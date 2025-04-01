@@ -1,6 +1,7 @@
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { TokenAuthGuard } from '@/common/guards/token-guard/token-auth.guard';
+import { CombinedAuthGuard } from '@/common/guards/combined-auth.guard';
 import { Module } from '@nestjs/common';
 import { CustomerService } from '@/customer/customer.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
@@ -11,6 +12,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 @Module({
   providers: [
@@ -18,6 +20,7 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
     WorkflowTokenRepository,
     WorkflowTokenService,
     TokenAuthGuard,
+    CombinedAuthGuard,
     CustomerService,
     CustomerRepository,
     UiDefinitionService,
@@ -26,7 +29,8 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
     WorkflowRuntimeDataRepository,
     ApiKeyService,
     ApiKeyRepository,
+    WorkflowService,
   ],
-  exports: [WorkflowTokenRepository, WorkflowTokenService, TokenAuthGuard],
+  exports: [WorkflowTokenRepository, WorkflowTokenService, TokenAuthGuard, CombinedAuthGuard],
 })
 export class TokenAuthModule {}

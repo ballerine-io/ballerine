@@ -3,6 +3,12 @@ import * as Sentry from '@sentry/react';
 import ky, { HTTPError } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
+const getWorkflowIdFromUrl = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  return urlParams.get('wf-id');
+};
+
 export const request = ky.create({
   //@ts-ignore
   prefixUrl:
@@ -13,11 +19,25 @@ export const request = ky.create({
     statusCodes: [500, 408, 404, 404, 403, 401],
     methods: ['get'],
   },
+  credentials: 'include',
   timeout: 30_000,
   hooks: {
     beforeRequest: [
       request => {
         request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
+
+        const workflowId = getWorkflowIdFromUrl();
+
+        if (workflowId) {
+          const currentUrl = new URL(request.url);
+          currentUrl.searchParams.set('wf-id', workflowId);
+
+          // Create a new Request with the updated URL
+          Object.defineProperty(request, 'url', {
+            value: currentUrl.toString(),
+            writable: true,
+          });
+        }
       },
     ],
     beforeError: [
@@ -35,7 +55,9 @@ export const request = ky.create({
             message: (responseJson as { message: string }).message,
           } as HTTPError);
 
-          if (isShouldIgnore) return error as HTTPError;
+          if (isShouldIgnore) {
+            return error as HTTPError;
+          }
 
           throw error;
         } catch (error) {
