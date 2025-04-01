@@ -1,14 +1,12 @@
 import { DefaultContextSchema } from '@/schemas';
+import { CollectionFlowStepStates } from './enums/collection-flow-step-state-enum';
 
-export interface ISetStepCompletionStateParams {
+export interface ISetStepStateParams {
   stepName: string;
-  completed: boolean;
+  state: CollectionFlowStepStates;
 }
 
-export const setStepCompletionState = (
-  context: DefaultContextSchema,
-  params: ISetStepCompletionStateParams,
-) => {
+export const setStepState = (context: DefaultContextSchema, params: ISetStepStateParams) => {
   if (!context.collectionFlow?.state?.steps) {
     throw new Error(
       'Unable to update step completion state: steps array is not initialized in collection flow state',
@@ -29,7 +27,7 @@ export const setStepCompletionState = (
     if (step.stepName === params.stepName) {
       return {
         ...step,
-        isCompleted: params.completed,
+        state: params.state,
       };
     }
 
