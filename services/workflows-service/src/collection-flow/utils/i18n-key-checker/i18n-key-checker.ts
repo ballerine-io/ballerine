@@ -18,17 +18,9 @@ export const i18nKeyChecker = (translations: Record<string, AnyRecord>) => {
     initImmediate: true,
   });
 
-  i18n.addResourceBundle('en', 'translation', translations);
-
-  for (const language of languages) {
-    i18n.addResourceBundle(language, 'translation', translations);
-  }
-
   const keyCheck = (key: string) => {
     for (const language of languages) {
-      const value = i18n.t(key, { lng: language });
-
-      if (key === value) {
+      if (!i18n.exists(key, { lng: language })) {
         throw new Error(`Translation not found for key: ${key} and language: ${language}`);
       }
     }
