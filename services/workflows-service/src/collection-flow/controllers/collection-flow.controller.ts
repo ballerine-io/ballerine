@@ -12,7 +12,7 @@ import {
   type ITokenScopeWithEndUserId,
   TokenScope,
 } from '@/common/decorators/token-scope.decorator';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import { UseCombinedAuthGuard } from '@/common/guards/combined-auth.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
@@ -21,7 +21,7 @@ import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 
-@UseTokenAuthGuard()
+@UseCombinedAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
 export class CollectionFlowController {

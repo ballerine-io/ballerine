@@ -5,7 +5,6 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { DocumentService } from '@/document/document.service';
 import { DeleteDocumentsSchema } from '@/document/dtos/document.dto';
-import { FileService } from '@/providers/file/file.service';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
@@ -45,7 +44,6 @@ import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flo
 export class CollectionFlowFilesController {
   constructor(
     protected readonly storageService: StorageService,
-    protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
     protected readonly collectionFlowService: CollectionFlowService,
