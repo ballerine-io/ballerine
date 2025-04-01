@@ -1,7 +1,8 @@
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { generatePriorityFields } from './generate-priority-fields';
+import { IFormElement, TBaseFields } from '@ballerine/ui';
+import { generateGranularRevisionFields } from './generate-granular-revision-fields';
 
-describe('generatePriorityFields', () => {
+describe('generateGranularRevisionFields', () => {
   const mockContext = {
     documents: [
       {
@@ -28,15 +29,15 @@ describe('generatePriorityFields', () => {
         },
       },
     },
-  ];
+  ] as Array<IFormElement<TBaseFields, any>>;
 
-  it('should return undefined when no priority fields found', () => {
-    const result = generatePriorityFields([], mockContext);
-    expect(result).toBeUndefined();
+  it('should return empty array when no revision fields found', () => {
+    const result = generateGranularRevisionFields(mockContext, []);
+    expect(result).toEqual([]);
   });
 
-  it('should generate priority fields for document elements', () => {
-    const result = generatePriorityFields(mockElements, mockContext);
+  it('should generate revision fields for document elements', () => {
+    const result = generateGranularRevisionFields(mockContext, mockElements);
 
     expect(result).toEqual([
       {
@@ -89,9 +90,9 @@ describe('generatePriorityFields', () => {
           },
         ],
       },
-    ];
+    ] as Array<IFormElement<TBaseFields, any>>;
 
-    const result = generatePriorityFields(mockedElements, nestedContext);
+    const result = generateGranularRevisionFields(nestedContext, mockedElements);
 
     expect(result).toEqual([
       {
@@ -99,26 +100,5 @@ describe('generatePriorityFields', () => {
         reason: 'needs_review - fix this issue',
       },
     ]);
-  });
-
-  it('should not generate priority fields if document is not in revision or requested status', () => {
-    const context = {
-      documents: [
-        {
-          id: 'doc1',
-          _document: {
-            id: 'doc1',
-            status: 'approved',
-            decision: 'approved',
-            decisionReason: 'all good',
-            comment: 'no issues',
-          },
-        },
-      ],
-    } as unknown as CollectionFlowContext;
-
-    const result = generatePriorityFields(mockElements, context);
-
-    expect(result).toBeUndefined();
   });
 });

@@ -3,7 +3,7 @@ import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/Indic
 import { MinusCircle } from '@/common/components/atoms/MinusCircle/MinusCircle';
 import { RefreshCircle } from '@/common/components/atoms/RefreshCircle/RefreshCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
-import { ProcessStatus, StateTag } from '@ballerine/common';
+import { CollectionFlowStepStatesEnum, ProcessStatus, StateTag } from '@ballerine/common';
 import { CheckCircle } from '@ballerine/ui';
 
 export const tagToAccordionCardItem = {
@@ -77,6 +77,13 @@ export const processStatusToIcon = {
   [ProcessStatus.SUCCESS]: Icon.CHECK,
   [ProcessStatus.ERROR]: Icon.X,
   [ProcessStatus.CANCELED]: Icon.MINUS,
+} as const;
+
+export const stepStatusToIcon = {
+  [CollectionFlowStepStatesEnum.idle]: Icon.INDICATOR,
+  [CollectionFlowStepStatesEnum.inProgress]: Icon.INDICATOR,
+  [CollectionFlowStepStatesEnum.completed]: Icon.CHECK,
+  [CollectionFlowStepStatesEnum.revision]: Icon.REFRESH,
 } as const;
 
 export const tagToIcon = {

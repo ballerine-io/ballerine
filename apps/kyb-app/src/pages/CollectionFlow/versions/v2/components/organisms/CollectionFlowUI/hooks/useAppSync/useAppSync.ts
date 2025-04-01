@@ -7,7 +7,6 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import { getCollectionFlowState } from '@ballerine/common';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { updateCollectionFlowState } from '../../helpers/update-collection-flow-state';
 
 export const useAppSync = () => {
   const [isSyncing, setIsSyncing] = useState(false);
@@ -15,50 +14,40 @@ export const useAppSync = () => {
   const { helpers } = useDynamicUIContext();
   const { setLoading } = helpers;
 
-  const sync = useCallback(
-    async (context: CollectionFlowContext) => {
-      const collectionFlow = getCollectionFlowState(context);
+  const sync = useCallback(async (context: CollectionFlowContext) => {
+    const collectionFlow = getCollectionFlowState(context);
 
-      if (!collectionFlow) {
-        return;
-      }
+    if (!collectionFlow) {
+      return;
+    }
 
-      try {
-        setLoading(true);
-        setIsSyncing(true);
-        updateCollectionFlowState(context, state);
+    try {
+      setLoading(true);
+      setIsSyncing(true);
+      await syncContext(context);
+    } catch (error) {
+      toast.error('Failed to sync.');
+      console.error(error);
+    } finally {
+      setIsSyncing(false);
+      setLoading(false);
+    }
+  }, []);
 
-        await syncContext(context);
-      } catch (error) {
-        toast.error('Failed to sync.');
-        console.error(error);
-      } finally {
-        setIsSyncing(false);
-        setLoading(false);
-      }
-    },
-    [state],
-  );
+  const syncStateless = useCallback(async (context: CollectionFlowContext) => {
+    const collectionFlow = getCollectionFlowState(context);
 
-  const syncStateless = useCallback(
-    async (context: CollectionFlowContext) => {
-      const collectionFlow = getCollectionFlowState(context);
+    if (!collectionFlow) {
+      return;
+    }
 
-      if (!collectionFlow) {
-        return;
-      }
-
-      try {
-        updateCollectionFlowState(context, state);
-
-        await syncContext(context);
-      } catch (error) {
-        toast.error('Failed to sync.');
-        console.error(error);
-      }
-    },
-    [state],
-  );
+    try {
+      await syncContext(context);
+    } catch (error) {
+      toast.error('Failed to sync.');
+      console.error(error);
+    }
+  }, []);
 
   return { isSyncing, sync, syncStateless, setIsSyncing };
 };

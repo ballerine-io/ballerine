@@ -61,8 +61,14 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
           Processes
         </AccordionCard.Title>
         <AccordionCard.Content>
-          {trackedProcesses.map(({ name, title, subitems }) => (
-            <AccordionCard.Item key={name} title={title} value={name} subitems={subitems} />
+          {trackedProcesses.map(({ name, title, subitems, params }) => (
+            <AccordionCard.Item
+              key={name}
+              title={title}
+              value={name}
+              subitems={subitems}
+              {...params}
+            />
           ))}
         </AccordionCard.Content>
       </AccordionCard>
