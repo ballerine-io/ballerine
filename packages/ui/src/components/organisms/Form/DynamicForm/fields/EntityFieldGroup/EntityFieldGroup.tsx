@@ -1,7 +1,6 @@
 import { AnyObject } from '@/common';
 import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
-import clsx from 'clsx';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -194,18 +193,17 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
                 <span className="text-sm font-bold">
                   {itemIndexLabel.replace('{INDEX}', (index + 1).toString())}
                 </span>
-                <span
+                <button
                   role="button"
                   tabIndex={0}
-                  aria-disabled={isRemovingEntity}
-                  className={clsx('cursor-pointer text-sm font-bold', {
-                    'pointer-events-none opacity-50': isRemovingEntity || disabled,
-                  })}
+                  aria-disabled={isRemovingEntity || disabled}
+                  className="disabled:opacity-50 text-sm font-bold"
+                  disabled={isRemovingEntity || disabled}
                   data-testid={`${fieldId}-fieldlist-item-remove-${entity.__id}`}
                   onClick={isRemovingEntity ? undefined : () => removeItem(entity.__id!)}
                 >
                   {removeButtonLabel}
-                </span>
+                </button>
               </div>
               <EntityFields
                 entityId={entity.__id!}

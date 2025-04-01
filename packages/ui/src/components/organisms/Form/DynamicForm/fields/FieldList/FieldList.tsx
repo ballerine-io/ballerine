@@ -1,4 +1,3 @@
-import { ctw } from '@/common';
 import { Button } from '@/components/atoms';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { FocusEventHandler } from 'react';
@@ -60,17 +59,16 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
               <span className="text-sm font-bold">
                 {itemIndexLabel.replace('{INDEX}', (index + 1).toString())}
               </span>
-              <span
-                role="button"
+              <button
                 tabIndex={0}
-                className={ctw('cursor-pointer text-sm', {
-                  'pointer-events-none opacity-50': disabled,
-                })}
+                disabled={disabled}
+                aria-disabled={disabled}
+                className="disabled:opacity-50 text-sm font-bold"
                 onClick={() => removeItem(index)}
                 data-testid={`${fieldId}-fieldlist-item-remove-${index}`}
               >
                 {removeButtonLabel}
-              </span>
+              </button>
             </div>
             <StackProvider stack={[...(stack || []), index]}>
               <Renderer
