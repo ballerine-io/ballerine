@@ -406,9 +406,7 @@ describe('Rule Engine', () => {
             key: 'pluginsOutput.businessInformation.data[0].shares',
             operator: OPERATION.EXISTS,
             value: {
-              schema: z.object({
-                exists: z.boolean(),
-              }),
+              schema: z.object({}),
             },
           },
         ],
