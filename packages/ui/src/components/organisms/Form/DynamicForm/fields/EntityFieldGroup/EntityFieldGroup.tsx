@@ -194,7 +194,6 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
                   {itemIndexLabel.replace('{INDEX}', (index + 1).toString())}
                 </span>
                 <button
-                  role="button"
                   tabIndex={0}
                   aria-disabled={isRemovingEntity || disabled}
                   className="disabled:opacity-50 text-sm font-bold"
