@@ -9,9 +9,9 @@ export const useStepsRequesting = (workflow: TWorkflowById) => {
   const stepsCountToRequest = useMemo(() => {
     const collectionFlowSteps = getCollectionFlowState(workflow?.context || {})?.steps;
 
-    return Number(
+    return (
       collectionFlowSteps?.filter(step => step.state === CollectionFlowStepStatesEnum.revision)
-        .length,
+        .length ?? 0
     );
   }, [workflow]);
 

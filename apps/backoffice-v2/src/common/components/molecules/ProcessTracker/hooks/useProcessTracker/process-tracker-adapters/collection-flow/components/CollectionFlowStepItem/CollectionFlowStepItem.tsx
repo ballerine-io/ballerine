@@ -53,13 +53,12 @@ export const CollectionFlowStepItem = ({
       </div>
       {isCanRequestStep ? (
         <div className="invisible pr-3 group-hover:visible">
-          {!isLoading ? (
-            <CollectionFlowStepOptions
-              onRequestStepFromClient={onRequestStepFromClient}
-              onCancelStep={onCancelStepRequest}
-              step={step}
-            />
-          ) : null}
+          <CollectionFlowStepOptions
+            disabled={isLoading}
+            onRequestStepFromClient={onRequestStepFromClient}
+            onCancelStep={onCancelStepRequest}
+            step={step}
+          />
         </div>
       ) : null}
     </div>

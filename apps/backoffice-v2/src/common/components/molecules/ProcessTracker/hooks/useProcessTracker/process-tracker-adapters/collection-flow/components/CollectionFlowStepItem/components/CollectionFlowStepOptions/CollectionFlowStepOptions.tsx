@@ -23,12 +23,14 @@ import { useReasonInput } from './hooks/useReasonInput';
 
 export interface ICollectionFlowStepOptionsProps {
   step: TCollectionFlowStep;
+  disabled: boolean;
   onRequestStepFromClient: (reason: string) => void;
   onCancelStep: () => void;
 }
 
 export const CollectionFlowStepOptions = ({
   step,
+  disabled,
   onRequestStepFromClient,
   onCancelStep,
 }: ICollectionFlowStepOptionsProps) => {
@@ -47,6 +49,7 @@ export const CollectionFlowStepOptions = ({
             variant="outline"
             size="icon"
             className="ms-auto text-muted-foreground d-5 focus-visible:visible group-hover:visible aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:bg-background aria-disabled:opacity-50 data-[state=open]:visible"
+            disabled={disabled}
           >
             <MoreVertical size={16} />
           </Button>
