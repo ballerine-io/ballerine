@@ -28,6 +28,20 @@ export class MetricsService {
     return await this.metricsRepository.getRuntimeStatusCaseCount(params, projectIds);
   }
 
+  async getCasesMetrics(projectIds: TProjectIds) {
+    const [casesByStatus, ongoingCasesByRisk, approvedCasesByRisk] = await Promise.all([
+      this.metricsRepository.getCasesByStatus(projectIds),
+      this.metricsRepository.getCasesByRiskLevel(projectIds, 'active'),
+      this.metricsRepository.getCasesByRiskLevel(projectIds, 'completed'),
+    ]);
+
+    return {
+      casesByStatus,
+      ongoingCasesByRisk,
+      approvedCasesByRisk,
+    };
+  }
+
   async listRuntimesStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {
     return await this.metricsRepository.findRuntimeStatistic(projectIds);
   }

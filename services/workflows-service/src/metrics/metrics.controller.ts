@@ -52,6 +52,15 @@ export class MetricsController {
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
     return await this.metricsService.getRuntimesStatusCaseCount(query, projectIds);
   }
+
+  // @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @common.HttpCode(200)
+  @common.Get('/worfklows/cases-metrics')
+  async getCasesMetrics(@ProjectIds() projectIds: TProjectIds) {
+    return await this.metricsService.getCasesMetrics(projectIds);
+  }
+
   @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })
   @ApiNotFoundResponse({ type: NotFoundException })
   @common.HttpCode(200)

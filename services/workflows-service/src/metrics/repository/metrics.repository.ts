@@ -43,6 +43,9 @@ import { plainToClass } from 'class-transformer';
 import { buildAggregateAverageResolutionTimeQuery } from './sql/build-aggregate-average-resolution-time.sql';
 import { buildAggregateWorkflowRuntimeStatusCaseCountQuery } from './sql/build-aggregate-workflow-runtime-status-case-count.sql';
 import { ApprovalState, BusinessReportStatus } from '@prisma/client';
+import { buildCasesByRiskLevelQuery, buildCasesByStatusQuery } from './sql/build-cases-metrics.sql';
+import { ICasesByStatusAggregationResult } from './types/cases-by-status';
+import { ICasesByRiskLevelAggregationResult } from './types/cases-by-risk-level';
 
 const LOW_LTE_RISK_SCORE = 39;
 const MEDIUM_LTE_RISK_SCORE = 69;
@@ -65,6 +68,32 @@ export class MetricsRepository {
       WorkflowRuntimeStatusCaseCountModel,
       results.length ? results.at(-1) : { active: 0, failed: 0, completed: 0 },
     );
+  }
+
+  async getCasesByStatus(projectIds: TProjectIds) {
+    const results = await this.prismaService.$queryRaw<ICasesByStatusAggregationResult[]>(
+      buildCasesByStatusQuery(projectIds),
+    );
+
+    console.log(results);
+
+    // return results.map(result => ({
+    //   status: result.status,
+    //   count: parseInt(result.count),
+    // }));
+  }
+
+  async getCasesByRiskLevel(projectIds: TProjectIds, status?: string) {
+    const results = await this.prismaService.$queryRaw<ICasesByRiskLevelAggregationResult[]>(
+      buildCasesByRiskLevelQuery(projectIds, status),
+    );
+
+    console.log(results);
+
+    // return results.map(result => ({
+    //   riskLevel: result.risk_level,
+    //   count: parseInt(result.count),
+    // }));
   }
 
   async findRuntimeStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {
