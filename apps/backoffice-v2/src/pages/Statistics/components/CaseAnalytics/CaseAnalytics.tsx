@@ -6,6 +6,7 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useCaseCurrentStats } from '@/domains/metrics/hooks/queries/useCaseCurrentStats/useCaseCurrentStats';
 
 export const CaseAnalytics: FunctionComponent<
   Pick<
@@ -14,6 +15,9 @@ export const CaseAnalytics: FunctionComponent<
   >
 > = props => {
   // Mock data for cases by status
+  const { data } = useCaseCurrentStats();
+  console.log(data);
+
   const casesByStatusData = [
     { name: 'Pending', value: 45, fill: '#3B82F6' },
     { name: 'In Review', value: 30, fill: '#FCD34D' },

@@ -28,6 +28,7 @@ import { Static, Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { GetDailyLiveCasesDto } from './dto/get-live-cases.dto';
 
 @ApiTags('Metrics')
 @Controller('/metrics')
@@ -56,9 +57,19 @@ export class MetricsController {
   // @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })
   @ApiNotFoundResponse({ type: NotFoundException })
   @common.HttpCode(200)
-  @common.Get('/worfklows/cases-metrics')
+  @common.Get('/cases/current')
   async getCasesMetrics(@ProjectIds() projectIds: TProjectIds) {
     return await this.metricsService.getCasesMetrics(projectIds);
+  }
+
+  @ApiOkResponse({ type: [Object] })
+  @common.HttpCode(200)
+  @common.Get('/cases/daily')
+  async getDailyLiveCases(
+    @common.Query() query: GetDailyLiveCasesDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return await this.metricsService.getDailyLiveCases(query, projectIds);
   }
 
   @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })

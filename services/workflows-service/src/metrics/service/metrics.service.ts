@@ -42,6 +42,17 @@ export class MetricsService {
     };
   }
 
+  async getDailyLiveCases(
+    params: { from: Date; to: Date },
+    projectIds: TProjectIds,
+  ): Promise<Array<{ date: string; count: number }>> {
+    return (await this.metricsRepository.getDailyLiveCases(
+      params.from,
+      params.to,
+      projectIds,
+    )) as any;
+  }
+
   async listRuntimesStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {
     return await this.metricsRepository.findRuntimeStatistic(projectIds);
   }
