@@ -42139,7 +42139,11 @@ packages:
       vite:
         optional: true
     dependencies:
+<<<<<<< HEAD
       vite: 4.5.3(@types/node@18.17.19)
+=======
+      vite: 4.5.3(@types/node@20.9.2)
+>>>>>>> dev
 
   /vitest@0.24.5(jsdom@20.0.3):
     resolution: {integrity: sha512-zw6JhPUHtLILQDe5Q39b/SzoITkG+R7hcFjuthp4xsi6zpmfQPOZcHodZ+3bqoWl4EdGK/p1fuMiEwdxgbGLOA==}
