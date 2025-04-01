@@ -74,3 +74,7 @@ export const AmlCheckSchema = z
 export const IdvCheckSchema = z.object({
   childWorkflowName: z.string(),
 });
+
+export const CompanySanctionsAdverseMediaSchema = z.object({
+  threshold: z.number().optional(),
+});

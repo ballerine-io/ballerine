@@ -5,11 +5,18 @@ import { z } from 'zod';
 import { Rule } from '@/rule-engine';
 import { IdvCheckParams } from './types';
 import { DataValueNotFoundError, ValidationFailedError } from '../errors';
+import { BaseOperator } from './helpers';
+import { IdvCheckSchema } from './schemas';
 
-function createIdvCheckOperator() {
-  const operator = 'IDV_CHECK';
+class IdvCheck extends BaseOperator<string[], IdvCheckParams> {
+  constructor() {
+    super({
+      operator: 'IDV_CHECK',
+      conditionValueSchema: IdvCheckSchema,
+    });
+  }
 
-  const extractValue = (data: unknown, rule: Rule) => {
+  extractValue(data: unknown, rule: Rule) {
     const idvRule = rule as Extract<Rule, { operator: 'IDV_CHECK' }>;
 
     const result = z.record(z.string(), z.any()).safeParse(data);
@@ -40,39 +47,20 @@ function createIdvCheckOperator() {
       throw new DataValueNotFoundError(rule.key);
     }
 
-    return decisions;
-  };
+    return decisions as string[];
+  }
 
-  const evaluate = async (dataValue: unknown, conditionValue: IdvCheckParams): Promise<boolean> => {
-    if (!dataValue || (Array.isArray(dataValue) && dataValue.length === 0)) {
+  evaluate(dataValue: string[], conditionValue: IdvCheckParams): boolean {
+    if (!dataValue || dataValue.length === 0) {
       return false;
     }
 
     const expectedStatus = 'declined';
 
-    if (Array.isArray(dataValue)) {
-      return dataValue.some(
-        status => typeof status === 'string' && status.toLowerCase() === expectedStatus,
-      );
-    }
-
-    return typeof dataValue === 'string' && dataValue.toLowerCase() === expectedStatus;
-  };
-
-  const execute = async (
-    value: unknown,
-    comparisonValue: IdvCheckParams,
-    options: { unifiedApiClient: any; threshold: number },
-  ) => {
-    return evaluate(value, comparisonValue);
-  };
-
-  return {
-    operator,
-    extractValue,
-    evaluate,
-    execute,
-  };
+    return dataValue.some(
+      status => typeof status === 'string' && status.toLowerCase() === expectedStatus,
+    );
+  }
 }
 
-export const IDV_CHECK = createIdvCheckOperator();
+export const IDV_CHECK = new IdvCheck();

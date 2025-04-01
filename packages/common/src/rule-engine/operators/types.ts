@@ -36,3 +36,7 @@ export type ConditionFn<TValue = Primitive, TData = Primitive> = (
 export interface IConditionHelpers<T> {
   [key: string]: ConditionFn<T>;
 }
+
+export interface CompanySanctionsAdverseMediaParams {
+  threshold?: number; // Optional threshold for number of adverse media sources required to trigger the rule
+}

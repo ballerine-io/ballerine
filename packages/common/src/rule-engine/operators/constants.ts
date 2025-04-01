@@ -14,10 +14,18 @@ import {
   NOT_IN,
   FUZZY_MATCH_SCORE_LT,
   IDV_CHECK,
-} from './helpers';
+  COMPANY_SANCTIONS_ADVERSE_MEDIA,
+} from './index';
 
 import { OPERATION } from './enums';
 
+// Import and re-export these from index.ts
+export { OPERATORS_WITHOUT_PATH_COMPARISON, OPERATORS_WITH_THRESHOLD } from './index';
+
+// Re-export the type with proper type annotation
+export type { TUnifiedApiClient } from './index';
+
+// Define and export OperationHelpers
 export const OperationHelpers = {
   [OPERATION.EQUALS]: EQUALS,
   [OPERATION.NOT_EQUALS]: NOT_EQUALS,
@@ -34,21 +42,5 @@ export const OperationHelpers = {
   [OPERATION.AML_CHECK]: AML_CHECK,
   [OPERATION.FUZZY_MATCH_SCORE_LT]: FUZZY_MATCH_SCORE_LT,
   [OPERATION.IDV_CHECK]: IDV_CHECK,
+  [OPERATION.COMPANY_SANCTIONS_ADVERSE_MEDIA]: COMPANY_SANCTIONS_ADVERSE_MEDIA,
 } as const;
-
-export const OPERATORS_WITHOUT_PATH_COMPARISON = [
-  OPERATION.AML_CHECK,
-  OPERATION.BETWEEN,
-  OPERATION.LAST_YEAR,
-  OPERATION.IDV_CHECK,
-] as const;
-
-export const OPERATORS_WITH_THRESHOLD = [OPERATION.FUZZY_MATCH_SCORE_LT] as const;
-
-export type TUnifiedApiClient = {
-  runEntityMatchingV2: (payload: {
-    entity1: string;
-    entity2: string;
-    includeAnalysis: boolean;
-  }) => Promise<{ data: { similarityScore: number & Record<string, unknown> } }>;
-};

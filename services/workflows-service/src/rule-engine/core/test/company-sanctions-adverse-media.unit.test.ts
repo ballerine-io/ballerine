@@ -1,133 +1,232 @@
-import { OPERATOR, RuleResult, RuleResultSet, RuleSet } from '@ballerine/common';
+import { DataValueNotFoundError, RuleResult, RuleResultSet, RuleSet } from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
-import { z } from 'zod';
 
-describe('Company Sanctions Adverse Media Rule', () => {
-  it('should detect when company sanctions has adverse media', async () => {
-    const mockDataWithAdverseMedia = {
+describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
+  it('should pass when adverse media sources meet the default threshold (1)', async () => {
+    const mockData = {
       pluginsOutput: {
         companySanctions: {
           data: [
             {
               entity: {
-                name: 'Test Company',
                 sources: [
                   {
-                    url: 'https://example.com/source1',
-                    dates: ['2023-01-01'],
-                    categories: ['Adverse Media', 'Corporate/Business'],
+                    categories: ['Adverse Media'],
                   },
                 ],
-                categories: ['Special Interest Entity (SIE)'],
               },
-              matchedFields: ['FullPrimaryName'],
             },
           ],
-          status: 'SUCCESS',
-        },
-      },
-    };
-
-    const mockDataWithoutAdverseMedia = {
-      pluginsOutput: {
-        companySanctions: {
-          data: [
-            {
-              entity: {
-                name: 'Test Company',
-                sources: [
-                  {
-                    url: 'https://example.com/source1',
-                    dates: ['2023-01-01'],
-                    categories: ['Corporate/Business', 'Regulatory Enforcement List'],
-                  },
-                ],
-                categories: ['Special Interest Entity (SIE)'],
-              },
-              matchedFields: ['FullPrimaryName'],
-            },
-          ],
-          status: 'SUCCESS',
         },
       },
     };
 
     const ruleSet: RuleSet = {
-      operator: OPERATOR.AND,
+      operator: 'and',
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'EXISTS',
-          value: {
-            schema: z.any(),
-          },
-        },
-        {
-          key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA',
-          value: true,
+          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          value: {} as any,
         },
       ],
     };
 
-    const engineWithAdverseMedia = createRuleEngine(ruleSet);
-    const resultsWithAdverseMedia = await engineWithAdverseMedia.run(mockDataWithAdverseMedia);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
 
-    expect(resultsWithAdverseMedia).toBeDefined();
-    expect(resultsWithAdverseMedia).toHaveLength(2);
-    expect(resultsWithAdverseMedia[0]?.status).toBe('PASSED');
-    expect(resultsWithAdverseMedia[1]?.status).toBe('PASSED');
-
-    const engineWithoutAdverseMedia = createRuleEngine(ruleSet);
-    const resultsWithoutAdverseMedia = await engineWithoutAdverseMedia.run(
-      mockDataWithoutAdverseMedia,
-    );
-
-    expect(resultsWithoutAdverseMedia).toBeDefined();
-    expect(resultsWithoutAdverseMedia).toHaveLength(2);
-    expect(resultsWithoutAdverseMedia[0]?.status).toBe('PASSED');
-    expect(resultsWithoutAdverseMedia[1]?.status).toBe('FAILED');
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
   });
 
-  it('should handle empty or missing company sanctions data', async () => {
-    const mockDataWithEmptySanctions = {
+  it('should pass when adverse media sources exceed the specified threshold', async () => {
+    const mockData = {
       pluginsOutput: {
         companySanctions: {
-          data: [],
-          status: 'SUCCESS',
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['Adverse Media'],
+                  },
+                  {
+                    categories: ['Adverse Media'],
+                  },
+                  {
+                    categories: ['Other Category'],
+                  },
+                ],
+              },
+            },
+          ],
         },
       },
     };
 
-    const mockDataWithoutSanctions = {
-      pluginsOutput: {},
-    };
-
     const ruleSet: RuleSet = {
-      operator: OPERATOR.AND,
+      operator: 'and',
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA',
-          value: true,
+          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          value: {
+            threshold: 2,
+          } as any,
         },
       ],
     };
 
-    const engineWithEmptySanctions = createRuleEngine(ruleSet);
-    const resultsWithEmptySanctions = await engineWithEmptySanctions.run(
-      mockDataWithEmptySanctions,
-    );
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
 
-    expect(resultsWithEmptySanctions).toBeDefined();
-    expect(resultsWithEmptySanctions).toHaveLength(1);
-    expect(resultsWithEmptySanctions[0]?.status).toBe('FAILED');
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
+  });
 
-    const engineWithoutSanctions = createRuleEngine(ruleSet);
-    const resultsWithoutSanctions = await engineWithoutSanctions.run(mockDataWithoutSanctions);
+  it('should fail when adverse media sources do not meet the threshold', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['Other Category'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
 
-    expect(resultsWithoutSanctions).toBeDefined();
-    expect(resultsWithoutSanctions).toHaveLength(1);
-    expect(resultsWithoutSanctions[0]?.status).toBe('FAILED');
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          key: 'pluginsOutput.companySanctions.data',
+          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          value: {} as any,
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('FAILED');
+  });
+
+  it('should handle case insensitivity for adverse media category name', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['ADVERSE MEDIA'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          key: 'pluginsOutput.companySanctions.data',
+          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          value: {} as any,
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
+  });
+
+  it('should handle multiple sources with adverse media categories', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['Other Category'],
+                  },
+                ],
+              },
+            },
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['Adverse Media'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          key: 'pluginsOutput.companySanctions.data',
+          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          value: {} as any,
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
+  });
+
+  it('should fail when companySanctions data does not exist', async () => {
+    const mockData = {
+      pluginsOutput: {
+        otherData: {},
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          key: 'pluginsOutput.companySanctions.data',
+          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          value: {} as any,
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('FAILED');
+    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
   });
 });

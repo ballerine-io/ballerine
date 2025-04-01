@@ -32,6 +32,13 @@ export const COMMERCIAL_CREDIT_CHECK_DONE = `contains(${UnifiedApiStatusesString
 
 export const SANCTIONS_DONE = `pluginsOutput.companySanctions.data != null`;
 
+// Add a rule for detecting company sanctions adverse media
+export const HAS_COMPANY_SANCTIONS_ADVERSE_MEDIA = {
+  key: 'pluginsOutput.companySanctions.data',
+  operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA',
+  value: { threshold: 1 },
+};
+
 export const BUSINESS_UBO_AND_SANCTIONS_DONE = `
   ${BUSINESS_INFORMATION_DONE} &&
   ${UBO_DONE} &&
