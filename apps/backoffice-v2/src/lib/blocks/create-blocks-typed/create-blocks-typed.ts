@@ -23,7 +23,6 @@ import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
 import { EditableDetailsV2Cell } from '../components/EditableDetailsV2Cell/EditableDetailsV2Cell';
-import { KycDecision } from '@/lib/blocks/components/KycDecision/KycDecision';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -45,7 +44,6 @@ export const cells: CellsMap = {
   callToAction: CallToAction,
   faceComparison: FaceComparison,
   details: Details,
-  kycDecision: KycDecision,
   nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
   map: MapCell,

@@ -20,7 +20,7 @@ import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlo
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { Button } from '@ballerine/ui';
+import { Badge, Button } from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
@@ -31,6 +31,28 @@ const motionBadgeProps = {
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 } satisfies ComponentProps<typeof MotionBadge>;
+
+const RISK_TO_LABEL = {
+  allowedAge: 'Disallowed age',
+  faceLiveness: 'Face is not lively',
+  documentNotExpired: 'Document expired',
+  geolocationMatch: 'No geolocation match',
+  documentAccepted: 'Document not accepted',
+  faceNotInBlocklist: 'Face is in blocklist',
+  allowedIpLocation: 'Disallowed IP location',
+  faceImageAvailable: 'Face image unavailable',
+  documentRecognised: 'Document not recognized',
+  faceSimilarToPortrait: 'Face not similar to portrait',
+  validDocumentAppearance: 'Invalid document appearance',
+  expectedTrafficBehaviour: 'Unexpected traffic behavior',
+  physicalDocumentPresent: 'Physical document not present',
+  documentBackFullyVisible: 'Document back not fully visible',
+  documentFrontFullyVisible: 'Document front not fully visible',
+  documentBackImageAvailable: 'Document back image unavailable',
+  faceImageQualitySufficient: 'Face image quality insufficient',
+  documentFrontImageAvailable: 'Document front image unavailable',
+  documentImageQualitySufficient: 'Document image quality insufficient',
+} as const;
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -55,7 +77,7 @@ export const useKycBlock = ({
     return allDocuments?.filter(document => document.type === 'identification_document') ?? [];
   }, [allDocuments]);
 
-  const riskLabels = kycSessionKeys?.length
+  const riskLabels: string[] = kycSessionKeys?.length
     ? kycSessionKeys.flatMap(key => {
         if (key === 'invokedAt') {
           return [];
@@ -577,13 +599,12 @@ export const useKycBlock = ({
                         })
                         .addCell({
                           id: 'decision',
-                          type: 'kycDecision',
+                          type: 'details',
                           hideSeparator: true,
                           value: {
                             id: 1,
                             title: 'Decision',
                             data: decision,
-                            riskLabels,
                           },
                           props: {
                             config: {
@@ -598,6 +619,25 @@ export const useKycBlock = ({
                           ),
                           isDocumentsV2:
                             !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
+                        })
+                        .addCell({
+                          type: 'node',
+                          value: (
+                            <div className="m-2 mt-4 flex flex-col gap-4 p-1">
+                              <p className="text-sm font-medium">Issues</p>
+                              <div className="flex flex-col space-y-4">
+                                {riskLabels.map(item => (
+                                  <Badge
+                                    key={item}
+                                    variant="destructive"
+                                    className={`max-w-fit text-sm font-bold`}
+                                  >
+                                    {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ?? item}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          ),
                         })
                         .buildFlat()
                     : createBlocksTyped()
