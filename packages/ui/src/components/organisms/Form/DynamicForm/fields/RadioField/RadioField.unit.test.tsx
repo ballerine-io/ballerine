@@ -2,6 +2,7 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { FieldDescription } from '../../layouts/FieldDescription';
@@ -33,6 +34,10 @@ vi.mock('../../layouts/FieldErrors', () => ({
 
 vi.mock('../../hooks/internal/usePriorityFields', () => ({
   usePriorityFields: vi.fn(),
+}));
+
+vi.mock('../../context', () => ({
+  useDynamicForm: vi.fn(),
 }));
 
 describe('RadioField', () => {
@@ -71,6 +76,11 @@ describe('RadioField', () => {
       isShouldDisablePriorityField: false,
       isShouldHidePriorityField: false,
     });
+    vi.mocked(useDynamicForm).mockReturnValue({
+      validationParams: {
+        globalValidationRules: [],
+      },
+    } as unknown as ReturnType<typeof useDynamicForm>);
   });
 
   afterEach(() => {
@@ -159,9 +169,10 @@ describe('RadioField', () => {
   });
 
   it('renders priority reason when priorityField exists', () => {
+    // Mock usePriorityFields with a priority field that has a reason
     vi.mocked(usePriorityFields).mockReturnValue({
       priorityField: {
-        id: 'test-id',
+        id: 'test-radio',
         reason: 'This is a priority field',
       },
       isPriorityField: true,
@@ -171,7 +182,11 @@ describe('RadioField', () => {
 
     render(<RadioField element={mockElement} />);
 
-    expect(screen.getByText('This is a priority field')).toBeInTheDocument();
+    // Use the testId to find the element instead of text content
+    expect(screen.getByTestId('test-radio-priority-reason')).toBeInTheDocument();
+    expect(screen.getByTestId('test-radio-priority-reason')).toHaveTextContent(
+      'This is a priority field',
+    );
   });
 
   it('does not render priority reason when priorityField is undefined', () => {

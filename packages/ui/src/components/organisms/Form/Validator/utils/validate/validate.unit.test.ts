@@ -949,5 +949,73 @@ describe('validate', () => {
         ]);
       });
     });
+
+    describe('global validation rules', () => {
+      it('should be applied to all validators', () => {
+        const schema = [
+          {
+            id: 'value',
+            valueDestination: 'value',
+            validators: [],
+          },
+        ] as IValidationSchema[];
+
+        const globalValidationRules = [
+          { type: 'required', message: 'Field is required.', value: {} },
+        ] as Array<ICommonValidator<any, any>>;
+
+        const data = {};
+
+        expect(validate(data, schema, {}, globalValidationRules)).toEqual([
+          {
+            id: 'value',
+            originId: 'value',
+            invalidValue: undefined,
+            message: ['Field is required.'],
+          },
+        ]);
+      });
+
+      it('should be applied conditionally', () => {
+        const schema = [
+          {
+            id: 'value',
+            valueDestination: 'value',
+            validators: [],
+          },
+        ] as IValidationSchema[];
+
+        const globalValidationRules = [
+          {
+            type: 'required',
+            message: 'Field is required.',
+            value: {},
+            applyWhen: {
+              engine: 'json-logic',
+              value: {
+                '==': [{ var: 'number' }, 1],
+              },
+            },
+          },
+        ] as Array<ICommonValidator<any, any>>;
+
+        const data = {
+          number: 1,
+        };
+
+        expect(validate(data, schema, {}, globalValidationRules)).toEqual([
+          {
+            id: 'value',
+            originId: 'value',
+            invalidValue: undefined,
+            message: ['Field is required.'],
+          },
+        ]);
+
+        data.number = 2;
+
+        expect(validate(data, schema, {}, globalValidationRules)).toEqual([]);
+      });
+    });
   });
 });

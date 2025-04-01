@@ -20,25 +20,39 @@ export class MerchantMonitoringProcessTracker implements IProcessTracker {
     ];
   }
 
-  getReadableName(): string {
+  getTitle(): string {
     return 'Merchant Monitoring';
   }
 
   private resolveTitleToTags(tags?: string[]) {
-    if (tags?.includes(StateTag.PENDING_PROCESS)) return 'Risk Analysis';
+    if (tags?.includes(StateTag.PENDING_PROCESS)) {
+      return 'Risk Analysis';
+    }
 
-    if (tags?.includes(StateTag.FAILURE)) return 'Process failed.';
+    if (tags?.includes(StateTag.FAILURE)) {
+      return 'Process failed.';
+    }
 
-    if (tags?.includes(StateTag.MANUAL_REVIEW)) return 'Manual Review';
+    if (tags?.includes(StateTag.MANUAL_REVIEW)) {
+      return 'Manual Review';
+    }
 
-    if (tags?.includes(StateTag.REJECTED)) return 'Rejected';
+    if (tags?.includes(StateTag.REJECTED)) {
+      return 'Rejected';
+    }
 
-    if (tags?.includes(StateTag.APPROVED)) return 'Approved';
+    if (tags?.includes(StateTag.APPROVED)) {
+      return 'Approved';
+    }
   }
 
   private getIconKeyByState(tags: string[]): JSX.Element {
     const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
 
     return tagToIcon[tag as keyof typeof tagToIcon] ?? tagToIcon.DEFAULT;
+  }
+
+  getItemParams(): object {
+    return {};
   }
 }

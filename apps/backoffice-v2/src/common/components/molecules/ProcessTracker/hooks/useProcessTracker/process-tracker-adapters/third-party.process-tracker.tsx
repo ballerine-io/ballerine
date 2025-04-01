@@ -36,7 +36,7 @@ export class ThirdPartyProcessTracker implements IProcessTracker {
     );
   }
 
-  getReadableName(): string {
+  getTitle(): string {
     return '3rd party processes';
   }
 
@@ -52,5 +52,9 @@ export class ThirdPartyProcessTracker implements IProcessTracker {
     });
 
     return plugin;
+  }
+
+  getItemParams(): object {
+    return {};
   }
 }

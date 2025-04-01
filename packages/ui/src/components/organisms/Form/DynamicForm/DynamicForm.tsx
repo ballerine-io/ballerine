@@ -81,13 +81,20 @@ export const DynamicFormV2 = forwardRef(
       ],
     );
 
+    const valuesAndMetadata = useMemo(() => {
+      return {
+        ...context.values,
+        ...context.metadata,
+      };
+    }, [context.values, context.metadata]);
+
     return (
       <TaskRunner>
         <EventsProvider onEvent={onEvent}>
           <DynamicFormContext.Provider value={context}>
             <ValidatorProvider
               schema={validationSchema}
-              value={context.values}
+              value={valuesAndMetadata}
               {...validationParams}
             >
               <Renderer

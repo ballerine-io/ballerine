@@ -11,7 +11,11 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
-import { getCollectionFlowState, setStepCompletionState } from '@ballerine/common';
+import {
+  CollectionFlowStepStatesEnum,
+  getCollectionFlowState,
+  setStepState,
+} from '@ballerine/common';
 import { Button } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
 
@@ -44,7 +48,9 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
         // Checking valueDestination for Array values
         const elementIndex = valueDestination.match(/\[(\d+)\]/)?.[1];
 
-        if (!element) return;
+        if (!element) {
+          return;
+        }
 
         const elementName = `${element.name}${elementIndex ? `[${elementIndex}]` : ''}`;
         nextState.elements[elementName] = {
@@ -72,9 +78,9 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       const collectionFlow = getCollectionFlowState(context);
 
       if (collectionFlow) {
-        setStepCompletionState(context, {
+        setStepState(context, {
           stepName: currentPage?.stateName as string,
-          completed: true,
+          state: CollectionFlowStepStatesEnum.completed,
         });
       }
 

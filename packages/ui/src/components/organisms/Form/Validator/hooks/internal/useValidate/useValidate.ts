@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { IValidationError, IValidationSchema } from '../../../types';
+import { ICommonValidator, IValidationError, IValidationSchema } from '../../../types';
 import { validate } from '../../../utils/validate';
 
 export interface IUseValidateParams {
@@ -8,6 +8,7 @@ export interface IUseValidateParams {
   validationDelay?: number;
   abortEarly?: boolean;
   abortAfterFirstError?: boolean;
+  globalValidationRules?: Array<ICommonValidator<object, string>>;
 }
 
 export const useValidate = (
@@ -20,11 +21,12 @@ export const useValidate = (
     validationDelay = undefined,
     abortEarly = false,
     abortAfterFirstError = false,
+    globalValidationRules,
   } = params;
 
   const [validationErrors, setValidationErrors] = useState<IValidationError[]>(() => {
     if (validateOnChange && validationDelay === undefined) {
-      return validate(context, schema, { abortEarly, abortAfterFirstError });
+      return validate(context, schema, { abortEarly, abortAfterFirstError }, globalValidationRules);
     }
 
     return [];
@@ -32,7 +34,12 @@ export const useValidate = (
 
   const debouncedValidate = useCallback(
     debounce((context, schema) => {
-      const errors = validate(context, schema, { abortEarly, abortAfterFirstError });
+      const errors = validate(
+        context,
+        schema,
+        { abortEarly, abortAfterFirstError },
+        globalValidationRules,
+      );
       setValidationErrors(errors);
     }, validationDelay),
     [validationDelay],
@@ -40,15 +47,25 @@ export const useValidate = (
 
   const validateSyncCallback = useCallback(
     (context: object, schema: IValidationSchema[]) => {
-      const errors = validate(context, schema, { abortEarly, abortAfterFirstError });
+      const errors = validate(
+        context,
+        schema,
+        { abortEarly, abortAfterFirstError },
+        globalValidationRules,
+      );
       setValidationErrors(errors);
     },
-    [abortEarly, abortAfterFirstError],
+    [abortEarly, abortAfterFirstError, globalValidationRules],
   );
 
   const externalValidate = useCallback((): Promise<IValidationError[]> => {
     return new Promise(resolve => {
-      const errors = validate(context, schema, { abortEarly, abortAfterFirstError });
+      const errors = validate(
+        context,
+        schema,
+        { abortEarly, abortAfterFirstError },
+        globalValidationRules,
+      );
       setValidationErrors(() => {
         setTimeout(() => {
           resolve(errors);
@@ -57,7 +74,7 @@ export const useValidate = (
         return errors;
       });
     });
-  }, [abortEarly, abortAfterFirstError, context, schema]);
+  }, [abortEarly, abortAfterFirstError, context, schema, globalValidationRules]);
 
   useLayoutEffect(() => {
     if (validateOnChange && validationDelay === undefined) {

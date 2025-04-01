@@ -2,6 +2,7 @@ import { ITagsInputProps, TagsInput } from '@/components/molecules';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TDeepthLevelStack } from '../../../Validator';
+import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { FieldDescription } from '../../layouts/FieldDescription';
@@ -40,6 +41,10 @@ vi.mock('../../hooks/internal/usePriorityFields', () => ({
   usePriorityFields: vi.fn(),
 }));
 
+vi.mock('../../context', () => ({
+  useDynamicForm: vi.fn(),
+}));
+
 describe('TagsField', () => {
   const mockElement = {
     id: 'test-tags',
@@ -75,6 +80,12 @@ describe('TagsField', () => {
       isShouldDisablePriorityField: false,
       isShouldHidePriorityField: false,
     });
+    vi.mocked(useDynamicForm).mockReturnValue({
+      metadata: {},
+      validationParams: {
+        globalValidationRules: [],
+      },
+    } as unknown as ReturnType<typeof useDynamicForm>);
   });
 
   afterEach(() => {
