@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
-import { getNationalities } from '@/helpers/countries-data';
+import { getNationalities } from '@ballerine/common';
 import { useTranslation } from 'react-i18next';
 
 export const NationalityPicker = (props: RJSFInputProps) => {

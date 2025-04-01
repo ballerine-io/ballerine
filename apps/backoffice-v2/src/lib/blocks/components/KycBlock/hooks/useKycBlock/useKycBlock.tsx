@@ -413,6 +413,7 @@ export const useKycBlock = ({
                 boolean: true,
                 url: true,
                 nullish: true,
+                country: true,
               },
               blacklist: [],
               actions: {
@@ -434,6 +435,7 @@ export const useKycBlock = ({
               },
               inputTypes: {
                 dateOfBirth: 'date',
+                country: 'country',
               },
             },
           },

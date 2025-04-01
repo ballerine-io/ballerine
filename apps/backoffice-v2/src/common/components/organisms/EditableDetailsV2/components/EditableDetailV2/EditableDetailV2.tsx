@@ -1,8 +1,8 @@
 import { ChangeEvent, useCallback } from 'react';
 import { checkIsFormattedDatetime } from '@/common/utils/check-is-formatted-datetime';
 import { FileJson2 } from 'lucide-react';
-import { BallerineLink, ctw, Input, JsonDialog } from '@ballerine/ui';
-import { checkIsUrl, isNullish, isObject } from '@ballerine/common';
+import { BallerineLink, CountrySelect, ctw, Input, JsonDialog } from '@ballerine/ui';
+import { checkIsCountry, checkIsUrl, isNullish, isObject } from '@ballerine/common';
 import { Select } from '../../../../atoms/Select/Select';
 import { SelectTrigger } from '../../../../atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../atoms/Select/Select.Value';
@@ -17,6 +17,7 @@ import { FormControl } from '../../../Form/Form.Control';
 import { getInputType } from '../../utils/get-input-type';
 import { checkIsDate } from '@/common/components/organisms/EditableDetailsV2/utils/check-is-date';
 import { checkIsDatetime } from '@/common/components/organisms/EditableDetailsV2/utils/check-is-datetime';
+import { getName } from 'i18n-iso-countries';
 
 export const EditableDetailV2 = ({
   isEditable,
@@ -61,6 +62,7 @@ export const EditableDetailV2 = ({
     boolean?: boolean;
     url?: boolean;
     nullish?: boolean;
+    country?: boolean;
   };
 }) => {
   const displayValue = getDisplayValue({ value, formValue, isEditable });
@@ -114,7 +116,7 @@ export const EditableDetailV2 = ({
 
   if (isEditable && options) {
     return (
-      <Select disabled={!isEditable} onValueChange={onOptionChange} defaultValue={formValue}>
+      <Select onValueChange={onOptionChange} defaultValue={formValue}>
         <FormControl>
           <SelectTrigger className="h-9 w-full border-input p-1 shadow-sm">
             <SelectValue />
@@ -146,6 +148,23 @@ export const EditableDetailV2 = ({
           className={ctw('border-[#E5E7EB]', className)}
         />
       </FormControl>
+    );
+  }
+
+  if (isEditable && inputType === 'country') {
+    return (
+      <CountrySelect value={displayValue} onChange={onOptionChange}>
+        <FormControl>
+          <CountrySelect.Trigger className="h-9 w-full border-input p-1 shadow-sm">
+            <CountrySelect.Value />
+          </CountrySelect.Trigger>
+        </FormControl>
+        <CountrySelect.Content locale={'en'}>
+          {country => (
+            <CountrySelect.Item value={country.const}>{country.title}</CountrySelect.Item>
+          )}
+        </CountrySelect.Content>
+      </CountrySelect>
     );
   }
 
@@ -201,6 +220,10 @@ export const EditableDetailV2 = ({
 
   if (isNullish(value)) {
     return <ReadOnlyDetailV2 className={className}>{`${value}`}</ReadOnlyDetailV2>;
+  }
+
+  if (parse?.country && checkIsCountry('en', value)) {
+    return <ReadOnlyDetailV2 className={className}>{getName(value, 'en')}</ReadOnlyDetailV2>;
   }
 
   return <ReadOnlyDetailV2 className={className}>{value}</ReadOnlyDetailV2>;

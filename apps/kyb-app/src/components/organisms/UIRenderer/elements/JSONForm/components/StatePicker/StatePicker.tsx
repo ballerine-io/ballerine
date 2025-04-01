@@ -1,6 +1,6 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { UIElement } from '@/domains/collection-flow';
-import { getCountryStates } from '@/helpers/countries-data';
+import { getCountryStates } from '@ballerine/common';
 import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 import get from 'lodash/get';
 import { useMemo } from 'react';
