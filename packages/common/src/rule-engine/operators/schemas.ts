@@ -75,6 +75,7 @@ export const IdvCheckSchema = z.object({
   childWorkflowName: z.string(),
 });
 
-export const CompanySanctionsAdverseMediaSchema = z.object({
+export const CompanySanctionsCategoriesSchema = z.object({
   threshold: z.number().optional(),
+  category: z.union([z.literal('Adverse Media'), z.string()]),
 });

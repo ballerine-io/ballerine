@@ -1,8 +1,15 @@
-import { DataValueNotFoundError, RuleResult, RuleResultSet, RuleSet } from '@ballerine/common';
+import {
+  DataValueNotFoundError,
+  OPERATION,
+  RuleResult,
+  RuleResultSet,
+  RuleSet,
+  ValidationFailedError,
+} from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
 
-describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
-  it('should pass when adverse media sources meet the default threshold (1)', async () => {
+describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
+  it('should pass when sanctions categories meet the default threshold (1)', async () => {
     const mockData = {
       pluginsOutput: {
         companySanctions: {
@@ -11,7 +18,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
               entity: {
                 sources: [
                   {
-                    categories: ['Adverse Media'],
+                    categories: ['Sanctions'],
                   },
                 ],
               },
@@ -26,8 +33,10 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
-          value: {} as any,
+          operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
+          value: {
+            category: 'Sanctions',
+          },
         },
       ],
     };
@@ -39,7 +48,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
     expect(validationResults[0]!.status).toBe('PASSED');
   });
 
-  it('should pass when adverse media sources exceed the specified threshold', async () => {
+  it('should pass when sanctions categories exceed the specified threshold', async () => {
     const mockData = {
       pluginsOutput: {
         companySanctions: {
@@ -48,10 +57,10 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
               entity: {
                 sources: [
                   {
-                    categories: ['Adverse Media'],
+                    categories: ['Sanctions'],
                   },
                   {
-                    categories: ['Adverse Media'],
+                    categories: ['Sanctions'],
                   },
                   {
                     categories: ['Other Category'],
@@ -69,10 +78,11 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
+          operator: 'COMPANY_SANCTIONS_CATEGORIES',
           value: {
             threshold: 2,
-          } as any,
+            category: 'Sanctions',
+          },
         },
       ],
     };
@@ -84,7 +94,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
     expect(validationResults[0]!.status).toBe('PASSED');
   });
 
-  it('should fail when adverse media sources do not meet the threshold', async () => {
+  it('should fail when sanctions categories do not meet the threshold', async () => {
     const mockData = {
       pluginsOutput: {
         companySanctions: {
@@ -108,8 +118,10 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
-          value: {} as any,
+          operator: 'COMPANY_SANCTIONS_CATEGORIES',
+          value: {
+            category: 'Sanctions',
+          },
         },
       ],
     };
@@ -121,7 +133,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
     expect(validationResults[0]!.status).toBe('FAILED');
   });
 
-  it('should handle case insensitivity for adverse media category name', async () => {
+  it('should handle case insensitivity for category name', async () => {
     const mockData = {
       pluginsOutput: {
         companySanctions: {
@@ -130,7 +142,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
               entity: {
                 sources: [
                   {
-                    categories: ['ADVERSE MEDIA'],
+                    categories: ['SANCTIONS'],
                   },
                 ],
               },
@@ -145,8 +157,10 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
-          value: {} as any,
+          operator: 'COMPANY_SANCTIONS_CATEGORIES',
+          value: {
+            category: 'sanctions',
+          },
         },
       ],
     };
@@ -158,7 +172,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
     expect(validationResults[0]!.status).toBe('PASSED');
   });
 
-  it('should handle multiple sources with adverse media categories', async () => {
+  it('should handle multiple sources with categories', async () => {
     const mockData = {
       pluginsOutput: {
         companySanctions: {
@@ -176,7 +190,7 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
               entity: {
                 sources: [
                   {
-                    categories: ['Adverse Media'],
+                    categories: ['Sanctions'],
                   },
                 ],
               },
@@ -191,8 +205,10 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
-          value: {} as any,
+          operator: 'COMPANY_SANCTIONS_CATEGORIES',
+          value: {
+            category: 'Sanctions',
+          },
         },
       ],
     };
@@ -216,8 +232,10 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
       rules: [
         {
           key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA' as any,
-          value: {} as any,
+          operator: 'COMPANY_SANCTIONS_CATEGORIES',
+          value: {
+            category: 'Sanctions',
+          },
         },
       ],
     };
@@ -227,6 +245,6 @@ describe('COMPANY_SANCTIONS_ADVERSE_MEDIA operator', () => {
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
     expect(validationResults[0]!.status).toBe('FAILED');
-    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
+    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(ValidationFailedError);
   });
 });

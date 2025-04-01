@@ -23,7 +23,7 @@ export {
 
 // Export specialized operators
 export { IDV_CHECK } from './idv-check';
-export { COMPANY_SANCTIONS_ADVERSE_MEDIA } from './company-sanctions-adverse-media';
+export { COMPANY_SANCTIONS_CATEGORIES } from './company-sanctions-by-category';
 
 // Export constants directly as they're not dependent on the operators
 export const OPERATORS_WITHOUT_PATH_COMPARISON = [
@@ -31,7 +31,7 @@ export const OPERATORS_WITHOUT_PATH_COMPARISON = [
   OPERATION.BETWEEN,
   OPERATION.LAST_YEAR,
   OPERATION.IDV_CHECK,
-  OPERATION.COMPANY_SANCTIONS_ADVERSE_MEDIA,
+  OPERATION.COMPANY_SANCTIONS_CATEGORIES,
 ] as const;
 
 export const OPERATORS_WITH_THRESHOLD = [OPERATION.FUZZY_MATCH_SCORE_LT] as const;

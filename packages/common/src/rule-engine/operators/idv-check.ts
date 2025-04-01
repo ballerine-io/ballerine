@@ -8,6 +8,22 @@ import { DataValueNotFoundError, ValidationFailedError } from '../errors';
 import { BaseOperator } from './helpers';
 import { IdvCheckSchema } from './schemas';
 
+const IDV_DECLINED_STATUS = 'declined';
+
+const createDataSchema = (childWorkflowName: string) =>
+  z.object({
+    childWorkflows: z
+      .record(z.string(), z.record(z.string(), z.any()))
+      .refine(childWorkflows => !!childWorkflows[childWorkflowName], {
+        message: `childWorkflows.${childWorkflowName} not found`,
+        path: [`childWorkflows.${childWorkflowName}`],
+      })
+      .refine(childWorkflows => Object.keys(childWorkflows[childWorkflowName] || {}).length > 0, {
+        message: `childWorkflows.${childWorkflowName} is empty`,
+        path: [`childWorkflows.${childWorkflowName}`],
+      }),
+  });
+
 class IdvCheck extends BaseOperator<string[], IdvCheckParams> {
   constructor() {
     super({
@@ -18,48 +34,41 @@ class IdvCheck extends BaseOperator<string[], IdvCheckParams> {
 
   extractValue(data: unknown, rule: Rule) {
     const idvRule = rule as Extract<Rule, { operator: 'IDV_CHECK' }>;
+    const childWorkflowName = idvRule.value.childWorkflowName;
 
-    const result = z.record(z.string(), z.any()).safeParse(data);
+    const dataSchema = createDataSchema(childWorkflowName);
+
+    const result = dataSchema.safeParse(data);
 
     if (!result.success) {
-      throw new ValidationFailedError('extract', 'parsing failed', result.error);
+      const error = result.error;
+      const errorPath = error.errors[0]?.path.join('.');
+
+      if (errorPath?.includes(childWorkflowName)) {
+        throw new DataValueNotFoundError(`childWorkflows.${childWorkflowName}`);
+      }
+
+      throw new ValidationFailedError('extract', 'parsing failed', error);
     }
 
-    const objData = result.data;
-
-    const childWorkflows = objData.childWorkflows[idvRule.value.childWorkflowName];
-
-    if (!childWorkflows) {
-      throw new DataValueNotFoundError(`childWorkflows.${idvRule.value.childWorkflowName}`);
-    }
-
+    const childWorkflows = result.data.childWorkflows[childWorkflowName];
     const childWorkflowKeys = Object.keys(childWorkflows || {});
-
-    if (isEmpty(childWorkflowKeys)) {
-      throw new DataValueNotFoundError(`childWorkflows.${idvRule.value.childWorkflowName}`);
-    }
 
     const decisions = childWorkflowKeys
       .map(workflowId => get(childWorkflows, `${workflowId}.result.vendorResult.decision.status`))
-      .filter(Boolean);
+      .filter((status): status is string => typeof status === 'string' && status !== '');
 
     if (isEmpty(decisions)) {
       throw new DataValueNotFoundError(rule.key);
     }
 
-    return decisions as string[];
+    return decisions;
   }
 
   evaluate(dataValue: string[], conditionValue: IdvCheckParams): boolean {
-    if (!dataValue || dataValue.length === 0) {
-      return false;
-    }
+    const expectedStatus = IDV_DECLINED_STATUS;
 
-    const expectedStatus = 'declined';
-
-    return dataValue.some(
-      status => typeof status === 'string' && status.toLowerCase() === expectedStatus,
-    );
+    return dataValue.some(status => status.toLowerCase() === expectedStatus);
   }
 }
 

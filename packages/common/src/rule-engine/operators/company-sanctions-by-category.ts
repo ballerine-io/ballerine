@@ -3,19 +3,17 @@ import isEmpty from 'lodash.isempty';
 import { z } from 'zod';
 
 import { Rule } from '@/rule-engine';
-import { CompanySanctionsAdverseMediaParams } from './types';
+import { CompanySanctionsCategoriesParams } from './types';
 import { DataValueNotFoundError, ValidationFailedError } from '../errors';
 import { BaseOperator } from './helpers';
-import { CompanySanctionsAdverseMediaSchema } from './schemas';
+import { CompanySanctionsCategoriesSchema } from './schemas';
+import { OPERATION } from './enums';
 
-class CompanySanctionsAdverseMedia extends BaseOperator<
-  string[],
-  CompanySanctionsAdverseMediaParams
-> {
+class CompanySanctionsCategories extends BaseOperator<string[], CompanySanctionsCategoriesParams> {
   constructor() {
     super({
-      operator: 'COMPANY_SANCTIONS_ADVERSE_MEDIA',
-      conditionValueSchema: CompanySanctionsAdverseMediaSchema,
+      operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
+      conditionValueSchema: CompanySanctionsCategoriesSchema,
     });
   }
 
@@ -47,22 +45,19 @@ class CompanySanctionsAdverseMedia extends BaseOperator<
     const result = companySanctionsSchema.safeParse(data);
 
     if (!result.success) {
-      throw new ValidationFailedError('extract', 'parsing failed', result.error);
+      throw new ValidationFailedError('Extract value', 'parsing failed', result.error);
     }
 
     const objData = result.data;
 
-    // Get company sanctions data
     const companySanctions = get(objData, 'pluginsOutput.companySanctions.data');
 
     if (!companySanctions || isEmpty(companySanctions)) {
       throw new DataValueNotFoundError('pluginsOutput.companySanctions.data');
     }
 
-    // Extract all source categories from company sanctions data
     const sourceCategories: string[] = [];
 
-    // Traverse the data structure to find sources with "Adverse Media" category
     companySanctions.forEach(sanction => {
       if (sanction?.entity?.sources) {
         sanction.entity.sources.forEach(source => {
@@ -78,21 +73,21 @@ class CompanySanctionsAdverseMedia extends BaseOperator<
     return sourceCategories;
   }
 
-  evaluate(dataValue: string[], conditionValue: CompanySanctionsAdverseMediaParams): boolean {
+  evaluate(dataValue: string[], conditionValue: CompanySanctionsCategoriesParams): boolean {
     if (!dataValue || dataValue.length === 0) {
       return false;
     }
 
-    // Count occurrences of "Adverse Media" in source categories
-    const adverseMediaCount = dataValue.filter(
-      category => typeof category === 'string' && category.toLowerCase() === 'adverse media',
-    ).length;
-
-    // If there's a threshold defined, check if we meet that threshold
     const threshold = conditionValue?.threshold || 1;
 
-    return adverseMediaCount >= threshold;
+    const categoryCount = dataValue.filter(
+      category =>
+        typeof category === 'string' &&
+        category.toLowerCase() === conditionValue.category.toLowerCase(),
+    ).length;
+
+    return categoryCount >= threshold;
   }
 }
 
-export const COMPANY_SANCTIONS_ADVERSE_MEDIA = new CompanySanctionsAdverseMedia();
+export const COMPANY_SANCTIONS_CATEGORIES = new CompanySanctionsCategories();

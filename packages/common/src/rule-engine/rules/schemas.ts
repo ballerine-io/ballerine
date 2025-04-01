@@ -11,7 +11,7 @@ import {
   PrimitiveArraySchema,
   PrimitiveSchema,
   IdvCheckSchema,
-  CompanySanctionsAdverseMediaSchema,
+  CompanySanctionsCategoriesSchema,
 } from '@/rule-engine';
 
 export const getValues = <T extends Record<string, unknown>>(obj: T) => {
@@ -44,8 +44,8 @@ export const RuleSchema = z.discriminatedUnion('operator', [
   }),
   z.object({
     key: z.string(),
-    operator: z.literal(OPERATION.COMPANY_SANCTIONS_ADVERSE_MEDIA),
-    value: CompanySanctionsAdverseMediaSchema,
+    operator: z.literal(OPERATION.COMPANY_SANCTIONS_CATEGORIES),
+    value: CompanySanctionsCategoriesSchema,
   }),
   z.object({
     key: z.string(),

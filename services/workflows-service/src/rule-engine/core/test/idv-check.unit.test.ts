@@ -4,6 +4,7 @@ import {
   RuleResult,
   RuleResultSet,
   RuleSet,
+  ValidationFailedError,
 } from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
 
@@ -207,5 +208,69 @@ describe('IDV_CHECK operator', () => {
     expect(validationResults).toHaveLength(1);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
+  });
+
+  it('should fail when child workflow exists but has no decision status values', async () => {
+    const mockData = {
+      childWorkflows: {
+        kyc_email_session_example: {
+          example_id_001: {
+            result: {
+              vendorResult: {
+                // Missing decision object
+                otherData: 'some value',
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: OPERATOR.AND,
+      rules: [
+        {
+          key: 'decision.status',
+          operator: 'IDV_CHECK',
+          value: {
+            childWorkflowName: 'kyc_email_session_example',
+          },
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('FAILED');
+    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
+  });
+
+  it('should throw ValidationFailedError when data structure is invalid', async () => {
+    const mockData = {
+      // Missing childWorkflows object completely
+      someOtherData: {},
+    };
+
+    const ruleSet: RuleSet = {
+      operator: OPERATOR.AND,
+      rules: [
+        {
+          key: 'decision.status',
+          operator: 'IDV_CHECK',
+          value: {
+            childWorkflowName: 'kyc_email_session_example',
+          },
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('FAILED');
+    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(ValidationFailedError);
   });
 });

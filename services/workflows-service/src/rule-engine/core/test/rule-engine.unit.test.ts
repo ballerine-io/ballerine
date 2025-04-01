@@ -120,7 +120,7 @@ describe('Rule Engine', () => {
               "LAST_YEAR",
               "AML_CHECK",
               "IDV_CHECK",
-              "COMPANY_SANCTIONS_ADVERSE_MEDIA",
+              "COMPANY_SANCTIONS_CATEGORIES",
               "EQUALS",
               "NOT_EQUALS",
               "BETWEEN",
@@ -137,7 +137,7 @@ describe('Rule Engine', () => {
             "path": [
               "operator"
             ],
-            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'IDV_CHECK' | 'COMPANY_SANCTIONS_ADVERSE_MEDIA' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'IN_CASE_INSENSITIVE' | 'NOT_IN' | 'FUZZY_MATCH_SCORE_LT'"
+            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'IDV_CHECK' | 'COMPANY_SANCTIONS_CATEGORIES' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'IN_CASE_INSENSITIVE' | 'NOT_IN' | 'FUZZY_MATCH_SCORE_LT'"
           }
         ],
         "name": "ZodError"
