@@ -92,6 +92,7 @@ export const BaseWorkflowByIdSchema = z.object({
     }).optional(),
     pluginsOutput: z
       .object({
+        kyc_session: z.record(z.string(), z.any()).optional(),
         ubo: z
           .object({
             data: z

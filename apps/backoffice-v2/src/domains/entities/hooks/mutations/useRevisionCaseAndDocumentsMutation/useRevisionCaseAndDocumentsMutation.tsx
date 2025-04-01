@@ -7,18 +7,14 @@ import { Action } from '../../../../../common/enums';
 import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 
 export const useRevisionCaseAndDocumentsMutation = ({
-  workflowId,
-  ids,
   isDocumentsV2,
 }: {
-  workflowId: string;
-  ids: string[];
   isDocumentsV2: boolean;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ revisionReason }: { revisionReason: string }) => {
+    mutationFn: async ({ revisionReason, ids, workflowId }: { revisionReason: string, ids: string[], workflowId: string }) => {
       if (isDocumentsV2) {
         await updateDocumentsDecisionByIds({
           ids,

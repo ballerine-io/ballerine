@@ -1,5 +1,5 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { getTabsToBlocksMap } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-tabs-block-map';
+import { useTabsToBlocksMap } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/useTabsToBlocksMap';
 import { getVariantTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-variant-tabs';
 import { Blocks } from '@ballerine/blocks';
 import { useMemo } from 'react';
@@ -35,7 +35,7 @@ export const useCaseBlocks = ({
 }: TCaseBlocksLogicParams) => {
   const tabBlocks = useMemo(
     () =>
-      getTabsToBlocksMap({
+      useTabsToBlocksMap({
         blocks,
         blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
         theme: config?.theme,
