@@ -12,7 +12,7 @@ export const FieldPriorityReason: React.FC<IFieldPriorityReasonProps> = ({ eleme
   const { stack } = useStack();
   const { priorityField } = usePriorityFields(element);
 
-  if (!priorityField) {
+  if (!priorityField || !priorityField.reason) {
     return null;
   }
 

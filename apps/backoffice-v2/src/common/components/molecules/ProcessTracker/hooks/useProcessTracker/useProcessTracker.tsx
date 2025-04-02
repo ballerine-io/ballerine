@@ -41,8 +41,9 @@ export const useProcessTracker = ({
   const trackedProcesses = useMemo(() => {
     return processTrackers.map(processTracker => {
       return {
-        title: processTracker.getReadableName(),
+        title: processTracker.getTitle(),
         name: processTracker.PROCESS_NAME,
+        params: processTracker.getItemParams(),
         subitems: processTracker.buildItems(),
       };
     });
