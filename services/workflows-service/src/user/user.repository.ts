@@ -33,7 +33,6 @@ export class UserRepository {
       },
     });
 
-    // Get the customer ID for the project
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
       select: { customerId: true },
