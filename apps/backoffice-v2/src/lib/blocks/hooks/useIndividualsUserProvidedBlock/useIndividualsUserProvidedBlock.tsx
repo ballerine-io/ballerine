@@ -4,6 +4,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ReadOnlyDetailsCell } from '../../components/ReadOnlyDetailsCell/ReadOnlyDetailsCell';
+import { ExtendedJson } from '@/common/types';
 
 export const useIndividualsUserProvidedBlock = (
   individualsUserProvided: Array<{
@@ -96,16 +97,18 @@ export const useIndividualsUserProvidedBlock = (
                   <ReadOnlyDetailsCell
                     value={Object.entries(collapsibleData).map(([key, value]) => ({
                       label: key,
-                      value,
+                      value: value as ExtendedJson,
                     }))}
                     props={{
-                      parse: {
-                        boolean: true,
-                        date: true,
-                        datetime: true,
-                        isoDate: true,
-                        nullish: true,
-                        url: true,
+                      config: {
+                        parse: {
+                          boolean: true,
+                          date: true,
+                          datetime: true,
+                          isoDate: true,
+                          nullish: true,
+                          url: true,
+                        },
                       },
                     }}
                   />

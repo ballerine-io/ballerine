@@ -76,19 +76,19 @@ importers:
         specifier: 0.2.39
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.84
+        specifier: 0.9.85
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.97
+        specifier: ^1.2.98
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: 0.7.124
+        specifier: 0.7.125
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../sdks/workflow-node-sdk
       '@botpress/webchat':
         specifier: ^2.1.10
@@ -536,13 +536,13 @@ importers:
         specifier: 0.2.39
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.84
+        specifier: ^0.9.85
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.7.124
+        specifier: 0.7.125
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1021,10 +1021,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.84
+        specifier: 0.9.85
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1525,7 +1525,7 @@ importers:
         specifier: ^1.1.37
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.7.124
+        specifier: 0.7.125
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1749,7 +1749,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.84
+        specifier: ^0.9.85
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -2041,7 +2041,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.84
+        specifier: 0.9.85
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2231,7 +2231,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.84
+        specifier: 0.9.85
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2358,10 +2358,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.84
+        specifier: 0.9.85
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2500,7 +2500,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2745,13 +2745,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.84
+        specifier: 0.9.85
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.106
+        specifier: 0.6.107
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -3103,7 +3103,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3(@types/node@22.13.5)(sass@1.85.1)(terser@5.39.0)(typescript@5.8.2))(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@5.8.2)))(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@5.8.2))
       '@ballerine/common':
-        specifier: ^0.9.84
+        specifier: ^0.9.85
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -17713,8 +17713,8 @@ packages:
   tailwind-merge@1.14.0:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
 
-  tailwind-merge@3.0.2:
-    resolution: {integrity: sha512-l7z+OYZ7mu3DTqrL88RiKrKIqO3NcpEO8V/Od04bNpvk0kiIFndGEoqfuzvj4yuhRkHKjRkII2z+KS2HfPcSxw==}
+  tailwind-merge@3.1.0:
+    resolution: {integrity: sha512-aV27Oj8B7U/tAOMhJsSGdWqelfmudnGMdXIlMnk1JfsjwSjts6o8HyfN7SFH3EztzH4YH8kk6GbLTHzITJO39Q==}
 
   tailwindcss-animate@1.0.5:
     resolution: {integrity: sha512-UU3qrOJ4lFQABY+MVADmBm+0KW3xZyhMdRvejwtXqYOL7YjHYxmuREFAZdmVG5LPe5E9CAst846SLC4j5I3dcw==}
@@ -32099,7 +32099,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-easy-sort: 1.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      tailwind-merge: 3.0.2
+      tailwind-merge: 3.1.0
       tsup: 6.7.0(@swc/core@1.11.5(@swc/helpers@0.5.15))(postcss@8.5.3)(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@18.17.19)(typescript@5.8.2))(typescript@5.8.2)
     transitivePeerDependencies:
       - '@swc/core'
@@ -32121,7 +32121,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-easy-sort: 1.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      tailwind-merge: 3.0.2
+      tailwind-merge: 3.1.0
       tsup: 6.7.0(@swc/core@1.11.5(@swc/helpers@0.5.15))(postcss@8.5.3)(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@20.17.19)(typescript@5.8.2))(typescript@5.8.2)
     transitivePeerDependencies:
       - '@swc/core'
@@ -40188,7 +40188,7 @@ snapshots:
 
   tailwind-merge@1.14.0: {}
 
-  tailwind-merge@3.0.2: {}
+  tailwind-merge@3.1.0: {}
 
   tailwindcss-animate@1.0.5(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@18.17.19)(typescript@5.8.2))):
     dependencies:

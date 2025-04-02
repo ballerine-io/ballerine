@@ -22,7 +22,7 @@ export class UBOFlowsProcessTracker implements IProcessTracker {
     });
   }
 
-  getReadableName(): string {
+  getTitle(): string {
     return 'UBO flows';
   }
 
@@ -34,5 +34,9 @@ export class UBOFlowsProcessTracker implements IProcessTracker {
 
   private getChildWorkflows() {
     return this.workflow?.childWorkflows || [];
+  }
+
+  getItemParams(): object {
+    return {};
   }
 }

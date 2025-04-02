@@ -1,7 +1,13 @@
 import { ITheme } from '@/common/types/settings';
 import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
 import { IPlugin } from '@/pages/CollectionFlow/versions/v2/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/types';
-import { AnyObject, IFormElement, TDocumentDecision, TDocumentStatus } from '@ballerine/ui';
+import {
+  AnyObject,
+  ICommonValidator,
+  IFormElement,
+  TDocumentDecision,
+  TDocumentStatus,
+} from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { CollectionFlowConfig } from './flow-context.types';
 
@@ -135,6 +141,7 @@ export interface UIPage<TVersion extends 'v1' | 'v2' = 'v1'> {
   elements: Array<TVersion extends 'v1' ? UIElementV1<any> : UIElementV2<any>>;
   plugins: IPlugin[];
   actions: Action[];
+  globalValidate?: ICommonValidator[];
   pageValidation?: Rule[];
 }
 

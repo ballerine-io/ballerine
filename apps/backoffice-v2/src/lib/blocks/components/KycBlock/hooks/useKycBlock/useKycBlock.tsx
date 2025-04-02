@@ -11,11 +11,12 @@ import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlo
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import {
+  Badge,
   Button,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
   DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
   Input,
 } from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
@@ -34,6 +35,28 @@ const motionBadgeProps = {
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 } satisfies ComponentProps<typeof MotionBadge>;
+
+const RISK_TO_LABEL = {
+  allowedAge: 'Disallowed age',
+  faceLiveness: 'Face is not lively',
+  documentNotExpired: 'Document expired',
+  geolocationMatch: 'No geolocation match',
+  documentAccepted: 'Document not accepted',
+  faceNotInBlocklist: 'Face is in blocklist',
+  allowedIpLocation: 'Disallowed IP location',
+  faceImageAvailable: 'Face image unavailable',
+  documentRecognised: 'Document not recognized',
+  faceSimilarToPortrait: 'Face not similar to portrait',
+  validDocumentAppearance: 'Invalid document appearance',
+  expectedTrafficBehaviour: 'Unexpected traffic behavior',
+  physicalDocumentPresent: 'Physical document not present',
+  documentBackFullyVisible: 'Document back not fully visible',
+  documentFrontFullyVisible: 'Document front not fully visible',
+  documentBackImageAvailable: 'Document back image unavailable',
+  faceImageQualitySufficient: 'Face image quality insufficient',
+  documentFrontImageAvailable: 'Document front image unavailable',
+  documentImageQualitySufficient: 'Document image quality insufficient',
+} as const;
 
 export const useKycBlock = ({
   onInitiateKyc,
@@ -77,6 +100,7 @@ export const useKycBlock = ({
             documents: TDocument[];
             decision: {
               status: string;
+              riskLabels: string[];
             };
           }
         | {
@@ -126,6 +150,16 @@ export const useKycBlock = ({
         ?.map(document => document.id) ?? []
     );
   }, [documents]);
+
+  const riskLabels = kycSessionKeys?.length
+  ? kycSessionKeys.flatMap(key => {
+      if (!kycSession[key]?.result?.decision?.riskLabels?.length) {
+        return 'none';
+      }
+
+      return kycSession[key]?.result?.decision?.riskLabels
+    })
+  : [];
 
   const decision = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => [
@@ -202,16 +236,18 @@ export const useKycBlock = ({
               issuer: kycSession[key]?.result?.documents?.[0]?.issuer?.country,
             })?.map(([label, value]) => ({
               label,
-              value,
+              value: value as ExtendedJson,
             })),
             props: {
-              parse: {
-                boolean: true,
-                date: true,
-                datetime: true,
-                isoDate: true,
-                nullish: true,
-                url: true,
+              config: {
+                parse: {
+                  boolean: true,
+                  date: true,
+                  datetime: true,
+                  isoDate: true,
+                  nullish: true,
+                  url: true,
+                },
               },
             },
           })
@@ -225,7 +261,9 @@ export const useKycBlock = ({
 
   const isDisabled = isActionsDisabled || noAction || isLoadingApprove || isLoadingReuploadNeeded;
 
-  const getDecisionStatusOrAction = (status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined) => {
+  const getDecisionStatusOrAction = (
+    status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined,
+  ) => {
     const badgeClassNames = 'text-sm font-bold';
 
     if (status === 'revision') {
@@ -548,15 +586,36 @@ export const useKycBlock = ({
                         value,
                       })),
                       props: {
-                        parse: {
-                          boolean: true,
-                          date: true,
-                          datetime: true,
-                          isoDate: true,
-                          nullish: true,
-                          url: true,
+                        config: {
+                          parse: {
+                            boolean: true,
+                            date: true,
+                            datetime: true,
+                            isoDate: true,
+                            nullish: true,
+                            url: true,
+                          },
                         },
                       },
+                    })
+                    .addCell({
+                      type: 'node',
+                      value: (
+                        <div className="m-2 mt-4 flex flex-col gap-4 p-1">
+                          <p className="text-sm font-medium">Issues</p>
+                          <div className="flex flex-col space-y-4">
+                            {riskLabels.map(item => (
+                              <Badge
+                                key={item}
+                                variant="destructive"
+                                className={`max-w-fit text-sm font-bold`}
+                              >
+                                {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ?? item}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ),
                     })
                     .buildFlat(),
                 })
@@ -602,13 +661,18 @@ export const useKycBlock = ({
                           type: 'readOnlyDetails',
                           value: decision,
                           props: {
-                            parse: {
-                              boolean: true,
-                              date: true,
-                              datetime: true,
-                              isoDate: true,
-                              nullish: true,
-                              url: true,
+                            config: {
+                              sort: {
+                                predefinedOrder: ['Result', 'Verified With', 'Full report'],
+                              },
+                              parse: {
+                                boolean: true,
+                                date: true,
+                                datetime: true,
+                                isoDate: true,
+                                nullish: true,
+                                url: true,
+                              },
                             },
                           },
                         })
@@ -648,12 +712,12 @@ export const useKycBlock = ({
           value: amlBlock,
         })
         .buildFlat(),
-        props: {
-          className: ctw({
-            'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
-              status === 'revision',
-          }),
-        }
+      props: {
+        className: ctw({
+          'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
+            status === 'revision',
+        }),
+      },
     })
     .build();
 };
