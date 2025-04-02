@@ -1,5 +1,4 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
-import { getDefaultLocalAccessToken } from '@/helpers/get-default-local-access-token';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AccessTokenIsMissingError } from '../../errors/access-token-is-missing';
@@ -10,20 +9,32 @@ interface IAccessTokenProviderProps {
 }
 
 export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => {
-  const [accessToken, setAccessToken] = useState<string | null>(
-    () => getAccessToken() ?? getDefaultLocalAccessToken(),
-  );
+  const [accessToken, setAccessToken] = useState<string | null>(() => getAccessToken());
+  const [wfIdToken, setWfIdToken] = useState<string | null>(() => getAccessToken('wf-id'));
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const context = useMemo(
     () => ({
+      wfIdToken,
       accessToken,
       setAccessToken,
+      setWfIdToken,
     }),
-    [accessToken, setAccessToken],
+    [wfIdToken, accessToken, setWfIdToken, setAccessToken],
   );
 
   useEffect(() => {
+    if (wfIdToken) {
+      const previousToken = searchParams.get('wf-id');
+
+      if (previousToken !== wfIdToken) {
+        setSearchParams({ 'wf-id': wfIdToken });
+      }
+
+      return;
+    }
+
     if (accessToken) {
       const previousToken = searchParams.get('token');
 
@@ -31,13 +42,13 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
         setSearchParams({ token: accessToken });
       }
     }
-  }, [accessToken, searchParams, setSearchParams]);
+  }, [wfIdToken, accessToken, searchParams, setSearchParams]);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!accessToken && !wfIdToken) {
       throw new AccessTokenIsMissingError();
     }
-  }, [accessToken]);
+  }, [accessToken, wfIdToken]);
 
   return <AccessTokenContext.Provider value={context}>{children}</AccessTokenContext.Provider>;
 };
