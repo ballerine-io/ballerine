@@ -9,14 +9,15 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 @Injectable()
 export class CombinedAuthGuard implements CanActivate {
   constructor(
-    protected readonly tokenService: WorkflowTokenService,
-    protected readonly workflowService: WorkflowService,
     private readonly cls: ClsService,
+    private readonly workflowService: WorkflowService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
-    const workflowId = req.params['wf-id'] || req.query['wf-id'];
+    // const workflowId = typeof req.query['wf-id'] === 'string' ? req.query['wf-id'] : null;
+    const workflowId = typeof req.query['wf-id'] === 'string' ? req.query['wf-id'] : null;
 
     const authenticatedEntity = req.user as AuthenticatedEntity & { projectIds?: TProjectIds };
 
@@ -27,7 +28,7 @@ export class CombinedAuthGuard implements CanActivate {
     ) {
       if (workflowId) {
         const workflow = await this.workflowService.getWorkflowRuntimeDataById(
-          workflowId as string,
+          workflowId,
           {},
           authenticatedEntity?.projectIds || [],
         );
@@ -36,10 +37,13 @@ export class CombinedAuthGuard implements CanActivate {
           throw new UnauthorizedException('Invalid workflow ID');
         }
 
-        (req as any).workflowScope = {
-          workflowRuntimeDataId: workflow.id,
-          projectId: workflow.projectId,
-        };
+        this.cls.set('entity', {
+          user: authenticatedEntity.user,
+          type: 'user',
+        });
+
+        (req as any).tokenScope =
+          await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(workflow.id);
       }
 
       return true;
@@ -51,7 +55,7 @@ export class CombinedAuthGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    const tokenEntity = await this.tokenService.findByTokenWithExpiredUnscoped(token);
+    const tokenEntity = await this.workflowTokenService.findByTokenWithExpiredUnscoped(token);
 
     if (!tokenEntity) {
       throw new UnauthorizedException('Unauthorized');

@@ -9,20 +9,24 @@ export const Root = () => {
   const { accessToken } = useAccessToken();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (!isSignupRequired) {
       void navigate(`/collection-flow?token=${accessToken}`);
     }
-  }, [isSignupRequired, isLoading]);
+  }, [isSignupRequired, isLoading, accessToken]);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (isSignupRequired) {
       void navigate(`/signup?token=${accessToken}`);
     }
-  }, [isSignupRequired, isLoading]);
+  }, [isSignupRequired, isLoading, accessToken]);
 
   return <Outlet />;
 };
