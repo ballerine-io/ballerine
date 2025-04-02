@@ -17,14 +17,14 @@ export class UserRepository {
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>,
     projectId: TProjectId,
-  ): Promise<User> {
+  ): Promise<User & { customerId: string }> {
     args.data.userToProjects ||= {
       createMany: {
         data: projectId ? [{ projectId }] : [],
       },
     } satisfies Prisma.UserToProjectCreateNestedManyWithoutUserInput;
 
-    return this.prisma.user.create<T>({
+    const user = await this.prisma.user.create<T>({
       ...args,
       data: {
         ...args.data,
@@ -32,6 +32,17 @@ export class UserRepository {
         password: await this.passwordService.hash(args.data.password),
       },
     });
+
+    // Get the customer ID for the project
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: { customerId: true },
+    });
+
+    return {
+      ...user,
+      customerId: project?.customerId || '',
+    };
   }
 
   async findMany<T extends Prisma.UserFindManyArgs>(
