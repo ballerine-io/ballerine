@@ -6,12 +6,12 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { CollectionFlowStatusesEnum } from '@ballerine/common';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
+import { CollectionFlowStatusesEnum, CollectionFlowStepStatesEnum } from '@ballerine/common';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
-import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 
 export const updateContextAndSyncEntity = async ({
   workflowId,
@@ -75,6 +75,7 @@ export const fetchWorkflows = async (params: {
 
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
+  assigneeId: z.string().nullable().optional(),
   status: z.string(),
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
@@ -159,7 +160,17 @@ export const BaseWorkflowByIdSchema = z.object({
         state: z.object({
           currentStep: z.string(),
           status: z.enum(Object.values(CollectionFlowStatusesEnum) as [string, ...string[]]),
-          steps: z.array(z.object({ stepName: z.string(), isCompleted: z.boolean() })),
+          steps: z.array(
+            z.object({
+              stepName: z.string(),
+              // TODO: Deprecate `isCompleted` and use `state` instead.
+              isCompleted: z.boolean().optional(),
+              state: z
+                .enum(Object.values(CollectionFlowStepStatesEnum) as [string, ...string[]])
+                .optional(),
+              reason: z.string().optional(),
+            }),
+          ),
         }),
         additionalInformation: z.record(z.string(), z.unknown()).optional(),
       })

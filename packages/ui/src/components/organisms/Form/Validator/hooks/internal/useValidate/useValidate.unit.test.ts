@@ -48,10 +48,15 @@ describe('useValidate', () => {
       it('should run validate on mount', () => {
         renderHook(() => useValidate(mockContext, mockSchema));
 
-        expect(mockValidate).toHaveBeenCalledWith(mockContext, mockSchema, {
-          abortEarly: false,
-          abortAfterFirstError: false,
-        });
+        expect(mockValidate).toHaveBeenCalledWith(
+          mockContext,
+          mockSchema,
+          {
+            abortEarly: false,
+            abortAfterFirstError: false,
+          },
+          undefined,
+        );
       });
 
       it('should re run validate on context change', async () => {
@@ -76,10 +81,15 @@ describe('useValidate', () => {
         });
 
         await waitFor(() => {
-          expect(mockValidate).toHaveBeenCalledWith(updatedContext, mockSchema, {
-            abortEarly: false,
-            abortAfterFirstError: false,
-          });
+          expect(mockValidate).toHaveBeenCalledWith(
+            updatedContext,
+            mockSchema,
+            {
+              abortEarly: false,
+              abortAfterFirstError: false,
+            },
+            undefined,
+          );
         });
       });
     });
@@ -140,10 +150,15 @@ describe('useValidate', () => {
       const { result } = renderHook(() => useValidate(mockContext, mockSchema));
 
       const validationResult = await result.current.validate();
-      expect(mockValidate).toHaveBeenCalledWith(mockContext, mockSchema, {
-        abortEarly: false,
-        abortAfterFirstError: false,
-      });
+      expect(mockValidate).toHaveBeenCalledWith(
+        mockContext,
+        mockSchema,
+        {
+          abortEarly: false,
+          abortAfterFirstError: false,
+        },
+        undefined,
+      );
       expect(validationResult).toEqual(errors);
     });
 
@@ -158,6 +173,24 @@ describe('useValidate', () => {
       await waitFor(() => {
         expect(result.current.errors).toEqual(mockValidationErrors);
       });
+    });
+  });
+
+  describe('globalValidationRules', () => {
+    it('should run validate with global validation rules', () => {
+      const globalValidationRules = [{ type: 'required', message: 'Name is required', value: {} }];
+
+      renderHook(() => useValidate(mockContext, mockSchema, { globalValidationRules }));
+
+      expect(mockValidate).toHaveBeenCalledWith(
+        mockContext,
+        mockSchema,
+        {
+          abortEarly: false,
+          abortAfterFirstError: false,
+        },
+        globalValidationRules,
+      );
     });
   });
 });

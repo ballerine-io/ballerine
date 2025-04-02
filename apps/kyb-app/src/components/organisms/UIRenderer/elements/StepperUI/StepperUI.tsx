@@ -6,52 +6,24 @@ import {
 import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
-import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
-import { UIPage } from '@/domains/collection-flow';
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { isPageCompleted } from '@/helpers/prepareInitialUIState';
+import { getCollectionFlowState } from '@ballerine/common';
 import { ScrollArea, ScrollBar } from '@ballerine/ui';
-import { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo } from 'react';
+import { computeStepStatus } from './helpers';
 
-interface IStepperUIProps {
-  revisionStateNames: string[];
-}
-
-export const StepperUI: FunctionComponent<IStepperUIProps> = ({ revisionStateNames }) => {
-  const { state: uiState } = useDynamicUIContext();
+export const StepperUI: FunctionComponent = () => {
   const { pages, currentPage } = usePageResolverContext();
   const { payload } = useStateManagerContext();
-
-  const computeStepStatus = ({
-    page,
-    context,
-    uiElementState,
-  }: {
-    page: UIPage;
-    uiElementState: UIElementState;
-    pageError: Record<string, ErrorField>;
-    currentPage: UIPage;
-    context: CollectionFlowContext;
-  }) => {
-    if (revisionStateNames?.includes(page.stateName)) return 'warning';
-
-    if (isPageCompleted(page, context) || uiElementState?.isCompleted) return 'completed';
-
-    return 'idle';
-  };
-
-  const [initialContext] = useState(() => structuredClone(payload));
+  const collectionFlowSteps = useMemo(
+    () => getCollectionFlowState(payload)?.steps || [],
+    [payload],
+  );
 
   const steps: BreadcrumbItemInput[] = useMemo(() => {
     return pages.map(page => {
       const stepStatus = computeStepStatus({
-        // @ts-ignore
-        uiElementState: uiState.elements[page.stateName],
+        steps: collectionFlowSteps,
         page,
-        context: initialContext,
-        currentPage: currentPage as UIPage,
       });
 
       const step: BreadcrumbItemInput = {
@@ -62,18 +34,22 @@ export const StepperUI: FunctionComponent<IStepperUIProps> = ({ revisionStateNam
 
       return step;
     });
-  }, [pages, uiState, initialContext, currentPage]);
+  }, [pages, collectionFlowSteps]);
 
   const activeStep = useMemo(() => {
     const activeStep = steps.find(step => step.id === currentPage?.stateName);
 
-    if (!activeStep) return null;
+    if (!activeStep) {
+      return null;
+    }
 
     return activeStep;
   }, [steps, currentPage]);
 
   useEffect(() => {
-    if (!activeStep) return;
+    if (!activeStep) {
+      return;
+    }
 
     const activeBreadcrumb = document.querySelector(`[data-breadcrumb-id=${activeStep.id}]`);
 

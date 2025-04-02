@@ -21,6 +21,7 @@ export const validate = <
   context: TValues,
   schema: Array<IValidationSchema<TValidatorTypeExtends>>,
   params: IValidateParams = {},
+  globalValidationRules: Array<ICommonValidator<TValues, TValidatorTypeExtends>> = [],
 ): IValidationError[] => {
   const { abortEarly = false, abortAfterFirstError = false } = params;
 
@@ -32,7 +33,7 @@ export const validate = <
   ) => {
     for (let i = 0; i < schema.length; i++) {
       const {
-        validators = [],
+        validators: schemaValidators = [],
         children,
         valueDestination,
         id,
@@ -44,6 +45,7 @@ export const validate = <
         : '';
 
       const value = formattedValueDestination ? get(context, formattedValueDestination) : context;
+      const validators = [...schemaValidators, ...globalValidationRules];
 
       try {
         for (const validator of validators) {
