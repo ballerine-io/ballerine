@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ReadOnlyDetailsCell } from '../../components/ReadOnlyDetailsCell/ReadOnlyDetailsCell';
 import { ExtendedJson } from '@/common/types';
+import { titleCase } from 'string-ts';
 
 export const useIndividualsUserProvidedBlock = (
   individualsUserProvided: Array<{
@@ -39,6 +40,11 @@ export const useIndividualsUserProvidedBlock = (
     }),
     columnHelper.accessor('role', {
       header: 'Role',
+      cell: ({ getValue }) => {
+        const value = getValue();
+
+        return <TextWithNAFallback>{titleCase(value ?? '')}</TextWithNAFallback>;
+      },
     }),
     columnHelper.accessor('percentageOfOwnership', {
       header: '% of Ownership',
