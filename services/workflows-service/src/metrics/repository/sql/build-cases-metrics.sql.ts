@@ -1,15 +1,10 @@
 import { TProjectIds } from '@/types';
-import { Prisma } from '@prisma/client';
+import { Prisma, type WorkflowRuntimeDataStatus } from '@prisma/client';
 
-export const buildCasesByStatusQuery = (projectIds: TProjectIds) => Prisma.sql`
-SELECT
-  state as status,
-  COUNT(*) as count
-FROM "WorkflowRuntimeData"
-WHERE "projectId" IN (${projectIds?.join(',')})
-GROUP BY state`;
-
-export const buildCasesByRiskLevelQuery = (projectIds: TProjectIds, status?: string) => Prisma.sql`
+export const buildCasesByRiskLevelQuery = (
+  projectIds: TProjectIds,
+  status?: WorkflowRuntimeDataStatus,
+) => Prisma.sql`
 SELECT
   CASE
     WHEN COALESCE(
@@ -29,5 +24,9 @@ SELECT
   COUNT(*) as count
 FROM "WorkflowRuntimeData"
 WHERE "projectId" IN (${projectIds?.join(',')})
-  ${status ? Prisma.sql`AND state = ${status}` : Prisma.sql``}
+  ${status ? Prisma.sql`AND status = ${status}::"WorkflowRuntimeDataStatus"` : Prisma.sql``}
+  AND (
+    context->'pluginsOutput'->'riskEvaluation'->>'riskScore' IS NOT NULL
+    OR context->'pluginsOutput'->'risk_evaluation'->>'riskScore' IS NOT NULL
+  )
 GROUP BY risk_level`;

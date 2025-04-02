@@ -1,4 +1,4 @@
 export interface ICasesDailyAggregationResult {
   count: number;
-  riskLevel: string;
+  date: string | null;
 }

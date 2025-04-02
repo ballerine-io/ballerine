@@ -19,10 +19,7 @@ import { buildAggregateUsersResolvedCasesStatisticQuery } from '@/metrics/reposi
 import { buildAggregateWorkflowDefinitionVariantsMetric } from '@/metrics/repository/sql/build-aggregate-workflow-definition-variants-metric.sql';
 import { buildAggregateWorkflowRuntimeStatisticQuery } from '@/metrics/repository/sql/build-aggregate-workflow-runtime-statistic.sql';
 import { buildAggregateWorkflowRuntimeStatusCaseCountQuery } from '@/metrics/repository/sql/build-aggregate-workflow-runtime-status-case-count.sql';
-import {
-  buildCasesByRiskLevelQuery,
-  buildCasesByStatusQuery,
-} from '@/metrics/repository/sql/build-cases-metrics.sql';
+import { buildCasesByRiskLevelQuery } from '@/metrics/repository/sql/build-cases-metrics.sql';
 import { buildDailyLiveCasesQuery } from '@/metrics/repository/sql/build-daily-live-cases.sql';
 import { buildSelectActiveUsersQuery } from '@/metrics/repository/sql/build-select-active-users.sql';
 import { IAggregateApprovalRate } from '@/metrics/repository/types/aggregate-approval-rate';
@@ -36,7 +33,6 @@ import { IAggregateWorkflowRuntimeStatistic } from '@/metrics/repository/types/a
 import { IAggregateWorkflowRuntimeStatusCaseCount } from '@/metrics/repository/types/aggregate-workflow-runtime-status-case-count';
 import { ICasesDailyAggregationResult } from '@/metrics/repository/types/cases-active-daily';
 import { ICasesByRiskLevelAggregationResult } from '@/metrics/repository/types/cases-by-risk-level';
-import { ICasesByStatusAggregationResult } from '@/metrics/repository/types/cases-by-status';
 import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
 import { FindUsersResolvedCasesStatisticParams } from '@/metrics/repository/types/find-users-resolved-cases-statistic.params';
 import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-runtime-status-case-count.params';
@@ -51,6 +47,9 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { ApprovalState, BusinessReportStatus } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
+import { CasesActiveDailyModel } from './models/cases-active-daily.model';
+import { CasesByRiskLevelMetricModel } from './models/cases-by-risk-level.model';
+import { CasesByStatusMetricModel } from './models/cases-by-status.model';
 
 const LOW_LTE_RISK_SCORE = 39;
 const MEDIUM_LTE_RISK_SCORE = 69;
@@ -76,42 +75,55 @@ export class MetricsRepository {
   }
 
   async getCasesByStatus(projectIds: TProjectIds) {
-    const results = await this.prismaService.$queryRaw<ICasesByStatusAggregationResult[]>(
-      buildCasesByStatusQuery(projectIds),
+    const results = await this.prismaService.workflowRuntimeData.groupBy({
+      by: ['status'],
+      where: {
+        projectId: { in: projectIds ?? [] },
+      },
+      _count: {
+        status: true,
+      },
+    });
+
+    return results.map(result =>
+      plainToClass(CasesByStatusMetricModel, {
+        status: result.status,
+        count: Number(result._count.status),
+      }),
     );
-
-    console.log(results);
-
-    // return results.map(result => ({
-    //   status: result.status,
-    //   count: parseInt(result.count),
-    // }));
   }
 
-  async getCasesByRiskLevel(projectIds: TProjectIds, status?: string) {
+  async getCasesByRiskLevel(
+    projectIds: TProjectIds,
+    status: Parameters<typeof buildCasesByRiskLevelQuery>[1],
+  ): Promise<CasesByRiskLevelMetricModel[]> {
     const results = await this.prismaService.$queryRaw<ICasesByRiskLevelAggregationResult[]>(
       buildCasesByRiskLevelQuery(projectIds, status),
     );
 
-    console.log(results);
-
-    // return results.map(result => ({
-    //   riskLevel: result.risk_level,
-    //   count: parseInt(result.count),
-    // }));
+    return results.map(result =>
+      plainToClass(CasesByRiskLevelMetricModel, {
+        riskLevel: result.risk_level,
+        count: Number(result.count),
+      }),
+    );
   }
 
-  async getDailyLiveCases(fromDate: Date, toDate: Date, projectIds: TProjectIds) {
+  async getDailyActiveCases(
+    fromDate: string,
+    toDate: string,
+    projectIds: TProjectIds,
+  ): Promise<CasesActiveDailyModel[]> {
     const results = await this.prismaService.$queryRaw<ICasesDailyAggregationResult[]>(
       buildDailyLiveCasesQuery(fromDate, toDate, projectIds),
     );
 
-    console.log(results);
-
-    // return results.map(result => ({
-    //   date: result.date,
-    //   count: Number(result.count),
-    // }));
+    return results.map(result =>
+      plainToClass(CasesActiveDailyModel, {
+        date: result.date,
+        count: Number(result.count),
+      }),
+    );
   }
 
   async findRuntimeStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {

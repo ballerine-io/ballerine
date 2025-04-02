@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { IsNumber, IsString } from 'class-validator';
 
-export class CasesByStatusMetric {
+export class CasesByStatusMetricModel {
   @ApiProperty()
-  @Transform(({ value }) => (value === null ? 0 : value))
+  @IsNumber()
   count!: number;
 
   @ApiProperty()
+  @IsString()
   status!: string;
 }

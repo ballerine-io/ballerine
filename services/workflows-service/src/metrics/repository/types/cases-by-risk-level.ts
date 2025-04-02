@@ -1,4 +1,6 @@
+import type { WorkflowRuntimeDataStatus } from '@prisma/client';
+
 export interface ICasesByRiskLevelAggregationResult {
   count: number;
-  riskLevel: string;
+  risk_level: WorkflowRuntimeDataStatus;
 }

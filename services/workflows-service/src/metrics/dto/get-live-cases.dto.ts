@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class GetDailyLiveCasesDto {
   @ApiProperty()
-  from!: Date;
+  from!: string;
 
   @ApiProperty()
-  to!: Date;
+  to!: string;
 }

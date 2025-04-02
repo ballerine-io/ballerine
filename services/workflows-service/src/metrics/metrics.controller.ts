@@ -65,11 +65,11 @@ export class MetricsController {
   @ApiOkResponse({ type: [Object] })
   @common.HttpCode(200)
   @common.Get('/cases/daily')
-  async getDailyLiveCases(
+  async getDailyActiveCases(
     @common.Query() query: GetDailyLiveCasesDto,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    return await this.metricsService.getDailyLiveCases(query, projectIds);
+    return await this.metricsService.getDailyActiveCases(query, projectIds);
   }
 
   @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })

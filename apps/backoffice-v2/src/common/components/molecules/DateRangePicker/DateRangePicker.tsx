@@ -17,7 +17,8 @@ export const DateRangePicker = ({
   value,
   placeholder,
   className,
-}: TDateRangePickerProps) => {
+  ...props
+}: TDateRangePickerProps & Partial<ComponentProps<typeof Calendar>>) => {
   return (
     <div className={ctw('grid gap-2', className)}>
       <Popover>
@@ -41,6 +42,7 @@ export const DateRangePicker = ({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
+            {...props}
             initialFocus
             mode="range"
             selected={value}

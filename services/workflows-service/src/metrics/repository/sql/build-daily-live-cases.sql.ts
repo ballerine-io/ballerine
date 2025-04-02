@@ -2,8 +2,8 @@ import { TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
 
 export const buildDailyLiveCasesQuery = (
-  fromDate: Date,
-  toDate: Date,
+  fromDate: string,
+  toDate: string,
   projectIds: TProjectIds,
 ) => Prisma.sql`
 WITH RECURSIVE dates AS (
@@ -28,5 +28,6 @@ SELECT
   to_char(date, 'YYYY-MM-DD') as date,
   live_cases as count
 FROM case_dates
+WHERE date IS NOT NULL AND live_cases IS NOT NULL AND live_cases > 0
 ORDER BY date ASC;
 `;
