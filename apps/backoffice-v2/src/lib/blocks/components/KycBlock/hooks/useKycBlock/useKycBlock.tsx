@@ -170,6 +170,15 @@ export const useKycBlock = ({
         {
           label: 'Result',
           value: kycSession[key]?.result?.decision?.status,
+          props: {
+            className: ctw({
+              'text-success': kycSession[key]?.result?.decision?.status === 'approved',
+              'text-destructive': kycSession[key]?.result?.decision?.status === 'rejected',
+              'font-bold':
+                kycSession[key]?.result?.decision?.status === 'approved' ||
+                kycSession[key]?.result?.decision?.status === 'rejected',
+            }),
+          },
         },
         {
           label: 'Issues',

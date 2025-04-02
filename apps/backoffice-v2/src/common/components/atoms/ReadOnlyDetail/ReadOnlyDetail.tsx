@@ -19,10 +19,10 @@ export const ReadOnlyDetail: FunctionComponent<{
     nullish?: boolean;
   };
   className?: string;
-}> = ({ children, parse, className }) => {
+}> = ({ children, parse, className, ...props }) => {
   if (Array.isArray(children) || isObject(children)) {
     return (
-      <div className={ctw(`flex items-end justify-start`, className)}>
+      <div {...props} className={ctw(`flex items-end justify-start`, className)}>
         <JsonDialog
           buttonProps={{
             variant: 'link',
@@ -39,39 +39,57 @@ export const ReadOnlyDetail: FunctionComponent<{
   if (parse?.datetime && isValidDatetime(children)) {
     const value = children.endsWith(':00') ? children : `${children}:00`;
 
-    return <p className={className}>{dayjs(value).utc().format('DD/MM/YYYY HH:mm')}</p>;
+    return (
+      <p {...props} className={className}>
+        {dayjs(value).utc().format('DD/MM/YYYY HH:mm')}
+      </p>
+    );
   }
 
   if (
     (parse?.date && checkIsDate(children, { isStrict: false })) ||
     (parse?.isoDate && checkIsIsoDate(children))
   ) {
-    return <p className={className}>{dayjs(children).format('DD/MM/YYYY')}</p>;
+    return (
+      <p {...props} className={className}>
+        {dayjs(children).format('DD/MM/YYYY')}
+      </p>
+    );
   }
 
   if (parse?.boolean && typeof children === 'boolean') {
-    return <Checkbox_ checked={children} className={ctw('border-[#E5E7EB]', className)} />;
+    return (
+      <Checkbox_ {...props} checked={children} className={ctw('border-[#E5E7EB]', className)} />
+    );
   }
 
   if (typeof children === 'boolean') {
-    return <p className={className}>{`${children}`}</p>;
+    return <p {...props} className={className}>{`${children}`}</p>;
   }
 
   if (parse?.url && checkIsUrl(children)) {
     return (
-      <BallerineLink href={children} className={className}>
+      <BallerineLink {...props} href={children} className={className}>
         {children}
       </BallerineLink>
     );
   }
 
   if (parse?.nullish && isNullish(children)) {
-    return <TextWithNAFallback className={className}>{children}</TextWithNAFallback>;
+    return (
+      <TextWithNAFallback {...props} className={className}>
+        {children}
+      </TextWithNAFallback>
+    );
   }
 
   if (isNullish(children)) {
-    return <p className={className}>{`${children}`}</p>;
+    return <p {...props} className={className}>{`${children}`}</p>;
   }
 
-  return <p className={className}>{children}</p>;
+  return (
+    <p {...props} className={className}>
+      {children}
+    </p>
+  );
 };

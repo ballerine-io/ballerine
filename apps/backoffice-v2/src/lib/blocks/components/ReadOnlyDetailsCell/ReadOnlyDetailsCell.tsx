@@ -31,15 +31,16 @@ export const ReadOnlyDetailsCell: FunctionComponent<ExtractCellProps<'readOnlyDe
       {...restProps}
       className={ctw(`grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3`, className)}
     >
-      {sortedData.map(({ label, value }) => {
+      {sortedData.map(({ label, value, props }) => {
         return (
           <div key={label} className="flex flex-col">
             <TextWithNAFallback as={'h4'} className={'mb-2 text-sm font-medium leading-none'}>
               {titleCase(label ?? '')}
             </TextWithNAFallback>
             <ReadOnlyDetail
+              {...props}
               parse={config?.parse}
-              className={'max-w-[35ch] justify-start break-all text-sm'}
+              className={ctw('max-w-[35ch] justify-start break-all text-sm', props?.className)}
             >
               {value}
             </ReadOnlyDetail>
