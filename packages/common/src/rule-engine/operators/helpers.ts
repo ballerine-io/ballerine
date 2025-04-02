@@ -8,6 +8,7 @@ import {
   Primitive,
   TOperation,
   AmlCheckParams,
+  UboMismatchParams,
 } from './types';
 
 import { z, ZodSchema } from 'zod';
@@ -17,7 +18,7 @@ import { ValidationFailedError, DataValueNotFoundError } from '../errors';
 import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
-import type { TUnifiedApiClient } from './constants';
+import { TUnifiedApiClient } from '.';
 
 export abstract class BaseOperator<
   TDataValue = Primitive,
@@ -48,9 +49,8 @@ export abstract class BaseOperator<
       threshold?: number;
     },
   ): TEvaluate;
-
   extractValue(data: unknown, rule: Rule) {
-    const value = get(data, rule.key);
+    const value = get(data, rule.key || '');
 
     const isPathComparison =
       !OPERATORS_WITHOUT_PATH_COMPARISON.includes(
@@ -61,7 +61,7 @@ export abstract class BaseOperator<
 
     if (!isPathComparison) {
       if (value === undefined || value === null) {
-        throw new DataValueNotFoundError(rule.key);
+        throw new DataValueNotFoundError(rule.key || '');
       }
 
       return value;
@@ -381,14 +381,14 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
       .filter(Boolean);
 
     if (isEmpty(hits)) {
-      throw new DataValueNotFoundError(rule.key);
+      throw new DataValueNotFoundError(rule.key as string);
     }
 
     if (!Array.isArray(hits) || hits.length === 0) {
       return false;
     }
 
-    return hits.map(hit => get(hit, rule.key)).filter(Boolean);
+    return hits.map(hit => get(hit, rule.key as string)).filter(Boolean);
   }
 
   evaluate = async (dataValue: any, conditionValue: AmlCheckParams) => {
@@ -455,6 +455,74 @@ class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boole
   };
 }
 
+class UboMismatch extends BaseOperator<any, UboMismatchParams> {
+  constructor() {
+    super({
+      operator: 'UBO_MISMATCH',
+    });
+  }
+
+  extractValue(data: unknown): { collectionUbos: string[]; registryUbos: string[] } {
+    try {
+      const normalizedString = z.string().transform(name => name.toUpperCase().trim());
+      const result = z
+        .object({
+          entity: z.object({
+            data: z.object({
+              additionalInfo: z.object({
+                ubos: z.array(
+                  z.object({
+                    firstName: normalizedString,
+                    lastName: normalizedString,
+                  }),
+                ),
+              }),
+            }),
+          }),
+          pluginsOutput: z.object({
+            ubo: z.object({
+              data: z.object({
+                nodes: z
+                  .array(
+                    z.object({
+                      data: z.object({
+                        name: normalizedString,
+                        type: z.string(),
+                      }),
+                    }),
+                  )
+                  .transform(nodes => nodes.filter(node => node.data.type === 'PERSON')),
+              }),
+            }),
+          }),
+        })
+        .parse(data);
+
+      return {
+        collectionUbos: result.entity.data.additionalInfo.ubos
+          .map(ubo => `${ubo.firstName} ${ubo.lastName}`)
+          .sort(),
+        registryUbos: result.pluginsOutput.ubo.data.nodes.map(node => node.data.name).sort(),
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new ValidationFailedError('extract', 'parsing failed', error);
+      }
+
+      throw error;
+    }
+  }
+
+  evaluate = (data: { collectionUbos: string[]; registryUbos: string[] }): boolean => {
+    const { collectionUbos, registryUbos } = data;
+    const exactMatch =
+      collectionUbos.length === registryUbos.length &&
+      collectionUbos.every((name, index) => name === registryUbos[index]);
+
+    return !exactMatch;
+  };
+}
+
 export const EQUALS = new Equals();
 export const NOT_EQUALS = new NotEquals();
 export const EXISTS = new Exists();
@@ -469,6 +537,7 @@ export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
 export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
+export const UBO_MISMATCH = new UboMismatch();
 
 export {
   Equals,

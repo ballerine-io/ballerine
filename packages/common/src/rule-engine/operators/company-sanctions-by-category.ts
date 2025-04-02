@@ -37,7 +37,7 @@ class CompanySanctionsCategories extends BaseOperator<string[], CompanySanctions
                   .optional(),
               }),
             )
-            .min(1, 'Company sanctions data is required'),
+            .optional(),
         }),
       }),
     });
@@ -52,7 +52,7 @@ class CompanySanctionsCategories extends BaseOperator<string[], CompanySanctions
 
     const companySanctions = get(objData, 'pluginsOutput.companySanctions.data');
 
-    if (!companySanctions || isEmpty(companySanctions)) {
+    if (!companySanctions) {
       throw new DataValueNotFoundError('pluginsOutput.companySanctions.data');
     }
 

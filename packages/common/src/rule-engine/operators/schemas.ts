@@ -79,3 +79,7 @@ export const CompanySanctionsCategoriesSchema = z.object({
   threshold: z.number().optional(),
   category: z.union([z.literal('Adverse Media'), z.string()]),
 });
+
+export const UboMismatchSchema = z.object({
+  operator: z.literal(OPERATION.UBO_MISMATCH),
+});

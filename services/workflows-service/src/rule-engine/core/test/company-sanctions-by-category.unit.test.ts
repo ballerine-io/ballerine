@@ -32,7 +32,6 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       operator: 'and',
       rules: [
         {
-          key: 'pluginsOutput.companySanctions.data',
           operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
           value: {
             category: 'Sanctions',
@@ -77,7 +76,6 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       operator: 'and',
       rules: [
         {
-          key: 'pluginsOutput.companySanctions.data',
           operator: 'COMPANY_SANCTIONS_CATEGORIES',
           value: {
             threshold: 2,
@@ -117,8 +115,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       operator: 'and',
       rules: [
         {
-          key: 'pluginsOutput.companySanctions.data',
-          operator: 'COMPANY_SANCTIONS_CATEGORIES',
+          operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
           value: {
             category: 'Sanctions',
           },
@@ -156,7 +153,6 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       operator: 'and',
       rules: [
         {
-          key: 'pluginsOutput.companySanctions.data',
           operator: 'COMPANY_SANCTIONS_CATEGORIES',
           value: {
             category: 'sanctions',
@@ -204,7 +200,6 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       operator: 'and',
       rules: [
         {
-          key: 'pluginsOutput.companySanctions.data',
           operator: 'COMPANY_SANCTIONS_CATEGORIES',
           value: {
             category: 'Sanctions',
@@ -231,7 +226,6 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       operator: 'and',
       rules: [
         {
-          key: 'pluginsOutput.companySanctions.data',
           operator: 'COMPANY_SANCTIONS_CATEGORIES',
           value: {
             category: 'Sanctions',
@@ -246,5 +240,34 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
     expect(validationResults).toHaveLength(1);
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).error).toBeInstanceOf(ValidationFailedError);
+  });
+
+  it('should fail when companySanctions data is an empty array', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [],
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          operator: 'COMPANY_SANCTIONS_CATEGORIES',
+          value: {
+            category: 'Sanctions',
+          },
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('FAILED');
+    expect(validationResults[0]!.error).toBeUndefined();
   });
 });

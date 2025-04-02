@@ -1,9 +1,7 @@
 import { OPERATION } from './enums';
 
-// Export base operators class
 export { BaseOperator } from './helpers';
 
-// Export all standard operators from helpers.ts
 export {
   EQUALS,
   NOT_EQUALS,
@@ -19,13 +17,12 @@ export {
   EXISTS,
   AML_CHECK,
   FUZZY_MATCH_SCORE_LT,
+  UBO_MISMATCH,
 } from './helpers';
 
-// Export specialized operators
 export { IDV_CHECK } from './idv-check';
 export { COMPANY_SANCTIONS_CATEGORIES } from './company-sanctions-by-category';
 
-// Export constants directly as they're not dependent on the operators
 export const OPERATORS_WITHOUT_PATH_COMPARISON = [
   OPERATION.AML_CHECK,
   OPERATION.BETWEEN,
@@ -36,7 +33,6 @@ export const OPERATORS_WITHOUT_PATH_COMPARISON = [
 
 export const OPERATORS_WITH_THRESHOLD = [OPERATION.FUZZY_MATCH_SCORE_LT] as const;
 
-// Export unified API client type
 export type TUnifiedApiClient = {
   runEntityMatchingV2: (payload: {
     entity1: string;

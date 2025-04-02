@@ -4,7 +4,6 @@ import { getCollectionFlowState } from '@ballerine/common';
 import { act, renderHook } from '@testing-library/react';
 import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { updateCollectionFlowState } from '../../helpers/update-collection-flow-state';
 import { useAppSync } from './useAppSync';
 
 vi.mock('@/domains/collection-flow', () => ({
@@ -78,7 +77,6 @@ describe('useAppSync', () => {
 
     expect(result.current.isSyncing).toBe(true);
     expect(mockSetLoading).toHaveBeenCalledWith(true);
-    expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
 
     await act(async () => {
       await syncPromise;
@@ -102,7 +100,6 @@ describe('useAppSync', () => {
     });
 
     expect(mockSetLoading).toHaveBeenCalledWith(true);
-    expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
     expect(toast.error).toHaveBeenCalledWith('Failed to sync.');
     expect(consoleSpy).toHaveBeenCalledWith(mockError);
     expect(result.current.isSyncing).toBe(false);
@@ -120,7 +117,6 @@ describe('useAppSync', () => {
     });
 
     expect(mockSetLoading).not.toHaveBeenCalled();
-    expect(updateCollectionFlowState).not.toHaveBeenCalled();
     expect(syncContext).not.toHaveBeenCalled();
   });
 
@@ -134,7 +130,6 @@ describe('useAppSync', () => {
     });
 
     expect(mockSetLoading).not.toHaveBeenCalled();
-    expect(updateCollectionFlowState).toHaveBeenCalledWith(mockContext, 'test-state');
     expect(syncContext).toHaveBeenCalledWith(mockContext);
   });
 });

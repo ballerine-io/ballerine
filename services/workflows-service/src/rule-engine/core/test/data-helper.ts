@@ -240,3 +240,309 @@ export const amlContext = {
     },
   },
 };
+
+export const ubosMismatchContext = Object.freeze({
+  state: 'personal_details',
+  entity: {
+    id: '0067x00000OExFJAA1',
+    data: {
+      address: {
+        city: 'Tel-Aviv',
+        street: 'Lincoln',
+        country: 'AX',
+        postalCode: '978333',
+        streetNumber: '20',
+      },
+      country: 'GB',
+      companyName: '2 PAY PEOPLE LTD',
+      businessType: 'Private Limited Company',
+      additionalInfo: {
+        apm: {
+          email: 'jod@ballerine.com',
+          jobTitle: 'Manager1',
+          lastName: 'MAnager',
+          firstName: 'APM',
+          secretWord: 'dsadasdsadsa',
+          phoneNumber: '11234543212',
+        },
+        dba: 'ASSISTED SALE PROPERTY',
+        mcc: '8931',
+        ubos: [
+          {
+            city: 'Tel-Aviv',
+            role: 'Alon Peretz',
+            email: 'alon+3232@ballerine.com',
+            phone: '12121121221',
+            street: 'Lincoln 20',
+            country: 'AL',
+            lastName: 'SEYMOUR',
+            firstName: 'JUDITH',
+            sourceOfFunds: 'Ballerine',
+            sourceOfWealth: 'Ballerine',
+            ballerineEntityId: 'cm8houie1000drt0knmynbu98',
+            ownershipPercentage: 29,
+          },
+          {
+            city: 'Tel-Aviv',
+            role: 'Alon Peretz',
+            email: 'alon+3232@ballerine.com',
+            phone: '12121121221',
+            street: 'Lincoln 20',
+            country: 'AL',
+            lastName: 'MOFFAT',
+            firstName: 'ANNE',
+            sourceOfFunds: 'Ballerine',
+            sourceOfWealth: 'Ballerine',
+            ballerineEntityId: 'cm8houie1000drt0knmynbu98',
+            ownershipPercentage: 29,
+          },
+        ],
+        cPanel: {
+          email: 'dudi@12.com',
+          jobTitle: 'Test',
+          lastName: 'Test',
+          firstName: 'Test',
+          secretWord: 'Test',
+          phoneNumber: '11234321234',
+        },
+        industry: 'Accounting, Auditing, and Bookkeeping Services',
+        websites: [
+          {
+            url: 'https://ballerine2.com',
+            isLoginRequired: false,
+          },
+        ],
+        directors: [
+          {
+            city: 'Tel-Aviv',
+            role: 'Alon Peretz',
+            email: 'alon+3232@ballerine.com',
+            phone: '11234532132',
+            street: 'Lincoln 20',
+            country: 'DZ',
+            lastName: 'Peretz',
+            firstName: 'Alon',
+            sourceOfFunds: 'Ballerine',
+            sourceOfWealth: 'Ballerine',
+            ballerineEntityId: 'cm8houi9i0009n30k3rnwyd65',
+            ownershipPercentage: 29,
+          },
+        ],
+        taxIdType: 'ABN',
+        taxNumber: '1234434343',
+        iAmDirector: true,
+        mainWebsite: {
+          url: 'https://ballerine.com',
+          password: 'DAS',
+          username: 'FA',
+          isLoginRequired: true,
+        },
+        headquarters: {
+          physical: {
+            city: 'Tel-Aviv',
+            street: 'Lincoln',
+            country: 'AS',
+            postalCode: '978333',
+            streetNumber: '20',
+          },
+          isDifferentFromPhysical: true,
+        },
+        chargingModel: 'one-of',
+        imShareholder: true,
+        openCorporate: {
+          vat: '',
+          name: '2 PAY PEOPLE LTD',
+          companyType: 'Private Limited Company',
+          companyNumber: '11906892',
+          currentStatus: 'Active',
+          jurisdictionCode: 'gb',
+          incorporationDate: '2019-03-26',
+        },
+        targetMarkets: ['AL'],
+        bankInformation: {
+          iban: 'GB29NWBK60161331926819',
+          name: '222',
+          country: 'AL',
+          swiftCode: '222211221',
+          accountNumber: '213',
+          accountHolderName: '32311',
+        },
+        servicesOffered: 'fdas',
+        underwriterEmail: 'underwriting@customer.com.invalid',
+        incorporationDate: '2019-03-26',
+        otherProviderInfo: 'ADS',
+        processingDetails: {
+          averageFullfilmentPeriod: '11',
+          averageRefundAmountRatio: 1,
+          averageChargebackAmountRatio: 2,
+        },
+        mainRepresentative: {
+          email: 'alon+3232@ballerine.com',
+          lastName: 'Peretz',
+          firstName: 'Alon',
+          additionalInfo: {
+            jobTitle: 'CTO',
+          },
+          ballerineEntityId: 'cm8hoi4ik0004rw0kljqryuil',
+        },
+        maximumTicketValue: 22,
+        minimumTicketValue: 22,
+        associatedCompanies: [
+          {
+            dba: '2121',
+            country: 'AX',
+            taxIdType: 'BN',
+            taxNumber: '12212121',
+            companyName: '2121',
+            businessType: 'Limited Liability Partnership',
+            registrationNumber: '21211221',
+            dateOfEstablishment: '2025-03-03T22:00:00.000Z',
+            paymentStatementPhoneNumber: '12121211221',
+          },
+        ],
+        processingCurrencies: ['AFN'],
+        underwriterFirstName: 'Underwriting',
+        expectedMonthlyVolume: 4422,
+        averageTransactionValue: 22,
+        fullfilmentCycleDetails: 'trew',
+        paymentStatementPhoneNumber: '12212121212',
+        expectedIntegrationStartDate: '2025-03-19T22:00:00.000Z',
+        expectedIntegrationGoLiveDate: '2025-03-20T22:00:00.000Z',
+        expectedNumberOfTransactionsPerMonth: 33,
+        iHaveAnotherAccountWithAnotherAcquirerOrProvider: true,
+        thereAreNoCompaniesWithMoreThan25PercentOfTheCompany: false,
+      },
+      registrationNumber: '11906892',
+      taxIdentificationNumber: '',
+    },
+    type: 'business',
+    ballerineEntityId: 'cm8ho6gpt002ru70k2crkcahg',
+  },
+  metadata: {
+    token: '7399db0d-8b60-400e-8f8d-aaff7fc6fb48',
+    customerId: 'cm2iz3ql60003ptnpqnpor2d1',
+    customerName: 'customer',
+    collectionFlowUrl: 'https://collection-sb.ballerine.app',
+    customerNormalizedName: 'customer',
+  },
+  documents: [],
+  customerName: 'customer',
+  pluginsInput: {
+    ubo: {
+      status: 'SUCCESS',
+      requestPayload: {
+        vendor: 'kyckr',
+        callbackUrl:
+          '{secret.APP_API_URL}/api/v1/external/workflows/cm8hoi4ib0002rw0kqjjkmup1/hook/VENDOR_DONE?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api',
+      },
+    },
+  },
+  pluginsOutput: {
+    ubo: {
+      code: 200001,
+      data: {
+        edges: [
+          {
+            id: 'f5b56379-e109-4eeb-890d-8d9edb6a8ccb->38466223-6d2f-4279-b018-1a7a594de68d',
+            data: {
+              sharePercentage: 50,
+            },
+            source: 'f5b56379-e109-4eeb-890d-8d9edb6a8ccb',
+            target: '38466223-6d2f-4279-b018-1a7a594de68d',
+          },
+          {
+            id: 'f5b56379-e109-4eeb-890d-8d9edb6a8ccb->067b0564-7585-4acd-a31f-cc45bd085ba1',
+            data: {
+              sharePercentage: 50,
+            },
+            source: 'f5b56379-e109-4eeb-890d-8d9edb6a8ccb',
+            target: '067b0564-7585-4acd-a31f-cc45bd085ba1',
+          },
+        ],
+        nodes: [
+          {
+            id: 'f5b56379-e109-4eeb-890d-8d9edb6a8ccb',
+            data: {
+              name: '2 PAY PEOPLE LTD',
+              type: 'COMPANY',
+            },
+          },
+          {
+            id: '38466223-6d2f-4279-b018-1a7a594de68d',
+            data: {
+              name: 'ANNE MOFFAT',
+              type: 'PERSON',
+              sharePercentage: 50,
+            },
+          },
+          {
+            id: '067b0564-7585-4acd-a31f-cc45bd085ba1',
+            data: {
+              name: 'JUDITH SEYMOUR',
+              type: 'PERSON',
+              sharePercentage: 50,
+            },
+          },
+        ],
+      },
+      name: 'ubo',
+      status: 'SUCCESS',
+      orderId: '3274409',
+      invokedAt: 1742495553890,
+    },
+  },
+  collectionFlow: {
+    state: {
+      steps: [
+        {
+          stepName: 'personal_details',
+          isCompleted: true,
+        },
+        {
+          stepName: 'company_details',
+          isCompleted: true,
+        },
+        {
+          stepName: 'company_address_page',
+          isCompleted: true,
+        },
+        {
+          stepName: 'company_activity',
+          isCompleted: true,
+        },
+        {
+          stepName: 'security_questions',
+          isCompleted: true,
+        },
+        {
+          stepName: 'processing_details',
+          isCompleted: true,
+        },
+        {
+          stepName: 'company_contacts',
+          isCompleted: true,
+        },
+        {
+          stepName: 'bank_information',
+          isCompleted: true,
+        },
+        {
+          stepName: 'company_ownership',
+          isCompleted: true,
+        },
+        {
+          stepName: 'company_documents',
+          isCompleted: true,
+        },
+      ],
+      status: 'completed',
+      currentStep: 'company_documents',
+    },
+    config: {
+      apiUrl: 'https://api-sb.ballerine.app',
+    },
+    additionalInformation: {
+      customerCompany: 'customer',
+    },
+  },
+});
