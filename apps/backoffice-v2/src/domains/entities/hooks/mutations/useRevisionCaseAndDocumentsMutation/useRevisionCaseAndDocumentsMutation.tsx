@@ -14,7 +14,15 @@ export const useRevisionCaseAndDocumentsMutation = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ revisionReason, ids, workflowId }: { revisionReason: string, ids: string[], workflowId: string }) => {
+    mutationFn: async ({
+      revisionReason,
+      ids,
+      workflowId,
+    }: {
+      revisionReason: string;
+      ids: string[];
+      workflowId: string;
+    }) => {
       if (isDocumentsV2) {
         await updateDocumentsDecisionByIds({
           ids,

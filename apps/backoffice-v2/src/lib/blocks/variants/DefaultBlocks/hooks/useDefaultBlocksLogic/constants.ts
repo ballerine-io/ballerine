@@ -1,0 +1,35 @@
+import { Blocks } from '@ballerine/blocks';
+
+export const ALL_BLOCKS = [
+  'websiteMonitoringBlock',
+  'entityInfoBlock',
+  'registryInfoBlock',
+  'kybRegistryInfoBlock',
+  'companySanctionsBlock',
+  'individualsUserProvidedBlock',
+  'ubosRegistryProvidedBlock',
+  'storeInfoBlock',
+  'websiteBasicRequirementBlock',
+  'bankingDetailsBlock',
+  'processingDetailsBlock',
+  'mainContactBlock',
+  'mainRepresentativeBlock',
+  'mapBlock',
+  'addressWithContainerBlock',
+  'parentDocumentBlocks',
+  'associatedCompaniesBlock',
+  'associatedCompaniesInformationBlock',
+  'websiteMonitoringBlocks',
+  'documentReviewBlocks',
+  'businessInformationBlocks',
+  'caseOverviewBlock',
+  'customDataBlock',
+  'amlWithContainerBlock',
+  'merchantScreeningBlock',
+  'manageUbosBlock',
+  'bankAccountVerificationBlock',
+  'commercialCreditCheckBlock',
+  'aiSummaryBlock',
+] as const;
+
+export type TAllBlocks = Record<(typeof ALL_BLOCKS)[number], Blocks>;

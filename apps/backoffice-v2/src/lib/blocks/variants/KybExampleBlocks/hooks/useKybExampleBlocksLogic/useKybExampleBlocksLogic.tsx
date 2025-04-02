@@ -158,8 +158,6 @@ export const useKybExampleBlocksLogic = () => {
     mainRepresentative,
   });
 
-  const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
-
   const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
   const {
     mutate: mutateRemoveDocumentDecisionById,
@@ -345,7 +343,6 @@ export const useKybExampleBlocksLogic = () => {
       ...businessInformation,
       ...mainRepresentativeBlock,
       ...documentsBlocks,
-      ...directorsUserProvidedBlock,
       ...directorsBlock,
       ...associatedCompaniesBlock,
       ...associatedCompaniesInformationBlock,
@@ -354,7 +351,6 @@ export const useKybExampleBlocksLogic = () => {
     businessInformation,
     mainRepresentativeBlock,
     documentsBlocks,
-    directorsUserProvidedBlock,
     directorsBlock,
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,

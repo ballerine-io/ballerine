@@ -13,7 +13,6 @@ import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
-import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useAISummaryBlock } from '@/lib/blocks/hooks/useAISummaryBlock/useAISummaryBlock';
@@ -31,8 +30,6 @@ import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInf
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
 import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
-import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocuments } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useDocuments';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
@@ -62,6 +59,7 @@ import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
+import { TAllBlocks } from './constants';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -323,19 +321,34 @@ export const useDefaultBlocksLogic = () => {
     } satisfies Parameters<typeof useIndividualsUserProvidedBlock>[0][number];
   };
 
-  const ubosUserProvided = useMemo(() => {
+  const childWorkflows = useMemo(
+    () =>
+      workflow?.childWorkflows?.filter(
+        childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo',
+      ),
+    [workflow?.childWorkflows],
+  );
+  const deDupedDirectors = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.directors?.filter(
+        director =>
+          !childWorkflows?.some(
+            childWorkflow =>
+              childWorkflow?.context?.entity?.data?.ballerineEntityId ===
+              director.ballerineEntityId,
+          ),
+      ),
+    [workflow?.context?.entity?.data?.additionalInfo?.directors, childWorkflows],
+  );
+  const individualsUserProvided = useMemo(() => {
     return [
-      ...(workflow?.childWorkflows
-        ?.filter(childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo')
-        ?.map(childWorkflow =>
-          entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
-        ) ?? []),
-      ...(workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-        entityDataToIndividualAdapter,
+      ...(childWorkflows?.map(childWorkflow =>
+        entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
       ) ?? []),
+      ...(deDupedDirectors?.map(entityDataToIndividualAdapter) ?? []),
     ];
   }, [workflow?.childWorkflows, workflow?.context?.entity?.data?.additionalInfo?.directors]);
-  const ubosUserProvidedBlock = useIndividualsUserProvidedBlock(ubosUserProvided);
+  const individualsUserProvidedBlock = useIndividualsUserProvidedBlock(individualsUserProvided);
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
     nodes: workflow?.context?.pluginsOutput?.ubo?.data?.nodes ?? [],
@@ -352,8 +365,6 @@ export const useDefaultBlocksLogic = () => {
       enabled: workflow?.workflowDefinition?.config?.ubos?.create?.enabled ?? false,
     },
   });
-
-  const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
   const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
   const {
@@ -445,19 +456,6 @@ export const useDefaultBlocksLogic = () => {
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum ?? [];
-  const directorsDocumentsBlocks = createDirectorsBlocks({
-    workflowId: workflow?.id ?? '',
-    onReuploadNeeded: onReuploadNeededDirectors,
-    onRemoveDecision: onMutateRemoveTaskDecisionByIdDirectors,
-    onApprove: onMutateApproveTaskByIdDirectors,
-    directors,
-    tags: workflow?.tags ?? [],
-    revisionReasons,
-    isEditable: caseState.writeEnabled,
-    isApproveDisabled: isLoadingApproveTaskById || isLoadingApproveDocumentById,
-    // Remove once callToActionLegacy is removed
-    workflow,
-  });
 
   const websiteMonitoringBlock = useWebsiteMonitoringBlock({
     pluginsOutput: workflow?.context?.pluginsOutput,
@@ -584,19 +582,17 @@ export const useDefaultBlocksLogic = () => {
 
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) {
-      return [];
+      return {};
     }
 
-    return [
+    return {
       websiteMonitoringBlock,
       entityInfoBlock,
       registryInfoBlock,
       kybRegistryInfoBlock,
       companySanctionsBlock,
-      ubosUserProvidedBlock,
+      individualsUserProvidedBlock,
       ubosRegistryProvidedBlock,
-      directorsUserProvidedBlock,
-      directorsDocumentsBlocks,
       storeInfoBlock,
       websiteBasicRequirementBlock,
       bankingDetailsBlock,
@@ -619,14 +615,12 @@ export const useDefaultBlocksLogic = () => {
       bankAccountVerificationBlock,
       commercialCreditCheckBlock,
       aiSummaryBlock,
-    ];
+    } satisfies TAllBlocks;
   }, [
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
     bankingDetailsBlock,
     companySanctionsBlock,
-    directorsDocumentsBlocks,
-    directorsUserProvidedBlock,
     entityInfoBlock,
     kybRegistryInfoBlock,
     mainContactBlock,
@@ -637,7 +631,7 @@ export const useDefaultBlocksLogic = () => {
     processingDetailsBlock,
     registryInfoBlock,
     storeInfoBlock,
-    ubosUserProvidedBlock,
+    individualsUserProvidedBlock,
     ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,

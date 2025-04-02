@@ -2,7 +2,6 @@ import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fe
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createAssociatedCompanyDocumentBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-assosiacted-company-document-blocks';
 import { createKycBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-kyc-blocks';
-import { Blocks } from '@ballerine/blocks';
 import { StateTag, WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 import { Tab } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-variant-tabs';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
@@ -12,6 +11,7 @@ import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mu
 import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -28,20 +28,18 @@ export const useTabsToBlocksMap = ({
   blocksCreationParams,
   theme,
 }: {
-  blocks: Blocks;
+  blocks: TAllBlocks;
   blocksCreationParams: TCaseBlocksCreationProps;
   theme?: WorkflowDefinitionConfigTheme;
 }) => {
-  const [
+  const {
     websiteMonitoringBlock,
     entityInfoBlock,
     registryInfoBlock,
     kybRegistryInfoBlock,
     companySanctionsBlock,
-    ubosUserProvidedBlock,
+    individualsUserProvidedBlock,
     ubosRegistryProvidedBlock,
-    directorsUserProvidedBlock,
-    directorsDocumentsBlocks,
     storeInfoBlock,
     websiteBasicRequirementBlock,
     bankingDetailsBlock,
@@ -64,7 +62,7 @@ export const useTabsToBlocksMap = ({
     bankAccountVerificationBlock,
     commercialCreditCheckBlock,
     aiSummaryBlock,
-  ] = blocks;
+  } = blocks;
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
     useApproveCaseAndDocumentsMutation({
@@ -209,9 +207,15 @@ export const useTabsToBlocksMap = ({
       ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'individual')
       ?.map(childWorkflowToIndividualAdapter) ?? [];
   const directors =
-    workflow?.context?.entity?.data?.additionalInfo?.directors?.filter(
-      (director) => !childWorkflows.some((childWorkflow) => childWorkflow.context?.entity?.data?.ballerineEntityId === director.ballerineEntityId),
-    )?.map(directorToIndividualAdapter) ?? [];
+    workflow?.context?.entity?.data?.additionalInfo?.directors
+      ?.filter(
+        director =>
+          !workflow?.childWorkflows?.some(
+            childWorkflow =>
+              childWorkflow.context?.entity?.data?.ballerineEntityId === director.ballerineEntityId,
+          ),
+      )
+      ?.map(directorToIndividualAdapter) ?? [];
   const individuals = [...childWorkflows, ...directors];
 
   const defaultTabsMap = {
@@ -244,11 +248,10 @@ export const useTabsToBlocksMap = ({
     ],
     [Tab.DOCUMENTS]: [...parentDocumentBlocks],
     [Tab.INDIVIDUALS]: [
-      ...ubosUserProvidedBlock,
+      ...individualsUserProvidedBlock,
       ...amlWithContainerBlock,
       ...manageUbosBlock,
       ...createKycBlocks(individuals),
-      ...directorsDocumentsBlocks,
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
       ...associatedCompaniesBlock,

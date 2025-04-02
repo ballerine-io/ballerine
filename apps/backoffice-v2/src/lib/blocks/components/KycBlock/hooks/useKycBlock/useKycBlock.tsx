@@ -152,14 +152,14 @@ export const useKycBlock = ({
   }, [documents]);
 
   const riskLabels = kycSessionKeys?.length
-  ? kycSessionKeys.flatMap(key => {
-      if (!kycSession[key]?.result?.decision?.riskLabels?.length) {
-        return 'none';
-      }
+    ? kycSessionKeys.flatMap(key => {
+        if (!kycSession[key]?.result?.decision?.riskLabels?.length) {
+          return 'none';
+        }
 
-      return kycSession[key]?.result?.decision?.riskLabels
-    })
-  : [];
+        return kycSession[key]?.result?.decision?.riskLabels;
+      })
+    : [];
 
   const decision = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => [
