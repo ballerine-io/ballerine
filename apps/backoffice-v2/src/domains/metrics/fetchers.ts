@@ -67,16 +67,11 @@ export const CaseDailyStatsOutputSchema = z.array(
 export const fetchCaseDailyStats = async (params: { from: string; to: string }) => {
   const queryParams = qs.stringify(params, { encode: false });
 
-  console.log(queryParams);
-
   const [stats, error] = await apiClient({
     endpoint: `../metrics/cases/daily?${queryParams}`,
     method: Method.GET,
-    schema: z.any(),
-    // schema: CaseDailyStatsOutputSchema,
+    schema: CaseDailyStatsOutputSchema,
   });
-
-  console.log(stats);
 
   return handleZodError(error, stats);
 };

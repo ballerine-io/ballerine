@@ -23,12 +23,16 @@ import {
   ApiOkResponse,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { Static, Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { GetDailyLiveCasesDto } from './dto/get-live-cases.dto';
+import { CasesByRiskLevelMetricModel } from './repository/models/cases-by-risk-level.model';
+import { CasesByStatusMetricModel } from './repository/models/cases-by-status.model';
+import { CasesActiveDailyModel } from './repository/models/cases-active-daily.model';
 
 @ApiTags('Metrics')
 @Controller('/metrics')
@@ -54,7 +58,26 @@ export class MetricsController {
     return await this.metricsService.getRuntimesStatusCaseCount(query, projectIds);
   }
 
-  // @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })
+  @ApiOkResponse({
+    description: 'Returns metrics for cases by status and risk level',
+    schema: {
+      type: 'object',
+      properties: {
+        casesByStatus: {
+          type: 'array',
+          items: { $ref: getSchemaPath(CasesByStatusMetricModel) },
+        },
+        ongoingCasesByRisk: {
+          type: 'array',
+          items: { $ref: getSchemaPath(CasesByRiskLevelMetricModel) },
+        },
+        approvedCasesByRisk: {
+          type: 'array',
+          items: { $ref: getSchemaPath(CasesByRiskLevelMetricModel) },
+        },
+      },
+    },
+  })
   @ApiNotFoundResponse({ type: NotFoundException })
   @common.HttpCode(200)
   @common.Get('/cases/current')
@@ -62,7 +85,7 @@ export class MetricsController {
     return await this.metricsService.getCasesMetrics(projectIds);
   }
 
-  @ApiOkResponse({ type: [Object] })
+  @ApiOkResponse({ type: [CasesActiveDailyModel] })
   @common.HttpCode(200)
   @common.Get('/cases/daily')
   async getDailyActiveCases(

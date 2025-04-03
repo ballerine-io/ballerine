@@ -8,7 +8,10 @@ export const useCaseDailyStats = (params: { from?: string; to?: string }) => {
   const { from, to } = params;
 
   return useQuery({
-    ...metricsQueryKeys.caseDailyStats(params as { from: string; to: string }),
+    ...metricsQueryKeys.caseDailyStats({
+      from: from ?? '',
+      to: to ?? '',
+    }),
     enabled: !!from && !!to && isAuthenticated,
     staleTime: 100_000,
   });
