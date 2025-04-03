@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 Write comments thoughtfully:
 - Do NOT write comments that explain obvious code or restate WHAT the code does.
