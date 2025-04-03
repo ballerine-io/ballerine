@@ -32,6 +32,7 @@ export {
   valueOrNA,
   zodBuilder,
   zodErrorToReadable,
+  checkIsNonEmptyArrayOfNonEmptyStrings,
 } from './utils';
 
 export * from './utils/collection-flow';
