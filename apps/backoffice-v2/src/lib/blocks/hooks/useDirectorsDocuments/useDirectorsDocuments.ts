@@ -9,7 +9,9 @@ export const useDirectorsDocuments = (workflow: TWorkflowById) => {
 
   const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
-    documents: workflow?.context?.documents as TDocument[],
+    documents: (workflow?.context?.entity?.data?.additionalInfo?.directors?.flatMap(
+      director => director.documents ?? [],
+    ) ?? []) as TDocument[],
   });
 
   return { documents, documentsSchemas, isLoading };

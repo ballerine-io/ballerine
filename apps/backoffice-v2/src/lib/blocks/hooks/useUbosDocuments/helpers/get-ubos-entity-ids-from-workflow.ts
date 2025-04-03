@@ -1,5 +1,17 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export const getUbosEntityIdsFromWorkflow = (workflow: TWorkflowById) => {
-  return workflow.childWorkflows?.map(childWorkflow => childWorkflow.entity.id) ?? [];
+  const directorsIds = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+    director => director.ballerineEntityId,
+  );
+
+  return (
+    workflow?.childWorkflows
+      ?.filter(
+        childWorkflow =>
+          childWorkflow.context?.entity?.variant === 'ubo' &&
+          !directorsIds.includes(childWorkflow.context?.entity?.ballerineEntityId),
+      )
+      ?.map(childWorkflow => childWorkflow.context?.entity?.ballerineEntityId) ?? []
+  );
 };
