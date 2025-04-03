@@ -20,16 +20,18 @@ export const useStatisticsLogic = () => {
     const now = dayjs();
     const yesterday = now.subtract(1, 'day');
 
+    const toSet: { from?: string; to?: string } = {};
+
     if (!from || dayjs(from).isAfter(yesterday)) {
-      setSearchParams({
-        from: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
-      });
+      toSet.from = dayjs().subtract(7, 'day').format('YYYY-MM-DD');
     }
 
     if (!to || dayjs(to).isAfter(now)) {
-      setSearchParams({
-        to: dayjs().format('YYYY-MM-DD'),
-      });
+      toSet.to = dayjs().format('YYYY-MM-DD');
+    }
+
+    if (Object.keys(toSet).length > 0) {
+      setSearchParams(toSet);
     }
   }, []);
 
@@ -43,7 +45,6 @@ export const useStatisticsLogic = () => {
   };
 
   return {
-    locale,
     customer,
     isLoadingCustomer,
     from,
