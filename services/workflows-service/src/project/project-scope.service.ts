@@ -1,8 +1,7 @@
 import type { TProjectIds } from '@/types';
-import { isType } from '@ballerine/common';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import z from 'zod';
+import { checkIsNonEmptyArrayOfNonEmptyStrings } from '@ballerine/common';
 
 export interface PrismaGeneralQueryArgs {
   select?: Record<string, unknown> | null;
@@ -26,9 +25,6 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
 }
 
 const assertIsValidProjectIds = (projectIds: unknown): asserts projectIds is TProjectIds => {
-  const nonEmptyArrayOfNonEmptyStringsSchema = z.array(z.string().min(1));
-  const checkIsNonEmptyArrayOfNonEmptyStrings = isType(nonEmptyArrayOfNonEmptyStringsSchema);
-
   if (checkIsNonEmptyArrayOfNonEmptyStrings(projectIds)) {
     return;
   }

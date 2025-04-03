@@ -29,3 +29,4 @@ export { valueOrFallback } from './value-or-fallback';
 export { valueOrNA } from './value-or-na';
 export { zodBuilder } from './zod-builder';
 export { zodErrorToReadable } from './zod-error-to-readable';
+export { checkIsNonEmptyArrayOfNonEmptyStrings } from './check-is-non-empty-array-of-non-empty-strings';
