@@ -5,13 +5,13 @@ import { HTTPError } from 'ky';
 import { useEndUserQuery } from '../useEndUserQuery';
 
 export const useCustomerQuery = () => {
-  const { accessToken } = useAccessToken();
+  const { accessToken, wfIdToken } = useAccessToken();
   const { data: endUser } = useEndUserQuery();
 
   const { data, isLoading, error, isFetched } = useQuery({
     ...collectionFlowQuerykeys.getCustomer(endUser?.id ?? null),
     //@ts-ignore
-    enabled: !!accessToken,
+    enabled: !!accessToken || !!wfIdToken,
   });
 
   return {

@@ -22,29 +22,28 @@ export class CombinedAuthGuard implements CanActivate {
     const authenticatedEntity = req.user as AuthenticatedEntity & { projectIds?: TProjectIds };
 
     if (
-      req.isAuthenticated() ||
-      !!authenticatedEntity?.customer ||
-      authenticatedEntity?.type === 'admin'
+      (req.isAuthenticated() ||
+        !!authenticatedEntity?.customer ||
+        authenticatedEntity?.type === 'admin') &&
+      workflowId
     ) {
-      if (workflowId) {
-        const workflow = await this.workflowService.getWorkflowRuntimeDataById(
-          workflowId,
-          {},
-          authenticatedEntity?.projectIds || [],
-        );
+      const workflow = await this.workflowService.getWorkflowRuntimeDataById(
+        workflowId,
+        {},
+        authenticatedEntity?.projectIds || [],
+      );
 
-        if (!workflow) {
-          throw new UnauthorizedException('Invalid workflow ID');
-        }
-
-        this.cls.set('entity', {
-          user: authenticatedEntity.user,
-          type: 'user',
-        });
-
-        (req as any).tokenScope =
-          await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(workflow.id);
+      if (!workflow) {
+        throw new UnauthorizedException('Invalid workflow ID');
       }
+
+      this.cls.set('entity', {
+        user: authenticatedEntity.user,
+        type: 'user',
+      });
+
+      (req as any).tokenScope =
+        await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(workflow.id);
 
       return true;
     }
