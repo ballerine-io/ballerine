@@ -165,7 +165,7 @@ export const useKycBlock = ({
     ? kycSessionKeys?.flatMap(key => [
         {
           label: 'Verified With',
-          value: capitalize(kycSession[key]?.vendor),
+          value: capitalize(kycSession[key]?.vendor ?? ''),
         },
         {
           label: 'Result',

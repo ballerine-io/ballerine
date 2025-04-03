@@ -12,6 +12,7 @@ import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mut
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
+import { useEndUsersByIdsQuery } from '@/domains/individuals/queries/useEndUsersByIdsQuery/useEndUsersByIdsQuery';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -172,17 +173,16 @@ export const useTabsToBlocksMap = ({
       isInitiateSanctionsScreeningDisabled: !initiateSanctionsScreeningEvent,
     } satisfies Parameters<typeof createKycBlocks>[0][number];
   };
-  const directorToIndividualAdapter = (
-    director: NonNullable<
-      TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
-    >[number],
-  ) => {
-    const status = undefined;
-
+  const directorToIndividualAdapter = ({
+    kycSession,
+    ...director
+  }: NonNullable<
+    TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
+  >[number]) => {
     return {
-      status,
+      status: undefined,
       documents: director?.documents,
-      kycSession: {},
+      kycSession,
       entityData: director,
       isActionsDisabled: true,
       isLoadingReuploadNeeded: false,
@@ -206,6 +206,12 @@ export const useTabsToBlocksMap = ({
     workflow?.childWorkflows
       ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'individual')
       ?.map(childWorkflowToIndividualAdapter) ?? [];
+  const directorsIds = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+    director => director.ballerineEntityId,
+  );
+
+  const { data: endUsers } = useEndUsersByIdsQuery({ ids: directorsIds });
+
   const directors =
     workflow?.context?.entity?.data?.additionalInfo?.directors
       ?.filter(
@@ -215,7 +221,22 @@ export const useTabsToBlocksMap = ({
               childWorkflow.context?.entity?.data?.ballerineEntityId === director.ballerineEntityId,
           ),
       )
-      ?.map(directorToIndividualAdapter) ?? [];
+      ?.map(director => {
+        const endUser = endUsers?.find(endUser => endUser.id === director.ballerineEntityId);
+
+        return directorToIndividualAdapter({
+          ...director,
+          kycSession: {
+            kyc_session_1: {
+              result: {
+                aml: {
+                  hits: endUser?.amlHits,
+                },
+              },
+            },
+          },
+        });
+      }) ?? [];
   const individuals = [...childWorkflows, ...directors];
 
   const defaultTabsMap = {

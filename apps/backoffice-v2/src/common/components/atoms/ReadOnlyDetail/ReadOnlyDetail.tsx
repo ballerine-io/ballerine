@@ -40,9 +40,9 @@ export const ReadOnlyDetail: FunctionComponent<{
     const value = children.endsWith(':00') ? children : `${children}:00`;
 
     return (
-      <p {...props} className={className}>
+      <TextWithNAFallback as="p" {...props} className={className}>
         {dayjs(value).utc().format('DD/MM/YYYY HH:mm')}
-      </p>
+      </TextWithNAFallback>
     );
   }
 
@@ -51,9 +51,9 @@ export const ReadOnlyDetail: FunctionComponent<{
     (parse?.isoDate && checkIsIsoDate(children))
   ) {
     return (
-      <p {...props} className={className}>
+      <TextWithNAFallback as="p" {...props} className={className}>
         {dayjs(children).format('DD/MM/YYYY')}
-      </p>
+      </TextWithNAFallback>
     );
   }
 
@@ -64,7 +64,13 @@ export const ReadOnlyDetail: FunctionComponent<{
   }
 
   if (typeof children === 'boolean') {
-    return <p {...props} className={className}>{`${children}`}</p>;
+    return (
+      <TextWithNAFallback
+        as="p"
+        {...props}
+        className={className}
+      >{`${children}`}</TextWithNAFallback>
+    );
   }
 
   if (parse?.url && checkIsUrl(children)) {
@@ -77,19 +83,25 @@ export const ReadOnlyDetail: FunctionComponent<{
 
   if (parse?.nullish && isNullish(children)) {
     return (
-      <TextWithNAFallback {...props} className={className}>
+      <TextWithNAFallback as="p" {...props} className={className}>
         {children}
       </TextWithNAFallback>
     );
   }
 
   if (isNullish(children)) {
-    return <p {...props} className={className}>{`${children}`}</p>;
+    return (
+      <TextWithNAFallback
+        as="p"
+        {...props}
+        className={className}
+      >{`${children}`}</TextWithNAFallback>
+    );
   }
 
   return (
-    <p {...props} className={className}>
+    <TextWithNAFallback as="p" {...props} className={className}>
       {children}
-    </p>
+    </TextWithNAFallback>
   );
 };

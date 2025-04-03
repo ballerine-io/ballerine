@@ -250,7 +250,7 @@ export type TReadOnlyDetailsCell = {
   value: Array<{
     label: string;
     value: ExtendedJson;
-    props?: ComponentProps<typeof ReadOnlyDetail>;
+    props?: Omit<ComponentProps<typeof ReadOnlyDetail>, 'children'>;
   }>;
 };
 

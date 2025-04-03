@@ -93,7 +93,7 @@ export const Detail: FunctionComponent<IDetailProps> = ({
         className,
       )}
     >
-      {valueOrNA(value)}
+      {value === 0 ? 0 : valueOrNA(value)}
     </div>
   );
 };
