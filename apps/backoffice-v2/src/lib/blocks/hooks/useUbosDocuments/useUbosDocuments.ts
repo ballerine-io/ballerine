@@ -9,7 +9,9 @@ export const useUbosDocuments = (workflow: TWorkflowById) => {
 
   const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
-    documents: workflow?.context?.documents as TDocument[],
+    documents: (workflow.childWorkflows
+      ?.filter(childWorkflow => childWorkflow.context?.entity?.variant === 'ubo')
+      ?.flatMap(childWorkflow => childWorkflow.context?.documents ?? []) ?? []) as TDocument[],
   });
 
   return { documents, documentsSchemas, isLoading };

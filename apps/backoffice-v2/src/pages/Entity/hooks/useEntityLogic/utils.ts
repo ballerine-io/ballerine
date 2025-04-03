@@ -1,6 +1,6 @@
 import { AnyArray, TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
-import { toTitleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 import { TDropdownOption } from '@/lib/blocks/components/EditableDetails/types';
 
 const composeDataFormCell = (
@@ -32,34 +32,36 @@ export const composePickableCategoryType = (
   const documentCategoryDropdownOptions: TDropdownOption[] = [];
   const documentTypesDropdownOptions: TDropdownOption[] = [];
   documentsSchemas.forEach(document => {
-    const category = document.category;
+    const { type, category } = document;
+    const isCategoryInDropdownOptions = documentCategoryDropdownOptions.some(
+      option => option.value === category,
+    );
+    const isTypeInDropdownOptions = documentTypesDropdownOptions.some(
+      option => option.value === type,
+    );
 
-    if (category) {
+    if (category && !isCategoryInDropdownOptions) {
       documentCategoryDropdownOptions.push({
         value: category,
-        label: toTitleCase(category),
+        label: titleCase(category),
       });
     }
 
-    const type = document.type;
-
-    if (type) {
+    if (type && !isTypeInDropdownOptions) {
       documentTypesDropdownOptions.push({
         dependantOn: 'category',
         dependantValue: category,
         value: type,
-        label: toTitleCase(type),
+        label: titleCase(type),
       });
     }
   });
 
-  const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
-  const typeDropdownOptions = documentTypesDropdownOptions;
   const isEditable = !config?.isLockedDocumentCategoryAndType;
 
   return {
-    ...composeDataFormCell('category', categoryDropdownOptions, categoryValue, isEditable),
-    ...composeDataFormCell('type', typeDropdownOptions, typeValue, isEditable),
+    ...composeDataFormCell('category', documentCategoryDropdownOptions, categoryValue, isEditable),
+    ...composeDataFormCell('type', documentTypesDropdownOptions, typeValue, isEditable),
   };
 };
 export const isExistingSchemaForDocument = (documentsSchemas: TDocument[]) => {
