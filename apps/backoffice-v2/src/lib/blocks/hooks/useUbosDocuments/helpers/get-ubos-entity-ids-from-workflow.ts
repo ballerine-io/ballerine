@@ -1,9 +1,10 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export const getUbosEntityIdsFromWorkflow = (workflow: TWorkflowById) => {
-  const directorsIds = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-    director => director.ballerineEntityId,
-  );
+  const directorsIds =
+    workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+      director => director.ballerineEntityId,
+    ) ?? [];
 
   return (
     workflow?.childWorkflows
