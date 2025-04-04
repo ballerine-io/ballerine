@@ -150,3 +150,5 @@ Here are some of the ways you can contribute:
 
 ## Contact Ballerine
 To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](https://discord.gg/e2rQE4YygA) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.
+
+
