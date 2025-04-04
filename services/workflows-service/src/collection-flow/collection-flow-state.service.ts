@@ -10,6 +10,8 @@ import {
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
   setCollectionFlowStatus,
+  TCollectionFlowState,
+  TCollectionFlowStep,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
@@ -155,7 +157,28 @@ export class CollectionFlowStateService {
       });
     });
 
+    const currentStep = this.computeCurrentStep(getCollectionFlowState(context));
+    context.collectionFlow.state.currentStep = currentStep;
+
     return getCollectionFlowState(context);
+  }
+
+  private computeCurrentStep(collectionFlowState: TCollectionFlowState) {
+    const isRevision = collectionFlowState.status === CollectionFlowStatusesEnum.revision;
+
+    if (isRevision) {
+      const revisionStep = collectionFlowState.steps.find(
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.revision,
+      );
+
+      if (revisionStep) {
+        return revisionStep.stepName;
+      }
+    }
+
+    return collectionFlowState.steps.find(
+      (step: TCollectionFlowStep) => step.state !== CollectionFlowStepStatesEnum.completed,
+    );
   }
 
   private getEntityIdsFromWorkflow(
