@@ -98,16 +98,6 @@ export class CollectionFlowStateService {
       throw new NotFoundException('Collection flow state not found');
     }
 
-    if (
-      !documentsWithEntityTypes.some(
-        document =>
-          document.decision === DocumentDecision.revisions ||
-          document.status === DocumentStatus.requested,
-      )
-    ) {
-      return getCollectionFlowState(context);
-    }
-
     documentsWithEntityTypes = documentsWithEntityTypes.filter(
       document =>
         document.status === DocumentStatus.requested ||
@@ -158,7 +148,10 @@ export class CollectionFlowStateService {
     });
 
     const currentStep = this.computeCurrentStep(getCollectionFlowState(context));
+    const currentStatus = this.computeCurrentStatus(getCollectionFlowState(context));
+
     context.collectionFlow.state.currentStep = currentStep;
+    context.collectionFlow.state.status = currentStatus;
 
     return getCollectionFlowState(context);
   }
@@ -178,7 +171,31 @@ export class CollectionFlowStateService {
 
     return collectionFlowState.steps.find(
       (step: TCollectionFlowStep) => step.state !== CollectionFlowStepStatesEnum.completed,
-    );
+    )?.stepName;
+  }
+
+  private computeCurrentStatus(collectionFlowState: TCollectionFlowState) {
+    if (collectionFlowState.status === CollectionFlowStatusesEnum.failed) {
+      return CollectionFlowStatusesEnum.failed;
+    }
+
+    if (
+      collectionFlowState.steps?.some(
+        (step: TCollectionFlowState) => step.state === CollectionFlowStepStatesEnum.revision,
+      )
+    ) {
+      return CollectionFlowStatusesEnum.revision;
+    }
+
+    if (
+      collectionFlowState.steps?.every(
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.completed,
+      )
+    ) {
+      return CollectionFlowStatusesEnum.completed;
+    }
+
+    return collectionFlowState.status;
   }
 
   private getEntityIdsFromWorkflow(
