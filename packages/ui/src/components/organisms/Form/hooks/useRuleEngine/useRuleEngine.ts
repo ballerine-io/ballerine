@@ -30,10 +30,15 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
   const rules = useMemo(() => (Array.isArray(_rules) ? _rules : _rules ? [_rules] : []), [_rules]);
 
   const syncRuleEngineExecutionResults = useMemo(() => {
-    if (!executeRulesSync) return [];
+    if (!executeRulesSync) {
+      return [];
+    }
 
     const results = executeRules(context, rules);
-    console.debug('Executed rules synchronously', results);
+
+    if (results.length) {
+      console.debug('Executed rules synchronously', results);
+    }
 
     return results;
   }, [rules, context, executeRulesSync]);
@@ -52,7 +57,9 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
   );
 
   useEffect(() => {
-    if (executeRulesSync) return;
+    if (executeRulesSync) {
+      return;
+    }
 
     executeRulesDebounced(context, rules);
   }, [context, rules, executeRulesSync, executeRulesDebounced]);
