@@ -90,7 +90,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   return definition && collectionFlowContext ? (
     <DynamicUI>
       <DynamicUI.StateManager
-        initialContext={collectionFlowData?.context as CollectionFlowContext}
+        initialContext={collectionFlowContext as CollectionFlowContext}
         workflowId="1"
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}

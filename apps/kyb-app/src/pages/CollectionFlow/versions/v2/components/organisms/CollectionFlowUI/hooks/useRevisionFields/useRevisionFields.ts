@@ -6,6 +6,7 @@ import { generateFieldsForRevision } from './utils/generate-fields-for-revision'
 export const useRevisionFields = (pages: Array<UIPage<'v2'>>, context: CollectionFlowContext) => {
   // Generating priority fields once per session
   const revisionFields = useMemo(() => generateFieldsForRevision(pages, context), []);
+  console.log({ revisionFields });
 
   return revisionFields;
 };

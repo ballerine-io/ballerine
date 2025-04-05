@@ -23,13 +23,12 @@ export const generateFieldsForRevision = (
     >;
 
     if (isPageInRevision) {
-      fieldsForRevision = fieldsForRevision.concat(
-        generateRevisionFieldsForAllElements(context, fieldDefinitions),
-      );
-    } else {
-      fieldsForRevision = fieldsForRevision.concat(
-        generateGranularRevisionFields(context, fieldDefinitions),
-      );
+      const granularRevisionFields = generateGranularRevisionFields(context, fieldDefinitions);
+      fieldsForRevision = granularRevisionFields.length
+        ? fieldsForRevision.concat(granularRevisionFields)
+        : granularRevisionFields.length
+        ? granularRevisionFields
+        : fieldsForRevision.concat(generateRevisionFieldsForAllElements(context, fieldDefinitions));
     }
   });
 
