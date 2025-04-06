@@ -76,19 +76,19 @@ importers:
         specifier: 0.2.39
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.86
+        specifier: 0.9.87
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.99
+        specifier: ^1.2.100
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: 0.7.126
+        specifier: 0.7.127
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../sdks/workflow-node-sdk
       '@botpress/webchat':
         specifier: ^2.1.10
@@ -539,13 +539,13 @@ importers:
         specifier: 0.2.39
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.86
+        specifier: ^0.9.87
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.7.126
+        specifier: 0.7.127
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -1024,10 +1024,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.86
+        specifier: 0.9.87
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1540,7 +1540,7 @@ importers:
         specifier: ^1.1.37
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.7.126
+        specifier: 0.7.127
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1764,7 +1764,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.86
+        specifier: ^0.9.87
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -2059,7 +2059,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.86
+        specifier: 0.9.87
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2249,7 +2249,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.86
+        specifier: 0.9.87
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2376,10 +2376,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.86
+        specifier: 0.9.87
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2518,7 +2518,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2763,13 +2763,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.86
+        specifier: 0.9.87
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.108
+        specifier: 0.6.109
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -3121,7 +3121,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3(@types/node@22.13.5)(sass@1.85.1)(terser@5.39.0)(typescript@5.8.2))(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@5.8.2)))(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@5.8.2))
       '@ballerine/common':
-        specifier: ^0.9.86
+        specifier: ^0.9.87
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
