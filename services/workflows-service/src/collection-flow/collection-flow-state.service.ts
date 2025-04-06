@@ -127,9 +127,13 @@ export class CollectionFlowStateService {
             });
           }
         } else {
+          if (!document.entityType) {
+            throw new Error(`Entity type not found on document ${document.id}`);
+          }
+
           const entityFieldsDefinition = findEntityFieldsDefinition(
             step.elements,
-            document.entityType!,
+            document.entityType,
           );
 
           if (
