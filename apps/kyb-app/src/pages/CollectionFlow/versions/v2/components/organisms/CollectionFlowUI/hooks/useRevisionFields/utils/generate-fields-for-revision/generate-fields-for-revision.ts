@@ -24,11 +24,16 @@ export const generateFieldsForRevision = (
 
     if (isPageInRevision) {
       const granularRevisionFields = generateGranularRevisionFields(context, fieldDefinitions);
-      fieldsForRevision = granularRevisionFields.length
-        ? fieldsForRevision.concat(granularRevisionFields)
-        : granularRevisionFields.length
-        ? granularRevisionFields
-        : fieldsForRevision.concat(generateRevisionFieldsForAllElements(context, fieldDefinitions));
+
+      // If there specific fields to revise marking only them (Documents currently)
+      if (granularRevisionFields.length) {
+        fieldsForRevision = fieldsForRevision.concat(granularRevisionFields);
+      } else {
+        // If there are no specific fields to revise, mark all fields for revision
+        fieldsForRevision = fieldsForRevision.concat(
+          generateRevisionFieldsForAllElements(context, fieldDefinitions),
+        );
+      }
     }
   });
 
