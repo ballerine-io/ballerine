@@ -114,6 +114,10 @@ export const useEditableDetailsV2Logic = ({
     defaultValues,
   });
 
+  const isSaveVisible = useMemo(() => {
+    return isEditable && filteredFields?.some(({ props }) => props.isEditable);
+  }, [filteredFields, isEditable]);
+
   const handleSubmit: SubmitHandler<Record<string, any>> = useCallback(
     values => {
       const updatedData = fields.reduce((acc, curr) => {
@@ -159,5 +163,6 @@ export const useEditableDetailsV2Logic = ({
     isEditable: !config.actions.editing.disabled && isEditable,
     toggleOnIsEditable,
     toggleOffIsEditable,
+    isSaveVisible,
   };
 };

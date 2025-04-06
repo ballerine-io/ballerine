@@ -25,14 +25,21 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
     throw new Error('Cannot provide both blacklist and whitelist');
   }
 
-  const { form, handleSubmit, handleCancel, handleEnableIsEditable, filteredFields, isEditable } =
-    useEditableDetailsV2Logic({
-      fields,
-      onSubmit,
-      onCancel,
-      onEnableIsEditable,
-      config,
-    });
+  const {
+    form,
+    handleSubmit,
+    handleCancel,
+    handleEnableIsEditable,
+    filteredFields,
+    isEditable,
+    isSaveVisible,
+  } = useEditableDetailsV2Logic({
+    fields,
+    onSubmit,
+    onCancel,
+    onEnableIsEditable,
+    config,
+  });
 
   return (
     <div className={'px-3.5'}>
@@ -112,7 +119,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                 Cancel
               </Button>
             )}
-            {isEditable && filteredFields?.some(({ props }) => props.isEditable) && (
+            {isSaveVisible && (
               <Button
                 type="submit"
                 className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
