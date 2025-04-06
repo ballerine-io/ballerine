@@ -102,6 +102,7 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       dir: `${packageDir}/dist/esm`,
       banner,
       preserveModules: true,
+      preserveModulesRoot: path.resolve(process.cwd(), 'src'),
     },
     plugins: [
       babelPlugin,
@@ -122,6 +123,7 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       sourcemap: true,
       dir: `${packageDir}/dist/cjs`,
       preserveModules: true,
+      preserveModulesRoot: path.resolve(process.cwd(), 'src'),
       exports: 'named',
       banner,
     },
