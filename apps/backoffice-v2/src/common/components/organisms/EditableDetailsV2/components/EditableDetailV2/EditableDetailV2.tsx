@@ -222,7 +222,7 @@ export const EditableDetailV2 = ({
     return <ReadOnlyDetailV2 className={className}>{`${value}`}</ReadOnlyDetailV2>;
   }
 
-  if (parse?.country && checkIsCountry('en', value)) {
+  if (parse?.country && inputType === 'country') {
     return <ReadOnlyDetailV2 className={className}>{getName(value, 'en')}</ReadOnlyDetailV2>;
   }
 
