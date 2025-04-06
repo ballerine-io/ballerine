@@ -40,7 +40,7 @@ export const getVariantTabs = (
       {
         name: Tab.DOCUMENTS,
         displayName: 'Documents',
-        disabled: !tabBlocks[Tab.DOCUMENTS]?.length,
+        disabled: false,
       },
       {
         name: Tab.MONITORING_REPORTS,

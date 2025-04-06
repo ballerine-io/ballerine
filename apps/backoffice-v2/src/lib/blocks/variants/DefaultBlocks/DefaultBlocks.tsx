@@ -13,6 +13,23 @@ import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
+import { ComponentProps } from 'react';
+
+export const BlocksToComponentsAdapter = ({
+  blocks,
+}: {
+  blocks: ComponentProps<typeof BlocksComponent>['blocks'];
+}) => {
+  if (Array.isArray(blocks)) {
+    return (
+      <BlocksComponent blocks={blocks} cells={cells}>
+        {(Cell, cell) => <Cell {...cell} />}
+      </BlocksComponent>
+    );
+  }
+
+  return blocks;
+};
 
 export const DefaultBlocks = () => {
   const { blocks, tabs, activeTab, getUpdatedSearchParamsWithActiveTab, isLoading } =
@@ -25,39 +42,38 @@ export const DefaultBlocks = () => {
           <TabsList className={'mb-4 inline-flex h-auto flex-wrap'}>
             {tabs.map(tab => {
               const tabName = camelCase(tab.name);
+              const link = (
+                <Link
+                  to={{
+                    search: getUpdatedSearchParamsWithActiveTab({ tab: tabName }),
+                  }}
+                  className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
+                  aria-disabled={tab.disabled}
+                >
+                  {tab.displayName}
+                </Link>
+              );
 
-              return tab.tooltip ? (
-                <TooltipProvider key={tabName} delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <TabsTrigger value={tabName} asChild>
-                        <Link
-                          to={{
-                            search: getUpdatedSearchParamsWithActiveTab({ tab: tabName }),
-                          }}
-                          className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
-                          aria-disabled={tab.disabled}
-                        >
-                          {tab.displayName}
-                        </Link>
-                      </TabsTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" align="center">
-                      {tab.tooltip}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ) : (
+              if (tab.tooltip) {
+                return (
+                  <TooltipProvider key={tabName} delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value={tabName} asChild>
+                          {link}
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="center">
+                        {tab.tooltip}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                );
+              }
+
+              return (
                 <TabsTrigger key={tabName} value={tabName} asChild>
-                  <Link
-                    to={{
-                      search: getUpdatedSearchParamsWithActiveTab({ tab: tabName }),
-                    }}
-                    className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
-                    aria-disabled={tab.disabled}
-                  >
-                    {tab.displayName}
-                  </Link>
+                  {link}
                 </TabsTrigger>
               );
             })}
@@ -69,9 +85,7 @@ export const DefaultBlocks = () => {
               return (
                 <TabsContent key={tabName} value={tabName}>
                   <div className="flex h-full flex-col gap-4">
-                    <BlocksComponent blocks={blocks} cells={cells}>
-                      {(Cell, cell) => <Cell {...cell} />}
-                    </BlocksComponent>
+                    <BlocksToComponentsAdapter blocks={blocks} />
                     {!isLoading && !blocks?.length && <NoBlocks />}
                   </div>
                 </TabsContent>
@@ -82,9 +96,7 @@ export const DefaultBlocks = () => {
       )}
       {!tabs.length && (
         <div className="flex h-full flex-col gap-4">
-          <BlocksComponent blocks={blocks} cells={cells}>
-            {(Cell, cell) => <Cell {...cell} />}
-          </BlocksComponent>
+          <BlocksToComponentsAdapter blocks={blocks} />
           {!isLoading && !blocks?.length && <NoBlocks />}
         </div>
       )}

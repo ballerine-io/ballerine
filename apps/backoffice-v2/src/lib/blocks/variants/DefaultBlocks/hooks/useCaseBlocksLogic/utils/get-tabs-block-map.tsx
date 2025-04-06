@@ -5,6 +5,7 @@ import { createKycBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCa
 import { Blocks } from '@ballerine/blocks';
 import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 import { Tab } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-variant-tabs';
+import { DocumentsTab } from '@/lib/blocks/hooks/useDocumentBlocks/DocumentsTab';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -88,7 +89,7 @@ export const getTabsToBlocksMap = ({
       ...processingDetailsBlock,
       ...websiteBasicRequirementBlock,
     ],
-    [Tab.DOCUMENTS]: [...parentDocumentBlocks],
+    [Tab.DOCUMENTS]: <DocumentsTab />,
     [Tab.UBOS_KYC]: [
       ...ubosUserProvidedBlock,
       ...amlWithContainerBlock,

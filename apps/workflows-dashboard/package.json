@@ -54,6 +54,7 @@
     "react-json-tree": "^0.20.0",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.11.2",
+    "react-simple-code-editor": "^0.14.1",
     "reactflow": "^11.11.4",
     "recharts": "^2.7.2",
     "sonner": "^1.4.3",
