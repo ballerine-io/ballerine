@@ -1,6 +1,7 @@
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { Block } from '@ballerine/blocks';
 import { FunctionComponent } from 'react';
@@ -31,10 +32,14 @@ export const BlockCell: FunctionComponent<IBlockCellProps> = ({ value, props }) 
       >
         {value?.map((cell, index) => {
           const Cell = cells[cell?.type];
-          const cellKeyProp = cell[cell?.keyProp as keyof typeof cell] ?? '';
-          const key = `${cellKeyProp ? `${cellKeyProp}:` : ''}${cell?.id ?? ''}`;
+          const key = keyFactory(
+            'block',
+            cell[cell?.keyProp as keyof typeof cell],
+            cell?.id,
+            index,
+          );
 
-          return <Cell key={key || index} {...cell} />;
+          return <Cell key={key} {...cell} />;
         })}
       </CardContent>
     </Card>

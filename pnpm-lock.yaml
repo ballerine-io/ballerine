@@ -73,7 +73,7 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.39
+        specifier: 0.2.40
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: 0.9.87
@@ -536,7 +536,7 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.39
+        specifier: 0.2.40
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: ^0.9.87
