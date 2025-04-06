@@ -3,9 +3,9 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { useMemo } from 'react';
 import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
 
-export const useMapBlock = ({ address, entityType, workflow }) => {
+export const useMapBlock = ({ address, title, workflow }) => {
   const { data: locations, isLoading } = useNominatimQuery(address);
-  const addressBlock = useAddressBlock({ address, entityType, workflow });
+  const addressBlock = useAddressBlock({ address, title, workflow });
 
   return useMemo(() => {
     if (
