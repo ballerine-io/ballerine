@@ -32,7 +32,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
     handleEnableIsEditable,
     filteredFields,
     isEditable,
-    isSaveVisible,
+    isEditingActionsVisible,
   } = useEditableDetailsV2Logic({
     fields,
     onSubmit,
@@ -109,7 +109,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
             })}
           </div>
           <div className={'min-h-12 mt-3 flex justify-end gap-x-3'}>
-            {isEditable && filteredFields?.some(({ props }) => props.isEditable) && (
+            {isEditingActionsVisible && (
               <Button
                 type="button"
                 className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
@@ -119,7 +119,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                 Cancel
               </Button>
             )}
-            {isSaveVisible && (
+            {isEditingActionsVisible && (
               <Button
                 type="submit"
                 className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}

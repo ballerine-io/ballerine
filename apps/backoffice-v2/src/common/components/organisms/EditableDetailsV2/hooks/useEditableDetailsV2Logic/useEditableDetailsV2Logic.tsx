@@ -114,7 +114,11 @@ export const useEditableDetailsV2Logic = ({
     defaultValues,
   });
 
-  const isSaveVisible = useMemo(() => {
+  const isEditableAndEditingEnabled = useMemo(() => {
+    return !config.actions.editing.disabled && isEditable;
+  }, [config.actions.editing.disabled, isEditable]);
+
+  const isEditingActionsVisible = useMemo(() => {
     return isEditable && filteredFields?.some(({ props }) => props.isEditable);
   }, [filteredFields, isEditable]);
 
@@ -160,9 +164,9 @@ export const useEditableDetailsV2Logic = ({
     handleCancel,
     handleEnableIsEditable,
     filteredFields,
-    isEditable: !config.actions.editing.disabled && isEditable,
+    isEditable: isEditableAndEditingEnabled,
     toggleOnIsEditable,
     toggleOffIsEditable,
-    isSaveVisible,
+    isEditingActionsVisible,
   };
 };
