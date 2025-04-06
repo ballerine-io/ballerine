@@ -92,6 +92,8 @@ describe('WorkflowAuthGuard', () => {
         salesforceRecordId: null,
         parentRuntimeDataId: null,
         deletedBy: null,
+        actorEndUserId: null,
+        actorUserId: null,
       };
 
       const context = mockExecutionContext({
