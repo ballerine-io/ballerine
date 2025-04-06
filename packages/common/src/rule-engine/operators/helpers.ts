@@ -8,6 +8,7 @@ import {
   Primitive,
   TOperation,
   AmlCheckParams,
+  UboMismatchParams,
 } from './types';
 
 import { z, ZodSchema } from 'zod';
@@ -455,6 +456,74 @@ class FuzzyMatchScoreLt extends BaseOperator<Primitive, Primitive, Promise<boole
   };
 }
 
+class UboMismatch extends BaseOperator<any, UboMismatchParams> {
+  constructor() {
+    super({
+      operator: 'UBO_MISMATCH',
+    });
+  }
+
+  extractValue(data: unknown): { collectionUbos: string[]; registryUbos: string[] } {
+    try {
+      const normalizedString = z.string().transform(name => name.toUpperCase().trim());
+      const result = z
+        .object({
+          entity: z.object({
+            data: z.object({
+              additionalInfo: z.object({
+                ubos: z.array(
+                  z.object({
+                    firstName: normalizedString,
+                    lastName: normalizedString,
+                  }),
+                ),
+              }),
+            }),
+          }),
+          pluginsOutput: z.object({
+            ubo: z.object({
+              data: z.object({
+                nodes: z
+                  .array(
+                    z.object({
+                      data: z.object({
+                        name: normalizedString,
+                        type: z.string(),
+                      }),
+                    }),
+                  )
+                  .transform(nodes => nodes.filter(node => node.data.type === 'PERSON')),
+              }),
+            }),
+          }),
+        })
+        .parse(data);
+
+      return {
+        collectionUbos: result.entity.data.additionalInfo.ubos
+          .map(ubo => `${ubo.firstName} ${ubo.lastName}`)
+          .sort(),
+        registryUbos: result.pluginsOutput.ubo.data.nodes.map(node => node.data.name).sort(),
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new ValidationFailedError('extract', 'parsing failed', error);
+      }
+
+      throw error;
+    }
+  }
+
+  evaluate = (data: { collectionUbos: string[]; registryUbos: string[] }): boolean => {
+    const { collectionUbos, registryUbos } = data;
+    const exactMatch =
+      collectionUbos.length === registryUbos.length &&
+      collectionUbos.every((name, index) => name === registryUbos[index]);
+
+    return !exactMatch;
+  };
+}
+
 export const EQUALS = new Equals();
 export const NOT_EQUALS = new NotEquals();
 export const EXISTS = new Exists();
@@ -469,3 +538,4 @@ export const IN_CASE_INSENSITIVE = new InCaseInsensitive();
 export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
 export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
+export const UBO_MISMATCH = new UboMismatch();

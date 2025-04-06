@@ -84,6 +84,8 @@ export const WorkflowConfigSchema = Type.Object({
   hasUboOngoingMonitoring: Type.Optional(Type.Boolean()),
   maxBusinessReports: Type.Optional(Type.Number()),
   isMerchantMonitoringEnabled: Type.Optional(Type.Boolean()),
+  isOngoingMonitoringEnabled: Type.Optional(Type.Boolean()),
+  isCollectionFlowPageRevisionEnabled: Type.Optional(Type.Boolean()),
 });
 
 export type TWorkflowConfig = Static<typeof WorkflowConfigSchema>;

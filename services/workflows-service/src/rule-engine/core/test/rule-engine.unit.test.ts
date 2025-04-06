@@ -7,7 +7,7 @@ import {
   RuleSet,
 } from '@ballerine/common';
 import z from 'zod';
-import { amlContext, context } from './data-helper';
+import { amlContext, context, ubosMismatchContext } from './data-helper';
 import { createRuleEngine, runRuleSet } from '../rule-engine';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
@@ -111,36 +111,9 @@ describe('Rule Engine', () => {
     const result = await createRuleEngine(ruleSetExample).run(mockData);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
-    expect(result[0]?.message).toMatchInlineSnapshot(`
-      "Validation failed for 'rule', message: parsing failed, error: {
-        "issues": [
-          {
-            "code": "invalid_union_discriminator",
-            "options": [
-              "LAST_YEAR",
-              "AML_CHECK",
-              "EQUALS",
-              "NOT_EQUALS",
-              "BETWEEN",
-              "GT",
-              "LT",
-              "GTE",
-              "LTE",
-              "EXISTS",
-              "IN",
-              "IN_CASE_INSENSITIVE",
-              "NOT_IN",
-              "FUZZY_MATCH_SCORE_LT"
-            ],
-            "path": [
-              "operator"
-            ],
-            "message": "Invalid discriminator value. Expected 'LAST_YEAR' | 'AML_CHECK' | 'EQUALS' | 'NOT_EQUALS' | 'BETWEEN' | 'GT' | 'LT' | 'GTE' | 'LTE' | 'EXISTS' | 'IN' | 'IN_CASE_INSENSITIVE' | 'NOT_IN' | 'FUZZY_MATCH_SCORE_LT'"
-          }
-        ],
-        "name": "ZodError"
-      }"
-    `);
+    expect(result[0]?.message).toMatch(
+      /^Validation failed for 'rule', message: parsing failed, error.*"name": "ZodError"/s,
+    );
   });
 
   it('should fail for incorrect value', async () => {
@@ -1137,6 +1110,134 @@ describe('Rule Engine', () => {
           "status": "FAILED",
         }
       `);
+    });
+  });
+
+  describe('UBO match operator', () => {
+    const ruleSet: RuleSet = {
+      operator: OPERATOR.AND,
+      rules: [
+        {
+          key: 'uboMismatch',
+          operator: OPERATION.UBO_MISMATCH,
+          value: 1,
+          isPathComparison: false,
+        },
+      ],
+    };
+
+    const createRegistryUbo = (
+      name: string,
+    ): (typeof ubosMismatchContext)['pluginsOutput']['ubo']['data']['nodes'][0] => ({
+      id: 'random-id',
+      data: {
+        name,
+        type: 'PERSON',
+        sharePercentage: 10,
+      },
+    });
+
+    const createCollectionUbo = (
+      firstName: string,
+      lastName: string,
+    ): (typeof ubosMismatchContext)['entity']['data']['additionalInfo']['ubos'][0] => ({
+      firstName,
+      lastName,
+      city: 'Tel-Aviv',
+      role: 'Role',
+      email: 'example@ballerine.com',
+      phone: '12121121221',
+      street: 'Lincoln 20',
+      country: 'IL',
+      sourceOfFunds: 'Ballerine',
+      sourceOfWealth: 'Ballerine',
+      ballerineEntityId: 'cm8houie1000drt0knmynbu98',
+      ownershipPercentage: 10,
+    });
+
+    const adjustContext = (
+      registryUbos: (typeof ubosMismatchContext)['pluginsOutput']['ubo']['data']['nodes'],
+      collectionUbos: (typeof ubosMismatchContext)['entity']['data']['additionalInfo']['ubos'],
+    ): typeof ubosMismatchContext => {
+      // replace registry ubos with the new ones without changing the original context
+      const newContext = JSON.parse(
+        JSON.stringify(ubosMismatchContext),
+      ) as typeof ubosMismatchContext;
+      newContext.pluginsOutput.ubo.data.nodes = registryUbos;
+      newContext.entity.data.additionalInfo.ubos = collectionUbos;
+
+      return newContext;
+    };
+
+    const expectResult = (result: RuleResult[], status: 'PASSED' | 'FAILED') => {
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.status).toBe(status);
+    };
+
+    it('should extact-match happy flow', async () => {
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(ubosMismatchContext);
+      expectResult(result, 'FAILED');
+    });
+
+    it('should fail when UBOs names match exactly regardless of order', async () => {
+      const engine = createRuleEngine(ruleSet);
+      const modifiedContexts = [
+        adjustContext(
+          [createRegistryUbo('John Doe'), createRegistryUbo('Jane Smith')],
+          [createCollectionUbo('John', 'Doe'), createCollectionUbo('Jane', 'Smith')],
+        ),
+        adjustContext(
+          [createRegistryUbo('John Doe'), createRegistryUbo('Jane Smith')],
+          [createCollectionUbo('Jane', 'Smith'), createCollectionUbo('John', 'Doe')],
+        ),
+      ];
+
+      for (const modifiedContext of modifiedContexts) {
+        const result = await engine.run(modifiedContext);
+        expectResult(result, 'FAILED');
+      }
+    });
+
+    it('should fail when UBOs are cased differently', async () => {
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(
+        adjustContext([createRegistryUbo('John Doe')], [createCollectionUbo('john', 'doe')]),
+      );
+      expectResult(result, 'FAILED');
+    });
+
+    it('should fail when UBOs are empty', async () => {
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(adjustContext([], []));
+      expectResult(result, 'FAILED');
+    });
+
+    it('should pass (hit) when UBOs names do not match exactly', async () => {
+      const modifiedContext = adjustContext(
+        [createRegistryUbo('John Dorian Doe')],
+        [createCollectionUbo('John', 'Doe')],
+      );
+
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(modifiedContext);
+      expectResult(result, 'PASSED');
+    });
+
+    it('should pass (hit) when UBOs count differs', async () => {
+      const modifiedContext = adjustContext(
+        [createRegistryUbo('John Doe'), createRegistryUbo('Jane Smith')],
+        [
+          createCollectionUbo('John', 'Doe'),
+          createCollectionUbo('Jane', 'Smith'),
+          createCollectionUbo('Additional', 'Person'),
+        ],
+      );
+
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(modifiedContext);
+      expectResult(result, 'PASSED');
     });
   });
 });

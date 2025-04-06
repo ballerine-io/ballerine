@@ -1,7 +1,12 @@
 import { AnyObject } from '@/common';
 import { FunctionComponent } from 'react';
 import { IRule } from '../../hooks/useRuleEngine';
-import { IValidationError, IValidationParams, TValidators } from '../../Validator';
+import {
+  ICommonValidator,
+  IValidationError,
+  IValidationParams,
+  TValidators,
+} from '../../Validator';
 import { IEventsProviderProps } from '../providers/EventsProvider';
 
 export interface ICommonFieldParams {
@@ -48,6 +53,7 @@ export type TElementsMap = Record<string, TDynamicFormElement<any, any>>;
 
 export interface IDynamicFormValidationParams extends IValidationParams {
   validateOnBlur?: boolean;
+  globalValidationRules?: Array<ICommonValidator<object, string>>;
 }
 
 export interface IPriorityField {

@@ -19,7 +19,10 @@ import { useStack } from '../FieldList/providers/StackProvider';
 export interface IDateFieldParams {
   disableFuture?: boolean;
   disablePast?: boolean;
-  outputFormat?: 'date' | 'iso';
+  // Reference for formats https://day.js.org/docs/en/display/format
+  outputFormat?: string;
+  // Reference for formats https://day.js.org/docs/en/parse/string-format
+  inputFormat?: string;
 }
 
 export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
@@ -30,6 +33,7 @@ export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
     disableFuture = false,
     disablePast = false,
     outputFormat = undefined,
+    inputFormat = undefined,
   } = element.params || {};
 
   const { stack } = useStack();
@@ -42,9 +46,13 @@ export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
     (event: DatePickerChangeEvent) => {
       const dateValue = event.target.value;
 
-      if (dateValue === null || dateValue === '') return onChange(null);
+      if (dateValue === null || dateValue === '') {
+        return onChange(null);
+      }
 
-      if (!checkIfDateIsValid(dateValue)) return;
+      if (!checkIfDateIsValid(dateValue)) {
+        return;
+      }
 
       onChange(dateValue);
     },
@@ -59,6 +67,7 @@ export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
           disableFuture,
           disablePast,
           outputValueFormat: outputFormat,
+          inputDateFormat: inputFormat,
         }}
         disabled={disabled}
         testId={createTestId(element, stack)}

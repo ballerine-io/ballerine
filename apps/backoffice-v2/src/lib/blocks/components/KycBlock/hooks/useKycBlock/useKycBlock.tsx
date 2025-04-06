@@ -20,7 +20,7 @@ import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlo
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { Button } from '@ballerine/ui';
+import { Badge, Button } from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
@@ -31,6 +31,28 @@ const motionBadgeProps = {
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 } satisfies ComponentProps<typeof MotionBadge>;
+
+const RISK_TO_LABEL = {
+  allowedAge: 'Disallowed age',
+  faceLiveness: 'Face is not lively',
+  documentNotExpired: 'Document expired',
+  geolocationMatch: 'No geolocation match',
+  documentAccepted: 'Document not accepted',
+  faceNotInBlocklist: 'Face is in blocklist',
+  allowedIpLocation: 'Disallowed IP location',
+  faceImageAvailable: 'Face image unavailable',
+  documentRecognised: 'Document not recognized',
+  faceSimilarToPortrait: 'Face not similar to portrait',
+  validDocumentAppearance: 'Invalid document appearance',
+  expectedTrafficBehaviour: 'Unexpected traffic behavior',
+  physicalDocumentPresent: 'Physical document not present',
+  documentBackFullyVisible: 'Document back not fully visible',
+  documentFrontFullyVisible: 'Document front not fully visible',
+  documentBackImageAvailable: 'Document back image unavailable',
+  faceImageQualitySufficient: 'Face image quality insufficient',
+  documentFrontImageAvailable: 'Document front image unavailable',
+  documentImageQualitySufficient: 'Document image quality insufficient',
+} as const;
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -55,46 +77,57 @@ export const useKycBlock = ({
     return allDocuments?.filter(document => document.type === 'identification_document') ?? [];
   }, [allDocuments]);
 
+  const riskLabels: string[] = kycSessionKeys?.length
+    ? kycSessionKeys.flatMap(key => {
+        if (key === 'invokedAt') {
+          return [];
+        }
+
+        return childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
+          ?.length
+          ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
+          : 'none';
+      })
+    : [];
+
   const decision = kycSessionKeys?.length
-    ? kycSessionKeys?.flatMap(key => [
-        {
-          title: 'Verified With',
-          value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        {
-          title: 'Result',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.status,
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        {
-          title: 'Issues',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels
-            ?.length
-            ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels?.join(
-                ', ',
-              )
-            : 'none',
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
-        ...(isObject(childWorkflow?.context?.pluginsOutput?.kyc_session[key])
-          ? [
-              {
-                title: 'Full report',
-                value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
-                pattern: '',
-                isEditable: false,
-                dropdownOptions: undefined,
-              },
-            ]
-          : []),
-      ]) ?? []
+    ? kycSessionKeys
+        .flatMap(key =>
+          key === 'invokedAt'
+            ? []
+            : [
+                {
+                  title: 'Verified With',
+                  value: capitalize(
+                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor,
+                  ),
+                  pattern: '',
+                  isEditable: false,
+                  dropdownOptions: undefined,
+                },
+                {
+                  title: 'Result',
+                  value:
+                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
+                      ?.status,
+                  pattern: '',
+                  isEditable: false,
+                  dropdownOptions: undefined,
+                },
+                ...(isObject(childWorkflow?.context?.pluginsOutput?.kyc_session[key])
+                  ? [
+                      {
+                        title: 'Full report',
+                        value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
+                        pattern: '',
+                        isEditable: false,
+                        dropdownOptions: undefined,
+                      },
+                    ]
+                  : []),
+              ],
+        )
+        .filter(x => Boolean(x)) ?? []
     : [];
 
   const amlData = useMemo(() => {
@@ -222,8 +255,7 @@ export const useKycBlock = ({
             className: badgeClassNames,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     if (tags?.includes(StateTag.APPROVED)) {
@@ -238,8 +270,7 @@ export const useKycBlock = ({
             className: `${badgeClassNames} bg-success/20`,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     if (tags?.includes(StateTag.REJECTED)) {
@@ -254,8 +285,7 @@ export const useKycBlock = ({
             className: badgeClassNames,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     if (tags?.includes(StateTag.PENDING_PROCESS)) {
@@ -270,8 +300,7 @@ export const useKycBlock = ({
             className: badgeClassNames,
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     return createBlocksTyped()
@@ -327,8 +356,7 @@ export const useKycBlock = ({
           },
         },
       })
-      .build()
-      .flat(1);
+      .buildFlat();
   };
 
   const { mutate: mutateInitiateKyc } = useEventMutation();
@@ -369,8 +397,7 @@ export const useKycBlock = ({
             className: 'mt-0',
           },
         })
-        .build()
-        .flat(1),
+        .buildFlat(),
     })
     .cellAt(0, 0);
 
@@ -448,8 +475,7 @@ export const useKycBlock = ({
             },
           },
         })
-        .build()
-        .flat(1);
+        .buildFlat();
     }
 
     return createBlocksTyped()
@@ -479,8 +505,7 @@ export const useKycBlock = ({
         documents: documents?.map(({ details: _details, ...document }) => document),
         isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
       })
-      .build()
-      .flat(1);
+      .buildFlat();
   };
 
   return createBlocksTyped()
@@ -516,8 +541,7 @@ export const useKycBlock = ({
               props: { className: 'space-x-4' },
               value: getDecisionStatusOrAction(childWorkflow?.tags),
             })
-            .build()
-            .flat(1),
+            .buildFlat(),
         })
         .addCell({
           id: 'kyc-block',
@@ -592,6 +616,13 @@ export const useKycBlock = ({
                             title: 'Decision',
                             data: decision,
                           },
+                          props: {
+                            config: {
+                              sort: {
+                                predefinedOrder: ['Result', 'Verified With', 'Full report'],
+                              },
+                            },
+                          },
                           workflowId: childWorkflow?.id,
                           documents: documents?.map(
                             ({ details: _details, ...document }) => document,
@@ -599,8 +630,26 @@ export const useKycBlock = ({
                           isDocumentsV2:
                             !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
                         })
-                        .build()
-                        .flat(1)
+                        .addCell({
+                          type: 'node',
+                          value: (
+                            <div className="m-2 mt-4 flex flex-col gap-4 p-1">
+                              <p className="text-sm font-medium">Issues</p>
+                              <div className="flex flex-col space-y-4">
+                                {riskLabels.map(item => (
+                                  <Badge
+                                    key={item}
+                                    variant="destructive"
+                                    className={`max-w-fit text-sm font-bold`}
+                                  >
+                                    {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ?? item}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          ),
+                        })
+                        .buildFlat()
                     : createBlocksTyped()
                         .addBlock()
                         .addCell({
@@ -616,8 +665,7 @@ export const useKycBlock = ({
                         })
                         .buildFlat(),
                 })
-                .build()
-                .flat(1),
+                .buildFlat(),
             })
             .addCell({
               type: 'multiDocuments',
@@ -626,8 +674,7 @@ export const useKycBlock = ({
                 data: documents?.flatMap(document => document?.details),
               },
             })
-            .build()
-            .flat(1),
+            .buildFlat(),
         })
         .addCell({
           type: 'node',
@@ -637,8 +684,7 @@ export const useKycBlock = ({
           type: 'container',
           value: amlBlock,
         })
-        .build()
-        .flat(1),
+        .buildFlat(),
     })
     .build();
 };

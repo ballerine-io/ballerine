@@ -11,13 +11,15 @@ import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI'
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
-import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
-import { IFormElement } from '@ballerine/ui';
+import {
+  CollectionFlowStatusesEnum,
+  CollectionFlowStepStatesEnum,
+  getCollectionFlowState,
+} from '@ballerine/common';
 import { LoadingScreen } from '../v1/components/atoms/LoadingScreen';
 import { Approved } from '../v1/components/pages/Approved';
 import { CompletedScreen } from '../v1/components/pages/CompletedScreen';
@@ -27,7 +29,6 @@ import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowC
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
 import { useCollectionFlowContext } from './hooks/useCollectionFlowContext/useCollectionFlowContext';
-import { useRevisionStates } from './hooks/useRevisionStates';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
@@ -48,11 +49,6 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements as unknown as Array<UIPage<'v2'>>;
   const definition = schema?.definition.definition;
 
-  const { initialRevisionState, revisionStateNames } = useRevisionStates(
-    elements || [],
-    collectionFlowContext ?? ({} as CollectionFlowContext),
-  );
-
   const isRevision = useMemo(
     () =>
       getCollectionFlowState(collectionFlowData?.context)?.status ===
@@ -63,21 +59,16 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const initialContext: CollectionFlowContext = useMemo(() => {
     const contextCopy = { ...collectionFlowContext };
     const collectionFlow = getCollectionFlowState(contextCopy);
+    const firstRevisionStep = collectionFlow?.steps?.find(
+      step => step.state === CollectionFlowStepStatesEnum.revision,
+    );
 
     if (isRevision && collectionFlow) {
-      collectionFlow.currentStep = initialRevisionState || collectionFlow.currentStep;
+      collectionFlow.currentStep = firstRevisionStep?.stepName || collectionFlow.currentStep;
     }
 
     return contextCopy as CollectionFlowContext;
-  }, [isRevision, collectionFlowContext, initialRevisionState]);
-
-  const initialUIState = useMemo(() => {
-    return prepareInitialUIState(
-      elements || [],
-      (initialContext as CollectionFlowContext) || {},
-      isRevision,
-    );
-  }, [elements, isRevision, initialContext]);
+  }, [isRevision, collectionFlowContext]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -110,7 +101,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   }
 
   return definition && collectionFlowContext ? (
-    <DynamicUI initialState={initialUIState}>
+    <DynamicUI>
       <DynamicUI.StateManager
         initialContext={initialContext}
         workflowId="1"
@@ -177,9 +168,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                       )}
                                     </div>
                                     <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? (
-                                        <StepperUI revisionStateNames={revisionStateNames} />
-                                      ) : null}
+                                      {isLogoLoaded ? <StepperUI /> : null}
                                     </div>
                                     <div>
                                       {themeDefinition.settings?.contactInformation ? (
@@ -191,11 +180,17 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                         />
                                       ) : customer?.displayName ? (
                                         <div>
-                                          {
-                                            t('contact', {
+                                          {themeDefinition.ui?.contactUsText ? (
+                                            <span
+                                              dangerouslySetInnerHTML={{
+                                                __html: themeDefinition.ui?.contactUsText,
+                                              }}
+                                            />
+                                          ) : (
+                                            (t('contact', {
                                               companyName: customer.displayName,
-                                            }) as string
-                                          }
+                                            }) as string)
+                                          )}
                                         </div>
                                       ) : null}
                                       {themeDefinition.ui?.poweredBy !== false && (
@@ -263,9 +258,11 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                               }> = [];
 
                                               const findElementsWithPlaceholders = (
-                                                elements: Array<any>,
+                                                elements: any[],
                                               ) => {
-                                                if (!elements || !Array.isArray(elements)) return;
+                                                if (!elements || !Array.isArray(elements)) {
+                                                  return;
+                                                }
 
                                                 elements.forEach((element: any) => {
                                                   const isHidden =
@@ -274,6 +271,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                                     element?.visibleOn === false;
 
                                                   let isVisible = true;
+
                                                   if (
                                                     element?.visibleOn &&
                                                     Array.isArray(element.visibleOn)
@@ -308,6 +306,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                                     hasVisibilityConditions
                                                   ) {
                                                     const visibilityRules = element.visibleOn;
+
                                                     return;
                                                   }
 
@@ -340,7 +339,9 @@ export const CollectionFlowV2 = withSessionProtected(() => {
 
                                               allElements.forEach(
                                                 ({ valueDestination, placeholder }) => {
-                                                  if (!valueDestination || !placeholder) return;
+                                                  if (!valueDestination || !placeholder) {
+                                                    return;
+                                                  }
 
                                                   const path = valueDestination.split('.');
 
@@ -348,15 +349,20 @@ export const CollectionFlowV2 = withSessionProtected(() => {
 
                                                   for (let i = 0; i < path.length - 1; i++) {
                                                     const key = path[i];
-                                                    if (!key) continue;
+
+                                                    if (!key) {
+                                                      continue;
+                                                    }
 
                                                     if (!current[key]) {
                                                       current[key] = {};
                                                     }
+
                                                     current = current[key];
                                                   }
 
                                                   const lastKey = path[path.length - 1];
+
                                                   if (lastKey) {
                                                     let value = placeholder;
 
@@ -404,13 +410,9 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                     <div>
                                       <PluginsRunner plugins={currentPage.plugins || []}>
                                         <CollectionFlowUI
-                                          elements={
-                                            currentPage.elements as unknown as Array<
-                                              IFormElement<any, any>
-                                            >
-                                          }
+                                          page={currentPage as unknown as UIPage<'v2'>}
+                                          pages={elements as unknown as Array<UIPage<'v2'>>}
                                           context={payload}
-                                          isRevision={isRevision}
                                           metadata={schema?.metadata}
                                         />
                                       </PluginsRunner>

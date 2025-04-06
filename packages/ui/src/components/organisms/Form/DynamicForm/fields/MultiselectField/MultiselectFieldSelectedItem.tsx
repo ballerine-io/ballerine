@@ -12,11 +12,11 @@ export const MultiselectfieldSelectedItem: FunctionComponent<
   IMultiselectfieldSelectedItemProps
 > = ({ option, params }) => {
   return (
-    <Chip key={option.value} className="h-6">
-      <Chip.Label text={option.title} variant="secondary" />
+    <Chip key={option.value} className="h-6 bg-[#0F172A]">
+      <Chip.Label text={option.title} className="text-sm text-white" />
       <Chip.UnselectButton
         {...params.unselectButtonProps}
-        icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
+        icon={<X className="h-3 w-3 text-white hover:text-white/80" />}
       />
     </Chip>
   );
