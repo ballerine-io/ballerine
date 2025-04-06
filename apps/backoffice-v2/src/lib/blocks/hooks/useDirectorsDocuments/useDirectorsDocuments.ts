@@ -6,7 +6,6 @@ import { getDirectorsIdsFromWorkflow } from './helpers/get-directors-ids-from-wo
 
 export const useDirectorsDocuments = (workflow: TWorkflowById) => {
   const entityIds = useMemo(() => getDirectorsIdsFromWorkflow(workflow), [workflow]);
-  console.log('entityIds directors', entityIds);
 
   const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
