@@ -12,7 +12,7 @@ export const associatedCompanyToWorkflowAdapter = (associatedCompany: {
   };
 }) => {
   return {
-    id: '',
+    id: associatedCompany?.companyName,
     entity: {
       name: associatedCompany.companyName,
     },

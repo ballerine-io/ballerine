@@ -78,7 +78,9 @@ export class CollectionFlowStateService {
     );
   }
 
-  async updateCollectionFlowState() {}
+  async updateCollectionFlowState() {
+    // TODO: Implement
+  }
 
   private async computeCollectionFlowState(
     uiDefinition: UiDefinition,
