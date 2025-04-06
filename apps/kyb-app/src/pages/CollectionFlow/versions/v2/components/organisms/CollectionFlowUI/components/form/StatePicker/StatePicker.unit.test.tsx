@@ -1,4 +1,4 @@
-import { getCountryStates } from '@/helpers/countries-data';
+import { getCountryStates } from '@ballerine/common';
 import {
   formatValueDestination,
   IFormElement,
@@ -21,7 +21,7 @@ vi.mock('@ballerine/ui', () => ({
   useStack: vi.fn(),
 }));
 
-vi.mock('@/helpers/countries-data', () => ({
+vi.mock('@ballerine/common', () => ({
   getCountryStates: vi.fn(),
 }));
 

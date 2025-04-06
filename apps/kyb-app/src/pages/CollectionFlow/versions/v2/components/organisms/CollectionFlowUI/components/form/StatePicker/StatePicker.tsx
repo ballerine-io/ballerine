@@ -1,4 +1,4 @@
-import { getCountryStates } from '@/helpers/countries-data';
+import { getCountryStates } from '@ballerine/common';
 import {
   formatValueDestination,
   IFormElement,

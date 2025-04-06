@@ -63,7 +63,7 @@ export const FieldList: TDynamicFormField<IFieldListParams> = props => {
                 tabIndex={0}
                 disabled={disabled}
                 aria-disabled={disabled}
-                className="disabled:opacity-50 text-sm font-bold"
+                className="text-sm font-bold disabled:opacity-50"
                 onClick={() => removeItem(index)}
                 data-testid={`${fieldId}-fieldlist-item-remove-${index}`}
               >

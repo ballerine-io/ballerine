@@ -1,4 +1,4 @@
-import { getNationalities } from '@/helpers/countries-data';
+import { getNationalities } from '@ballerine/common';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { IFormElement, ISelectFieldParams, SelectField, TDynamicFormField } from '@ballerine/ui';
 import { useMemo } from 'react';

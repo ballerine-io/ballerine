@@ -23,9 +23,9 @@ export const RevisionBlock = ({ page, context }: IRevisionBlockProps) => {
   }
 
   return (
-    <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 my-4 gap-4 flex flex-col">
+    <div className="my-4 mb-6 flex flex-col gap-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
       <h2 className="text-md font-bold text-amber-900">Please provide following information</h2>
-      <p className="text-amber-800 text-sm">
+      <p className="text-sm text-amber-800">
         <span className="font-bold">Commentary</span>: {stepUnderRevision.reason}
       </p>
     </div>

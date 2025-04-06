@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { TextInputAdapter } from '@ballerine/ui';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
-import { getCountries } from '@/helpers/countries-data';
+import { getCountries } from '@ballerine/common';
 
 // @ts-ignore
 export const CountryPicker = (props: (typeof TextInputAdapter)['props']) => {

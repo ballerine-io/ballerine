@@ -3,16 +3,14 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
-import { toTitleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 
-export const useCaseInfoBlock = ({
+export const useEntityInfoBlock = ({
   entity,
   workflow,
-  entityDataAdditionalInfo,
 }: {
   entity: TWorkflowById['context']['entity'];
   workflow: TWorkflowById;
-  entityDataAdditionalInfo: TWorkflowById['context']['entity']['data']['additionalInfo'];
 }) => {
   const predefinedOrder = useMemo(
     () =>
@@ -25,18 +23,9 @@ export const useCaseInfoBlock = ({
   );
 
   return useMemo(() => {
-    const entityDetails = [
-      ...Object.entries(omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {}),
-      ...Object.entries(
-        Object.keys(entity?.data?.additionalInfo?.mainRepresentative ?? {}).length
-          ? { entity: entity?.data?.additionalInfo?.mainRepresentative }
-          : {},
-      ),
-      ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
-      ...Object.entries(entity?.data?.address ? { address: entity?.data?.address } : {}),
-    ];
+    const entityData = omitPropsFromObject(entity?.data ?? {}, 'additionalInfo', 'address');
 
-    if (Object.keys(entityDetails ?? {}).length === 0) {
+    if (Object.keys(entityData ?? {}).length === 0) {
       return [];
     }
 
@@ -52,7 +41,7 @@ export const useCaseInfoBlock = ({
               .addBlock()
               .addCell({
                 type: 'heading',
-                value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
+                value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
               })
               .addCell({
                 type: 'subheading',
@@ -67,8 +56,8 @@ export const useCaseInfoBlock = ({
             hideSeparator: true,
             value: {
               id: 'entity-details-value',
-              title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
-              data: entityDetails
+              title: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+              data: Object.entries(entityData)
                 ?.map(([title, value]) => ({
                   title,
                   value,
@@ -92,5 +81,5 @@ export const useCaseInfoBlock = ({
           .flat(1),
       })
       .build();
-  }, [entity, workflow, entityDataAdditionalInfo]);
+  }, [entity, workflow]);
 };

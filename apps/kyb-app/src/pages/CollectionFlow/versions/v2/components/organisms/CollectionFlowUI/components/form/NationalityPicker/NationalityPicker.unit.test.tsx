@@ -1,4 +1,4 @@
-import { getNationalities } from '@/helpers/countries-data';
+import { getNationalities } from '@ballerine/common';
 import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -23,7 +23,7 @@ vi.mock('@ballerine/ui', () => ({
   ),
 }));
 
-vi.mock('@/helpers/countries-data', () => ({
+vi.mock('@ballerine/common', () => ({
   getNationalities: vi.fn(),
 }));
 

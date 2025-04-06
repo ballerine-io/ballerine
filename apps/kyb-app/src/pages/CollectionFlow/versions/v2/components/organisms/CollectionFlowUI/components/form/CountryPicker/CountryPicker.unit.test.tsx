@@ -1,4 +1,4 @@
-import { getCountries } from '@/helpers/countries-data';
+import { getCountries } from '@ballerine/common';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { COUNTRY_PICKER_FIELD_TYPE, CountryPickerField } from './CountryPicker';
 
 // Mock dependencies
-vi.mock('@/helpers/countries-data');
+vi.mock('@ballerine/common');
 vi.mock('@/hooks/useLanguageParam/useLanguageParam');
 vi.mock('@ballerine/ui', () => ({
   SelectField: ({ element }: { element: any }) => (
