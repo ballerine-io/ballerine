@@ -29,6 +29,7 @@ import { FunctionComponent, useCallback } from 'react';
 import { toTitleCase } from 'string-ts';
 import { isBusinessDocument } from './helpers/is-business-document';
 import { useDocuments } from './hooks/useDocuments';
+import { ExtractCellProps } from '@ballerine/blocks';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -368,19 +369,15 @@ export const useDocumentBlocks = ({
       const documentNameOrNA = `${categoryOrNA}${
         withEntityNameInHeader ? '' : ` - ${documentTypeOrNA}`
       }`;
+      const getHeaderCellValue = () => {
+        if (!isBusinessDocument(businessDocuments, document)) {
+          const { entityType, entity } = document;
+          const entityName =
+            entity?.firstName && entity?.lastName
+              ? `${entity?.firstName} ${entity?.lastName}`
+              : undefined;
 
-      let headerContentCell = createBlocksTyped().addBlock();
-
-      if (!isBusinessDocument(businessDocuments, document)) {
-        const { entityType, entity } = document;
-        const entityName =
-          entity?.firstName && entity?.lastName
-            ? `${entity?.firstName} ${entity?.lastName}`
-            : undefined;
-
-        headerContentCell = headerContentCell.addCell({
-          type: 'heading',
-          value: (
+          return (
             <div className="flex flex-col">
               <span>{documentNameOrNA}</span>
               <div className="mt-1 flex items-center gap-1.5">
@@ -392,23 +389,14 @@ export const useDocumentBlocks = ({
                 )}
               </div>
             </div>
-          ),
-        });
-      } else {
-        headerContentCell = headerContentCell.addCell({
-          type: 'heading',
-          value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
-        });
-      }
+          ) satisfies ExtractCellProps<'heading'>['value'];
+        }
 
-      headerContentCell = headerContentCell
-        .addCell({
-          id: 'actions',
-          type: 'container',
-          value: getDecisionStatusOrAction(isDocumentRevision),
-        })
-        .build()
-        .flat(1);
+        return `${
+          withEntityNameInHeader ? `${entityNameOrNA} - ` : ''
+        }${documentNameOrNA}` satisfies ExtractCellProps<'heading'>['value'];
+      };
+
       const headerCell = createBlocksTyped()
         .addBlock()
         .addCell({
@@ -417,7 +405,18 @@ export const useDocumentBlocks = ({
           props: {
             className: 'items-start',
           },
-          value: headerContentCell,
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'heading',
+              value: getHeaderCellValue(),
+            })
+            .addCell({
+              id: 'actions',
+              type: 'container',
+              value: getDecisionStatusOrAction(isDocumentRevision),
+            })
+            .buildFlat(),
         })
         .cellAt(0, 0);
 
