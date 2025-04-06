@@ -12,7 +12,7 @@ import {
   motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
-import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
@@ -113,7 +113,7 @@ export const useKybExampleBlocksLogic = () => {
   );
 
   // Blocks
-  const businessInformation = useCaseInfoBlock({
+  const businessInformation = useEntityInfoBlock({
     entity: workflow?.context?.entity ?? {},
     workflow,
     entityDataAdditionalInfo,

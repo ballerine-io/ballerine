@@ -1,4 +1,4 @@
-import { Button, TextWithNAFallback } from '@ballerine/ui';
+import { Button, ctw, TextWithNAFallback } from '@ballerine/ui';
 
 import { FormField } from '../Form/Form.Field';
 import { titleCase } from 'string-ts';
@@ -17,6 +17,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
   fields,
   onSubmit,
   onEnableIsEditable,
+  onReRunChecks,
   onCancel,
   config,
 }) => {
@@ -24,17 +25,30 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
     throw new Error('Cannot provide both blacklist and whitelist');
   }
 
-  const { form, handleSubmit, handleCancel, filteredFields } = useEditableDetailsV2Logic({
+  const {
+    form,
+    handleSubmit,
+    handleCancel,
+    handleEnableIsEditable,
+    filteredFields,
+    isEditable,
+    isEditingActionsVisible,
+  } = useEditableDetailsV2Logic({
     fields,
     onSubmit,
     onCancel,
+    onEnableIsEditable,
     config,
   });
 
   return (
     <div className={'px-3.5'}>
-      <div className={'my-4 flex justify-between'}>
-        <h2 className={'text-xl font-bold'}>{title}</h2>
+      <div
+        className={ctw('my-4 flex justify-between', {
+          'justify-end': !title,
+        })}
+      >
+        {title && <h2 className={'text-xl font-bold'}>{title}</h2>}
         <EditableDetailsV2Options
           actions={{
             options: {
@@ -43,8 +57,12 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
             enableEditing: {
               disabled: config.actions.enableEditing.disabled,
             },
+            reRunChecks: {
+              disabled: config.actions.reRunChecks.disabled,
+            },
           }}
-          onEnableIsEditable={onEnableIsEditable}
+          onEnableIsEditable={handleEnableIsEditable}
+          onReRunChecks={onReRunChecks}
         />
       </div>
       <Form {...form}>
@@ -75,7 +93,7 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
                         maximum={props.maximum}
                         pattern={props.pattern}
                         options={props.options}
-                        isEditable={!config.actions.editing.disabled && props.isEditable}
+                        isEditable={isEditable && props.isEditable}
                         value={value}
                         valueAlias={props.valueAlias}
                         formValue={field.value}
@@ -91,27 +109,25 @@ export const EditableDetailsV2: FunctionComponent<IEditableDetailsV2Props> = ({
             })}
           </div>
           <div className={'min-h-12 mt-3 flex justify-end gap-x-3'}>
-            {!config.actions.editing.disabled &&
-              filteredFields?.some(({ props }) => props.isEditable) && (
-                <Button
-                  type="button"
-                  className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
-                  aria-disabled={config.actions.cancel.disabled}
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-              )}
-            {!config.actions.editing.disabled &&
-              filteredFields?.some(({ props }) => props.isEditable) && (
-                <Button
-                  type="submit"
-                  className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
-                  aria-disabled={config.actions.save.disabled}
-                >
-                  Save
-                </Button>
-              )}
+            {isEditingActionsVisible && (
+              <Button
+                type="button"
+                className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+                aria-disabled={config.actions.cancel.disabled}
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+            )}
+            {isEditingActionsVisible && (
+              <Button
+                type="submit"
+                className={`aria-disabled:pointer-events-none aria-disabled:opacity-50`}
+                aria-disabled={config.actions.save.disabled}
+              >
+                Save
+              </Button>
+            )}
           </div>
         </form>
       </Form>
