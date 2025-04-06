@@ -14,22 +14,21 @@ export const BlocksComponent = forwardRef(
 
     return (
       <>
-        {blocks?.map((block, index) => {
+        {blocks?.map((block, blockIndex) => {
           if (!Array.isArray(block) || !block?.length) {
             return null;
           }
 
           const typesInBlock = block?.map(({ type }) => type)?.join(':');
-          const key = `block:${typesInBlock}:${index}`;
-          const cellsList = block?.map(({ type, ...cell }) => {
+          const blockKey = `block:${typesInBlock}:${blockIndex}`;
+          const cellsList = block?.map(({ type, ...cell }, cellIndex) => {
             const Cell = cells[type];
+            const cellKey = `${(cell[cell?.keyProp as keyof typeof cell] as string) ?? ''}:${
+              (cell?.id as string) ?? ''
+            }`;
 
             return (
-              <Fragment
-                key={`${(cell[cell?.keyProp as keyof typeof cell] as string) ?? ''}:${
-                  (cell?.id as string) ?? ''
-                }`}
-              >
+              <Fragment key={cellKey === ':' ? `block:${blockIndex}:cell:${cellIndex}` : cellKey}>
                 {
                   // @ts-expect-error - expects the consumer of `@ballerine/blocks` to register `Blocks.cells` for type safety.
                   children(Cell, cell, block)
@@ -39,12 +38,12 @@ export const BlocksComponent = forwardRef(
           });
 
           if (!Block) {
-            return <Fragment key={key}>{cellsList}</Fragment>;
+            return <Fragment key={blockKey}>{cellsList}</Fragment>;
           }
 
           return (
             <Block
-              key={key}
+              key={blockKey}
               block={block}
               // TODO: Find a way to type ref for a component not known at compile time.
               // @ts-ignore
@@ -58,4 +57,5 @@ export const BlocksComponent = forwardRef(
     );
   },
 );
+
 BlocksComponent.displayName = 'Blocks';

@@ -3,9 +3,12 @@ import React, { FunctionComponent } from 'react';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { IContainerProps } from './interfaces';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const Container: FunctionComponent<IContainerProps> = ({ value, id, props }) => {
-  if (!Array.isArray(value) || !value?.length) return null;
+  if (!Array.isArray(value) || !value?.length) {
+    return null;
+  }
 
   return (
     <div
@@ -23,10 +26,14 @@ export const Container: FunctionComponent<IContainerProps> = ({ value, id, props
     >
       {value?.map((cell, index) => {
         const Cell = cells[cell?.type];
-        const cellKeyProp = cell[cell?.keyProp as keyof typeof cell] ?? '';
-        const key = `${cellKeyProp ? `${cellKeyProp}:` : ''}${cell?.id ?? ''}`;
+        const key = keyFactory(
+          'container',
+          cell[cell?.keyProp as keyof typeof cell],
+          cell?.id,
+          index,
+        );
 
-        return <Cell key={key || index} {...cell} />;
+        return <Cell key={key} {...cell} />;
       })}
     </div>
   );

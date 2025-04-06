@@ -29,6 +29,7 @@ import { FunctionComponent, useCallback } from 'react';
 import { toTitleCase } from 'string-ts';
 import { isBusinessDocument } from './helpers/is-business-document';
 import { useDocuments } from './hooks/useDocuments';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -572,6 +573,8 @@ export const useDocumentBlocks = ({
         .addBlock()
         .addCell({
           type: 'block',
+          keyProp: 'key',
+          key: keyFactory('document', id, docType, category),
           className: ctw({
             'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
               isDocumentRevision,

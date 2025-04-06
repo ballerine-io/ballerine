@@ -8,7 +8,7 @@ export const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={ctw('-mx-1 my-1 h-px bg-muted', className)}
+    className={ctw('bg-muted -mx-1 my-1 h-px', className)}
     {...props}
   />
 ));
