@@ -1,3 +1,4 @@
+import { AnyObject } from '@/common';
 import { useRuleEngine } from '@/components/organisms/Form/hooks';
 import { TDeepthLevelStack, useValidator } from '@/components/organisms/Form/Validator';
 import { useCallback, useMemo } from 'react';
@@ -9,7 +10,11 @@ import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
 
-export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeepthLevelStack) => {
+export const useField = <TValue>(
+  element: IFormElement<any, any>,
+  stack?: TDeepthLevelStack,
+  elementState?: AnyObject,
+) => {
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
 
@@ -21,7 +26,10 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
   const value = useMemo(() => getValue<TValue>(valueDestination), [valueDestination, getValue]);
   const touched = useMemo(() => getTouched(fieldId), [fieldId, getTouched]);
 
-  const valuesAndMetadata = useMemo(() => ({ ...values, ...metadata }), [values, metadata]);
+  const valuesAndMetadata = useMemo(
+    () => ({ ...values, ...metadata, $this: elementState }),
+    [values, metadata, elementState],
+  );
 
   const disabledRulesResult = useRuleEngine(valuesAndMetadata, {
     rules: useRules(element.disable, stack),
@@ -42,17 +50,21 @@ export const useField = <TValue>(element: IFormElement<any, any>, stack?: TDeept
       setValue(fieldId, valueDestination, value);
 
       if (!ignoreEvent) {
-        sendEventAsync('onChange');
+        if (element?.params?.syncEvents) {
+          sendEvent('onChange');
+        } else {
+          sendEventAsync('onChange');
+        }
       }
     },
-    [fieldId, valueDestination, setValue, sendEventAsync],
+    [fieldId, valueDestination, setValue, sendEventAsync, sendEvent, element],
   );
 
   const onBlur = useCallback(async () => {
     sendEvent('onBlur');
 
     if (validationParams.validateOnBlur) {
-      validate();
+      await validate();
     }
 
     await setTouched(fieldId, true);

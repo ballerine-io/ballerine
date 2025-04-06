@@ -14,7 +14,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
 // eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
 import { CustomerModule } from '@/customer/customer.module';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { BusinessReportControllerExternal } from '@/business-report/business-report.controller.external';
 
 @Module({

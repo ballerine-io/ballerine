@@ -1,33 +1,50 @@
-import { Button } from '@/common/components/atoms/Button/Button';
-import { SheetContent, SheetTrigger } from '@/common/components/atoms/Sheet';
-import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
-import { CaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm';
-import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hocs/withCaseCreation';
-import { useCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hooks/useCaseCreationContext';
-import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
 import { Plus } from 'lucide-react';
 import { valueOrNA } from '@ballerine/common';
+
 import { ctw } from '@/common/utils/ctw/ctw';
-import { titleCase } from 'string-ts';
+import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { SheetContent, SheetTrigger } from '@/common/components/atoms/Sheet';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
+import { CaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm';
+import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hocs/withCaseCreation';
+import { useCaseCreationLogic } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationLogic/useCaseCreationLogic';
 
 export const CaseCreation = withCaseCreation(() => {
-  const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
-  const { isOpen, setIsOpen: setOpen } = useCaseCreationContext();
-  const workflowDefinitionName =
-    workflowDefinition?.displayName || titleCase(workflowDefinition?.name ?? '');
+  const {
+    isDemoAccount,
+    isOpen,
+    setOpen,
+    error,
+    workflowDefinition,
+    workflowDefinitionName,
+    isLoading,
+  } = useCaseCreationLogic();
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex w-full items-center justify-start gap-2 font-semibold"
-          onClick={() => setOpen(true)}
-        >
-          <Plus />
-          <span>Add case manually</span>
-        </Button>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              disabled={isDemoAccount}
+              className="flex w-full items-center justify-start gap-2 font-semibold disabled:!pointer-events-auto"
+              onClick={() => setOpen(true)}
+            >
+              <Plus />
+              <span>Add case manually</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
+            This feature is not available for trial accounts.
+            <br />
+            Talk to us to get full access.
+          </TooltipContent>
+        </Tooltip>
       </SheetTrigger>
       <SheetContent
         side="right"

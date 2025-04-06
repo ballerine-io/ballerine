@@ -1,21 +1,40 @@
+import { updateDocumentsDecisionByIds } from '@/domains/documents/fetchers';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { t } from 'i18next';
+import { toast } from 'sonner';
+import { Action } from '../../../../../common/enums';
 import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { Action } from '../../../../../common/enums';
 
-export const useApproveCaseAndDocumentsMutation = ({ workflowId }: { workflowId: string }) => {
+export const useApproveCaseAndDocumentsMutation = ({
+  workflowId,
+  ids,
+  isDocumentsV2,
+}: {
+  workflowId: string;
+  ids: string[];
+  isDocumentsV2: boolean;
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
-      fetchWorkflowEventDecision({
+    mutationFn: async () => {
+      if (isDocumentsV2) {
+        await updateDocumentsDecisionByIds({
+          ids,
+          data: {
+            decision: Action.APPROVE,
+          },
+        });
+      }
+
+      return fetchWorkflowEventDecision({
         workflowId,
         body: {
           name: Action.APPROVE,
         },
-      }),
+      });
+    },
     onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);

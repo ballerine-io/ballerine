@@ -29,34 +29,47 @@ export const generateKycChildWorkflowMockData = async ({
     projectId,
   });
 
-  const generateKycChild = () => {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-
-    return {
+  const children = [
+    {
       id: randomUUID(),
-      email: faker.internet.email(firstName, lastName),
-      firstName,
-      lastName,
+      email: faker.internet.email('Carlton', 'Cushnie'),
+      firstName: 'Carlton',
+      lastName: 'Ellington Cushnie',
       role: faker.name.jobTitle(),
       companyName: faker.company.name(),
       dateOfBirth: faker.date.past().toISOString(),
-    };
-  };
-
-  const children = Array.from({ length: 3 }, () => generateKycChild());
+    },
+    {
+      id: randomUUID(),
+      email: faker.internet.email('Johnathan', 'Reed'),
+      firstName: 'Johnathan',
+      lastName: 'Reed',
+      role: faker.name.jobTitle(),
+      companyName: faker.company.name(),
+      dateOfBirth: faker.date.past().toISOString(),
+    },
+    {
+      id: randomUUID(),
+      email: faker.internet.email('Robert', 'Carter'),
+      firstName: 'Robert',
+      lastName: 'Carter',
+      role: faker.name.jobTitle(),
+      companyName: faker.company.name(),
+      dateOfBirth: faker.date.past().toISOString(),
+    },
+  ];
 
   return [
     {
       entity: {
         data: {
-          email: children[0]?.email,
-          lastName: children[0]?.lastName,
-          firstName: children[0]?.firstName,
+          email: children[2]?.email,
+          lastName: children[2]?.lastName,
+          firstName: children[2]?.firstName,
           additionalInfo: {
-            role: children[0]?.role,
-            companyName: children[0]?.companyName,
-            dateOfBirth: children[0]?.dateOfBirth,
+            role: children[2]?.role,
+            companyName: children[2]?.companyName,
+            dateOfBirth: children[2]?.dateOfBirth,
             customerCompany: customer.displayName,
             __isGeneratedAutomatically: true,
           },
@@ -75,20 +88,13 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.jpg',
               metadata: { side: 'face' },
             }),
+
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.png',
-              metadata: { side: 'face-pre' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/canada%20license%20front.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/canada-license-front.jpg',
               metadata: { side: 'front' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/canada%20license%20front.png',
-              metadata: { side: 'front-pre' },
             }),
           ],
           issuer: {
@@ -139,7 +145,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: ['United States'],
                     sanctions: [],
                     matchTypes: ['name_exact'],
-                    matchedName: 'John Smith',
+                    matchedName: 'Rob Carter',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -150,7 +156,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: [],
                     sanctions: [],
                     matchTypes: ['name_exact'],
-                    matchedName: 'Jane Doe',
+                    matchedName: 'Robert Farter',
                     adverseMedia: [],
                     fitnessProbity: [
                       {
@@ -175,7 +181,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: ['Brazil'],
                     sanctions: [],
                     matchTypes: ['name_fuzzy'],
-                    matchedName: 'Juan Carlos',
+                    matchedName: 'Robbie Cartier',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -199,7 +205,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: ['Canada', 'United States'],
                     sanctions: [],
                     matchTypes: ['name_fuzzy'],
-                    matchedName: 'Emily Johnson',
+                    matchedName: 'Robbert Cartter',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -213,9 +219,9 @@ export const generateKycChildWorkflowMockData = async ({
               },
               entity: {
                 data: {
-                  lastName: children[0]?.lastName,
-                  firstName: children[0]?.firstName,
-                  dateOfBirth: dayjs(children[0]?.dateOfBirth).format('YYYY-MM-DD'),
+                  lastName: children[2]?.lastName,
+                  firstName: children[2]?.firstName,
+                  dateOfBirth: dayjs(children[2]?.dateOfBirth).format('YYYY-MM-DD'),
                   additionalInfo: { gender: 'M', nationality: 'IL' },
                 },
                 type: 'individual',
@@ -259,20 +265,12 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20selfie.png',
-              metadata: { side: 'face' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20selfie.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card-selfie.jpg',
               metadata: { side: 'face-pre' },
             }),
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20copy.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card.jpg',
               metadata: { side: 'front' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card%20copy.png',
-              metadata: { side: 'front-pre' },
             }),
           ],
           issuer: {
@@ -323,7 +321,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: ['China'],
                     sanctions: [],
                     matchTypes: ['name_exact'],
-                    matchedName: '刘时进 (Liu Shi Jin )',
+                    matchedName: 'John Reid',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -334,7 +332,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: [],
                     sanctions: [],
                     matchTypes: ['name_exact'],
-                    matchedName: '刘石金 (Liu Shi Jin )',
+                    matchedName: 'Jonathan Reid',
                     adverseMedia: [],
                     fitnessProbity: [
                       {
@@ -360,7 +358,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: ['Brazil'],
                     sanctions: [],
                     matchTypes: ['name_fuzzy'],
-                    matchedName: 'Liu Shimin',
+                    matchedName: 'Johnny Reed',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -384,7 +382,7 @@ export const generateKycChildWorkflowMockData = async ({
                     countries: ['Canada', 'China'],
                     sanctions: [],
                     matchTypes: ['name_fuzzy'],
-                    matchedName: 'Liu Shijie',
+                    matchedName: 'John Reed',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -419,13 +417,13 @@ export const generateKycChildWorkflowMockData = async ({
     {
       entity: {
         data: {
-          email: children[2]?.email,
-          lastName: children[2]?.lastName,
-          firstName: children[2]?.firstName,
+          email: children[0]?.email,
+          lastName: children[0]?.lastName,
+          firstName: children[0]?.firstName,
           additionalInfo: {
-            role: children[2]?.role,
-            companyName: children[2]?.companyName,
-            dateOfBirth: children[2]?.dateOfBirth,
+            role: children[0]?.role,
+            companyName: children[0]?.companyName,
+            dateOfBirth: children[0]?.dateOfBirth,
             customerCompany: customer.displayName,
             __isGeneratedAutomatically: true,
           },
@@ -444,20 +442,13 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport%20Selfie.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-Selfie.jpg',
               metadata: { side: 'face' },
             }),
+
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport%20Selfie.png',
-              metadata: { side: 'face-pre' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.png',
+              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.jpg',
               metadata: { side: 'front' },
-            }),
-            await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.png',
-              metadata: { side: 'front-pre' },
             }),
           ],
           issuer: {
@@ -488,27 +479,48 @@ export const generateKycChildWorkflowMockData = async ({
                 id: randomUUID(),
                 hits: [
                   {
-                    pep: [
+                    pep: [],
+                    other: [],
+                    warnings: [],
+                    countries: ['United Kingdom'],
+                    sanctions: [],
+                    matchTypes: ['name_exact'],
+                    matchedName: 'Carlton Ellington Cushnie',
+                    adverseMedia: [
+                      {
+                        date: null,
+                        type: null,
+                        sourceUrl:
+                          'https://www.thetimes.com/business-money/companies/article/london-capital-and-finance-was-a-ponzi-scheme-judge-finds-stwrhx6v8?region=global',
+                        sourceName:
+                          'The Times - London Capital and Finance was a Ponzi scheme, judge finds',
+                      },
+                    ],
+                    fitnessProbity: [
                       {
                         date: null,
                         type: null,
                         sourceUrl: null,
                         sourceName:
-                          "China Standing Committee of Xiangxi Tujia and Miao Autonomous Prefecture People's Congress Leadership",
+                          'High-Risk UBO Connection - Linked to fraudulent payment scheme',
                       },
+                    ],
+                  },
+                  {
+                    pep: [],
+                    other: [],
+                    warnings: [],
+                    countries: ['United Kingdom'],
+                    sanctions: [
                       {
                         date: null,
                         type: null,
                         sourceUrl: null,
-                        sourceName: 'ComplyAdvantage PEP Data',
+                        sourceName: 'UK Financial Conduct Authority Sanctions List',
                       },
                     ],
-                    other: [],
-                    warnings: [],
-                    countries: ['China'],
-                    sanctions: [],
                     matchTypes: ['name_exact'],
-                    matchedName: '刘时进 (Liu Shi Jin )',
+                    matchedName: 'Carlton E. Cushnie',
                     adverseMedia: [],
                     fitnessProbity: [],
                   },
@@ -516,62 +528,37 @@ export const generateKycChildWorkflowMockData = async ({
                     pep: [],
                     other: [],
                     warnings: [],
-                    countries: [],
+                    countries: ['United Kingdom'],
                     sanctions: [],
-                    matchTypes: ['name_exact'],
-                    matchedName: '刘石金 (Liu Shi Jin )',
+                    matchTypes: ['name_fuzzy'],
+                    matchedName: 'Carlton Cushnie',
+                    adverseMedia: [
+                      {
+                        date: null,
+                        type: null,
+                        sourceUrl: null,
+                        sourceName: 'Previously shut-down fraudulent payment scheme investigation',
+                      },
+                    ],
+                    fitnessProbity: [],
+                  },
+                  {
+                    pep: [],
+                    other: [],
+                    warnings: [],
+                    countries: ['United Kingdom', 'United States'],
+                    sanctions: [],
+                    matchTypes: ['name_fuzzy'],
+                    matchedName: 'Carlton E. Cushnie',
                     adverseMedia: [],
                     fitnessProbity: [
                       {
                         date: null,
                         type: null,
                         sourceUrl: null,
-                        sourceName:
-                          'China Credit Bureau Untrustworthy Persons Subject to Enforcement (Suspended)',
+                        sourceName: 'Financial fraud watchlist',
                       },
                     ],
-                  },
-                  {
-                    pep: [
-                      {
-                        date: null,
-                        type: null,
-                        sourceUrl: null,
-                        sourceName: 'Brazil Diplomatic Missions Foreign',
-                      },
-                    ],
-                    other: [],
-                    warnings: [],
-                    countries: ['Brazil'],
-                    sanctions: [],
-                    matchTypes: ['name_fuzzy'],
-                    matchedName: 'Liu Shimin',
-                    adverseMedia: [],
-                    fitnessProbity: [],
-                  },
-                  {
-                    pep: [
-                      {
-                        date: null,
-                        type: null,
-                        sourceUrl: null,
-                        sourceName: 'Canada Diplomatic Missions Foreign',
-                      },
-                      {
-                        date: null,
-                        type: null,
-                        sourceUrl: null,
-                        sourceName: 'Canada Diplomatic Missions Foreign Representatives',
-                      },
-                    ],
-                    other: [],
-                    warnings: [],
-                    countries: ['Canada', 'China'],
-                    sanctions: [],
-                    matchTypes: ['name_fuzzy'],
-                    matchedName: 'Liu Shijie',
-                    adverseMedia: [],
-                    fitnessProbity: [],
                   },
                 ],
                 vendor: faker.helpers.arrayElement(['dow-jones', 'veriff']),
@@ -583,9 +570,9 @@ export const generateKycChildWorkflowMockData = async ({
               },
               entity: {
                 data: {
-                  lastName: children[2]?.lastName,
-                  firstName: children[2]?.firstName,
-                  dateOfBirth: dayjs(children[2]?.dateOfBirth).format('YYYY-MM-DD'),
+                  lastName: children[0]?.lastName,
+                  firstName: children[0]?.firstName,
+                  dateOfBirth: dayjs(children[0]?.dateOfBirth).format('YYYY-MM-DD'),
                   additionalInfo: { gender: 'M', nationality: 'IL' },
                 },
                 type: 'individual',

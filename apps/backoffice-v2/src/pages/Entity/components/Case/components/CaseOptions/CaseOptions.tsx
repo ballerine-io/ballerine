@@ -5,9 +5,13 @@ import { DropdownMenuItem } from '@/common/components/molecules/DropdownMenu/Dro
 import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
 import { useCaseOptionsLogic } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/useCaseOptionsLogic';
 import { FileText, Link, MoreVertical } from 'lucide-react';
+import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
+import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 
 export const CaseOptions = () => {
   const {
+    isDemoAccount,
     isGeneratingPDF,
     generateAndOpenPDFInNewTab,
     isCopyingCollectionFlowLink,
@@ -23,15 +27,24 @@ export const CaseOptions = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="w-full px-8 py-1" asChild>
-          <Button
-            onClick={() => generateAndOpenPDFInNewTab()}
-            // disabled={isGeneratingPDF}
-            disabled
-            variant={'ghost'}
-            className="justify-start"
-          >
-            <FileText size={18} className="mr-2" /> Open PDF Certificate
-          </Button>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => generateAndOpenPDFInNewTab()}
+                // disabled={isGeneratingPDF}
+                disabled
+                variant={'ghost'}
+                className="w-full justify-start px-8 py-1 disabled:!pointer-events-auto"
+              >
+                <FileText size={18} className="mr-2" /> Open PDF Certificate
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
+              This feature is not available for trial accounts.
+              <br />
+              Talk to us to get full access.
+            </TooltipContent>
+          </Tooltip>
         </DropdownMenuItem>
         <DropdownMenuItem
           className={`w-full px-8 py-1 ${isCopyingCollectionFlowLink ? 'hidden' : ''}`}

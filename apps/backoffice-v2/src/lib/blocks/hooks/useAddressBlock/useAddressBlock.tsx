@@ -1,16 +1,14 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { valueOrNA } from '@ballerine/common';
-import { toTitleCase } from 'string-ts';
 
 export const useAddressBlock = ({
   address,
-  entityType,
+  title,
   workflow,
 }: {
   address: string | Record<string, string>;
-  entityType: string;
+  title: string;
   workflow: TWorkflowById;
 }) => {
   return useMemo(() => {
@@ -30,7 +28,7 @@ export const useAddressBlock = ({
           .addCell({
             id: 'header',
             type: 'heading',
-            value: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
+            value: title,
           })
           .addCell({
             type: 'subheading',
@@ -43,7 +41,7 @@ export const useAddressBlock = ({
             type: 'details',
             hideSeparator: true,
             value: {
-              title: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
+              title,
               data:
                 typeof address === 'string'
                   ? [
@@ -65,11 +63,14 @@ export const useAddressBlock = ({
               },
             },
             workflowId: workflow?.id,
-            documents: workflow?.context?.documents,
+            documents: workflow?.context?.documents?.map(
+              ({ details: _details, ...document }) => document,
+            ),
+            isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
           .build()
           .flat(1),
       })
       .build();
-  }, [address, entityType, workflow?.id, workflow?.context?.documents]);
+  }, [address, title, workflow?.id, workflow?.context?.documents]);
 };

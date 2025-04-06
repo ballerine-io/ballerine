@@ -1,33 +1,38 @@
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useBusinessDocuments } from '@/lib/blocks/hooks/useBusinessDocuments';
+import { useDirectorsDocuments } from '@/lib/blocks/hooks/useDirectorsDocuments';
+import { useUbosDocuments } from '@/lib/blocks/hooks/useUbosDocuments';
 import { safeEvery, someDocumentDecisionStatus } from '@ballerine/common';
+import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Action } from '../../../../../../common/enums';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useParams } from 'react-router-dom';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
-import { useMemo } from 'react';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 
 export const useCaseDecision = () => {
   const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
   const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
-  const childDocuments = useMemo(() => {
-    return (
-      workflow?.childWorkflows
-        ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'business')
-        ?.flatMap(childWorkflow => childWorkflow?.context?.documents) || []
-    );
-  }, [workflow?.childWorkflows]);
-  const parentDocuments = workflow?.context?.documents || [];
-  const directorsDocuments = selectDirectorsDocuments(workflow) || [];
+  const [
+    { documents: businessDocuments },
+    { documents: directorsDocuments },
+    { documents: ubosDocuments },
+  ] = [
+    useBusinessDocuments(workflow as TWorkflowById),
+    useDirectorsDocuments(workflow as TWorkflowById),
+    useUbosDocuments(workflow as TWorkflowById),
+  ];
+
+  const documents = useMemo(
+    () => [...businessDocuments, ...directorsDocuments, ...ubosDocuments],
+    [businessDocuments, directorsDocuments, ubosDocuments],
+  );
   const { data: session } = useAuthenticatedUserQuery();
   const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);
-  const hasDecision = safeEvery(
-    workflow?.context?.documents,
-    document => !!document?.decision?.status,
-  );
+  const hasDecision = safeEvery(documents, document => !!document?.decision?.status);
   const canTakeAction = caseState.actionButtonsEnabled && hasDecision;
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
@@ -35,10 +40,7 @@ export const useCaseDecision = () => {
   const canRevision =
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.REVISION) &&
-    someDocumentDecisionStatus(
-      [...parentDocuments, ...directorsDocuments, ...childDocuments],
-      'revision',
-    );
+    someDocumentDecisionStatus(documents, 'revision');
 
   const canApprove =
     !canRevision &&

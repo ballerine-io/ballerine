@@ -1,30 +1,49 @@
-import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessService } from '@/business/business.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { TDocumentsWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import {
-  AnyRecord,
-  ProcessStatus,
-  TDocument,
-  EndUserActiveMonitoringsSchema,
-} from '@ballerine/common';
+import { AnyRecord, EndUserActiveMonitoringsSchema, ProcessStatus } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Customer, WorkflowRuntimeData } from '@prisma/client';
+import { WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
-import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
+import { SentryService } from '@/sentry/sentry.service';
 
 const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
+
+const IGNORED_DECISION_CHECKS = ['newUser', 'newDocument'] as const;
+
+const DECISION_CHECKS = [
+  'allowedAge',
+  'faceLiveness',
+  'documentNotExpired',
+  'geolocationMatch',
+  'documentAccepted',
+  'faceNotInBlocklist',
+  'allowedIpLocation',
+  'faceImageAvailable',
+  'documentRecognised',
+  'faceSimilarToPortrait',
+  'validDocumentAppearance',
+  'expectedTrafficBehaviour',
+  'physicalDocumentPresent',
+  'documentBackFullyVisible',
+  'documentFrontFullyVisible',
+  'documentBackImageAvailable',
+  'faceImageQualitySufficient',
+  'documentFrontImageAvailable',
+  'documentImageQualitySufficient',
+] as const;
+
+const ALL_KNOWN_CHECKS = [...IGNORED_DECISION_CHECKS, ...DECISION_CHECKS] as const;
 
 export const setPluginStatus = ({
   data,
@@ -63,11 +82,9 @@ export class HookCallbackHandlerService {
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly customerService: CustomerService,
-    protected readonly businessReportService: BusinessReportService,
     protected readonly businessService: BusinessService,
-    protected readonly alertService: AlertService,
-    private readonly logger: AppLoggerService,
     private readonly endUserService: EndUserService,
+    private readonly sentryService: SentryService,
   ) {}
 
   async handleHookResponse({
@@ -176,10 +193,8 @@ export class HookCallbackHandlerService {
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
-    const customer = await this.customerService.getByProjectId(currentProjectId);
-
     const { context } = workflowRuntime;
-    const { reportData, base64Pdf, reportId, reportType } = data;
+    const { reportData } = data;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -189,20 +204,6 @@ export class HookCallbackHandlerService {
       throw new BadRequestException('Business not found.');
     }
 
-    // const currentReportId = reportId as string;
-    //
-    // this.alertService
-    //   .checkOngoingMonitoringAlert({
-    //     businessReport: businessReport,
-    //     businessCompanyName: business.companyName,
-    //   })
-    //   .then(() => {
-    //     this.logger.debug(`Alert Tested for ${currentReportId}}`);
-    //   })
-    //   .catch(error => {
-    //     this.logger.error(error);
-    //   });
-
     return setPluginStatus({
       resultDestinationPath,
       context: workflowRuntime.context,
@@ -210,110 +211,6 @@ export class HookCallbackHandlerService {
       ignoreLastKey: false,
       status: ProcessStatus.SUCCESS,
     });
-  }
-
-  // async prepareMerchantAuditReportContext(
-  //   data: Record<string, unknown>,
-  //   workflowRuntime: WorkflowRuntimeData,
-  //   resultDestinationPath: string,
-  //   currentProjectId: TProjectId,
-  // ) {
-  //   const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
-  //     .object({
-  //       reportData: ReportWithRiskScoreSchema,
-  //       base64Pdf: z.string(),
-  //       reportId: z.string(),
-  //       reportType: z.string(),
-  //       comparedToReportId: z.string().optional(),
-  //     })
-  //     .parse(data);
-  //
-  //   const { context } = workflowRuntime;
-  //
-  //   const businessId = context.entity.id as string;
-  //
-  //   const customer = await this.customerService.getByProjectId(currentProjectId);
-  //
-  //   if (comparedToReportId) {
-  //     const comparedToReport = await this.businessReportService.findFirstOrThrow(
-  //       {
-  //         where: {
-  //           businessId,
-  //           reportId: comparedToReportId,
-  //         },
-  //       },
-  //       [currentProjectId],
-  //     );
-  //
-  //     if (!comparedToReport) {
-  //       throw new BadRequestException('Compared to report not found.');
-  //     }
-  //
-  //     reportData.previousReport = {
-  //       summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
-  //         .summary,
-  //       reportType: comparedToReport.type,
-  //     };
-  //   }
-  //
-  //   return context;
-  // }
-
-  async persistPDFReportDocumentWithWorkflowDocuments({
-    context,
-    base64PDFString,
-    projectId,
-    customer,
-  }: {
-    context: any;
-    base64PDFString: string;
-    projectId: TProjectId;
-    customer: Customer;
-  }) {
-    const contextClone = structuredClone(context);
-
-    const pdfDocument: TDocument = {
-      category: 'website-monitoring',
-      type: 'pdf-report',
-      pages: [
-        {
-          provider: 'base64',
-          uri: base64PDFString,
-          fileName: 'report.pdf',
-        },
-      ],
-      issuer: {
-        country: 'GB',
-      },
-      propertiesSchema: {},
-      properties: {},
-    };
-
-    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
-      [pdfDocument] as unknown as TDocumentsWithoutPageType,
-      contextClone.entity.id || context.entity.ballerineEntityId,
-      projectId,
-      customer.name,
-    );
-
-    let pdfReportBallerineFileId: string | undefined;
-
-    persistedDocuments.forEach(document => {
-      const pdfReportDocument = document.pages.find(
-        //@ts-ignore
-        documentPage => documentPage.uri === base64PDFString,
-      );
-
-      if (!pdfReportDocument?.ballerineFileId) {
-        return;
-      }
-
-      pdfReportBallerineFileId = pdfReportDocument.ballerineFileId;
-    });
-
-    return {
-      pdfReportBallerineFileId,
-    };
   }
 
   async mapCallbackDataToIndividual(
@@ -358,7 +255,7 @@ export class HookCallbackHandlerService {
     // @ts-expect-error - we don't validate `context` is an object
     context.documents = [
       // @ts-expect-error - we don't validate `context` is an object
-      ...context.documents,
+      ...(context.documents?.filter(document => document.type !== 'identification_document') ?? []),
       ...persistedDocuments,
     ];
 
@@ -372,7 +269,7 @@ export class HookCallbackHandlerService {
     documentProperties: AnyRecord,
     kycDocument: AnyRecord,
   ) {
-    const documents = [
+    return [
       {
         type: 'identification_document',
         category: documentCategory?.toLocaleLowerCase(),
@@ -382,28 +279,32 @@ export class HookCallbackHandlerService {
         issuingVersion: kycDocument['issueNumber'] || 1,
       },
     ];
-
-    return documents;
   }
 
   private formatDecision(data: AnyRecord) {
-    const insights = data.insights as AnyRecord[]; // Explicitly type 'insights' as 'AnyRecord[]'
+    const insights = data.insights as Record<string, Record<string, string | null>>;
+
+    const insightValues = Object.values(insights).flatMap(category => Object.entries(category));
+
+    const unknownValues = Object.keys(insightValues).filter(
+      value => !ALL_KNOWN_CHECKS.includes(value),
+    );
+
+    if (unknownValues.length > 0) {
+      this.sentryService.captureException(
+        `Unknown KYC decision checks: ${unknownValues.join(', ')}`,
+      );
+    }
+
+    const riskLabels = insightValues
+      .filter(([label, result]) => IGNORED_DECISION_CHECKS.includes(label) && result !== 'yes')
+      .map(([label]) => label);
 
     return {
+      riskLabels,
       status: data.decision,
       decisionReason: data.reason,
       decisionScore: data.decisionScore,
-      riskLabels:
-        insights &&
-        insights.map &&
-        insights
-          .map((insight: AnyRecord) => {
-            if (insight.result === 'yes') {
-              return insight.label;
-            }
-          })
-          .filter((x: any) => Boolean(x))
-          .join(', '),
     };
   }
 
@@ -412,26 +313,21 @@ export class HookCallbackHandlerService {
     const additionalInfo = {
       gender: (person['gender'] as any)?.value,
       nationality: (person['nationality'] as any)?.value,
-      // yearOfBirth: person['yearOfBirth'],
       placeOfBirth: (person['placeOfBirth'] as any)?.value,
-      // pepSanctionMatch: person['pepSanctionMatch'],
       addresses: (person['addresses'] as any)?.value,
     };
 
     const entityInformation = {
-      // nationalId: person['idNumber'],
       firstName: (person['firstName'] as any)?.value,
       lastName: (person['lastName'] as any)?.value,
       dateOfBirth: (person['dateOfBirth'] as any)?.value,
-      // email: person['email'],
       additionalInfo: additionalInfo,
     };
-    const entity = {
+
+    return {
       type: 'individual',
       data: entityInformation,
     };
-
-    return entity;
   }
 
   private formatIssuerData(kycDocument: AnyRecord) {
@@ -440,14 +336,13 @@ export class HookCallbackHandlerService {
       validUntil: (kycDocument['validUntil'] as any)?.value, // Add type assertion here
       firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
-    const issuer = {
+
+    return {
       additionalInfo: additionalIssuerInfor,
       country: (kycDocument['country'] as any)?.value,
       // name: kycDocument['issuedBy'],
       city: (kycDocument['placeOfIssue'] as any)?.value,
     };
-
-    return issuer;
   }
 
   async formatPages(data: AnyRecord) {
@@ -479,15 +374,14 @@ export class HookCallbackHandlerService {
 
   private formatDocumentProperties(data: AnyRecord, kycDocument: AnyRecord) {
     const person = data.person as AnyRecord;
-    const properties = {
+
+    return {
       expiryDate: (kycDocument['validUntil'] as any)?.value,
       idNumber: (person['idNumber'] as any)?.value,
       validFrom: (kycDocument['validFrom'] as any)?.value,
       validUntil: (kycDocument['validUntil'] as any)?.value,
       firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
-
-    return properties;
   }
 
   setNestedProperty(obj: Record<string, any>, path: string[], value: AnyRecord) {

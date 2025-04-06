@@ -7,9 +7,10 @@ import { CustomerControllerExternal } from '@/customer/customer.controller.exter
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
+import { MerchantMonitoringModule } from '@/merchant-monitoring/merchant-monitoring.module';
 
 @Module({
-  imports: [ACLModule, PrismaModule],
+  imports: [ACLModule, PrismaModule, MerchantMonitoringModule],
   controllers: [CustomerControllerInternal, CustomerControllerExternal],
   providers: [CustomerService, CustomerRepository, ApiKeyService, ApiKeyRepository],
   exports: [ACLModule, CustomerService, CustomerRepository, ApiKeyService],

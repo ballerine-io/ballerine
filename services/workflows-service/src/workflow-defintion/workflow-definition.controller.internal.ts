@@ -16,6 +16,10 @@ export class WorkflowControllerInternal {
   @common.UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createDemoWorkflowDefinition(@common.Body() data: CreateDemoWorkflowDefinitionDto) {
-    return await this.service.createDemoWorkflowDefinition(data);
+    return await this.service.createDemoWorkflowDefinition({
+      customerId: data.customerId,
+      userId: data.userId,
+      workflowOverrides: data.workflowOverrides,
+    });
   }
 }

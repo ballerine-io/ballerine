@@ -11,7 +11,7 @@ export const useHomeLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
   const isExample = customer?.config?.isExample;
-  const isDemo = customer?.config?.isDemo;
+  const isMerchantMonitoringEnabled = customer?.config?.isMerchantMonitoringEnabled;
   const { firstName, fullName, avatarUrl } = session?.user || {};
   const statisticsLink = `/${locale}/home/statistics${search}`;
   const workflowsLink = `/${locale}/home/workflows${search}`;
@@ -22,7 +22,7 @@ export const useHomeLogic = () => {
       return;
     }
 
-    navigate(`/${locale}/home/statistics`);
+    navigate(`/${locale}/home/statistics`, { replace: true });
   }, [pathname, locale, navigate]);
 
   return {
@@ -34,6 +34,6 @@ export const useHomeLogic = () => {
     defaultTabValue,
     isLoadingCustomer,
     isExample,
-    isDemo,
+    isMerchantMonitoringEnabled,
   };
 };

@@ -6,9 +6,11 @@ import { WarningFilledSvg } from '@ballerine/ui';
 export const useCommercialCreditCheckBlock = ({
   workflowId,
   pluginsOutput,
+  isDocumentsV2,
 }: {
   workflowId: string;
   pluginsOutput: any;
+  isDocumentsV2: boolean;
 }) => {
   return useMemo(() => {
     if (!pluginsOutput?.commercialCreditCheck) {
@@ -94,14 +96,10 @@ export const useCommercialCreditCheckBlock = ({
                 sort: { predefinedOrder: ['CommercialName', 'RegNumber'] },
               },
             },
-          } satisfies Extract<
-            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
-            {
-              type: 'details';
-            }
-          >)
+            isDocumentsV2,
+          })
           .buildFlat(),
       })
       .build();
-  }, [pluginsOutput.commercialCreditCheck, workflowId]);
+  }, [isDocumentsV2, pluginsOutput.commercialCreditCheck, workflowId]);
 };

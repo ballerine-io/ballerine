@@ -16,7 +16,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import type { TProjectId } from '@/types';
+import type { AuthenticatedEntity, TProjectId } from '@/types';
 import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
 import {
   BusinessReportListRequestParamDto,
@@ -34,13 +34,14 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateBusinessReportBatchBodyDto } from '@/business-report/dtos/create-business-report-batch-body.dto';
 import type { Response } from 'express';
 import { BusinessReportFindingsListResponseDto } from '@/business-report/dtos/business-report-findings.dto';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import {
   BusinessReportMetricsRequestQueryDto,
   BusinessReportsMetricsQuerySchema,
 } from '@/business-report/dtos/business-report-metrics.dto';
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 import { BusinessReportStatusUpdateRequestParamsDto } from '@/business-report/dtos/business-report-status-update.dto';
+import { UserData } from '@/user/user-data.decorator';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -54,6 +55,7 @@ export class BusinessReportControllerExternal {
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
 
+  @common.Get('/latest')
   @swagger.ApiOperation({
     summary: 'Get latest business report',
     description:
@@ -69,7 +71,6 @@ export class BusinessReportControllerExternal {
     required: true,
     description: 'Type of report to retrieve',
   })
-  @common.Get('/latest')
   @swagger.ApiOkResponse({
     description: 'Latest report retrieved successfully',
     type: [String],
@@ -151,20 +152,14 @@ export class BusinessReportControllerExternal {
       ...(search ? { searchQuery: search } : {}),
     });
 
-    const reports = await Promise.all(
-      data.map(async report => {
-        return {
-          ...report,
-          monitoringStatus:
-            report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
-        };
-      }),
-    );
-
     return {
       totalPages,
       totalItems,
-      data: reports,
+      data: data.map(report => ({
+        ...report,
+        monitoringStatus:
+          report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
+      })),
     };
   }
 
@@ -263,6 +258,7 @@ export class BusinessReportControllerExternal {
     };
   }
 
+  @common.Post()
   @swagger.ApiOperation({
     summary: 'Create business report',
     description: 'Create a new business report for a merchant',
@@ -271,7 +267,6 @@ export class BusinessReportControllerExternal {
     type: CreateBusinessReportDto,
     description: 'Business report creation parameters',
   })
-  @common.Post()
   @swagger.ApiOkResponse({
     description: 'Business report created successfully',
   })
@@ -293,11 +288,10 @@ export class BusinessReportControllerExternal {
       workflowVersion,
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
+    @UserData() user: AuthenticatedEntity,
   ) {
-    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
-
-    const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+    await this.businessReportService.checkBusinessReportsLimit(customer);
 
     let business: Pick<Business, 'id' | 'correlationId'> | undefined;
 
@@ -340,8 +334,9 @@ export class BusinessReportControllerExternal {
       countryCode,
       merchantName,
       workflowVersion,
-      withQualityControl,
-      customerId,
+      withQualityControl: customer.config?.withQualityControl ?? false,
+      customerId: customer.id,
+      requestedByUserId: user.user?.id,
     });
   }
 
@@ -423,15 +418,19 @@ export class BusinessReportControllerExternal {
     @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { id: customerId, config } = await this.customerService.getByProjectId(currentProjectId);
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+    const { maxBusinessReports, withQualityControl, isDemoAccount } = customer.config ?? {};
 
-    const { maxBusinessReports, withQualityControl } = config || {};
-    await this.businessReportService.checkBusinessReportsLimit(maxBusinessReports, customerId);
+    if (isDemoAccount) {
+      throw new BadRequestException("You don't have access to this feature");
+    }
+
+    await this.businessReportService.checkBusinessReportsLimit(customer);
 
     const result = await this.businessReportService.processBatchFile({
       type,
       workflowVersion,
-      customerId,
+      customerId: customer.id,
       maxBusinessReports,
       merchantSheet: file,
       projectId: currentProjectId,

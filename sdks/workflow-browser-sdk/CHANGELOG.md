@@ -1,5 +1,98 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.6.109
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.87
+  - @ballerine/workflow-core@0.6.109
+
+## 0.6.108
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.86
+  - @ballerine/workflow-core@0.6.108
+
+## 0.6.107
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.85
+  - @ballerine/workflow-core@0.6.107
+
+## 0.6.106
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.84
+  - @ballerine/workflow-core@0.6.106
+
+## 0.6.105
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.105
+
+## 0.6.104
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.83
+  - @ballerine/workflow-core@0.6.104
+
+## 0.6.103
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.82
+  - @ballerine/workflow-core@0.6.103
+
+## 0.6.102
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.81
+  - @ballerine/workflow-core@0.6.102
+
+## 0.6.101
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.80
+  - @ballerine/workflow-core@0.6.101
+
+## 0.6.100
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.100
+  - @ballerine/common@0.9.79
+
+## 0.6.99
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
+  - @ballerine/workflow-core@0.6.99
+
 ## 0.6.98
 
 ### Patch Changes

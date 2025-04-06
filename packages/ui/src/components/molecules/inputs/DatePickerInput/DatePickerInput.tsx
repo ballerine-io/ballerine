@@ -78,13 +78,18 @@ export const DatePickerInput = ({
     [outputValueFormat],
   );
 
-  const deserializeValue = useCallback((value: DatePickerValue) => {
-    return dayjs(value);
-  }, []);
+  const deserializeValue = useCallback(
+    (value: DatePickerValue) => {
+      return dayjs(value, outputValueFormat);
+    },
+    [outputValueFormat],
+  );
 
   const handleChange = useCallback(
     (value: Dayjs | null) => {
-      if (!value) return onChange({ target: { value: null, name } });
+      if (!value) {
+        return onChange({ target: { value: null, name } });
+      }
 
       try {
         const serializedDateValue = serializeValue(value);
@@ -104,7 +109,9 @@ export const DatePickerInput = ({
   );
 
   const value = useMemo(() => {
-    if (!_value) return null;
+    if (!_value) {
+      return null;
+    }
 
     return deserializeValue(_value);
   }, [_value, deserializeValue]);

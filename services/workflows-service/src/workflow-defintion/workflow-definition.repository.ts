@@ -250,7 +250,11 @@ export class WorkflowDefinitionRepository {
     );
   }
 
-  async createDemoWorkflowDefinition(customerId: string) {
+  async createDemoWorkflowDefinition(
+    customerId: string,
+    userId?: string,
+    workflowOverrides?: Array<{ webPresenceReportId?: string }>,
+  ) {
     return await this.prisma.$transaction(async transaction => {
       const customer = await transaction.customer.findUniqueOrThrow({
         where: {
@@ -274,7 +278,20 @@ export class WorkflowDefinitionRepository {
         user: project.userToProjects[0]?.user,
       };
 
-      await createDemoWorkflow(customer, demoEnv, transaction);
+      await createDemoWorkflow({ customer, demoEnv, transaction, workflowOverrides, userId });
+    });
+  }
+
+  async findByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.findFirst({
+      where: {
+        workflowRuntimeData: {
+          some: {
+            id: workflowRuntimeDataId,
+          },
+        },
+        projectId: { in: projectIds },
+      },
     });
   }
 }

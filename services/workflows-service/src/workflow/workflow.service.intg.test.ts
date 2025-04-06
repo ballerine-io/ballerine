@@ -38,8 +38,8 @@ import { RuleEngineService } from '@/rule-engine/rule-engine.service';
 import { NotionService } from '@/notion/notion.service';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
-
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
   let workflowDefinitionRepository: WorkflowDefinitionRepository;
@@ -85,6 +85,7 @@ describe('WorkflowService', () => {
       SentryService,
       SecretsManagerFactory,
       MerchantMonitoringClient,
+      WorkflowLogService,
     ];
 
     workflowRuntimeService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [

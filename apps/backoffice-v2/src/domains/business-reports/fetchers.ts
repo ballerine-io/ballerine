@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
 import { TReportStatusValue, TRiskLevel } from '@/pages/MerchantMonitoring/schemas';
+import { PaginationParams } from '@/common/utils/fetch-all-pages';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import {
   MERCHANT_REPORT_STATUSES_MAP,
@@ -30,6 +31,7 @@ export const BusinessReportSchema = ReportSchema.transform(data => {
     website: data.website.url,
     riskLevel: isReportReady ? data.riskLevel : null,
     data: isReportReady ? data?.data : null,
+    isExample: data.metadata?.isExample ?? false,
   };
 });
 
@@ -64,19 +66,18 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, data);
 };
 
-type BusinessReportsParams = {
+export interface BusinessReportsFilterParams {
   reportType?: MerchantReportType;
   riskLevels?: TRiskLevel[];
   statuses?: TReportStatusValue[];
   findings?: string[];
   from?: string;
   to?: string;
-  page?: {
-    number: number;
-    size: number;
-  };
   orderBy?: string;
-};
+}
+
+export interface BusinessReportsParams extends BusinessReportsFilterParams, PaginationParams {}
+
 export const fetchBusinessReports = async (params: BusinessReportsParams) => {
   const queryParams = qs.stringify(params, { encode: false });
 

@@ -22,6 +22,7 @@ import {
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
+// eslint-disable-next-line import/no-cycle
 import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
 import { RuleEngineService } from '@/rule-engine/rule-engine.service';
@@ -44,12 +45,9 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { WorkflowLogService, WorkflowRunnerLogEntry } from '@/workflow/workflow-log.service';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import {
-  WorkflowAssignee,
-  WorkflowRuntimeListItemModel,
-} from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
   buildCollectionFlowState,
@@ -100,7 +98,7 @@ import {
 import { Static, TSchema } from '@sinclair/typebox';
 import { plainToClass } from 'class-transformer';
 import dayjs from 'dayjs';
-import { isEqual, merge } from 'lodash';
+import { get, isEqual, merge } from 'lodash';
 import mime from 'mime';
 import { WORKFLOW_FINAL_STATES } from './consts';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -119,6 +117,8 @@ import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { PartialDeep } from 'type-fest';
+import { WorkflowAssignee } from './workflow-runtime-list-item.model';
+import { WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
 
 type TEntityId = string;
 
@@ -162,6 +162,7 @@ export class WorkflowService {
     private readonly sentry: SentryService,
     private readonly secretsManagerFactory: SecretsManagerFactory,
     private readonly storageService: StorageService,
+    private readonly workflowLogService: WorkflowLogService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -741,14 +742,18 @@ export class WorkflowService {
     projectId,
   }: {
     id: string;
-    name: string;
+    name: 'approve' | 'reject' | 'revision';
     reason?: string;
     projectId: TProjectId;
   }) {
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
-        {},
+        {
+          include: {
+            workflowDefinition: true,
+          },
+        },
         [projectId],
         transaction,
       );
@@ -757,7 +762,10 @@ export class WorkflowService {
         approve: 'approved',
         reject: 'rejected',
         revision: 'revision',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof name, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = Status[name as keyof typeof Status];
       const decision = (() => {
         if (status === 'approved') {
@@ -858,7 +866,10 @@ export class WorkflowService {
         reject: 'rejected',
         revision: 'revision',
         revised: 'revised',
-      } as const;
+      } as const satisfies Record<
+        Exclude<typeof decision.status, null>,
+        NonNullable<DefaultContextSchema['documents'][number]['decision']>['status']
+      >;
       const status = decision.status ? Status[decision.status] : null;
       const newDecision = (() => {
         if (!status || status === 'approved') {
@@ -995,15 +1006,20 @@ export class WorkflowService {
         id: documentId,
       };
 
-      const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
-      const propertiesSchema = documentSchema?.propertiesSchema ?? {};
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        document,
+        workflowDef.documentsSchema,
+      );
+      const propertiesSchema = documentWithPropertiesSchema?.propertiesSchema ?? {};
 
       if (Object.keys(propertiesSchema)?.length && validateDocumentSchema) {
         const propertiesSchemaForValidation = propertiesSchema;
 
         const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-        const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
+        const isValidPropertiesSchema = validatePropertiesSchema(
+          documentWithPropertiesSchema?.properties,
+        );
 
         if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
           throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
@@ -1017,7 +1033,7 @@ export class WorkflowService {
           payload: {
             newContext: this.updateDocumentInContext(
               runtimeData.context,
-              documentSchema,
+              documentWithPropertiesSchema,
               documentsUpdateContextMethod,
               directorId,
             ),
@@ -1639,6 +1655,7 @@ export class WorkflowService {
                     token: workflowToken?.token,
                     collectionFlowUrl: env.COLLECTION_FLOW_URL,
                     webUiSDKUrl: env.WEB_UI_SDK_URL,
+                    endUserId,
                   },
                 } as InputJsonValue,
                 projectId: currentProjectId,
@@ -1978,7 +1995,10 @@ export class WorkflowService {
     this.sentry.captureException(new Error('Workflow definition context validation failed'));
     this.logger.error('Workflow definition context validation failed', {
       errors: validate.errors,
-      context,
+      errorData: validate.errors?.map(error => ({
+        path: error.instancePath,
+        value: get(context, error.instancePath.split('/').filter(Boolean)),
+      })),
       workflowDefinitionId: workflowDefinition.id,
     });
   }
@@ -2052,23 +2072,25 @@ export class WorkflowService {
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
-          return rules.map(rule => {
-            try {
-              return {
-                result: this.ruleEngineService.run(rule.ruleSet, context),
-                ...rule,
-              } as const;
-            } catch (ex) {
-              return {
-                ...rule,
-                result: {
-                  status: 'FAILED',
-                  message: isErrorWithMessage(ex) ? ex.message : undefined,
-                  error: ex,
-                },
-              } as const;
-            }
-          });
+          return Promise.all(
+            rules.map(async rule => {
+              try {
+                return {
+                  result: await this.ruleEngineService.run(rule.ruleSet, context),
+                  ...rule,
+                } as const;
+              } catch (ex) {
+                return {
+                  ...rule,
+                  result: {
+                    status: 'FAILED',
+                    message: isErrorWithMessage(ex) ? ex.message : undefined,
+                    error: ex,
+                  },
+                } as const;
+              }
+            }),
+          );
         },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
@@ -2239,11 +2261,28 @@ export class WorkflowService {
         );
       }
 
+      // Send the event to the workflow
       await service.sendEvent({
         type,
         ...(payload ? { payload } : {}),
       });
 
+      try {
+        const logs = (service as any).getLogs?.();
+        if (logs && Array.isArray(logs) && logs.length > 0) {
+          await this.workflowLogService.processWorkflowRunnerLogs(
+            workflowRuntimeData.id,
+            currentProjectId,
+            logs as WorkflowRunnerLogEntry[],
+            transaction,
+          );
+          (service as any).clearLogs?.();
+        }
+      } catch (error) {
+        this.logger.error('Failed to process workflow logs', { error });
+      }
+
+      // Get the snapshot after sending the event
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
       const context = snapshot.machine?.context;

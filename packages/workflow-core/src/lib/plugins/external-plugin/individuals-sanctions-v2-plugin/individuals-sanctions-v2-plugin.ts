@@ -20,10 +20,20 @@ const isObjectWithKycInformation = (obj: unknown) => {
   return isType(KycInformationSchema)(obj);
 };
 
+const dateSchema = z.preprocess(arg => {
+  if (typeof arg === 'string' || arg instanceof Date) {
+    const date = new Date(arg);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    }
+  }
+  return arg;
+}, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'));
+
 const KycInformationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  dateOfBirth: z.string().date().optional(),
+  dateOfBirth: dateSchema,
 });
 
 const IndividualsSanctionsV2PluginPayloadSchema = z.object({
@@ -60,6 +70,11 @@ const IndividualsSanctionsV2PluginPayloadSchema = z.object({
   ]),
   endUserId: z.string().min(1),
   clientId: z.string().min(1),
+  resultDestination: z
+    .string()
+    .min(1)
+    // TODO: proabably can be kept undefined and let the parent class handle it, for now keeping our old path as default
+    .default('pluginsOutput.kyc_session.kyc_session_1.result.aml'),
 });
 
 export class IndividualsSanctionsV2Plugin extends ApiPlugin {
@@ -125,9 +140,12 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
         properties: this.payload,
         context,
       });
-      const { workflowRuntimeId, kycInformation, ...validatedPayload } =
+
+      const { workflowRuntimeId, kycInformation, resultDestination, ...validatedPayload } =
         IndividualsSanctionsV2PluginPayloadSchema.parse(payload);
-      const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeId}/hook/${this.successAction}?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result.aml&processName=aml-unified-api`;
+
+      const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeId}/hook/${this.successAction}?resultDestination=${resultDestination}&processName=aml-unified-api`;
+
       const getKycInformationByDataType = (
         kycInformation: z.output<
           typeof IndividualsSanctionsV2PluginPayloadSchema
@@ -169,7 +187,8 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
             `${this.pluginName} - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
-          return kycInformation[firstKey].result.vendorResult.entity.data;
+          const data = kycInformation[firstKey].result.vendorResult.entity.data;
+          return data;
         }
 
         // Should never reach this point. Will reach here if error handling or validation changes.
@@ -217,7 +236,9 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
       }
 
       const res = await apiResponse.json();
+
       const result = z.record(z.string(), z.unknown()).parse(res);
+
       const getPluginStatus = (response: Record<string, unknown>) => {
         if (response.reason === UnifiedApiReason.NOT_IMPLEMENTED) {
           return ProcessStatus.CANCELED;

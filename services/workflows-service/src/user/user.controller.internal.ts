@@ -14,7 +14,7 @@ import { UserStatus } from '@prisma/client';
 @common.Controller('internal/users')
 @swagger.ApiExcludeController()
 export class UserControllerInternal {
-  constructor(protected readonly service: UserService) {}
+  constructor(protected readonly userService: UserService) {}
 
   @common.Get()
   @swagger.ApiQuery({ name: 'projectId', type: String })
@@ -24,7 +24,7 @@ export class UserControllerInternal {
     @ProjectIds() projectIds: TProjectIds,
     @common.Query('projectId') projectId: string,
   ): Promise<UserModel[]> {
-    return this.service.list(
+    return this.userService.list(
       {
         where: { status: UserStatus.Active },
         select: {
@@ -43,6 +43,28 @@ export class UserControllerInternal {
     );
   }
 
+  @common.Get(':id')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiParam({ name: 'id', type: String, description: 'User ID' })
+  @swagger.ApiOkResponse({ type: UserModel })
+  @swagger.ApiNotFoundResponse({ description: 'User not found' })
+  @swagger.ApiForbiddenResponse()
+  async getById(@common.Param('id') id: string): Promise<UserModel> {
+    return this.userService.getByIdUnscoped(id, {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        avatarUrl: true,
+        updatedAt: true,
+        createdAt: true,
+        roles: true,
+      },
+    });
+  }
+
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [UserModel] })
   @UseGuards(AdminAuthGuard)
@@ -53,7 +75,7 @@ export class UserControllerInternal {
   ) {
     const { projectIds, ...userInfo } = userCreatInfo;
 
-    return this.service.create(
+    return this.userService.create(
       {
         data: userInfo,
         select: {

@@ -1,26 +1,57 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerRepository } from '@/customer/customer.repository';
 import { Prisma } from '@prisma/client';
-import { TCustomerWithFeatures } from '@/customer/types';
-import { ApiKeyService } from '@/customer/api-key/api-key.service';
-import { generateHashedKey } from '@/customer/api-key/utils';
+import dayjs from 'dayjs';
+
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
-import { PrismaService } from '@/prisma/prisma.service';
+import { generateHashedKey } from '@/customer/api-key/utils';
+import { CustomerRepository } from '@/customer/customer.repository';
+import { TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { AccessDetailsSchema, TAccessDetails, TAccessDetailsInput } from './schemas/zod-schemas';
+import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
 
 @Injectable()
 export class CustomerService {
   constructor(
     protected readonly repository: CustomerRepository,
-    protected readonly apiKeyService: ApiKeyService,
-    private readonly prisma: PrismaService,
+    private readonly prismaService: PrismaService,
+    private readonly analyticsService: AnalyticsService,
+    private readonly merchantMonitoringClient: MerchantMonitoringClient,
   ) {}
+
+  async getAccessDetails(customer: TCustomerWithFeatures): Promise<TAccessDetails> {
+    const { id: customerId, config } = customer;
+
+    const businessReportsCount = await this.merchantMonitoringClient.count({
+      customerId,
+      noExample: true,
+    });
+
+    const demoDetails: TAccessDetailsInput = {
+      totalReports: businessReportsCount,
+      maxBusinessReports: config.maxBusinessReports ?? 10,
+      expiresAt: config.expiresAt,
+    };
+
+    if (!demoDetails.expiresAt) {
+      const expiresAt = dayjs().add(env.DEFAULT_DEMO_DURATION_DAYS, 'days').unix();
+      await this.updateById(customerId, { data: { config: { ...config, expiresAt } } });
+
+      demoDetails.seenWelcomeModal = false;
+      demoDetails.expiresAt = expiresAt;
+    }
+
+    return AccessDetailsSchema.parse(demoDetails);
+  }
+
   async create(args: Parameters<CustomerRepository['create']>[0]) {
-    // @ts-expect-error - prisma json not updated
+    // @ts-expect-error - prismaService json not updated
     const authValue = args.data?.authenticationConfiguration?.authValue;
     const { hashedKey, validUntil } = await generateHashedKey({ key: authValue });
 
-    return await this.prisma.$transaction(async transaction => {
+    return await this.prismaService.$transaction(async transaction => {
       const customer = await this.repository.create(
         {
           ...args,
@@ -37,9 +68,17 @@ export class CustomerService {
         transaction,
       );
 
-      if (env.SYNC_UNIFIED_API === 'true') {
+      if (env.SYNC_UNIFIED_API) {
         await retry(() => new UnifiedApiClient().createCustomer(customer));
       }
+
+      this.analyticsService.track({
+        event: EventNamesMap.CUSTOMER_CREATED,
+        distinctId: customer.id,
+        properties: {
+          isDemoAccount: customer.config?.isDemoAccount,
+        },
+      });
 
       return customer;
     });
@@ -58,35 +97,22 @@ export class CustomerService {
   }
 
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
-    return (await this.repository.findByProjectId(
-      projectId,
-      args,
-    )) as unknown as TCustomerWithFeatures;
+    return (await this.repository.findByProjectId(projectId, args)) as TCustomerWithFeatures;
   }
 
   async updateById(id: string, args: Parameters<CustomerRepository['updateById']>[1]) {
-    return await this.prisma.$transaction(async transaction => {
+    return await this.prismaService.$transaction(async transaction => {
       const customer = (await this.repository.updateById(
         id,
         args,
         transaction,
       )) as unknown as TCustomerWithFeatures;
 
-      if (env.SYNC_UNIFIED_API === 'true') {
+      if (env.SYNC_UNIFIED_API) {
         await retry(() => new UnifiedApiClient().updateCustomer(id, customer));
       }
 
       return customer;
-    });
-  }
-
-  async deleteById(id: string, args?: Parameters<CustomerRepository['deleteById']>[1]) {
-    return await this.prisma.$transaction(async transaction => {
-      await this.repository.deleteById(id, args, transaction);
-
-      if (env.SYNC_UNIFIED_API === 'true') {
-        await retry(() => new UnifiedApiClient().deleteCustomer(id));
-      }
     });
   }
 }

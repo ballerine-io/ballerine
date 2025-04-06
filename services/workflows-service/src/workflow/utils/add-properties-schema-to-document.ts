@@ -62,11 +62,11 @@ const getPropertiesFromDefinition = (
   documentsSchema: TDocument[],
   countryCode: string,
 ): ReturnType<typeof getPropertiesSchemaForDocument> | undefined => {
-  const localizedDocumentSchemas = documentsSchema.filter(
-    documentSchema => documentSchema.issuer.country === countryCode,
+  const localizedDocumentSchemas = documentsSchema?.filter(
+    documentSchema => documentSchema?.issuer?.country === countryCode,
   );
 
-  if (localizedDocumentSchemas.length === 0) {
+  if (localizedDocumentSchemas?.length === 0) {
     console.info(`No localized document schemas found for ${countryCode}`);
 
     return;
@@ -78,7 +78,7 @@ const getPropertiesFromDefinition = (
   );
 
   if (!documentSchemaForDocument) {
-    console.info(`No document schema in definition found for document ${JSON.stringify(document)}`);
+    // console.info(`No document schema in definition found for document ${JSON.stringify(document)}`);
 
     return;
   }

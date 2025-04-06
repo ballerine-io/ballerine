@@ -7,28 +7,24 @@ import { z } from 'zod';
 export const RiskIndicatorsSummary: FunctionComponent<{
   sections: ReadonlyArray<{
     title: string;
-    search: string;
-    riskIndicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
+    search?: string;
+    indicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
   }>;
-  Link: ComponentProps<typeof RiskIndicator>['Link'];
+  Link?: ComponentProps<typeof RiskIndicator>['Link'];
 }> = ({ sections = [], Link }) => {
   return (
     <Card className={'col-span-full'}>
       <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
       <CardContent className={'grid grid-cols-2 gap-4 xl:grid-cols-3'}>
-        {sections.length > 0 ? (
-          sections.map(section => (
-            <RiskIndicator
-              key={section.title}
-              title={section.title}
-              search={section.search}
-              riskIndicators={section.riskIndicators}
-              Link={Link}
-            />
-          ))
-        ) : (
-          <p>No risk indicators detected.</p>
-        )}
+        {sections.map(section => (
+          <RiskIndicator
+            key={section.title}
+            title={section.title}
+            search={section.search}
+            riskIndicators={section.indicators}
+            Link={Link}
+          />
+        ))}
       </CardContent>
     </Card>
   );

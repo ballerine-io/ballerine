@@ -9,15 +9,17 @@ import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
 import { useCustomer } from '@/components/providers/CustomerProvider';
-import { UIPage } from '@/domains/collection-flow';
+import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
-import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
-import { IFormElement } from '@ballerine/ui';
+import {
+  CollectionFlowStatusesEnum,
+  CollectionFlowStepStatesEnum,
+  getCollectionFlowState,
+} from '@ballerine/common';
 import { LoadingScreen } from '../v1/components/atoms/LoadingScreen';
 import { Approved } from '../v1/components/pages/Approved';
 import { CompletedScreen } from '../v1/components/pages/CompletedScreen';
@@ -26,7 +28,7 @@ import { Rejected } from '../v1/components/pages/Rejected';
 import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowContext';
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
-import { useRevisionStates } from './hooks/useRevisionStates';
+import { useCollectionFlowContext } from './hooks/useCollectionFlowContext/useCollectionFlowContext';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
@@ -35,6 +37,10 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();
+  const collectionFlowContext = useCollectionFlowContext(
+    collectionFlowData?.context as CollectionFlowContext,
+    schema as UISchema,
+  );
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -42,11 +48,6 @@ export const CollectionFlowV2 = withSessionProtected(() => {
 
   const elements = schema?.uiSchema?.elements as unknown as Array<UIPage<'v2'>>;
   const definition = schema?.definition.definition;
-
-  const { initialRevisionState, revisionStateNames } = useRevisionStates(
-    elements || [],
-    collectionFlowData?.context ?? ({} as CollectionFlowContext),
-  );
 
   const isRevision = useMemo(
     () =>
@@ -56,23 +57,18 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   );
 
   const initialContext: CollectionFlowContext = useMemo(() => {
-    const contextCopy = { ...collectionFlowData?.context };
+    const contextCopy = { ...collectionFlowContext };
     const collectionFlow = getCollectionFlowState(contextCopy);
+    const firstRevisionStep = collectionFlow?.steps?.find(
+      step => step.state === CollectionFlowStepStatesEnum.revision,
+    );
 
     if (isRevision && collectionFlow) {
-      collectionFlow.currentStep = initialRevisionState || collectionFlow.currentStep;
+      collectionFlow.currentStep = firstRevisionStep?.stepName || collectionFlow.currentStep;
     }
 
     return contextCopy as CollectionFlowContext;
-  }, [isRevision, collectionFlowData?.context, initialRevisionState]);
-
-  const initialUIState = useMemo(() => {
-    return prepareInitialUIState(
-      elements || [],
-      (initialContext as CollectionFlowContext) || {},
-      isRevision,
-    );
-  }, [elements, isRevision, initialContext]);
+  }, [isRevision, collectionFlowContext]);
 
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
@@ -104,8 +100,8 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     return <FailedScreen />;
   }
 
-  return definition && collectionFlowData ? (
-    <DynamicUI initialState={initialUIState}>
+  return definition && collectionFlowContext ? (
+    <DynamicUI>
       <DynamicUI.StateManager
         initialContext={initialContext}
         workflowId="1"
@@ -172,9 +168,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                       )}
                                     </div>
                                     <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? (
-                                        <StepperUI revisionStateNames={revisionStateNames} />
-                                      ) : null}
+                                      {isLogoLoaded ? <StepperUI /> : null}
                                     </div>
                                     <div>
                                       {themeDefinition.settings?.contactInformation ? (
@@ -186,11 +180,17 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                         />
                                       ) : customer?.displayName ? (
                                         <div>
-                                          {
-                                            t('contact', {
+                                          {themeDefinition.ui?.contactUsText ? (
+                                            <span
+                                              dangerouslySetInnerHTML={{
+                                                __html: themeDefinition.ui?.contactUsText,
+                                              }}
+                                            />
+                                          ) : (
+                                            (t('contact', {
                                               companyName: customer.displayName,
-                                            }) as string
-                                          }
+                                            }) as string)
+                                          )}
                                         </div>
                                       ) : null}
                                       {themeDefinition.ui?.poweredBy !== false && (
@@ -247,6 +247,152 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                         >
                                           Next
                                         </button>
+                                        <button
+                                          onClick={() => {
+                                            try {
+                                              const filledPayload = { ...stateApi.getContext() };
+
+                                              const allElements: Array<{
+                                                valueDestination?: string;
+                                                placeholder?: string;
+                                              }> = [];
+
+                                              const findElementsWithPlaceholders = (
+                                                elements: any[],
+                                              ) => {
+                                                if (!elements || !Array.isArray(elements)) {
+                                                  return;
+                                                }
+
+                                                elements.forEach((element: any) => {
+                                                  const isHidden =
+                                                    element?.hidden === true ||
+                                                    element?.options?.hidden === true ||
+                                                    element?.visibleOn === false;
+
+                                                  let isVisible = true;
+
+                                                  if (
+                                                    element?.visibleOn &&
+                                                    Array.isArray(element.visibleOn)
+                                                  ) {
+                                                    isVisible = false;
+                                                  }
+
+                                                  if (
+                                                    !isHidden &&
+                                                    isVisible &&
+                                                    element?.valueDestination
+                                                  ) {
+                                                    const placeholder =
+                                                      element?.options?.uiSchema?.[
+                                                        'ui:placeholder'
+                                                      ] || element?.options?.hint;
+
+                                                    if (placeholder) {
+                                                      allElements.push({
+                                                        valueDestination: element.valueDestination,
+                                                        placeholder,
+                                                      });
+                                                    }
+                                                  }
+
+                                                  const hasVisibilityConditions =
+                                                    element?.visibleOn &&
+                                                    Array.isArray(element.visibleOn);
+
+                                                  if (
+                                                    element?.type === 'json-form' &&
+                                                    hasVisibilityConditions
+                                                  ) {
+                                                    const visibilityRules = element.visibleOn;
+
+                                                    return;
+                                                  }
+
+                                                  if (
+                                                    element?.elements &&
+                                                    Array.isArray(element.elements)
+                                                  ) {
+                                                    findElementsWithPlaceholders(element.elements);
+                                                  }
+
+                                                  if (
+                                                    element?.schema &&
+                                                    Array.isArray(element.schema)
+                                                  ) {
+                                                    findElementsWithPlaceholders(element.schema);
+                                                  }
+
+                                                  if (
+                                                    element?.children &&
+                                                    Array.isArray(element.children)
+                                                  ) {
+                                                    findElementsWithPlaceholders(element.children);
+                                                  }
+                                                });
+                                              };
+
+                                              if (currentPage?.elements) {
+                                                findElementsWithPlaceholders(currentPage.elements);
+                                              }
+
+                                              allElements.forEach(
+                                                ({ valueDestination, placeholder }) => {
+                                                  if (!valueDestination || !placeholder) {
+                                                    return;
+                                                  }
+
+                                                  const path = valueDestination.split('.');
+
+                                                  let current: any = filledPayload;
+
+                                                  for (let i = 0; i < path.length - 1; i++) {
+                                                    const key = path[i];
+
+                                                    if (!key) {
+                                                      continue;
+                                                    }
+
+                                                    if (!current[key]) {
+                                                      current[key] = {};
+                                                    }
+
+                                                    current = current[key];
+                                                  }
+
+                                                  const lastKey = path[path.length - 1];
+
+                                                  if (lastKey) {
+                                                    let value = placeholder;
+
+                                                    if (
+                                                      lastKey.toLowerCase().includes('date') ||
+                                                      lastKey.toLowerCase().includes('birth') ||
+                                                      valueDestination
+                                                        .toLowerCase()
+                                                        .includes('date') ||
+                                                      valueDestination
+                                                        .toLowerCase()
+                                                        .includes('birth')
+                                                    ) {
+                                                      value = '11/11/1990';
+                                                    }
+
+                                                    current[lastKey] = value;
+                                                  }
+                                                },
+                                              );
+
+                                              stateApi.setContext(filledPayload);
+                                            } catch (error) {
+                                              console.error('Error filling placeholders:', error);
+                                            }
+                                          }}
+                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                        >
+                                          Fill Placeholders
+                                        </button>
                                       </div>
                                     </div>
                                   ) : null}
@@ -264,13 +410,10 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                     <div>
                                       <PluginsRunner plugins={currentPage.plugins || []}>
                                         <CollectionFlowUI
-                                          elements={
-                                            currentPage.elements as unknown as Array<
-                                              IFormElement<any, any>
-                                            >
-                                          }
+                                          page={currentPage as unknown as UIPage<'v2'>}
+                                          pages={elements as unknown as Array<UIPage<'v2'>>}
                                           context={payload}
-                                          isRevision={isRevision}
+                                          metadata={schema?.metadata}
                                         />
                                       </PluginsRunner>
                                     </div>

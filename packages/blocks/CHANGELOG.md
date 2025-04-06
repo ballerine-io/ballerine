@@ -1,10 +1,50 @@
 # @ballerine/blocks
 
+## 0.2.40
+
+### Patch Changes
+
+- updated way to handle React keys for blocks
+
+## 0.2.39
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.84
+
+## 0.2.38
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.82
+
+## 0.2.37
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.81
+
+## 0.2.36
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.80
+
 ## 0.2.35
 
 ### Patch Changes
 
-- Updated handling of react keys
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
 
 ## 0.2.34
 

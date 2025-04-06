@@ -1,4 +1,4 @@
-import { ctw } from '@/common';
+import { AnyObject, ctw } from '@/common';
 import { Label } from '@/components/atoms';
 import { FunctionComponent } from 'react';
 import { useDynamicForm } from '../../context';
@@ -11,23 +11,27 @@ interface IFieldLayoutProps {
   element: IFormElement<string, any>;
   children: React.ReactNode;
   layout?: 'vertical' | 'horizontal';
+  elementState?: AnyObject;
 }
 
 export const FieldLayout: FunctionComponent<IFieldLayoutProps> = ({
   element,
   children,
   layout = 'vertical',
+  elementState,
 }: IFieldLayoutProps) => {
   const { values } = useDynamicForm();
   const { stack } = useStack();
-  const { id, hidden } = useElement(element, stack);
+  const { id, hidden } = useElement(element, stack, elementState);
   const { label } = element.params || {};
   const isRequired = useRequired(element, values);
 
-  if (hidden) return null;
+  if (hidden) {
+    return null;
+  }
 
   return (
-    <div data-testid={`${id}-field-layout`}>
+    <div data-testid={`${id}-field-layout`} className="w-full">
       <div
         className={ctw('flex py-2', {
           'gap-2': Boolean(label),

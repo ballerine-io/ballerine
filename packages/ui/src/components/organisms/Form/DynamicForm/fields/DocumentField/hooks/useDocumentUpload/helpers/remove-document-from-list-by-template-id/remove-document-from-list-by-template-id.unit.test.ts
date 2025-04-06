@@ -1,13 +1,33 @@
 import { describe, expect, it } from 'vitest';
-import { IDocumentFieldParams } from '../../../..';
+import { IDocumentTemplate } from '../../../..';
 import { removeDocumentFromListByTemplateId } from './remove-document-from-list-by-template-id';
 
 describe('removeDocumentFromListByTemplateId', () => {
   it('should remove document with matching template id from list', () => {
     const documents = [
-      { id: 'doc1', pages: [] },
-      { id: 'doc2', pages: [] },
-    ] as Array<IDocumentFieldParams['template']>;
+      {
+        id: 'doc1',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+      {
+        id: 'doc2',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+    ] as IDocumentTemplate[];
 
     const result = removeDocumentFromListByTemplateId(documents, 'doc1');
 
@@ -17,9 +37,29 @@ describe('removeDocumentFromListByTemplateId', () => {
 
   it('should return original list if template id not found', () => {
     const documents = [
-      { id: 'doc1', pages: [] },
-      { id: 'doc2', pages: [] },
-    ] as Array<IDocumentFieldParams['template']>;
+      {
+        id: 'doc1',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+      {
+        id: 'doc2',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+    ] as IDocumentTemplate[];
 
     const result = removeDocumentFromListByTemplateId(documents, 'doc3');
 
@@ -41,10 +81,40 @@ describe('removeDocumentFromListByTemplateId', () => {
 
   it('should remove only matching document when multiple documents exist', () => {
     const documents = [
-      { id: 'doc1', pages: [] },
-      { id: 'doc2', pages: [] },
-      { id: 'doc3', pages: [] },
-    ] as Array<IDocumentFieldParams['template']>;
+      {
+        id: 'doc1',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+      {
+        id: 'doc2',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+      {
+        id: 'doc3',
+        category: 'test',
+        type: 'test',
+        issuer: {
+          country: 'test',
+        },
+        version: 1,
+        issuingVersion: 1,
+        properties: {},
+      },
+    ] as IDocumentTemplate[];
 
     const result = removeDocumentFromListByTemplateId(documents, 'doc2');
 

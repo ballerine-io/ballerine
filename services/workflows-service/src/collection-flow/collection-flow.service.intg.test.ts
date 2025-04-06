@@ -36,12 +36,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Customer, EndUser, PrismaClient, Project } from '@prisma/client';
 import { noop } from 'lodash';
 import { CollectionFlowService } from './collection-flow.service';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
 import { env } from '@/env';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
+import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 
 const deps: Provider[] = [
   {
     provide: AppLoggerService,
+    useValue: noop,
+  },
+  {
+    provide: AnalyticsService,
     useValue: noop,
   },
   {
@@ -147,6 +153,7 @@ describe('CollectionFlowService', () => {
         CustomerService,
         EndUserRepository,
         MerchantMonitoringClient,
+        WorkflowLogService,
       ],
     }).compile();
 

@@ -32,9 +32,20 @@ export {
   valueOrNA,
   zodBuilder,
   zodErrorToReadable,
+  checkIsNonEmptyArrayOfNonEmptyStrings,
+  getCountries,
+  getCountryStates,
+  getFullCountryNameByCode,
+  getNationalities,
+  checkIsCountry,
 } from './utils';
 
 export * from './utils/collection-flow';
+export type {
+  TCollectionFlow,
+  TCollectionFlowState,
+  TCollectionFlowStep,
+} from './utils/collection-flow';
 
 export type { IErrorWithMessage } from './utils';
 

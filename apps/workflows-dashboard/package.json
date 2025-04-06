@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-dashboard",
   "private": false,
-  "version": "0.2.32",
+  "version": "0.2.39",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -16,8 +16,8 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
-    "@ballerine/common": "^0.9.68",
-    "@ballerine/ui": "^0.5.67",
+    "@ballerine/common": "^0.9.86",
+    "@ballerine/ui": "^0.7.126",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
@@ -51,8 +51,10 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.43.9",
+    "react-json-tree": "^0.20.0",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.11.2",
+    "reactflow": "^11.11.4",
     "recharts": "^2.7.2",
     "sonner": "^1.4.3",
     "string-ts": "^1.2.0",
@@ -64,8 +66,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.32",
-    "@ballerine/eslint-config-react": "^2.0.32",
+    "@ballerine/config": "^1.1.37",
+    "@ballerine/eslint-config-react": "^2.0.37",
     "@cspell/cspell-types": "^6.31.1",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",

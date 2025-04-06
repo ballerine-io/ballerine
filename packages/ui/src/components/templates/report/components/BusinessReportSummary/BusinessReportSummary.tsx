@@ -1,33 +1,37 @@
-import React, { ComponentProps, FunctionComponent } from 'react';
 import {
-  getSeverityFromRiskScore,
   MERCHANT_REPORT_RISK_LEVELS_MAP,
   MerchantReportRiskLevel,
-  RiskIndicatorRiskLevel,
-  Severity,
-  SeverityType,
+  RiskIndicatorSchema,
 } from '@ballerine/common';
-import { ctw, severityToClassName } from '@/common';
+import { ComponentProps, FunctionComponent } from 'react';
 import { toTitleCase } from 'string-ts';
+import { z } from 'zod';
+
+import { ctw, severityToClassName } from '@/common';
 import { Badge, Card, CardContent, CardHeader, RiskIndicatorsSummary } from '@/components';
 import { TextWithNAFallback } from '@/components/atoms/TextWithNAFallback';
-import { RiskIndicatorSchema } from '@ballerine/common';
-import { z } from 'zod';
 
 export const BusinessReportSummary: FunctionComponent<{
   summary: string;
   ongoingMonitoringSummary?: string;
-  sections: ReadonlyArray<{
+  riskIndicators: ReadonlyArray<{
     title: string;
-    search: string;
-    riskIndicators: z.infer<typeof RiskIndicatorSchema>[] | null;
+    search?: string;
+    indicators: Array<z.infer<typeof RiskIndicatorSchema>> | null;
   }>;
-  riskLevel: MerchantReportRiskLevel;
+  riskLevel: MerchantReportRiskLevel | null;
   homepageScreenshotUrl: string | null;
-  Link: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
-}> = ({ sections, summary, ongoingMonitoringSummary, riskLevel, homepageScreenshotUrl, Link }) => {
+  Link?: ComponentProps<typeof RiskIndicatorsSummary>['Link'];
+}> = ({
+  riskIndicators,
+  summary,
+  ongoingMonitoringSummary,
+  riskLevel,
+  homepageScreenshotUrl,
+  Link,
+}) => {
   return (
-    <div className={'grid grid-cols-5 gap-8'}>
+    <div className={'grid grid-cols-5 gap-x-8 gap-y-6'}>
       <Card className={!homepageScreenshotUrl ? 'col-span-full' : 'col-span-3'}>
         <CardHeader className={'pt-4 font-bold'}>
           <span className={'mb-1'}>Overall Risk Level</span>
@@ -78,6 +82,7 @@ export const BusinessReportSummary: FunctionComponent<{
               title={'Click to view full screenshot'}
             >
               <img
+                key={homepageScreenshotUrl}
                 src={homepageScreenshotUrl}
                 alt={'Homepage Screenshot'}
                 className={'absolute inset-0 h-auto w-full object-cover object-top'}
@@ -94,7 +99,7 @@ export const BusinessReportSummary: FunctionComponent<{
         </Card>
       )}
 
-      <RiskIndicatorsSummary sections={sections} Link={Link} />
+      <RiskIndicatorsSummary sections={riskIndicators} Link={Link} />
     </div>
   );
 };

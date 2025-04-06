@@ -19,26 +19,73 @@ import {
   REPORT_TYPE_TO_DISPLAY_TEXT,
   RISK_LEVEL_FILTER,
   STATUS_LEVEL_FILTER,
+  TReportStatusValue,
 } from '@/pages/MerchantMonitoring/schemas';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
+import { toast } from 'sonner';
+import { exportToCSV } from '@/common/utils/export-to-csv';
+import {
+  fetchAllBusinessReports,
+  formatBusinessReportsForCsv,
+} from '@/domains/business-reports/utils';
+import { useMutation } from '@tanstack/react-query';
+import { BusinessReportsFilterParams } from '@/domains/business-reports/fetchers';
+import { TCustomer } from '@/domains/customer/fetchers';
 
-const useDefaultDateRange = () => {
-  const [{ from, to }, setSearchParams] = useZodSearchParams(MerchantMonitoringSearchSchema);
+const useExportCSVMutation = ({
+  reportQuery,
+  customer,
+  fullName,
+  firstName,
+}: {
+  reportQuery: BusinessReportsFilterParams;
+  customer: TCustomer | undefined | null;
+  fullName: string | undefined;
+  firstName: string | undefined;
+}) => {
+  return useMutation({
+    mutationFn: async () => {
+      const allData = await fetchAllBusinessReports(reportQuery);
+      const csvData = formatBusinessReportsForCsv(allData);
 
-  useEffect(() => {
-    if (from || to) {
-      return;
-    }
+      const clientName = customer?.displayName || 'Unknown';
+      const username = fullName || firstName || 'Unknown';
+      const now = dayjs().format('YYYY-MM-DDTHH-mm-ss');
 
-    setSearchParams({
-      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
-      to: dayjs().format('YYYY-MM-DD'),
-    });
-  }, []);
+      exportToCSV(
+        csvData as unknown as Record<string, unknown>[],
+        `merchant-monitoring-export-${clientName}-${username}-${now}`,
+      );
+    },
+    onError: error => {
+      console.error('Export failed:', error);
+      toast.error('Failed to export data');
+    },
+  });
 };
 
 export const useMerchantMonitoringLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
+
+  const demoError = customer?.config?.demoAccessDetails
+    ? getDemoStateErrorText({
+        reportsLeft: customer.config.demoAccessDetails.reportsLeft,
+        demoDaysLeft: customer.config.demoAccessDetails.demoDaysLeft,
+      })
+    : null;
+  const createBusinessReport = {
+    ...customer?.features?.createBusinessReport,
+    enabled: customer?.features?.createBusinessReport?.enabled && !demoError,
+  };
+  const createBusinessReportBatch = {
+    ...customer?.features?.createBusinessReportBatch,
+    enabled: customer?.features?.createBusinessReportBatch?.enabled && !demoError,
+  };
+
+  const { data: session } = useAuthenticatedUserQuery();
+  const { firstName, fullName, avatarUrl } = session?.user || {};
 
   const { search, debouncedSearch, onSearch } = useSearch();
 
@@ -55,13 +102,28 @@ export const useMerchantMonitoringLogic = () => {
       to,
       findings,
       isAlert,
+      isCreating,
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
 
+  useEffect(() => {
+    if (from || to) {
+      return;
+    }
+
+    setSearchParams({
+      from: dayjs().subtract(90, 'day').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, [from, to, setSearchParams]);
+
+  const open = isCreating ?? false;
+  const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
+
   const { findings: findingsOptions, isLoading: isLoadingFindings } = useFindings();
 
-  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
+  const reportQuery = {
     ...(reportType !== 'All' && {
       reportType:
         DISPLAY_TEXT_TO_MERCHANT_REPORT_TYPE[
@@ -75,14 +137,24 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
     findings,
     riskLevels: riskLevels ?? [],
+    // TODO: fix type
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
         status === 'in-progress' ? ['in-progress', 'quality-control', 'failed'] : [status],
-      ),
+      ) as TReportStatusValue[],
     from,
     to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
     ...(isAlert !== 'All' && { isAlert: DISPLAY_TEXT_TO_IS_ALERT[isAlert] }),
+  };
+
+  const { data, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery(reportQuery);
+
+  const { mutate: onExportMautation, isLoading: isExportingReport } = useExportCSVMutation({
+    reportQuery,
+    customer,
+    fullName,
+    firstName,
   });
 
   const isClearAllButtonVisible = useMemo(
@@ -174,13 +246,11 @@ export const useMerchantMonitoringLogic = () => {
     [findingsOptions],
   );
 
-  useDefaultDateRange();
-
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
-    createBusinessReport: customer?.features?.createBusinessReport,
-    createBusinessReportBatch: customer?.features?.createBusinessReportBatch,
+    createBusinessReport,
+    createBusinessReportBatch,
     businessReports: data?.data || [],
     isLoadingBusinessReports,
     isLoadingFindings,
@@ -212,5 +282,13 @@ export const useMerchantMonitoringLogic = () => {
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
+    firstName,
+    fullName,
+    avatarUrl,
+    open,
+    toggleOpen,
+    isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    onExport: () => onExportMautation(),
+    isExportingReport,
   };
 };

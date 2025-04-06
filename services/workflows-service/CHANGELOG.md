@@ -1,5 +1,116 @@
 # @ballerine/workflows-service
 
+## 0.7.116
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.87
+  - @ballerine/workflow-core@0.6.109
+  - @ballerine/workflow-node-sdk@0.6.109
+
+## 0.7.115
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.86
+  - @ballerine/workflow-core@0.6.108
+  - @ballerine/workflow-node-sdk@0.6.108
+
+## 0.7.114
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.85
+  - @ballerine/workflow-core@0.6.107
+  - @ballerine/workflow-node-sdk@0.6.107
+
+## 0.7.113
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.84
+  - @ballerine/workflow-core@0.6.106
+  - @ballerine/workflow-node-sdk@0.6.106
+
+## 0.7.112
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.105
+  - @ballerine/workflow-node-sdk@0.6.105
+
+## 0.7.111
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.83
+  - @ballerine/workflow-core@0.6.104
+  - @ballerine/workflow-node-sdk@0.6.104
+
+## 0.7.110
+
+### Patch Changes
+
+- version bump
+
+## 0.7.109
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.82
+  - @ballerine/workflow-core@0.6.103
+  - @ballerine/workflow-node-sdk@0.6.103
+
+## 0.7.108
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.81
+  - @ballerine/workflow-core@0.6.102
+  - @ballerine/workflow-node-sdk@0.6.102
+
+## 0.7.107
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.80
+  - @ballerine/workflow-core@0.6.101
+  - @ballerine/workflow-node-sdk@0.6.101
+
+## 0.7.106
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.100
+  - @ballerine/common@0.9.79
+  - @ballerine/workflow-node-sdk@0.6.100
+
+## 0.7.105
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.78
+  - @ballerine/workflow-core@0.6.99
+  - @ballerine/workflow-node-sdk@0.6.99
+
 ## 0.7.104
 
 ### Patch Changes

@@ -3,7 +3,7 @@ import { IValidatorContext, ValidatorContext } from './context';
 import { checkIfValid } from './helpers';
 import { useValidate } from './hooks/internal/useValidate';
 import { IValidatorRef, useValidatorRef } from './hooks/internal/useValidatorRef';
-import { IValidationSchema } from './types';
+import { ICommonValidator, IValidationSchema } from './types';
 import { IValidateParams } from './utils/validate/types';
 
 export interface IValidationParams extends IValidateParams {
@@ -15,6 +15,7 @@ export interface IValidationParams extends IValidateParams {
 export interface IValidatorProviderProps<TValue extends object> extends IValidationParams {
   children: React.ReactNode | React.ReactNode[];
   schema: IValidationSchema[];
+  globalValidationRules?: Array<ICommonValidator<TValue, string>>;
   value: TValue;
 
   ref?: React.RefObject<IValidatorRef>;
@@ -28,6 +29,7 @@ export const ValidatorProvider = <TValue extends object>({
   abortEarly,
   validationDelay,
   abortAfterFirstError,
+  globalValidationRules,
   ref,
 }: IValidatorProviderProps<TValue>) => {
   useValidatorRef(ref);
@@ -36,6 +38,7 @@ export const ValidatorProvider = <TValue extends object>({
     validateOnChange,
     validationDelay,
     abortAfterFirstError,
+    globalValidationRules,
   });
 
   const context: IValidatorContext<TValue> = useMemo(

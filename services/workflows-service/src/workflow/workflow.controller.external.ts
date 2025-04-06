@@ -539,29 +539,33 @@ export class WorkflowControllerExternal {
           currentProjectId: workflowRuntime.projectId,
         });
 
-        await this.workflowService.event(
-          {
-            id: params.id,
-            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-            payload: {
-              newContext: context,
-              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+        if (params.event !== BUILT_IN_EVENT.NO_OP) {
+          await this.workflowService.event(
+            {
+              id: params.id,
+              name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+              payload: {
+                newContext: context,
+                arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+              },
             },
-          },
-          [workflowRuntime.projectId],
-          workflowRuntime.projectId,
-          transaction,
-        );
+            [workflowRuntime.projectId],
+            workflowRuntime.projectId,
+            transaction,
+          );
+        }
 
-        await this.workflowService.event(
-          {
-            id: params.id,
-            name: params.event,
-          },
-          [workflowRuntime.projectId],
-          workflowRuntime.projectId,
-          transaction,
-        );
+        if (params.event && params.event !== 'undefined') {
+          await this.workflowService.event(
+            {
+              id: params.id,
+              name: params.event,
+            },
+            [workflowRuntime.projectId],
+            workflowRuntime.projectId,
+            transaction,
+          );
+        }
       }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {

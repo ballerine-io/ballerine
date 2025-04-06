@@ -39,7 +39,7 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { WorkflowControllerExternal } from '@/workflow/workflow.controller.external';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { DataInvestigationService } from '@/data-analytics/data-investigation.service';
-import { MerchantMonitoringClient } from '@/business-report/merchant-monitoring-client';
+import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app-helper';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
@@ -48,7 +48,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
 describe('/api/v1/external/workflows #api #integration', () => {
   let app: INestApplication;
 
@@ -104,6 +104,7 @@ describe('/api/v1/external/workflows #api #integration', () => {
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,
       SalesforceIntegrationRepository,
+      WorkflowLogService,
     ];
 
     const userAuthOverrideMiddleware = (req: Request, res: any, next: any) => {

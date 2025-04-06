@@ -1,23 +1,25 @@
-import { useParams } from 'react-router-dom';
+import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { useSelectNextCase } from '@/domains/entities/hooks/useSelectNextCase/useSelectNextCase';
 import { useApproveCaseMutation } from '@/domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
 import { useRejectCaseMutation } from '@/domains/entities/hooks/mutations/useRejectCaseMutation/useRejectCaseMutation';
-import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
+import { useSelectNextCase } from '@/domains/entities/hooks/useSelectNextCase/useSelectNextCase';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useAssignWorkflowMutation } from '@/domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
-import { useCallback, useMemo } from 'react';
+import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useDocuments } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useDocuments';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
-import { CommonWorkflowEvent } from '@ballerine/common';
-import { useDebounce } from '@/common/hooks/useDebounce/useDebounce';
+import { StateTag } from '@ballerine/common';
+import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
 export const useDefaultActionsLogic = () => {
-  const { entityId } = useParams();
+  const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
 
   const { data: workflow } = useWorkflowByIdQuery({
-    workflowId: entityId ?? '',
+    workflowId: workflowId ?? '',
     filterId: filterId ?? '',
   });
 
@@ -48,17 +50,13 @@ export const useDefaultActionsLogic = () => {
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const onMutateRejectCase = useCallback(() => mutateRejectCase(), [mutateRejectCase]);
 
-  const { onMutateRevisionCase, pendingWorkflowEvents } = usePendingRevisionEvents(
-    mutateRevisionCase,
-    workflow,
-  );
+  const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
+
+  const { documents } = useDocuments(workflow as TWorkflowById);
 
   const documentsToReviseCount = useMemo(
-    () =>
-      pendingWorkflowEvents?.filter(
-        pendingEvent => pendingEvent.eventName === CommonWorkflowEvent.REVISION,
-      )?.length,
-    [pendingWorkflowEvents],
+    () => [...documents].filter(document => document?.decision?.status === 'revision').length,
+    [documents],
   );
 
   // Only display the button spinners if the request is longer than 300ms
@@ -68,7 +66,9 @@ export const useDefaultActionsLogic = () => {
 
   return {
     isLoadingActions,
-    canRevision,
+    canRevision:
+      canRevision &&
+      workflow?.tags?.some(tag => [StateTag.MANUAL_REVIEW, StateTag.PENDING_PROCESS].includes(tag)),
     debouncedIsLoadingRejectCase,
     documentsToReviseCount,
     debouncedIsLoadingRevisionCase,

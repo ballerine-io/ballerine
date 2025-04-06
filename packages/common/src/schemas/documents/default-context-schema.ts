@@ -5,6 +5,7 @@ import { BusinessInformationPluginSchema } from '@/schemas/documents/schemas/bus
 import { CompanySanctionsPluginSchema } from '@/schemas/documents/schemas/company-sanctions-plugin-schema';
 import { MerchantMonitoringPluginSchema } from '@/schemas/documents/schemas/merchant-monitoring-plugin-schema';
 import { CollectionFlowStatusesEnum } from '@/utils/collection-flow';
+import { CollectionFlowStepStatesEnum } from '@/utils/collection-flow/enums/collection-flow-step-state-enum';
 import { AmlSchema } from './schemas/aml-schema';
 import { DocumentsSchema } from './schemas/documents-schema';
 import { EntitySchema } from './schemas/entity-schema';
@@ -21,6 +22,46 @@ export const defaultInputContextSchema = Type.Object({
   documents: DocumentsSchema,
 });
 
+export const defaultPluginSchema = Type.Object({
+  name: Type.String(),
+  status: Type.String(),
+  orderId: Type.String(),
+  invokedAt: Type.Number(),
+  data: Type.Optional(Type.Any()),
+});
+
+const individualSanctionsPluginSchema = Type.Composite([
+  defaultPluginSchema,
+  Type.Object({
+    data: AmlSchema,
+  }),
+]);
+
+export const CollectionFlowStepSchema = Type.Object({
+  stepName: Type.String(),
+  state: Type.Optional(Type.Enum(CollectionFlowStepStatesEnum)),
+  reason: Type.Optional(Type.String()),
+  isCompleted: Type.Boolean(),
+});
+
+export const CollectionFlowConfigSchema = Type.Object({
+  apiUrl: Type.String(),
+});
+
+export const CollectionFlowStateSchema = Type.Object({
+  currentStep: Type.String(),
+  status: Type.Enum(CollectionFlowStatusesEnum),
+  steps: Type.Optional(Type.Array(CollectionFlowStepSchema)),
+});
+
+export const CollectionFlowSchema = Type.Object({
+  config: Type.Optional(CollectionFlowConfigSchema),
+  state: Type.Optional(CollectionFlowStateSchema),
+  additionalInformation: Type.Optional(
+    Type.Object({ customerCompany: Type.Optional(Type.String()) }),
+  ),
+});
+
 export const defaultContextSchema = Type.Composite([
   defaultInputContextSchema,
   Type.Object({
@@ -31,6 +72,7 @@ export const defaultContextSchema = Type.Composite([
           ubo: UboPluginSchema,
           kyc_session: KycSessionPluginSchema,
           companySanctions: CompanySanctionsPluginSchema,
+          individualSanctions: individualSanctionsPluginSchema,
           merchantMonitoring: MerchantMonitoringPluginSchema,
           businessInformation: BusinessInformationPluginSchema,
           merchantScreening: MerchantScreeningPluginSchema,
@@ -41,34 +83,7 @@ export const defaultContextSchema = Type.Composite([
     ),
   }),
   Type.Object({
-    collectionFlow: Type.Optional(
-      Type.Object({
-        config: Type.Optional(
-          Type.Object({
-            apiUrl: Type.String(),
-          }),
-        ),
-        state: Type.Optional(
-          Type.Object({
-            currentStep: Type.String(),
-            status: Type.Enum(CollectionFlowStatusesEnum),
-            steps: Type.Optional(
-              Type.Array(
-                Type.Object({
-                  stepName: Type.String(),
-                  isCompleted: Type.Boolean(),
-                }),
-              ),
-            ),
-          }),
-        ),
-        additionalInformation: Type.Optional(
-          Type.Object({
-            customerCompany: Type.Optional(Type.String()),
-          }),
-        ),
-      }),
-    ),
+    collectionFlow: Type.Optional(CollectionFlowSchema),
   }),
 ]);
 

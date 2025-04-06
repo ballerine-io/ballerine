@@ -1,5 +1,5 @@
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { CommonWorkflowStates } from '@ballerine/common';
+import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 
 export interface ICaseCallToActionLegacyProps {
   value: string;
@@ -12,5 +12,6 @@ export interface ICaseCallToActionLegacyProps {
       | typeof CommonWorkflowStates.REJECTED
       | typeof CommonWorkflowStates.APPROVED
       | typeof CommonWorkflowStates.REVISION;
+    isKYC: boolean;
   };
 }

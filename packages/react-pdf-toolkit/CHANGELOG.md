@@ -1,5 +1,163 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.2.100
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.127
+
+## 1.2.99
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.126
+
+## 1.2.98
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.125
+
+## 1.2.97
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.124
+
+## 1.2.96
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.37
+  - @ballerine/ui@0.7.123
+
+## 1.2.95
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.122
+
+## 1.2.94
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.120
+
+## 1.2.93
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.119
+
+## 1.2.92
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.118
+
+## 1.2.91
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/config@1.1.36
+  - @ballerine/ui@0.7.117
+
+## 1.2.90
+
+### Patch Changes
+
+- Updated dependencies
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.35
+  - @ballerine/ui@0.7.116
+
+## 1.2.89
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/config@1.1.34
+  - @ballerine/ui@0.7.115
+
+## 1.2.88
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.114
+
+## 1.2.87
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.113
+
+## 1.2.86
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.112
+
+## 1.2.85
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.111
+
+## 1.2.84
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.110
+
+## 1.2.83
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.109
+
+## 1.2.82
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.82
+
+## 1.2.81
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.5.81
+
+## 1.2.80
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/ui@0.5.80
+  - @ballerine/config@1.1.33
+
 ## 1.2.79
 
 ### Patch Changes

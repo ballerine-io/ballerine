@@ -21,6 +21,7 @@ export const validate = <
   context: TValues,
   schema: Array<IValidationSchema<TValidatorTypeExtends>>,
   params: IValidateParams = {},
+  globalValidationRules: Array<ICommonValidator<TValues, TValidatorTypeExtends>> = [],
 ): IValidationError[] => {
   const { abortEarly = false, abortAfterFirstError = false } = params;
 
@@ -31,12 +32,20 @@ export const validate = <
     stack: TDeepthLevelStack = [],
   ) => {
     for (let i = 0; i < schema.length; i++) {
-      const { validators = [], children, valueDestination, id } = schema[i]!;
+      const {
+        validators: schemaValidators = [],
+        children,
+        valueDestination,
+        id,
+        metadata = {},
+        getThisContext,
+      } = schema[i]!;
       const formattedValueDestination = valueDestination
         ? formatValueDestination(valueDestination, stack)
         : '';
 
       const value = formattedValueDestination ? get(context, formattedValueDestination) : context;
+      const validators = [...schemaValidators, ...globalValidationRules];
 
       try {
         for (const validator of validators) {
@@ -44,7 +53,10 @@ export const validate = <
             validator.applyWhen &&
             !isShouldApplyValidation(
               replaceTagsWithIndexesInRule([validator.applyWhen], stack)[0],
-              context,
+              {
+                ...context,
+                ...(getThisContext?.(context, metadata, stack) || {}),
+              },
             )
           ) {
             continue;

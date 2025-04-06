@@ -81,7 +81,7 @@ export class UserRepository {
   async findByEmailUnscoped<T extends Omit<Prisma.UserFindUniqueArgs, 'where'>>(
     email: string,
     args?: Prisma.SelectSubset<T, Omit<Prisma.UserFindUniqueArgs, 'where'>>,
-  ): Promise<any> {
+  ) {
     return this.prisma.user.findUnique({
       where: { email },
       ...args,

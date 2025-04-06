@@ -23,8 +23,8 @@ import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
 
 import { ReadOnlyDetail } from '@/common/components/atoms/ReadOnlyDetail/ReadOnlyDetail';
-import { DataTable } from '@ballerine/ui/dist/components/organisms/DataTable/DataTable';
 import { EditableDetailsV2 } from '@/common/components/organisms/EditableDetailsV2/EditableDetailsV2';
+import { DataTable } from '@ballerine/ui/dist/components/organisms/DataTable/DataTable';
 
 export type TBlockCell = {
   type: 'block';
@@ -142,6 +142,7 @@ export type TDetailsCell = {
     };
   };
   onSubmit?: (document: AnyObject) => void;
+  isDocumentsV2: boolean;
 };
 
 export type TNestedDetailsCell = {
@@ -192,6 +193,7 @@ export type TCaseCallToActionLegacyCell = {
       | typeof CommonWorkflowStates.REJECTED
       | typeof CommonWorkflowStates.APPROVED
       | typeof CommonWorkflowStates.REVISION;
+    isKYC: boolean;
   };
 };
 

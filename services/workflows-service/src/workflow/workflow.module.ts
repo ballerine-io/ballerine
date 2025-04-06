@@ -20,10 +20,8 @@ import { FilterService } from '@/filter/filter.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { ProjectModule } from '@/project/project.module';
-import { FileService } from '@/providers/file/file.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import { FileRepository } from '@/storage/storage.repository';
 import { StorageService } from '@/storage/storage.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
@@ -46,9 +44,14 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
+import { FileModule } from '@/providers/file/file.module';
+import { FileRepository } from '@/storage/storage.repository';
+import { WorkflowLogService } from './workflow-log.service';
+import { WorkflowLogRepository } from './workflow-log.repository';
+import { WorkflowLogController } from './workflow-log.controller';
 
 @Module({
-  controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
+  controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
   imports: [
     ACLModule,
     forwardRef(() => AuthModule),
@@ -57,6 +60,7 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     PrismaModule,
     CustomerModule,
     forwardRef(() => BusinessReportModule),
+    forwardRef(() => FileModule),
     WorkflowDefinitionModule,
     AlertModule,
     BusinessModule,
@@ -78,7 +82,6 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     FileRepository,
     WorkflowService,
     HookCallbackHandlerService,
-    FileService,
     WorkflowEventEmitterService,
     DocumentChangedWebhookCaller,
     WorkflowCompletedWebhookCaller,
@@ -95,6 +98,8 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     UiDefinitionRepository,
     UiDefinitionService,
     SentryService,
+    WorkflowLogService,
+    WorkflowLogRepository,
   ],
   exports: [
     WorkflowService,
@@ -102,13 +107,14 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
     ACLModule,
     AuthModule,
     StorageService,
-    FileRepository,
     EndUserService,
     EndUserRepository,
     WorkflowDefinitionService,
     FilterService,
     ProjectScopeService,
     WorkflowTokenService,
+    WorkflowLogService,
+    WorkflowLogRepository,
   ],
 })
 export class WorkflowModule {}

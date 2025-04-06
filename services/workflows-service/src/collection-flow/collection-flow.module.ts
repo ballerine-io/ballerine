@@ -8,6 +8,7 @@ import { CollectionFlowBusinessController } from '@/collection-flow/controllers/
 import { CollectionFlowController } from '@/collection-flow/controllers/collection-flow.controller';
 import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
 import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
+import { CollectionFlowNoUserController } from '@/collection-flow/controllers/collection-flow.no-user.controller';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EntityRepository } from '@/common/entity/entity.repository';
@@ -39,7 +40,9 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { CollectionFlowNoUserController } from '@/collection-flow/controllers/collection-flow.no-user.controller';
+import { CollectionFlowEntityService } from './collection-flow-entity.service';
+import { CollectionFlowEntityController } from './controllers/collection-flow.entity.controller';
+import { DocumentModule } from '@/document/document.module';
 
 @Module({
   imports: [
@@ -54,6 +57,7 @@ import { CollectionFlowNoUserController } from '@/collection-flow/controllers/co
     DataAnalyticsModule,
     RuleEngineModule,
     WorkflowModule,
+    DocumentModule,
   ],
   controllers: [
     CollectionFlowController,
@@ -61,6 +65,7 @@ import { CollectionFlowNoUserController } from '@/collection-flow/controllers/co
     CollectionFlowNoUserController,
     CollectionFlowBusinessController,
     CollectionFlowEndUserController,
+    CollectionFlowEntityController,
   ],
   providers: [
     CollectionFlowService,
@@ -90,6 +95,7 @@ import { CollectionFlowNoUserController } from '@/collection-flow/controllers/co
     SalesforceService,
     SalesforceIntegrationRepository,
     SentryService,
+    CollectionFlowEntityService,
   ],
 })
 export class CollectionFlowModule {}

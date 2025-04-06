@@ -22,5 +22,6 @@ export const useCaseOptionsLogic = () => {
     generateAndOpenPDFInNewTab,
     isCopyingCollectionFlowLink,
     copyCollectionFlowLink,
+    isDemoAccount: customer?.config?.isDemoAccount,
   };
 };

@@ -4,19 +4,21 @@ import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
+    isDocumentsV2: z.boolean().optional(),
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
+    isDocumentTrackerEnabled: z.boolean().optional(),
     isCaseRiskOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
     isManualCreation: z.boolean().optional(),
-    isDemo: z.boolean().optional(),
     isExample: z.boolean().optional(), // OSS only
     language: z.string().optional(),
     supportedLanguages: z.array(z.string()).optional(),
     subscriptions: z.array(SubscriptionSchema).optional(),
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
+    isCollectionFlowPageRevisionEnabled: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
     initialEvent: z.string().optional(),
     availableDocuments: z.array(z.object({ category: z.string(), type: z.string() })).optional(),
@@ -62,7 +64,7 @@ export const ConfigSchema = z
     hasUboOngoingMonitoring: z.boolean().optional(),
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
-    showFullAccessPopup: z.boolean().optional(),
+    isOngoingMonitoringEnabled: z.boolean().optional(),
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
@@ -105,6 +107,7 @@ export const CustomerConfigSchema = z.object({
   hideCreateMerchantMonitoringButton: z.boolean().optional(),
   isExample: z.boolean().optional(),
   isMerchantMonitoringEnabled: z.boolean().optional(),
+  isOngoingMonitoringEnabled: z.boolean().optional(),
   isDemo: z.boolean().optional(),
   maxBusinessReports: z.number().optional(),
 });

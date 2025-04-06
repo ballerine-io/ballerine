@@ -120,4 +120,16 @@ export class UnifiedApiClient {
   public shouldUpdateBusiness(business: BusinessPayload) {
     return business.project.customer.config?.disableBusinessSyncToUnifiedApi !== true;
   }
+
+  public async runEntityMatchingV2(payload: {
+    entity1: string;
+    entity2: string;
+    includeAnalysis: boolean;
+  }) {
+    return await this.axiosInstance.post('/entity-matching-v2', {
+      entity1: { value: payload.entity1 },
+      entity2: { value: payload.entity2 },
+      includeAnalysis: payload.includeAnalysis,
+    });
+  }
 }

@@ -148,6 +148,7 @@ export class DataInvestigationService {
       excludePaymentMethods = false,
       projectId,
       amountThreshold,
+      havingAggregate,
     } = options;
 
     return {
@@ -160,7 +161,7 @@ export class DataInvestigationService {
             },
           }
         : {}),
-      ...(amountThreshold
+      ...(amountThreshold && isEmpty(havingAggregate)
         ? {
             transactionBaseAmount: {
               gte: amountThreshold,

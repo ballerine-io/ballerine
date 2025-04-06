@@ -59,6 +59,7 @@ export const WorkflowConfigSchema = Type.Object({
   subscriptions,
   isAssociatedCompanyKybEnabled: Type.Optional(Type.Boolean()),
   isCaseOverviewEnabled: Type.Optional(Type.Boolean()),
+  isDocumentTrackerEnabled: Type.Optional(Type.Boolean()),
   isCaseRiskOverviewEnabled: Type.Optional(Type.Boolean()),
   isLegacyReject: Type.Optional(Type.Boolean()),
   isLockedDocumentCategoryAndType: Type.Optional(Type.Boolean()),
@@ -83,6 +84,8 @@ export const WorkflowConfigSchema = Type.Object({
   hasUboOngoingMonitoring: Type.Optional(Type.Boolean()),
   maxBusinessReports: Type.Optional(Type.Number()),
   isMerchantMonitoringEnabled: Type.Optional(Type.Boolean()),
+  isOngoingMonitoringEnabled: Type.Optional(Type.Boolean()),
+  isCollectionFlowPageRevisionEnabled: Type.Optional(Type.Boolean()),
 });
 
 export type TWorkflowConfig = Static<typeof WorkflowConfigSchema>;
