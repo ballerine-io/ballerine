@@ -1,44 +1,20 @@
 import { Loader2 } from 'lucide-react';
 import { FunctionComponent } from 'react';
 
-import { MonthPicker } from './components/MonthPicker/MonthPicker';
-import { PortfolioAnalytics } from './components/PortfolioAnalytics/PortfolioAnalytics';
-import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/PortfolioRiskStatistics';
+import { StatisticsCaseDashboard } from './components/StatisticsCaseDashboard/StatisticsCaseDashboard';
 import { useStatisticsLogic } from './hooks/useStatisticsLogic';
+import { StatisticsMerchantMonitoringDashboard } from './components/StatisticsMerchantMonitoringDashboard/StatisticsMerchantMonitoringDashboard';
 
 export const Statistics: FunctionComponent = () => {
-  const { metrics, isLoadingMetrics, customer, isLoadingCustomer, error, date, setDate } =
-    useStatisticsLogic();
+  const { customer, isLoadingCustomer, from, to, setDate } = useStatisticsLogic();
 
-  if (error) {
-    throw error;
-  }
-
-  if (isLoadingMetrics || !metrics || isLoadingCustomer || !customer) {
+  if (isLoadingCustomer || !customer) {
     return <Loader2 className="w-4 animate-spin" />;
   }
 
-  return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Statistics</h1>
-        <MonthPicker date={date} setDate={setDate} />
-      </div>
+  if (customer?.config?.isOngoingMonitoringEnabled) {
+    return <StatisticsMerchantMonitoringDashboard from={from} to={to} setDate={setDate} />;
+  }
 
-      {customer?.config?.isMerchantMonitoringEnabled && (
-        <div className="flex flex-col space-y-8">
-          <PortfolioAnalytics
-            totalActiveMerchants={metrics.totalActiveMerchants}
-            addedMerchantsCount={metrics.addedMerchantsCount}
-            removedMerchantsCount={metrics.removedMerchantsCount}
-          />
-          <PortfolioRiskStatistics
-            userSelectedDate={date}
-            riskLevelCounts={metrics.riskLevelCounts}
-            violationCounts={metrics.violationCounts}
-          />
-        </div>
-      )}
-    </div>
-  );
+  return <StatisticsCaseDashboard from={from} to={to} setDate={setDate} />;
 };
