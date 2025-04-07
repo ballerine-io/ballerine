@@ -19,12 +19,14 @@ import {
 import { ctw } from '@/common/utils/ctw/ctw';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
+import { useStatisticsLogic } from '../../hooks/useStatisticsLogic';
 
 export const PortfolioRiskStatistics: FunctionComponent<
   Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'> & {
-    userSelectedDate: Date;
+    from: ReturnType<typeof useStatisticsLogic>['from'];
+    to: ReturnType<typeof useStatisticsLogic>['to'];
   }
-> = ({ riskLevelCounts, violationCounts, userSelectedDate }) => {
+> = ({ from, to, riskLevelCounts, violationCounts }) => {
   const {
     riskLevelToFillColor,
     parent,
@@ -34,13 +36,8 @@ export const PortfolioRiskStatistics: FunctionComponent<
     locale,
     navigate,
     alertedReports,
-    from,
-    to,
     isOngoingMonitoringEnabled,
-  } = usePortfolioRiskStatisticsLogic({
-    userSelectedDate,
-    violationCounts,
-  });
+  } = usePortfolioRiskStatisticsLogic({ from, to, violationCounts });
 
   return (
     <div>

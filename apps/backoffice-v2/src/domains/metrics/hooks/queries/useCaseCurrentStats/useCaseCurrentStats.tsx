@@ -1,13 +1,14 @@
-import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { metricsQueryKeys } from '@/domains/metrics/query-keys';
 import { useQuery } from '@tanstack/react-query';
 
-export const useHomeMetricsQuery = () => {
+import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { metricsQueryKeys } from '@/domains/metrics/query-keys';
+
+export const useCaseCurrentStats = () => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...metricsQueryKeys.home(),
+    ...metricsQueryKeys.caseStats(),
     enabled: isAuthenticated,
-    keepPreviousData: true,
+    staleTime: 100_000,
   });
 };
