@@ -405,17 +405,17 @@ export const useKycBlock = ({
     path: 'entity.data',
   });
 
-  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle();
   const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
     workflowId: childWorkflow?.id,
-    onSuccess: () => {
-      toggleOffIsEditable();
-    },
   });
 
   const onSubmit = useCallback(
-    (values: Record<PropertyKey, any>) => {
-      mutateUpdateContextAndSyncEntity(values);
+    (values: Record<PropertyKey, any>, toggleOffIsEditable: () => void) => {
+      mutateUpdateContextAndSyncEntity(values, {
+        onSuccess: () => {
+          toggleOffIsEditable();
+        },
+      });
     },
     [mutateUpdateContextAndSyncEntity],
   );
@@ -430,8 +430,13 @@ export const useKycBlock = ({
           props: {
             title: 'Details',
             onSubmit,
-            onEnableIsEditable: toggleOnIsEditable,
-            onCancel: toggleOffIsEditable,
+            onEnableIsEditable: toggleOnIsEditable => {
+              toggleOnIsEditable();
+            },
+            onReRunChecks: () => {},
+            onCancel: toggleOffIsEditable => {
+              toggleOffIsEditable();
+            },
             config: {
               parse: {
                 date: true,
@@ -440,6 +445,7 @@ export const useKycBlock = ({
                 boolean: true,
                 url: true,
                 nullish: true,
+                country: true,
               },
               blacklist: [],
               actions: {
@@ -447,10 +453,13 @@ export const useKycBlock = ({
                   disabled: !caseState.writeEnabled,
                 },
                 enableEditing: {
-                  disabled: isEditable,
+                  disabled: false,
+                },
+                reRunChecks: {
+                  disabled: true,
                 },
                 editing: {
-                  disabled: !isEditable || !caseState.writeEnabled,
+                  disabled: !caseState.writeEnabled,
                 },
                 cancel: {
                   disabled: false,
@@ -461,6 +470,7 @@ export const useKycBlock = ({
               },
               inputTypes: {
                 dateOfBirth: 'date',
+                country: 'country',
               },
             },
           },

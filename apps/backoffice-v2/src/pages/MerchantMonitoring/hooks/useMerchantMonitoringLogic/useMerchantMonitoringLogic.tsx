@@ -113,7 +113,7 @@ export const useMerchantMonitoringLogic = () => {
     }
 
     setSearchParams({
-      from: dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
+      from: dayjs().subtract(90, 'day').format('YYYY-MM-DD'),
       to: dayjs().format('YYYY-MM-DD'),
     });
   }, [from, to, setSearchParams]);
