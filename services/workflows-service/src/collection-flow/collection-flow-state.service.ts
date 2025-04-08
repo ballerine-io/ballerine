@@ -25,6 +25,7 @@ import {
 import { findEntityFieldsDefinition } from './helpers/find-entity-fields-definition';
 import { findDocumentDefinitionByTypeAndCategory } from './helpers/find-document-definition-by-type-and-category';
 import { findBusinessDocumentDefinitionByTypeAndCategory } from './helpers/find-business-document-definition';
+import { EntityType, TEntityType } from './enums';
 
 @Injectable()
 export class CollectionFlowStateService {
@@ -82,7 +83,7 @@ export class CollectionFlowStateService {
     uiDefinition: UiDefinition,
     _context: AnyRecord,
     documents: Document[],
-    entities: Array<{ entityId: string; entityType: 'ubo' | 'director' | 'business' }>,
+    entities: Array<{ entityId: string; entityType: TEntityType }>,
   ) {
     const context = structuredClone(_context);
     let documentsWithEntityTypes = documents.map(document => ({
@@ -110,7 +111,7 @@ export class CollectionFlowStateService {
 
     collectionFlowSteps.forEach(step => {
       documentsWithEntityTypes.forEach(document => {
-        if (document.entityType === 'business') {
+        if (document.entityType === EntityType.business) {
           const businessDocumentDefinition = findBusinessDocumentDefinitionByTypeAndCategory(
             step.elements,
             {
@@ -204,11 +205,11 @@ export class CollectionFlowStateService {
     workflow: WorkflowRuntimeData & {
       childWorkflowsRuntimeData: WorkflowRuntimeData[];
     },
-  ): Array<{ entityId: string; entityType: 'ubo' | 'director' | 'business' }> {
-    const entityIds: Array<{ entityId: string; entityType: 'ubo' | 'director' | 'business' }> = [
+  ): Array<{ entityId: string; entityType: TEntityType }> {
+    const entityIds: Array<{ entityId: string; entityType: TEntityType }> = [
       {
         entityId: workflow.context.entity.ballerineEntityId,
-        entityType: 'business',
+        entityType: EntityType.business,
       },
     ];
 
@@ -219,7 +220,7 @@ export class CollectionFlowStateService {
 
       entityIds.push({
         entityId: childWorkflow.endUserId,
-        entityType: 'ubo',
+        entityType: EntityType.ubo,
       });
     });
 
@@ -227,7 +228,7 @@ export class CollectionFlowStateService {
       (director: { ballerineEntityId: string }) => {
         entityIds.push({
           entityId: director.ballerineEntityId,
-          entityType: 'director',
+          entityType: EntityType.director,
         });
       },
     );
