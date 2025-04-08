@@ -13,6 +13,7 @@ import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMu
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
 import { useEndUsersByIdsQuery } from '@/domains/individuals/queries/useEndUsersByIdsQuery/useEndUsersByIdsQuery';
+import { useMemo } from 'react';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -48,7 +49,6 @@ export const useTabsToBlocksMap = ({
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
-    addressWithContainerBlock,
     businessDocumentBlocks,
     uboDocumentBlocks,
     directorDocumentBlocks,
@@ -97,6 +97,20 @@ export const useTabsToBlocksMap = ({
   const { data: session } = useAuthenticatedUserQuery();
   const { data: workflow } = useCurrentCaseQuery();
   const caseState = useCaseState(session?.user ?? null, workflow);
+  const directorsIds = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
+        director => director.ballerineEntityId,
+      ) ?? [],
+    [workflow?.context?.entity?.data?.additionalInfo?.directors],
+  );
+  const ubosIds = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.ubos?.map(ubo => ubo.ballerineEntityId) ??
+      [],
+    [workflow?.context?.entity?.data?.additionalInfo?.ubos],
+  );
+  const { data: endUsers } = useEndUsersByIdsQuery({ ids: [...directorsIds, ...ubosIds] });
 
   const getStatus = (tags: string[]) => {
     if (tags?.includes(StateTag.REVISION)) {
@@ -123,6 +137,9 @@ export const useTabsToBlocksMap = ({
     const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
       childWorkflow?.nextEvents ?? [],
     );
+    const endUser = endUsers?.find(
+      endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+    );
 
     return {
       status,
@@ -131,6 +148,9 @@ export const useTabsToBlocksMap = ({
         childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
         'invokedAt',
       ),
+      aml: {
+        hits: endUser?.amlHits,
+      },
       entityData: childWorkflow?.context?.entity?.data,
       isActionsDisabled:
         !caseState.actionButtonsEnabled || !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
@@ -180,6 +200,7 @@ export const useTabsToBlocksMap = ({
   };
   const directorToIndividualAdapter = ({
     kycSession,
+    aml,
     ...director
   }: NonNullable<
     TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
@@ -188,6 +209,7 @@ export const useTabsToBlocksMap = ({
       status: undefined,
       documents: director?.documents,
       kycSession,
+      aml,
       entityData: director,
       isActionsDisabled: true,
       isLoadingReuploadNeeded: false,
@@ -211,11 +233,6 @@ export const useTabsToBlocksMap = ({
     workflow?.childWorkflows
       ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'individual')
       ?.map(childWorkflowToIndividualAdapter) ?? [];
-  const directorsIds = workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-    director => director.ballerineEntityId,
-  );
-
-  const { data: endUsers } = useEndUsersByIdsQuery({ ids: directorsIds });
 
   const directors =
     workflow?.context?.entity?.data?.additionalInfo?.directors
@@ -227,18 +244,15 @@ export const useTabsToBlocksMap = ({
           ),
       )
       ?.map(director => {
-        const endUser = endUsers?.find(endUser => endUser.id === director.ballerineEntityId);
+        const directorEndUser = endUsers?.find(
+          endUser => endUser.id === director.ballerineEntityId,
+        );
 
         return directorToIndividualAdapter({
           ...director,
-          kycSession: {
-            kyc_session_1: {
-              result: {
-                aml: {
-                  hits: endUser?.amlHits,
-                },
-              },
-            },
+          kycSession: {},
+          aml: {
+            hits: directorEndUser?.amlHits,
           },
         });
       }) ?? [];

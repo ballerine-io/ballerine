@@ -65,6 +65,7 @@ export const useKycBlock = ({
   onReuploadNeeded,
   documents: passedDocuments,
   kycSession,
+  aml,
   entityData,
   status,
   isActionsDisabled,
@@ -113,6 +114,9 @@ export const useKycBlock = ({
           };
     }
   >;
+  aml: {
+    vendor: string;
+  };
   entityData: Record<string, ExtendedJson>;
   status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined;
   isActionsDisabled: boolean;
@@ -198,12 +202,12 @@ export const useKycBlock = ({
     : [];
 
   const amlData = useMemo(() => {
-    if (!kycSessionKeys?.length) {
+    if (!Object.keys(aml ?? {}).length && !kycSessionKeys?.length) {
       return [];
     }
 
     return kycSessionKeys.map(
-      key => kycSession[key]?.result?.vendorResult?.aml ?? kycSession[key]?.result?.aml,
+      key => aml ?? kycSession[key]?.result?.vendorResult?.aml ?? kycSession[key]?.result?.aml,
     );
   }, [kycSession, kycSessionKeys]);
   const vendor = useMemo(() => {
@@ -214,6 +218,7 @@ export const useKycBlock = ({
     const amlVendor = kycSessionKeys
       .map(
         key =>
+          aml?.vendor ??
           kycSession[key]?.result?.vendorResult?.aml?.vendor ??
           kycSession[key]?.result?.aml?.vendor,
       )
