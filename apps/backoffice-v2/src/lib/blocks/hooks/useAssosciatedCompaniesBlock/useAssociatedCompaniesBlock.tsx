@@ -5,6 +5,7 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { associatedCompanyAdapter } from './associated-company-adapter';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -51,6 +52,8 @@ export const useAssociatedCompaniesBlock = ({
           .addBlock()
           .addCell({
             type: 'container',
+            keyProp: 'key',
+            key: keyFactory('container', 'associated-companies'),
             value: createBlocksTyped()
               .addBlock()
               .addCell({
@@ -187,5 +190,5 @@ export const useAssociatedCompaniesBlock = ({
           .flat(1),
       })
       .build();
-  }, [dialog, transformedAssociatedCompanies]);
+  }, [dialog, isAssociatedCompanyKybEnabled, transformedAssociatedCompanies]);
 };

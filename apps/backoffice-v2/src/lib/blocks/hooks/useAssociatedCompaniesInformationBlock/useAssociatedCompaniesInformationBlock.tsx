@@ -2,10 +2,13 @@ import { useMemo } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@ballerine/common';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[]) => {
   return useMemo(() => {
-    if (!Array.isArray(workflows) || !workflows.length) return [];
+    if (!Array.isArray(workflows) || !workflows.length) {
+      return [];
+    }
 
     return workflows.flatMap(workflow => {
       const { additionalInfo, ...entityData } = workflow?.context?.entity?.data ?? {};
@@ -22,6 +25,8 @@ export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[
             .addBlock()
             .addCell({
               type: 'container',
+              keyProp: 'key',
+              key: keyFactory('container', 'associated-companies-information', workflow?.id),
               value: createBlocksTyped()
                 .addBlock()
                 .addCell({

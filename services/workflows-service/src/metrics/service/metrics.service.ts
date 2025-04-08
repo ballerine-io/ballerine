@@ -16,6 +16,9 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Static } from '@sinclair/typebox';
 import { HomeMetricsSchema } from '@/metrics/schemas/home-metrics.schema';
+import { CasesByStatusMetricModel } from '../repository/models/cases-by-status.model';
+import { CasesByRiskLevelMetricModel } from '../repository/models/cases-by-risk-level.model';
+import { CasesActiveDailyModel } from '../repository/models/cases-active-daily.model';
 
 @Injectable()
 export class MetricsService {
@@ -26,6 +29,31 @@ export class MetricsService {
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
     return await this.metricsRepository.getRuntimeStatusCaseCount(params, projectIds);
+  }
+
+  async getCasesMetrics(projectIds: TProjectIds): Promise<{
+    casesByStatus: CasesByStatusMetricModel[];
+    ongoingCasesByRisk: CasesByRiskLevelMetricModel[];
+    approvedCasesByRisk: CasesByRiskLevelMetricModel[];
+  }> {
+    const [casesByStatus, ongoingCasesByRisk, approvedCasesByRisk] = await Promise.all([
+      this.metricsRepository.getCasesByStatus(projectIds),
+      this.metricsRepository.getCasesByRiskLevel(projectIds, 'active'),
+      this.metricsRepository.getCasesByRiskLevel(projectIds, 'completed'),
+    ]);
+
+    return {
+      casesByStatus,
+      ongoingCasesByRisk,
+      approvedCasesByRisk,
+    };
+  }
+
+  async getDailyActiveCases(
+    params: { from: string; to: string },
+    projectIds: TProjectIds,
+  ): Promise<CasesActiveDailyModel[]> {
+    return await this.metricsRepository.getDailyActiveCases(params.from, params.to, projectIds);
   }
 
   async listRuntimesStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {

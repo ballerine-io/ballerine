@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@ballerine/ui';
-import { Edit } from 'lucide-react';
+import { Edit, RefreshCcw } from 'lucide-react';
 import { FunctionComponent } from 'react';
 
 export const EditableDetailsV2Options: FunctionComponent<{
@@ -16,9 +16,13 @@ export const EditableDetailsV2Options: FunctionComponent<{
     enableEditing: {
       disabled: boolean;
     };
+    reRunChecks: {
+      disabled: boolean;
+    };
   };
   onEnableIsEditable: () => void;
-}> = ({ actions, onEnableIsEditable }) => {
+  onReRunChecks: () => void;
+}> = ({ actions, onEnableIsEditable, onReRunChecks }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,6 +43,16 @@ export const EditableDetailsV2Options: FunctionComponent<{
             onClick={onEnableIsEditable}
           >
             <Edit size={16} className="me-2" /> Edit
+          </Button>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={`h-6 w-full`} asChild>
+          <Button
+            variant={'ghost'}
+            className="justify-start text-xs leading-tight aria-disabled:pointer-events-none aria-disabled:opacity-50"
+            aria-disabled={actions.reRunChecks.disabled}
+            onClick={onReRunChecks}
+          >
+            <RefreshCcw size={16} className="me-2" /> Re-run Checks
           </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>

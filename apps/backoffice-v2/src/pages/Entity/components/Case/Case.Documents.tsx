@@ -6,10 +6,10 @@ import { ImageEditor } from '@/common/components/molecules/ImageEditor/ImageEdit
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { isCsv } from '@/common/utils/is-csv/is-csv';
-import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
 import { useDocumentsLogic } from './hooks/useDocuments/useDocumentsLogic';
 import { IDocumentsProps } from './interfaces';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -67,7 +67,6 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
               onTransformed={onTransformed}
             >
               <ImageViewer.SelectedImage
-                key={initialImage?.imageUrl}
                 initialImage={initialImage}
                 ref={selectedImageRef}
                 isLoading={isLoading}
@@ -107,7 +106,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
               return !isCsv(document) ? (
                 <ImageViewer.Item
                   id={id}
-                  key={keyFactory(id, title, fileName, fileType, imageUrl)}
+                  key={keyFactory(id, title, fileName, fileType)}
                   src={imageUrl}
                   fileType={fileType}
                   fileName={fileName}

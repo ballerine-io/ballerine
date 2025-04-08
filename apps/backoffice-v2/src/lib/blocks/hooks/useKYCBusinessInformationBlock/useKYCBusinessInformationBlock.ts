@@ -1,4 +1,4 @@
-import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 
 export const useKYCBusinessInformationBlock = () => {
@@ -15,7 +15,7 @@ export const useKYCBusinessInformationBlock = () => {
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
 
-  const blocks = useCaseInfoBlock({
+  const blocks = useEntityInfoBlock({
     entityDataAdditionalInfo,
     entity: workflow?.context?.entity,
     workflow,

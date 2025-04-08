@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { documentsQueryKeys } from '../../query-keys';
+import { checkIsNonEmptyArrayOfNonEmptyStrings } from '@ballerine/common';
 
 export const useDocumentsByEntityIdsAndWorkflowIdQuery = ({
   workflowId,
@@ -9,8 +10,10 @@ export const useDocumentsByEntityIdsAndWorkflowIdQuery = ({
   workflowId: string;
   entityIds: string[];
 }) => {
-  const isEnabled = useMemo(() => !!workflowId && !!entityIds.length, [workflowId, entityIds]);
-
+  const isEnabled = useMemo(
+    () => !!workflowId && checkIsNonEmptyArrayOfNonEmptyStrings(entityIds),
+    [workflowId, entityIds],
+  );
   const query = useQuery({
     ...documentsQueryKeys.listByEntityIdsAndWorkflowId({ workflowId, entityIds }),
     enabled: isEnabled,
