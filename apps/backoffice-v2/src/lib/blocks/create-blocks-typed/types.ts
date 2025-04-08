@@ -41,7 +41,7 @@ export type TContainerCell = {
 
 export type THeadingCell = {
   type: 'heading';
-  value: string;
+  value: ReactNode;
   props?: ComponentProps<'h2'>;
 };
 

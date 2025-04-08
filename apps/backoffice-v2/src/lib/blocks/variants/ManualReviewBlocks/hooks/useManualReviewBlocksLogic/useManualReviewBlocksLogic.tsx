@@ -66,7 +66,7 @@ export const useManualReviewBlocksLogic = () => {
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
-  const documentsBlocks = useDocumentBlocks({
+  const { businessDocumentBlocks: documentsBlocks } = useDocumentBlocks({
     workflow,
     parentMachine: workflow?.context?.parentMachine,
     noAction,

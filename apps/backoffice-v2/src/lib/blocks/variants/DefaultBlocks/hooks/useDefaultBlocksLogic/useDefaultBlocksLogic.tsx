@@ -63,6 +63,7 @@ import { TAllBlocks } from './constants';
 import { titleCase } from 'string-ts';
 import { valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
+import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -187,7 +188,7 @@ export const useDefaultBlocksLogic = () => {
     isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
   });
 
-  const parentDocumentBlocks = useDocumentBlocks({
+  const { businessDocumentBlocks, uboDocumentBlocks, directorDocumentBlocks } = useDocumentBlocks({
     workflow,
     parentMachine: workflow?.context?.parentMachine,
     noAction,
@@ -630,7 +631,9 @@ export const useDefaultBlocksLogic = () => {
       mainRepresentativeBlock,
       mapBlock,
       headquartersAddressWithContainerBlock,
-      parentDocumentBlocks,
+      businessDocumentBlocks,
+      uboDocumentBlocks,
+      directorDocumentBlocks,
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
       websiteMonitoringBlocks,
@@ -658,7 +661,9 @@ export const useDefaultBlocksLogic = () => {
     mainRepresentativeBlock,
     mapBlock,
     headquartersAddressWithContainerBlock,
-    parentDocumentBlocks,
+    businessDocumentBlocks,
+    uboDocumentBlocks,
+    directorDocumentBlocks,
     processingDetailsBlock,
     registryInfoBlock,
     storeInfoBlock,
