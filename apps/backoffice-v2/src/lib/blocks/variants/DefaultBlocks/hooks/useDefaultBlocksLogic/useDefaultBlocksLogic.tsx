@@ -27,7 +27,7 @@ import {
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useBankAccountVerificationBlock } from '@/lib/blocks/hooks/useBankAccountVerificationBlock/useBankAccountVerificationBlock';
 import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
-import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
 import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
@@ -62,6 +62,9 @@ import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
+import { titleCase } from 'string-ts';
+import { valueOrNA } from '@ballerine/common';
+import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -130,7 +133,6 @@ export const useDefaultBlocksLogic = () => {
     mainContact,
     openCorporate: _openCorporate,
     associatedCompanies: _associatedCompanies,
-    ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
 
@@ -231,28 +233,35 @@ export const useDefaultBlocksLogic = () => {
     },
   });
 
-  const entityInfoBlock = useCaseInfoBlock({
+  const entityInfoBlock = useEntityInfoBlock({
     entity: workflow?.context?.entity,
-    entityDataAdditionalInfo,
     workflow,
+  });
+
+  const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({
+    entity: workflow?.context?.entity,
+    workflow,
+    predefinedOrder:
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder ?? [],
   });
 
   const mapBlock = useMapBlock({
     address: getAddressDeep(registryInfo, {
       propertyName: 'registeredAddressInFull',
     }),
-    entityType: workflow?.context?.entity?.type,
+    title: `${valueOrNA(titleCase(workflow?.context?.entity?.type ?? ''))} Address`,
     workflow,
   });
 
-  const addressBlock = useAddressBlock({
+  const headquartersAddressBlock = useAddressBlock({
     address: workflow?.context?.entity?.data?.additionalInfo?.headquarters,
-    entityType: workflow?.context?.entity?.type,
+    title: `${valueOrNA(titleCase(workflow?.context?.entity?.type ?? ''))} Headquarters Address`,
     workflow,
   });
 
-  const addressWithContainerBlock = useMemo(() => {
-    if (!addressBlock?.length) {
+  const headquartersAddressWithContainerBlock = useMemo(() => {
+    if (!headquartersAddressBlock?.length) {
       return [];
     }
 
@@ -260,10 +269,30 @@ export const useDefaultBlocksLogic = () => {
       .addBlock()
       .addCell({
         type: 'block',
-        value: addressBlock.flat(1),
+        value: headquartersAddressBlock.flat(1),
       })
       .build();
-  }, [addressBlock]);
+  }, [headquartersAddressBlock]);
+
+  const entityAddressBlock = useAddressBlock({
+    address: workflow?.context?.entity?.data?.address,
+    title: `${valueOrNA(titleCase(workflow?.context?.entity?.type ?? ''))} Address`,
+    workflow,
+  });
+
+  const entityAddressWithContainerBlock = useMemo(() => {
+    if (!entityAddressBlock?.length) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: entityAddressBlock.flat(1),
+      })
+      .build();
+  }, [entityAddressBlock]);
 
   const storeInfoBlock = useStoreInfoBlock({
     storeInfo,
@@ -597,7 +626,7 @@ export const useDefaultBlocksLogic = () => {
       mainContactBlock,
       mainRepresentativeBlock,
       mapBlock,
-      addressWithContainerBlock,
+      headquartersAddressWithContainerBlock,
       parentDocumentBlocks,
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
@@ -612,6 +641,8 @@ export const useDefaultBlocksLogic = () => {
       bankAccountVerificationBlock,
       commercialCreditCheckBlock,
       aiSummaryBlock,
+      entityAddressWithContainerBlock,
+      entityAdditionalInfoBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -626,7 +657,7 @@ export const useDefaultBlocksLogic = () => {
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
-    addressWithContainerBlock,
+    headquartersAddressWithContainerBlock,
     parentDocumentBlocks,
     processingDetailsBlock,
     registryInfoBlock,
@@ -647,6 +678,8 @@ export const useDefaultBlocksLogic = () => {
     bankAccountVerificationBlock,
     commercialCreditCheckBlock,
     aiSummaryBlock,
+    entityAddressWithContainerBlock,
+    entityAdditionalInfoBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({

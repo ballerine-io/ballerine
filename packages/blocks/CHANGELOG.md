@@ -1,5 +1,11 @@
 # @ballerine/blocks
 
+## 0.2.40
+
+### Patch Changes
+
+- updated way to handle React keys for blocks
+
 ## 0.2.39
 
 ### Patch Changes

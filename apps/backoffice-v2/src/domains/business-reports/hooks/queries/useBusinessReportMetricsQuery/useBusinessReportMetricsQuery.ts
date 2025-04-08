@@ -40,7 +40,7 @@ export const useBusinessReportMetricsQuery = ({ from, to }: { from?: string; to?
   return useQuery({
     queryKey: ['business-report-metrics', from, to],
     queryFn: () => fetchBusinessReportMetrics({ from, to }),
-    enabled: isAuthenticated,
+    enabled: !!from && !!to && isAuthenticated,
     keepPreviousData: true,
   });
 };
