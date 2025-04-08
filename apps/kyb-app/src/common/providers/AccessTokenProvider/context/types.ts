@@ -1,6 +1,6 @@
 export interface IAccessTokenContext {
-  wfIdToken: string | null;
+  workflowId: string | null;
   accessToken: string | null;
-  setWfIdToken: (wfIdToken: string) => void;
+  setWorkflowId: (workflowId: string) => void;
   setAccessToken: (accessToken: string) => void;
 }

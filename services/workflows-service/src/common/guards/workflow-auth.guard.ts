@@ -7,7 +7,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 @Injectable()
-export class CombinedAuthGuard implements CanActivate {
+export class WorkflowAuthGuard implements CanActivate {
   constructor(
     private readonly cls: ClsService,
     private readonly workflowService: WorkflowService,
@@ -16,8 +16,7 @@ export class CombinedAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
-    // const workflowId = typeof req.query['wf-id'] === 'string' ? req.query['wf-id'] : null;
-    const workflowId = typeof req.query['wf-id'] === 'string' ? req.query['wf-id'] : null;
+    const workflowId = typeof req.query['workflowId'] === 'string' ? req.query['workflowId'] : null;
 
     const authenticatedEntity = req.user as AuthenticatedEntity & { projectIds?: TProjectIds };
 
