@@ -234,29 +234,34 @@ export const useTabsToBlocksMap = ({
       ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'individual')
       ?.map(childWorkflowToIndividualAdapter) ?? [];
 
-  const directors =
-    workflow?.context?.entity?.data?.additionalInfo?.directors
-      ?.filter(
-        director =>
-          !workflow?.childWorkflows?.some(
-            childWorkflow =>
-              childWorkflow.context?.entity?.data?.ballerineEntityId === director.ballerineEntityId,
-          ),
-      )
-      ?.map(director => {
-        const directorEndUser = endUsers?.find(
-          endUser => endUser.id === director.ballerineEntityId,
-        );
+  const deDupedDirectors = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.directors
+        ?.filter(
+          director =>
+            !workflow?.childWorkflows?.some(
+              childWorkflow =>
+                childWorkflow.context?.entity?.data?.ballerineEntityId ===
+                director.ballerineEntityId,
+            ),
+        )
+        ?.map(director => {
+          const directorEndUser = endUsers?.find(
+            endUser => endUser.id === director.ballerineEntityId,
+          );
 
-        return directorToIndividualAdapter({
-          ...director,
-          kycSession: {},
-          aml: {
-            hits: directorEndUser?.amlHits,
-          },
-        });
-      }) ?? [];
-  const individuals = [...childWorkflows, ...directors];
+          return directorToIndividualAdapter({
+            ...director,
+            kycSession: {},
+            aml: {
+              hits: directorEndUser?.amlHits,
+            },
+          });
+        }) ?? [],
+    [workflow?.context?.entity?.data?.additionalInfo?.directors, endUsers],
+  );
+
+  const individuals = [...childWorkflows, ...deDupedDirectors];
 
   const defaultTabsMap = {
     [Tab.SUMMARY]: [
