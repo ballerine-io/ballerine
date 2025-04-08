@@ -286,9 +286,7 @@ export class HookCallbackHandlerService {
 
     const insightValues = Object.values(insights).flatMap(category => Object.entries(category));
 
-    const unknownValues = Object.keys(insightValues).filter(
-      value => !ALL_KNOWN_CHECKS.includes(value),
-    );
+    const unknownValues = insightValues.filter(([check]) => !ALL_KNOWN_CHECKS.includes(check));
 
     if (unknownValues.length > 0) {
       this.sentryService.captureException(
