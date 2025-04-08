@@ -91,7 +91,7 @@ export class CollectionFlowStateService {
       entityType:
         entities.find(entity => entity.entityId === document.endUserId)?.entityType ||
         entities.find(entity => entity.entityId === document.businessId)?.entityType,
-    }));
+    })) as Array<Document & { entityType: TEntityType }>;
 
     if (!getCollectionFlowState(context)) {
       throw new NotFoundException('Collection flow state not found');
@@ -125,11 +125,11 @@ export class CollectionFlowStateService {
               state: CollectionFlowStepStatesEnum.revision,
             });
           }
-        } else {
-          if (!document.entityType) {
-            throw new Error(`Entity type not found on document ${document.id}`);
-          }
 
+          return;
+        }
+
+        if ([EntityType.director, EntityType.ubo].includes(document.entityType)) {
           const entityFieldsDefinition = findEntityFieldsDefinition(
             step.elements,
             document.entityType,
@@ -146,7 +146,11 @@ export class CollectionFlowStateService {
               state: CollectionFlowStepStatesEnum.revision,
             });
           }
+
+          return;
         }
+
+        throw new Error(`Unknown entity type: ${document.entityType}`);
       });
     });
 
