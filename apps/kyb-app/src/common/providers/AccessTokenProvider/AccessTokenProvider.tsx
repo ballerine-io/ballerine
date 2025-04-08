@@ -10,26 +10,26 @@ interface IAccessTokenProviderProps {
 
 export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => {
   const [accessToken, setAccessToken] = useState<string | null>(() => getAccessToken());
-  const [wfIdToken, setWfIdToken] = useState<string | null>(() => getAccessToken('wf-id'));
+  const [workflowId, setWorkflowId] = useState<string | null>(() => getAccessToken('workflowId'));
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const context = useMemo(
     () => ({
-      wfIdToken,
+      workflowId,
       accessToken,
       setAccessToken,
-      setWfIdToken,
+      setWorkflowId,
     }),
-    [wfIdToken, accessToken, setWfIdToken, setAccessToken],
+    [workflowId, accessToken, setWorkflowId, setAccessToken],
   );
 
   useEffect(() => {
-    if (wfIdToken) {
-      const previousToken = searchParams.get('wf-id');
+    if (workflowId) {
+      const previousToken = searchParams.get('workflowId');
 
-      if (previousToken !== wfIdToken) {
-        setSearchParams({ 'wf-id': wfIdToken });
+      if (previousToken !== workflowId) {
+        setSearchParams({ workflowId: workflowId });
       }
 
       return;
@@ -42,13 +42,13 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
         setSearchParams({ token: accessToken });
       }
     }
-  }, [wfIdToken, accessToken, searchParams, setSearchParams]);
+  }, [workflowId, accessToken, searchParams, setSearchParams]);
 
   useEffect(() => {
-    if (!accessToken && !wfIdToken) {
+    if (!accessToken && !workflowId) {
       throw new AccessTokenIsMissingError();
     }
-  }, [accessToken, wfIdToken]);
+  }, [accessToken, workflowId]);
 
   return <AccessTokenContext.Provider value={context}>{children}</AccessTokenContext.Provider>;
 };

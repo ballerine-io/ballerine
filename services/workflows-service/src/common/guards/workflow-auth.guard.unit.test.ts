@@ -2,7 +2,7 @@ import { ClsService } from 'nestjs-cls';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { WorkflowRuntimeData, WorkflowRuntimeDataToken } from '@prisma/client';
 
-import { CombinedAuthGuard } from './combined-auth.guard';
+import { WorkflowAuthGuard } from './workflow-auth.guard';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
@@ -10,8 +10,8 @@ type PartialMock<T> = {
   [P in keyof T]?: jest.Mock;
 };
 
-describe('CombinedAuthGuard', () => {
-  let guard: CombinedAuthGuard;
+describe('WorkflowAuthGuard', () => {
+  let guard: WorkflowAuthGuard;
   let workflowTokenService: PartialMock<WorkflowTokenService>;
   let workflowService: PartialMock<WorkflowService>;
 
@@ -38,8 +38,8 @@ describe('CombinedAuthGuard', () => {
       has: jest.fn(),
     } as unknown as ClsService;
 
-    // Create a new instance of CombinedAuthGuard directly
-    guard = new CombinedAuthGuard(
+    // Create a new instance of WorkflowAuthGuard directly
+    guard = new WorkflowAuthGuard(
       mockClsService,
       mockWorkflowService as unknown as WorkflowService,
       mockWorkflowTokenService as unknown as WorkflowTokenService,

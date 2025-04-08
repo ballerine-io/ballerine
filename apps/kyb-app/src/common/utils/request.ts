@@ -7,7 +7,7 @@ import { isExceptionWillBeHandled } from './helpers';
 const getWorkflowIdFromUrl = () => {
   const urlParams = new URLSearchParams(window.location.search);
 
-  return urlParams.get('wf-id');
+  return urlParams.get('workflowId');
 };
 
 // Create base instance
@@ -28,7 +28,7 @@ const instance = ky.create({
       request => {
         request.headers.set(
           'Authorization',
-          `Bearer ${getAccessToken('wf-id') ?? getAccessToken()}`,
+          `Bearer ${getAccessToken('workflowId') ?? getAccessToken()}`,
         );
       },
     ],
@@ -93,7 +93,8 @@ const addWorkflowId = (options: Options = {}): Options => {
   const searchParams = new URLSearchParams(
     options.searchParams as string | URLSearchParams | Record<string, string> | undefined,
   );
-  searchParams.append('wf-id', workflowId);
+
+  searchParams.append('workflowId', workflowId);
 
   return {
     ...options,
