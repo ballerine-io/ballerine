@@ -63,6 +63,9 @@ export const useTabsToBlocksMap = ({
     bankAccountVerificationBlock,
     commercialCreditCheckBlock,
     aiSummaryBlock,
+    entityAdditionalInfoBlock,
+    headquartersAddressWithContainerBlock,
+    entityAddressWithContainerBlock,
   } = blocks;
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
@@ -255,9 +258,12 @@ export const useTabsToBlocksMap = ({
       ...ubosRegistryProvidedBlock,
       ...companySanctionsBlock,
       ...entityInfoBlock,
+      ...entityAddressWithContainerBlock,
+      ...headquartersAddressWithContainerBlock,
+      ...entityAdditionalInfoBlock,
+      ...mainRepresentativeBlock,
       ...registryInfoBlock,
       // ...mapBlock,
-      ...addressWithContainerBlock,
       ...bankingDetailsBlock,
       ...bankAccountVerificationBlock,
       ...commercialCreditCheckBlock,

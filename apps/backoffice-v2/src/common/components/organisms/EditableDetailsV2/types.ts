@@ -23,6 +23,9 @@ export interface IBaseEditableDetailsV2Config {
     enableEditing: {
       disabled: boolean;
     };
+    reRunChecks: {
+      disabled: boolean;
+    };
     cancel: {
       disabled: boolean;
     };
@@ -48,7 +51,7 @@ export type TEditableDetailsV2Config =
   | IEditableDetailsV2ConfigWithWhitelist;
 
 export interface IEditableDetailsV2Props {
-  title: string;
+  title?: string;
   fields: Array<{
     id?: string;
     title: string;
@@ -69,8 +72,9 @@ export interface IEditableDetailsV2Props {
     path: string;
     root: string;
   }>;
-  onSubmit: (values: Record<string, any>) => void;
-  onEnableIsEditable: () => void;
-  onCancel: () => void;
+  onSubmit: (values: Record<string, any>, toggleOffIsEditable: () => void) => void;
+  onEnableIsEditable: (toggleOnIsEditable: () => void) => void;
+  onReRunChecks: () => void;
+  onCancel: (toggleOffIsEditable: () => void) => void;
   config: TEditableDetailsV2Config;
 }

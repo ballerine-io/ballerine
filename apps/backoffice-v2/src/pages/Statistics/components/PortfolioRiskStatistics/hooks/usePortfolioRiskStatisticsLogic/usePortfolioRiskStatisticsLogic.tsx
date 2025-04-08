@@ -1,24 +1,27 @@
+import { SortDirection } from '@ballerine/common';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { useCallback, useMemo, useState } from 'react';
-import { SortDirection } from '@ballerine/common';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
+import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import {
   riskLevelToBackgroundColor,
   riskLevelToFillColor,
 } from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
-import { z } from 'zod';
-import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { StatisticsSearchSchema } from '@/pages/Statistics/hooks/useStatisticsLogic';
-import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useStatisticsLogic } from '@/pages/Statistics/hooks/useStatisticsLogic';
 
 export const usePortfolioRiskStatisticsLogic = ({
   violationCounts,
-  userSelectedDate,
-}: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'> & { userSelectedDate: Date }) => {
+  from,
+  to,
+}: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'> & {
+  from: ReturnType<typeof useStatisticsLogic>['from'];
+  to: ReturnType<typeof useStatisticsLogic>['to'];
+}) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');
   const onSortRiskIndicators = useCallback(
@@ -51,9 +54,6 @@ export const usePortfolioRiskStatisticsLogic = ({
   );
   const locale = useLocale();
   const navigate = useNavigate();
-
-  const from = dayjs(userSelectedDate).format('YYYY-MM-DD');
-  const to = dayjs(userSelectedDate).add(1, 'month').format('YYYY-MM-DD');
 
   const { data: businessReports } = useBusinessReportsQuery({
     isAlert: true,

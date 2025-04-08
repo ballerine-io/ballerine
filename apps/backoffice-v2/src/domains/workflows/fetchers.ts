@@ -215,6 +215,7 @@ export const fetchWorkflowById = async ({
   filterId: string;
 }) => {
   const [workflow, error] = await apiClient({
+    // TODO: filterId supposedly doesn't do anything on the backend in this endpoint
     endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
     schema: WorkflowByIdSchema.transform(data => ({
