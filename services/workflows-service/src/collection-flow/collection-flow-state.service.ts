@@ -187,7 +187,7 @@ export class CollectionFlowStateService {
 
     if (
       collectionFlowState.steps?.some(
-        (step: TCollectionFlowState) => step.state === CollectionFlowStepStatesEnum.revision,
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.revision,
       )
     ) {
       return CollectionFlowStatusesEnum.revision;
