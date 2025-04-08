@@ -78,10 +78,6 @@ export class CollectionFlowStateService {
     );
   }
 
-  async updateCollectionFlowState() {
-    // TODO: Implement
-  }
-
   private async computeCollectionFlowState(
     uiDefinition: UiDefinition,
     _context: AnyRecord,
