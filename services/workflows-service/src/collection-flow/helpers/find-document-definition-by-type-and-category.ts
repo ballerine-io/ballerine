@@ -10,14 +10,13 @@ export const findDocumentDefinitionByTypeAndCategory = (
     elements: Array<IFormElement<any>>,
   ): IFormElement<any> | null => {
     for (const element of elements) {
-      if (element.element === 'documentfield') {
-        if (
-          element.params?.template?.type === type &&
-          element.params?.template?.category === category
-        ) {
-          documentDefinition = element;
-          break;
-        }
+      if (
+        element.element === 'documentfield' &&
+        element.params?.template?.type === type &&
+        element.params?.template?.category === category
+      ) {
+        documentDefinition = element;
+        break;
       }
 
       if (element.children) {
