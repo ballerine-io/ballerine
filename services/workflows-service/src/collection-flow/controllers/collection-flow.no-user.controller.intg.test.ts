@@ -42,6 +42,8 @@ import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+import { CollectionFlowStateService } from '../collection-flow-state.service';
+
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
   let prismaClient: PrismaService;
@@ -94,6 +96,7 @@ describe('CollectionFlowSignupController', () => {
         CustomerRepository,
         EndUserRepository,
         WorkflowLogService,
+        { provide: CollectionFlowStateService, useValue: noop },
       ],
     }).compile();
 

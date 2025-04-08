@@ -2,6 +2,7 @@ import { AnyRecord } from '@ballerine/common';
 import { Document } from '@prisma/client';
 
 export interface IUIDefinitionPage {
+  stateName: string;
   elements: IFormElement[];
 }
 

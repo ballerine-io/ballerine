@@ -40,6 +40,8 @@ import { env } from '@/env';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+import { CollectionFlowStateService } from './collection-flow-state.service';
+import { DocumentService } from '@/document/document.service';
 
 const deps: Provider[] = [
   {
@@ -118,6 +120,10 @@ const deps: Provider[] = [
     provide: ApiKeyService,
     useValue: noop,
   },
+  {
+    provide: DocumentService,
+    useValue: noop,
+  },
 ];
 
 describe('CollectionFlowService', () => {
@@ -129,6 +135,7 @@ describe('CollectionFlowService', () => {
   let customerRepository: CustomerRepository;
   let endUserRepository: EndUserRepository;
   let uiDefinitionRepository: UiDefinitionRepository;
+  let collectionFlowStateService: CollectionFlowStateService;
 
   let customer: Customer;
   let project: Project;
@@ -154,11 +161,13 @@ describe('CollectionFlowService', () => {
         EndUserRepository,
         MerchantMonitoringClient,
         WorkflowLogService,
+        CollectionFlowStateService,
       ],
     }).compile();
 
     prismaClient = module.get<PrismaService>(PrismaService);
     collectionFlowService = module.get<CollectionFlowService>(CollectionFlowService);
+    collectionFlowStateService = module.get<CollectionFlowStateService>(CollectionFlowStateService);
     workflowTokenService = module.get<WorkflowTokenService>(WorkflowTokenService);
     workflowDefinitionRepository = module.get<WorkflowDefinitionRepository>(
       WorkflowDefinitionRepository,
@@ -236,6 +245,13 @@ describe('CollectionFlowService', () => {
         workflowRuntimeDataId: workflowRuntimeData.id,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
         endUserId: endUser.id,
+      });
+
+      // Mock the getCollectionFlowState method
+      jest.spyOn(collectionFlowStateService, 'getCollectionFlowState').mockResolvedValue({
+        steps: [],
+        status: 'pending',
+        currentStep: '',
       });
 
       const context = await collectionFlowService.getCollectionFlowContext(token);
