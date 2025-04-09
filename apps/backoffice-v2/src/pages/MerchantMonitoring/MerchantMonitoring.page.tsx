@@ -20,7 +20,7 @@ import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { Search } from '@/common/components/molecules/Search';
 import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapper/DemoAccessWrapper';
@@ -153,14 +153,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         </div>
         <div className={`flex items-center space-x-4`}>
           <Search value={search} onChange={onSearch} />
-          <DateRangePicker
-            value={{
-              from: dates.from ? new Date(dates.from) : undefined,
-              to: dates.to ? new Date(dates.to) : undefined,
-            }}
-            placeholder="Select a date range"
-            onChange={onDatesChange}
-          />
+          <DateRangePicker value={dates} onChange={onDatesChange} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>

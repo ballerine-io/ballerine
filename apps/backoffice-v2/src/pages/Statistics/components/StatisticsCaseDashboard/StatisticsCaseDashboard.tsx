@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { CaseAnalyticsOutput } from '@/domains/metrics/fetchers';
 import { useCaseDailyStats } from '@/domains/metrics/hooks/queries/useCaseDailyStats/useCaseDailyStats';
 import { useStatisticsLogic } from '../../hooks/useStatisticsLogic';

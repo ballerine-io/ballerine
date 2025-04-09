@@ -3,14 +3,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { DayPicker, DayPickerRangeProps } from 'react-day-picker';
 import { buttonVariants } from '../../atoms/Button/Button';
-import { Button } from '@ballerine/ui';
 
-export type CalendarProps = DayPickerRangeProps;
+export type CalendarProps = DayPickerRangeProps & { bottomActions?: React.ReactNode };
 
 export const Calendar = ({
   className,
   classNames,
   showOutsideDays = true,
+  bottomActions,
   ...props
 }: CalendarProps) => {
   return (
@@ -62,17 +62,8 @@ export const Calendar = ({
         }}
         {...props}
       />
-      <div className={`flex w-full justify-end`}>
-        <Button
-          variant={`ghost`}
-          className={ctw(`!mt-0 h-8 select-none font-normal hover:bg-transparent`, {
-            'pointer-events-none opacity-50': !(props.selected?.from && props.selected?.to),
-          })}
-          onClick={e => props.onSelect?.({ from: undefined, to: undefined }, new Date(), {}, e)}
-        >
-          Clear dates
-        </Button>
-      </div>
+
+      {bottomActions && <div className={`ml-auto`}>{bottomActions}</div>}
     </div>
   );
 };

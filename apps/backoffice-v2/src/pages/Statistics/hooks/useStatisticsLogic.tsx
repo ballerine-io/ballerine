@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { useEffect, type ComponentProps } from 'react';
 import { z } from 'zod';
 
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
@@ -17,22 +17,14 @@ export const useStatisticsLogic = () => {
   });
 
   useEffect(() => {
-    const now = dayjs();
-    const yesterday = now.subtract(1, 'day');
-
-    const toSet: { from?: string; to?: string } = {};
-
-    if (!from || dayjs(from).isAfter(yesterday)) {
-      toSet.from = dayjs().subtract(7, 'day').format('YYYY-MM-DD');
+    if (from || to) {
+      return;
     }
 
-    if (!to || dayjs(to).isAfter(now)) {
-      toSet.to = dayjs().format('YYYY-MM-DD');
-    }
-
-    if (Object.keys(toSet).length > 0) {
-      setSearchParams(toSet);
-    }
+    setSearchParams({
+      from: dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
   }, []);
 
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();

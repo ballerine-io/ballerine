@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
 import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
@@ -32,6 +32,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import { BusinessReportsFilterParams } from '@/domains/business-reports/fetchers';
 import { TCustomer } from '@/domains/customer/fetchers';
+import { useLocation } from 'react-router-dom';
 
 const useExportCSVMutation = ({
   reportQuery,
@@ -108,15 +109,17 @@ export const useMerchantMonitoringLogic = () => {
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
 
   useEffect(() => {
-    if (from || to) {
+    if (from || to || !customer) {
       return;
     }
 
-    setSearchParams({
-      from: dayjs().subtract(90, 'day').format('YYYY-MM-DD'),
-      to: dayjs().format('YYYY-MM-DD'),
-    });
-  }, [from, to, setSearchParams]);
+    if (!customer.config?.demoAccessDetails) {
+      setSearchParams({
+        from: dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+        to: dayjs().format('YYYY-MM-DD'),
+      });
+    }
+  }, []);
 
   const open = isCreating ?? false;
   const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
@@ -137,14 +140,13 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
     findings,
     riskLevels: riskLevels ?? [],
-    // TODO: fix type
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
         status === 'in-progress' ? ['in-progress', 'quality-control', 'failed'] : [status],
       ) as TReportStatusValue[],
     from,
-    to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
+    to,
     ...(isAlert !== 'All' && { isAlert: DISPLAY_TEXT_TO_IS_ALERT[isAlert] }),
   };
 
@@ -218,6 +220,14 @@ export const useMerchantMonitoringLogic = () => {
     totalPages: data?.totalPages ?? 0,
   });
 
+  const dates = useMemo(
+    () => ({
+      from: from ? dayjs(from).toDate() : undefined,
+      to: to ? dayjs(to).toDate() : undefined,
+    }),
+    [from, to],
+  );
+
   const onDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
@@ -278,7 +288,7 @@ export const useMerchantMonitoringLogic = () => {
     findings,
     isAlert,
     IS_ALERT_TO_DISPLAY_TEXT,
-    dates: { from, to },
+    dates,
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,
