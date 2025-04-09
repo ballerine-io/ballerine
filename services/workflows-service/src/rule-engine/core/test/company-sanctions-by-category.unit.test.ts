@@ -270,4 +270,127 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
     expect(validationResults[0]!.status).toBe('FAILED');
     expect(validationResults[0]!.error).toBeUndefined();
   });
+
+  it('should handle real-world data with financial report category', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['financial report', 'compliance notice'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
+          value: {
+            category: 'financial report',
+          },
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
+  });
+
+  it('should handle real-world data with multiple source categories and threshold', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['financial report', 'compliance notice'],
+                  },
+                  {
+                    categories: ['compliance notice'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
+          value: {
+            category: 'compliance notice',
+            threshold: 2,
+          },
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
+  });
+
+  it('should handle real-world data with nested company categories', async () => {
+    const mockData = {
+      pluginsOutput: {
+        companySanctions: {
+          data: [
+            {
+              entity: {
+                sources: [
+                  {
+                    categories: ['compliance notice'],
+                  },
+                ],
+                linkedCompanies: [
+                  {
+                    categories: ['software development'],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const ruleSet: RuleSet = {
+      operator: 'and',
+      rules: [
+        {
+          operator: OPERATION.COMPANY_SANCTIONS_CATEGORIES,
+          value: {
+            category: 'compliance notice',
+          },
+        },
+      ],
+    };
+
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+
+    expect(validationResults).toBeDefined();
+    expect(validationResults).toHaveLength(1);
+    expect(validationResults[0]!.status).toBe('PASSED');
+  });
 });

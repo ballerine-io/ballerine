@@ -38,7 +38,7 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     value: AmlCheckSchema,
   }),
   z.object({
-    key: z.string(),
+    key: z.string().optional(),
     operator: z.literal(OPERATION.IDV_CHECK),
     value: IdvCheckSchema,
   }),

@@ -59,7 +59,7 @@ class IdvCheck extends BaseOperator<string[], IdvCheckParams> {
       .filter((status): status is string => typeof status === 'string' && status !== '');
 
     if (isEmpty(decisions)) {
-      throw new DataValueNotFoundError(idvRule.key);
+      throw new Error('No decisions found');
     }
 
     return decisions;
