@@ -2,9 +2,9 @@ import { TProjectIds } from '@/types';
 import { Prisma } from '@prisma/client';
 
 export const buildDailyLiveCasesQuery = (
-  fromDate: string,
-  toDate: string,
   projectIds: TProjectIds,
+  fromDate?: string,
+  toDate?: string,
 ) => Prisma.sql`
 WITH RECURSIVE dates AS (
   SELECT date_trunc('day', ${fromDate}::timestamp) as date
