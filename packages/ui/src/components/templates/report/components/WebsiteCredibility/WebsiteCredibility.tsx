@@ -516,13 +516,16 @@ export const WebsiteCredibility: FunctionComponent<{
             })}
           >
             {!!pricingRiskIndicators?.length &&
-              pricingRiskIndicators.map(({ pricingViolationExamples }) =>
-                pricingViolationExamples?.map(example => (
-                  <li key={example} className="list-decimal">
-                    {example}
-                  </li>
-                )),
-              )}
+              pricingRiskIndicators.map(({ reason, sourceUrl }) => (
+                <li key={reason} className="list-decimal">
+                  {reason}
+                  {!!sourceUrl && (
+                    <span className={'ms-4'}>
+                      (<BallerineLink href={sourceUrl}>source</BallerineLink>)
+                    </span>
+                  )}
+                </li>
+              ))}
             {!pricingRiskIndicators?.length && (
               <li>
                 No indications of suspicious pricing or anomalies in the website’s pricing were
