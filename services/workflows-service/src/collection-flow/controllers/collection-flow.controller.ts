@@ -12,7 +12,7 @@ import {
   type ITokenScopeWithEndUserId,
   TokenScope,
 } from '@/common/decorators/token-scope.decorator';
-import { UseWorkflowAuthGuard } from '@/common/guards/workflow-auth.decorator';
+import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
@@ -33,17 +33,17 @@ export class CollectionFlowController {
     protected readonly endUserService: EndUserService,
   ) {}
 
-  @common.Get('/customer')
+  @common.Get('/customer/:workflowId')
   async getCustomer(@TokenScope() tokenScope: ITokenScope) {
     return this.collectionFlowService.getCustomerDetails(tokenScope.projectId);
   }
 
-  @common.Get('/user')
+  @common.Get('/user/:workflowId')
   async getUser(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
     return this.collectionFlowService.getUser(tokenScope.endUserId, tokenScope.projectId);
   }
 
-  @common.Get('/active-flow')
+  @common.Get('/active-flow/:workflowId')
   async getActiveFlow(@TokenScope() tokenScope: ITokenScope) {
     const activeWorkflow = await this.collectionFlowService.getActiveFlow(
       tokenScope.workflowRuntimeDataId,
@@ -71,12 +71,12 @@ export class CollectionFlowController {
     }
   }
 
-  @common.Get('/context')
+  @common.Get('/context/:workflowId')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
     return this.collectionFlowService.getCollectionFlowContext(tokenScope);
   }
 
-  @common.Get('/configuration/:language')
+  @common.Get('/configuration/:language/:workflowId')
   async getFlowConfiguration(
     @TokenScope() tokenScope: ITokenScope,
     @common.Param() params: GetFlowConfigurationInputDto,
@@ -100,7 +100,7 @@ export class CollectionFlowController {
     );
   }
 
-  @common.Put('/language')
+  @common.Put('/language/:workflowId')
   async updateFlowLanguage(
     @common.Body() { language }: UpdateFlowLanguageDto,
     @TokenScope() tokenScope: ITokenScope,
@@ -108,12 +108,12 @@ export class CollectionFlowController {
     return await this.collectionFlowService.updateWorkflowRuntimeLanguage(language, tokenScope);
   }
 
-  @common.Put('/sync')
+  @common.Put('/sync/:workflowId')
   async syncWorkflow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
     return await this.collectionFlowService.syncWorkflow(payload, tokenScope);
   }
 
-  @common.Patch('/sync/context')
+  @common.Patch('/sync/context/:workflowId')
   async updateContextById(
     @common.Body() { context }: UpdateContextInputDto,
     @TokenScope() tokenScope: ITokenScope,
@@ -132,7 +132,7 @@ export class CollectionFlowController {
     );
   }
 
-  @common.Post('/send-event')
+  @common.Post('/send-event/:workflowId')
   async finishFlow(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     return await this.workflowService.event(
       {
@@ -144,7 +144,7 @@ export class CollectionFlowController {
     );
   }
 
-  @common.Post('/final-submission')
+  @common.Post('/final-submission/:workflowId')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
       const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
@@ -304,7 +304,7 @@ export class CollectionFlowController {
     }
   }
 
-  @common.Post('resubmit')
+  @common.Post('resubmit/:workflowId')
   async resubmitFlow(@TokenScope() tokenScope: ITokenScope) {
     await this.workflowService.event(
       { id: tokenScope.workflowRuntimeDataId, name: 'RESUBMITTED' },

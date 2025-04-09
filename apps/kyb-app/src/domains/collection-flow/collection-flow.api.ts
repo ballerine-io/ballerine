@@ -1,6 +1,9 @@
 import { request } from '@/common/utils/request';
 import {
+  CreateEndUserDto,
   DocumentConfiguration,
+  EndUser,
+  FlowContextResponse,
   IDocumentRecord,
   TCustomer,
   TFlowConfiguration,
@@ -8,10 +11,7 @@ import {
   TUser,
   UISchema,
 } from '@/domains/collection-flow/types';
-import {
-  CollectionFlowConfig,
-  CollectionFlowContext,
-} from '@/domains/collection-flow/types/flow-context.types';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import get from 'lodash/get';
 import posthog from 'posthog-js';
 
@@ -72,11 +72,6 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
-export interface FlowContextResponse {
-  context: CollectionFlowContext;
-  config: CollectionFlowConfig;
-}
-
 export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   try {
     const result = await request.get('collection-flow/context');
@@ -93,25 +88,9 @@ export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   }
 };
 
-export interface EndUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-}
-
 export const fetchEndUser = async (): Promise<EndUser> => {
-  const result = await request.get('collection-flow/user');
-
-  return result.json<EndUser>();
+  return await request.get('collection-flow/user').json<EndUser>();
 };
-
-export interface CreateEndUserDto {
-  email: string;
-  firstName: string;
-  lastName: string;
-  additionalInfo?: Record<string, unknown>;
-}
 
 export const createEndUserRequest = async ({
   email,

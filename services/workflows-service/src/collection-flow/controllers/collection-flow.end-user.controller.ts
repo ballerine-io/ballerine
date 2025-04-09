@@ -3,15 +3,15 @@ import {
   TokenScope,
   type ITokenScopeWithEndUserId,
 } from '@/common/decorators/token-scope.decorator';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { EndUserUpdateDto } from '@/end-user/dtos/end-user-update';
 import { EndUserModel } from '@/end-user/end-user.model';
 import { EndUserService } from '@/end-user/end-user.service';
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 
-@UseTokenAuthGuard()
+@UseWorkflowAuthGuard()
 @swagger.ApiExcludeController()
 @Controller('collection-flow/end-user')
 export class CollectionFlowEndUserController {

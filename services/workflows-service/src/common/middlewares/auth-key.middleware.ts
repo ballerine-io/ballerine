@@ -12,7 +12,7 @@ export class AuthKeyMiddleware implements NestMiddleware {
     const authHeader = req.headers.authorization;
     const apiKey = authHeader?.split?.(' ')?.[1];
 
-    if (apiKey) {
+    if (apiKey && apiKey !== 'null') {
       const dbApiKey = await this.apiKeyService.find(apiKey);
 
       if (!dbApiKey || isEmpty(dbApiKey)) {

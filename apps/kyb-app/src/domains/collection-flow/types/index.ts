@@ -9,20 +9,31 @@ import {
   TDocumentStatus,
 } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { CollectionFlowConfig } from './flow-context.types';
-
-export interface AuthorizeDto {
-  email: string;
-}
-
-export interface GetSessionDto {
-  email: string;
-}
+import { CollectionFlowConfig, CollectionFlowContext } from './flow-context.types';
 
 export interface TUser {
   id: string;
   email: string;
   businessId: string;
+}
+
+export interface EndUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface FlowContextResponse {
+  context: CollectionFlowContext;
+  config: CollectionFlowConfig;
+}
+
+export interface CreateEndUserDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+  additionalInfo?: Record<string, unknown>;
 }
 
 export interface TFlowStep {
@@ -44,16 +55,6 @@ export interface TFlowConfiguration {
   id: string;
   steps: TFlowStep[];
   documentConfigurations: DocumentConfiguration[];
-}
-
-export interface MainRepresentative {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  dateOfBirth: string;
-  companyName: string;
-  email: string;
-  title: string;
 }
 
 export interface Document {
@@ -78,44 +79,6 @@ export interface UBO {
   title: string;
   birthDate: string;
   email: string;
-}
-
-export interface EntityData {
-  website: string;
-  registrationNumber: string;
-  companyName: string;
-  companyDisplayName: string;
-  countryOfIncorporation: string;
-  fullAddress: string;
-}
-
-export interface BusinessData {
-  businessType?: string;
-  companyName: string;
-  registrationNumber: string;
-  legalForm: string;
-  country: string;
-  countryOfIncorporation: string;
-  dateOfIncorporation: string;
-  address: string;
-  phoneNumber: string;
-  email: string;
-  website: string;
-  industry: string;
-  taxIdentificationNumber: string;
-  vatNumber: string;
-}
-
-export interface UpdateFlowDto {
-  payload: {
-    mainRepresentative: MainRepresentative;
-    documents: Document[];
-    ubos: UBO[];
-    entityData: EntityData;
-    flowState: string;
-    dynamicData: object;
-    businessData: BusinessData;
-  };
 }
 
 export interface TCustomer {

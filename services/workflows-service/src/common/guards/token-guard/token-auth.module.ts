@@ -1,7 +1,6 @@
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { TokenAuthGuard } from '@/common/guards/token-guard/token-auth.guard';
-import { WorkflowAuthGuard } from '@/common/guards/workflow-auth.guard';
+import { WorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.guard';
 import { Module } from '@nestjs/common';
 import { CustomerService } from '@/customer/customer.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
@@ -44,7 +43,6 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     MerchantMonitoringClient,
     WorkflowTokenRepository,
     WorkflowTokenService,
-    TokenAuthGuard,
     WorkflowAuthGuard,
     CustomerService,
     CustomerRepository,
@@ -82,6 +80,6 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     SecretsManagerFactory,
     WorkflowEventEmitterService,
   ],
-  exports: [WorkflowTokenRepository, WorkflowTokenService, TokenAuthGuard, WorkflowAuthGuard],
+  exports: [WorkflowTokenRepository, WorkflowTokenService, WorkflowAuthGuard],
 })
 export class TokenAuthModule {}
