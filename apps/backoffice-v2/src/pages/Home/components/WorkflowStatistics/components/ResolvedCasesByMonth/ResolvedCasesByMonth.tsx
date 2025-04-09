@@ -1,7 +1,4 @@
-import React, { FunctionComponent } from 'react';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import type { FunctionComponent } from 'react';
 import {
   Bar,
   BarChart,
@@ -12,6 +9,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CustomLegend } from '@/pages/Home/components/WorkflowStatistics/components/CustomLegend/CustomLegend';
 
 export const ResolvedCasesByMonth: FunctionComponent<{
