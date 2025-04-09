@@ -75,11 +75,7 @@ export const DatePickerInput = ({
   );
 
   const deserializeValue = useCallback(
-    (value: DatePickerValue) => {
-      const deserializedDate = dayjs(value, outputValueFormat);
-
-      return deserializedDate;
-    },
+    (value: DatePickerValue) => dayjs(value, outputValueFormat),
     [outputValueFormat],
   );
 
