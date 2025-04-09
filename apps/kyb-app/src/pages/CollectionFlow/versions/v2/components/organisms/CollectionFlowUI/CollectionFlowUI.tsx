@@ -49,7 +49,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const appMetadata = useAppMetadata();
   const { pluginStatuses } = usePlugins();
   const revisionFields = useRevisionFields(pages, context);
-  const { isFinalSubmissionAvailable, handleFinalSubmission } = useFinalSubmission(context, state);
+  const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
+    useFinalSubmission(context, state);
   const validationParams: IDynamicFormValidationParams = useMemo(
     () => ({ ...DEFAULT_VALIDATION_PARAMS, globalValidationRules: page.globalValidate }),
     [page.globalValidate],
@@ -73,11 +74,12 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       _plugins: pluginStatuses,
       _appState: {
         isSyncing,
+        isFinalSubmitted,
       },
       $page: getCollectionFlowState(context)?.steps?.find(step => step.stepName === page.stateName),
       ..._uiSchemaMetadata,
     }),
-    [appMetadata, pluginStatuses, isSyncing, _uiSchemaMetadata, page, context],
+    [appMetadata, pluginStatuses, isSyncing, isFinalSubmitted, _uiSchemaMetadata, page, context],
   );
 
   useEffect(() => {
