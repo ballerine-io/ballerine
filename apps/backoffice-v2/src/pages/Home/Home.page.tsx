@@ -42,7 +42,6 @@ export const Home: FunctionComponent = () => {
             from={from}
             to={to}
             setDate={setDate}
-            // Don't show another datepicker, already have one in StatisticsMerchantMonitoringDashboard
             shouldShowDatePicker={!customer.config.isMerchantMonitoringEnabled}
           />
         )}

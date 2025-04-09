@@ -153,7 +153,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         </div>
         <div className={`flex items-center space-x-4`}>
           <Search value={search} onChange={onSearch} />
-          <DateRangePicker value={dates} onChange={onDatesChange} />
+          <DateRangePicker toDate={new Date()} value={dates} onChange={onDatesChange} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
