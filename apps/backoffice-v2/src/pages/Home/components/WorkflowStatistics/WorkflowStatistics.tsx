@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import { useWorkflowStatisticsLogic } from '@/pages/Statistics/components/WorkflowStatistics/hooks/useWorkflowStatisticsLogic/useWorkflowStatisticsLogic';
-import { CasesPendingManualReview } from '@/pages/Statistics/components/WorkflowStatistics/components/CasesPendingManualReview/CasesPendingManualReview';
-import { ResolvedCasesByMonth } from '@/pages/Statistics/components/WorkflowStatistics/components/ResolvedCasesByMonth/ResolvedCasesByMonth';
-import { ActiveCases } from '@/pages/Statistics/components/WorkflowStatistics/components/ActiveCases/ActiveCases';
-import { AssignedCasesByUser } from '@/pages/Statistics/components/WorkflowStatistics/components/AssignedCasesByUser/AssignedCasesByUser';
+import { useWorkflowStatisticsLogic } from '@/pages/Home/components/WorkflowStatistics/hooks/useWorkflowStatisticsLogic/useWorkflowStatisticsLogic';
+import { CasesPendingManualReview } from '@/pages/Home/components/WorkflowStatistics/components/CasesPendingManualReview/CasesPendingManualReview';
+import { ResolvedCasesByMonth } from '@/pages/Home/components/WorkflowStatistics/components/ResolvedCasesByMonth/ResolvedCasesByMonth';
+import { ActiveCases } from '@/pages/Home/components/WorkflowStatistics/components/ActiveCases/ActiveCases';
+import { AssignedCasesByUser } from '@/pages/Home/components/WorkflowStatistics/components/AssignedCasesByUser/AssignedCasesByUser';
 
 export const WorkflowStatistics: FunctionComponent = () => {
   const {

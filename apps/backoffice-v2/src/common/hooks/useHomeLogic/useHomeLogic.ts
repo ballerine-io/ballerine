@@ -1,39 +1,52 @@
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import dayjs from 'dayjs';
+import { useEffect, type ComponentProps } from 'react';
+import { z } from 'zod';
+
+import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+
+export const HomeSearchSchema = z.object({
+  from: z.string().date().optional(),
+  to: z.string().date().optional(),
+});
 
 export const useHomeLogic = () => {
-  const locale = useLocale();
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
   const { data: session } = useAuthenticatedUserQuery();
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
-  const isExample = customer?.config?.isExample;
-  const isMerchantMonitoringEnabled = customer?.config?.isMerchantMonitoringEnabled;
-  const { firstName, fullName, avatarUrl } = session?.user || {};
-  const statisticsLink = `/${locale}/home/statistics${search}`;
-  const workflowsLink = `/${locale}/home/workflows${search}`;
-  const defaultTabValue = `${pathname}${search}`;
+  const { firstName, fullName, avatarUrl } = session?.user ?? {};
+
+  const [{ from, to }, setSearchParams] = useZodSearchParams(HomeSearchSchema, {
+    replace: true,
+  });
 
   useEffect(() => {
-    if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
+    if (from || to) {
       return;
     }
 
-    navigate(`/${locale}/home/statistics`, { replace: true });
-  }, [pathname, locale, navigate]);
+    setSearchParams({
+      from: dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+      to: dayjs().format('YYYY-MM-DD'),
+    });
+  }, []);
+
+  const onDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
+    const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
+    const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
+
+    setSearchParams({ from, to });
+  };
 
   return {
+    customer,
+    isLoadingCustomer,
+    from,
+    to,
+    setDate: onDatesChange,
     firstName,
     fullName,
     avatarUrl,
-    statisticsLink,
-    workflowsLink,
-    defaultTabValue,
-    isLoadingCustomer,
-    isExample,
-    isMerchantMonitoringEnabled,
   };
 };

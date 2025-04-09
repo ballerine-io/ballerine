@@ -4,23 +4,20 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import type { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
 import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import {
-  riskLevelToBackgroundColor,
-  riskLevelToFillColor,
-} from '@/pages/Statistics/components/PortfolioRiskStatistics/constants';
-import { useStatisticsLogic } from '@/pages/Statistics/hooks/useStatisticsLogic';
+import { riskLevelToBackgroundColor, riskLevelToFillColor } from '../../constants';
 
 export const usePortfolioRiskStatisticsLogic = ({
   violationCounts,
   from,
   to,
 }: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'> & {
-  from: ReturnType<typeof useStatisticsLogic>['from'];
-  to: ReturnType<typeof useStatisticsLogic>['to'];
+  from: ReturnType<typeof useHomeLogic>['from'];
+  to: ReturnType<typeof useHomeLogic>['to'];
 }) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');

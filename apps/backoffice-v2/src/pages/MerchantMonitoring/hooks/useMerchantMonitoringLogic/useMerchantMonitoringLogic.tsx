@@ -32,7 +32,6 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import { BusinessReportsFilterParams } from '@/domains/business-reports/fetchers';
 import { TCustomer } from '@/domains/customer/fetchers';
-import { useLocation } from 'react-router-dom';
 
 const useExportCSVMutation = ({
   reportQuery,

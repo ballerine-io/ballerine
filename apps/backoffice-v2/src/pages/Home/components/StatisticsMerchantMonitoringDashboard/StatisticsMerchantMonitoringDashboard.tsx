@@ -2,14 +2,14 @@ import { type FunctionComponent } from 'react';
 
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useBusinessReportMetricsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { useStatisticsLogic } from '../../hooks/useStatisticsLogic';
 import { PortfolioAnalytics } from '../PortfolioAnalytics/PortfolioAnalytics';
 import { PortfolioRiskStatistics } from '../PortfolioRiskStatistics/PortfolioRiskStatistics';
+import type { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 
 export const StatisticsMerchantMonitoringDashboard: FunctionComponent<{
-  from: ReturnType<typeof useStatisticsLogic>['from'];
-  to: ReturnType<typeof useStatisticsLogic>['to'];
-  setDate: ReturnType<typeof useStatisticsLogic>['setDate'];
+  from: ReturnType<typeof useHomeLogic>['from'];
+  to: ReturnType<typeof useHomeLogic>['to'];
+  setDate: ReturnType<typeof useHomeLogic>['setDate'];
 }> = ({ setDate, ...dates }) => {
   const {
     data: metrics,

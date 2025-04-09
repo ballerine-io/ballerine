@@ -16,15 +16,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/common/components/atoms/Table';
+import type { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { usePortfolioRiskStatisticsLogic } from '@/pages/Statistics/components/PortfolioRiskStatistics/hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
-import { useStatisticsLogic } from '../../hooks/useStatisticsLogic';
+import { usePortfolioRiskStatisticsLogic } from './hooks/usePortfolioRiskStatisticsLogic/usePortfolioRiskStatisticsLogic';
 
 export const PortfolioRiskStatistics: FunctionComponent<
   Pick<z.infer<typeof MetricsResponseSchema>, 'riskLevelCounts' | 'violationCounts'> & {
-    from: ReturnType<typeof useStatisticsLogic>['from'];
-    to: ReturnType<typeof useStatisticsLogic>['to'];
+    from: ReturnType<typeof useHomeLogic>['from'];
+    to: ReturnType<typeof useHomeLogic>['to'];
   }
 > = ({ from, to, riskLevelCounts, violationCounts }) => {
   const {

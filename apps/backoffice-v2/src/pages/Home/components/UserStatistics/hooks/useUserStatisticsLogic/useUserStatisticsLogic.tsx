@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo } from 'react';
-import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
+import { HSL_PIE_COLORS } from '@/pages/Home/constants';
 import { Cell, Pie, PieChart } from 'recharts';
 import { ctw } from '@/common/utils/ctw/ctw';
 

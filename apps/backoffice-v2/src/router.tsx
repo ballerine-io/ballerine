@@ -157,18 +157,6 @@ const router = createBrowserRouter([
               {
                 path: '/:locale/home',
                 element: <Home />,
-                children: [
-                  {
-                    path: '/:locale/home/statistics',
-                    element: <Statistics />,
-                    errorElement: <RouteError />,
-                  },
-                  {
-                    path: '/:locale/home/workflows',
-                    element: <Workflows />,
-                    errorElement: <RouteError />,
-                  },
-                ],
                 errorElement: <RouteError />,
               },
             ],

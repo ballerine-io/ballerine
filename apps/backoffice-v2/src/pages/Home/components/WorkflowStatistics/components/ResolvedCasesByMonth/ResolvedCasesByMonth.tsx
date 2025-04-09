@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { CustomLegend } from '@/pages/Statistics/components/WorkflowStatistics/components/CustomLegend/CustomLegend';
+import { CustomLegend } from '@/pages/Home/components/WorkflowStatistics/components/CustomLegend/CustomLegend';
 
 export const ResolvedCasesByMonth: FunctionComponent<{
   resolvedCasesByMonth: Array<{

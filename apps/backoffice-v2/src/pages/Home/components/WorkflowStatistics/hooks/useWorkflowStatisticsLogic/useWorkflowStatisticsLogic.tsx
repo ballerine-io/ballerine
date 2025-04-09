@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { HSL_PIE_COLORS } from '@/pages/Statistics/constants';
+import { HSL_PIE_COLORS } from '@/pages/Home/constants';
 
 export const useWorkflowStatisticsLogic = () => {
   const tags = [

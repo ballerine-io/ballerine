@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
@@ -5,17 +6,16 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
+import type { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 import { CaseAnalyticsOutput } from '@/domains/metrics/fetchers';
 import { useCaseDailyStats } from '@/domains/metrics/hooks/queries/useCaseDailyStats/useCaseDailyStats';
-import { useStatisticsLogic } from '../../hooks/useStatisticsLogic';
 import { CasePieChart } from '../CasePieChart/CasePieChart';
 import { useStatisticsCaseDashboardLogic } from './hooks/useStatisticsCaseDashboardLogic';
-import { Loader2 } from 'lucide-react';
 
 export const StatisticsCaseDashboard: FunctionComponent<{
-  from: ReturnType<typeof useStatisticsLogic>['from'];
-  to: ReturnType<typeof useStatisticsLogic>['to'];
-  setDate: ReturnType<typeof useStatisticsLogic>['setDate'];
+  from: ReturnType<typeof useHomeLogic>['from'];
+  to: ReturnType<typeof useHomeLogic>['to'];
+  setDate: ReturnType<typeof useHomeLogic>['setDate'];
 }> = ({ from, to, setDate }) => {
   const {
     staticMetrics,
@@ -124,9 +124,9 @@ const CaseAnalytics: FunctionComponent<
 );
 
 const CaseGraphs: FunctionComponent<{
-  from: ReturnType<typeof useStatisticsLogic>['from'];
-  to: ReturnType<typeof useStatisticsLogic>['to'];
-  setDate: ReturnType<typeof useStatisticsLogic>['setDate'];
+  from: ReturnType<typeof useHomeLogic>['from'];
+  to: ReturnType<typeof useHomeLogic>['to'];
+  setDate: ReturnType<typeof useHomeLogic>['setDate'];
 }> = ({ from, to, setDate }) => {
   const { data: liveCasesData, isLoading } = useCaseDailyStats({ from, to });
 

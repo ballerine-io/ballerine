@@ -1,15 +1,8 @@
 import { FunctionComponent, useMemo } from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
-import { z } from 'zod';
 
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
-import { MetricsResponseSchema } from '@/domains/business-reports/hooks/queries/useBusinessReportMetricsQuery/useBusinessReportMetricsQuery';
-import { useCaseCurrentStats } from '@/domains/metrics/hooks/queries/useCaseCurrentStats/useCaseCurrentStats';
 import { ChartContainer } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
-import { CaseAnalyticsOutput } from '@/domains/metrics/fetchers';
 
 type PieChartData = { status?: string; riskLevel?: string; count: number };
 
