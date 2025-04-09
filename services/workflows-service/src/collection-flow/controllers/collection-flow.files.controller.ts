@@ -1,6 +1,5 @@
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { DocumentService } from '@/document/document.service';
@@ -37,8 +36,9 @@ import { CollectionFlowService } from '../collection-flow.service';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
 import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flow-document.schema';
+import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 
-@UseTokenAuthGuard()
+@UseWorkflowAuthGuard()
 @ApiExcludeController()
 @Controller('collection-flow/files')
 export class CollectionFlowFilesController {

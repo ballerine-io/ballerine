@@ -16,7 +16,10 @@ export class WorkflowAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
-    const workflowId = typeof req.query['workflowId'] === 'string' ? req.query['workflowId'] : null;
+    const workflowId =
+      typeof req.params['workflowId'] === 'string' && req.params['workflowId'] !== 'null'
+        ? req.params['workflowId']
+        : null;
 
     const authenticatedEntity = req.user as AuthenticatedEntity & { projectIds?: TProjectIds };
 

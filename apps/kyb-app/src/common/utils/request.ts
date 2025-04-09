@@ -1,16 +1,8 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
-import ky, { HTTPError, Options } from 'ky';
+import ky, { HTTPError } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
-// Helper function to get workflow ID from URL
-const getWorkflowIdFromUrl = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  return urlParams.get('workflowId');
-};
-
-// Create base instance
 const instance = ky.create({
   //@ts-ignore
   prefixUrl:
@@ -26,10 +18,7 @@ const instance = ky.create({
   hooks: {
     beforeRequest: [
       request => {
-        request.headers.set(
-          'Authorization',
-          `Bearer ${getAccessToken('workflowId') ?? getAccessToken()}`,
-        );
+        request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
       },
     ],
     beforeError: [
@@ -82,32 +71,25 @@ const instance = ky.create({
   },
 });
 
-// Helper to add workflow ID to options
-const addWorkflowId = (options: Options = {}): Options => {
-  const workflowId = getWorkflowIdFromUrl();
+const addWorkflowId = (url: string) => {
+  const workflowId = window.location.pathname.split('/')[2] || null;
 
   if (!workflowId) {
-    return options;
+    return url;
   }
 
-  const searchParams = new URLSearchParams(
-    options.searchParams as string | URLSearchParams | Record<string, string> | undefined,
-  );
-
-  searchParams.append('workflowId', workflowId);
-
-  return {
-    ...options,
-    searchParams,
-  };
+  return `${url.replace(/\/$/, '')}/${workflowId}`;
 };
 
-// Export wrapped instance
 export const request = {
-  ...instance,
-  get: (url: string, options?: Options) => instance.get(url, addWorkflowId(options)),
-  post: (url: string, options?: Options) => instance.post(url, addWorkflowId(options)),
-  put: (url: string, options?: Options) => instance.put(url, addWorkflowId(options)),
-  patch: (url: string, options?: Options) => instance.patch(url, addWorkflowId(options)),
-  delete: (url: string, options?: Options) => instance.delete(url, addWorkflowId(options)),
+  get: (url: string, options?: Parameters<typeof instance.get>[1]) =>
+    instance.get(addWorkflowId(url), options),
+  post: (url: string, options?: Parameters<typeof instance.post>[1]) =>
+    instance.post(addWorkflowId(url), options),
+  put: (url: string, options?: Parameters<typeof instance.put>[1]) =>
+    instance.put(addWorkflowId(url), options),
+  patch: (url: string, options?: Parameters<typeof instance.patch>[1]) =>
+    instance.patch(addWorkflowId(url), options),
+  delete: (url: string, options?: Parameters<typeof instance.delete>[1]) =>
+    instance.delete(addWorkflowId(url), options),
 };

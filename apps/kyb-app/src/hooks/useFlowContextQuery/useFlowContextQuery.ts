@@ -3,9 +3,11 @@ import { collectionFlowQuerykeys } from '@/domains/collection-flow';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useEndUserQuery } from '../useEndUserQuery';
+import { useWorkflowId } from '@/common/hooks/useWorkflowId';
 
 export const useFlowContextQuery = () => {
-  const { accessToken, workflowId } = useAccessToken();
+  const workflowId = useWorkflowId();
+  const { accessToken } = useAccessToken();
   const { data: endUser } = useEndUserQuery();
 
   const { data, isLoading, isFetched, error, refetch } = useQuery({
