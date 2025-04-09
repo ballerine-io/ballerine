@@ -75,14 +75,12 @@ describe('useAppSync', () => {
       syncPromise = result.current.sync(mockContext);
     });
 
-    expect(result.current.isSyncing).toBe(true);
     expect(mockSetLoading).toHaveBeenCalledWith(true);
 
     await act(async () => {
       await syncPromise;
     });
 
-    expect(result.current.isSyncing).toBe(false);
     expect(mockSetLoading).toHaveBeenCalledWith(false);
   });
 
@@ -102,7 +100,6 @@ describe('useAppSync', () => {
     expect(mockSetLoading).toHaveBeenCalledWith(true);
     expect(toast.error).toHaveBeenCalledWith('Failed to sync.');
     expect(consoleSpy).toHaveBeenCalledWith(mockError);
-    expect(result.current.isSyncing).toBe(false);
     expect(mockSetLoading).toHaveBeenCalledWith(false);
   });
 

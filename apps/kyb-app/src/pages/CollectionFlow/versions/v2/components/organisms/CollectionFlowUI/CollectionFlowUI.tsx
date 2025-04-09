@@ -21,6 +21,7 @@ import { useFinalSubmission } from './hooks/useFinalSubmission/useFinalSubmissio
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { useRevisionFields } from './hooks/useRevisionFields';
 import { formElementsExtends } from './ui-elemenets.extends';
+import { useGlobalUIState } from '../../providers/GlobalUIState';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   page: UIPage<'v2'>;
@@ -44,8 +45,9 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   metadata: _uiSchemaMetadata,
 }) => {
   const { stateApi, state } = useStateManagerContext();
+  const { updateUIState, state: uiState } = useGlobalUIState();
   const { handleEvent } = usePluginsHandler();
-  const { isSyncing, sync, syncStateless, setIsSyncing } = useAppSync();
+  const { sync, syncStateless, setIsSyncing } = useAppSync();
   const appMetadata = useAppMetadata();
   const { pluginStatuses } = usePlugins();
   const revisionFields = useRevisionFields(pages, context);
@@ -73,13 +75,21 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       _app: appMetadata,
       _plugins: pluginStatuses,
       _appState: {
-        isSyncing,
-        isFinalSubmitted,
+        isSyncing: uiState.isSyncing,
+        isFinalSubmitted: uiState.isFinalSubmitted,
       },
       $page: getCollectionFlowState(context)?.steps?.find(step => step.stepName === page.stateName),
       ..._uiSchemaMetadata,
     }),
-    [appMetadata, pluginStatuses, isSyncing, isFinalSubmitted, _uiSchemaMetadata, page, context],
+    [
+      appMetadata,
+      pluginStatuses,
+      uiState.isSyncing,
+      uiState.isFinalSubmitted,
+      _uiSchemaMetadata,
+      page,
+      context,
+    ],
   );
 
   useEffect(() => {
@@ -95,6 +105,12 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       stateApi.setContext(context);
     }
   }, [page, context, stateApi]);
+
+  useEffect(() => {
+    if (isFinalSubmitted) {
+      updateUIState({ isFinalSubmitted });
+    }
+  }, [isFinalSubmitted, updateUIState]);
 
   const handleChange = useCallback(
     (values: CollectionFlowContext) => {

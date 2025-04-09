@@ -41,6 +41,7 @@ import { CompletedScreen } from './components/pages/CompletedScreen';
 import { FailedScreen } from './components/pages/FailedScreen';
 import { Rejected } from './components/pages/Rejected';
 import { useAdditionalWorkflowContext } from './hooks/useAdditionalWorkflowContext';
+import { GlobalUIState } from '../v2/components/providers/GlobalUIState';
 
 const elems = {
   h1: Title,
@@ -146,328 +147,349 @@ export const CollectionFlowV1 = withSessionProtected(() => {
   }
 
   return definition && collectionFlowData ? (
-    <DynamicUI initialState={initialUIState}>
-      <DynamicUI.StateManager
-        initialContext={initialContext}
-        workflowId="1"
-        definitionType={schema?.definition.definitionType}
-        extensions={schema?.definition.extensions}
-        definition={definition as State}
-        config={collectionFlowData?.config}
-        additionalContext={additionalContext}
-      >
-        {({ state, stateApi }) => {
-          return (
-            <DynamicUI.TransitionListener
-              pages={elements ?? []}
-              onNext={async (tools, prevState, currentState) => {
-                tools.setElementCompleted(prevState, true);
+    <GlobalUIState>
+      <DynamicUI initialState={initialUIState}>
+        <DynamicUI.StateManager
+          initialContext={initialContext}
+          workflowId="1"
+          definitionType={schema?.definition.definitionType}
+          extensions={schema?.definition.extensions}
+          definition={definition as State}
+          config={collectionFlowData?.config}
+          additionalContext={additionalContext}
+        >
+          {({ state, stateApi }) => {
+            return (
+              <DynamicUI.TransitionListener
+                pages={elements ?? []}
+                onNext={async (tools, prevState, currentState) => {
+                  tools.setElementCompleted(prevState, true);
 
-                const context = stateApi.getContext();
+                  const context = stateApi.getContext();
 
-                const collectionFlow = getCollectionFlowState(context);
+                  const collectionFlow = getCollectionFlowState(context);
 
-                if (collectionFlow) {
-                  const steps = collectionFlow?.steps || [];
+                  if (collectionFlow) {
+                    const steps = collectionFlow?.steps || [];
 
-                  const isAnyStepCompleted = steps.some(step => step.isCompleted);
+                    const isAnyStepCompleted = steps.some(step => step.isCompleted);
 
-                  setStepState(context, {
-                    stepName: prevState,
-                    state: CollectionFlowStepStatesEnum.completed,
-                  });
+                    setStepState(context, {
+                      stepName: prevState,
+                      state: CollectionFlowStepStatesEnum.completed,
+                    });
 
-                  collectionFlow.currentStep = currentState;
+                    collectionFlow.currentStep = currentState;
 
-                  if (!isAnyStepCompleted) {
-                    console.log('Collection flow touched, changing state to inprogress');
-                    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                    if (!isAnyStepCompleted) {
+                      console.log('Collection flow touched, changing state to inprogress');
+                      setCollectionFlowStatus(context, CollectionFlowStatusesEnum.inprogress);
+                    }
+
+                    stateApi.setContext(context);
+
+                    await stateApi.invokePlugin('sync_workflow_runtime');
+                  }
+                }}
+              >
+                {() => {
+                  // Temp state, has to be resolved to success or failure by plugins
+                  if (state === 'done') {
+                    return <LoadingScreen />;
                   }
 
-                  stateApi.setContext(context);
+                  if (isCompleted(state)) {
+                    return <CompletedScreen />;
+                  }
 
-                  await stateApi.invokePlugin('sync_workflow_runtime');
-                }
-              }}
-            >
-              {() => {
-                // Temp state, has to be resolved to success or failure by plugins
-                if (state === 'done') {
-                  return <LoadingScreen />;
-                }
+                  if (isFailed(state)) {
+                    return <FailedScreen />;
+                  }
 
-                if (isCompleted(state)) {
-                  return <CompletedScreen />;
-                }
-
-                if (isFailed(state)) {
-                  return <FailedScreen />;
-                }
-
-                return (
-                  <DynamicUI.PageResolver state={state} pages={elements ?? []}>
-                    {({ currentPage }) => {
-                      return currentPage ? (
-                        <DynamicUI.Page page={currentPage}>
-                          <DynamicUI.ActionsHandler
-                            actions={currentPage.actions}
-                            stateApi={stateApi}
-                          >
-                            <AppShell>
-                              <AppShell.Sidebar>
-                                <div className="flex h-full flex-col">
-                                  <div className="flex h-full flex-1 flex-col">
-                                    <div className="flex justify-between gap-8 pb-10">
-                                      <AppShell.Navigation />
-                                      {schema?.uiOptions?.disableLanguageSelection ? null : (
-                                        <div className="flex w-full justify-end">
-                                          <AppShell.LanguagePicker />
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="pb-10">
-                                      {customer?.logoImageUri && (
-                                        <AppShell.Logo
-                                          // @ts-ignore
-                                          logoSrc={themeDefinition.logo || customer?.logoImageUri}
-                                          // @ts-ignore
-                                          appName={customer?.displayName}
-                                          onLoad={() => setLogoLoaded(true)}
-                                        />
-                                      )}
-                                    </div>
-                                    <div className="min-h-0 flex-1 pb-10">
-                                      {isLogoLoaded ? <StepperUI /> : null}
-                                    </div>
-                                    <div>
-                                      {customer?.displayName && (
-                                        <div>
-                                          {
-                                            t('contact', {
-                                              companyName: customer.displayName,
-                                            }) as string
-                                          }
-                                        </div>
-                                      )}
-                                      {themeDefinition.ui?.poweredBy !== false && (
-                                        <div className="flex flex-col">
-                                          <div className="border-b pb-12" />
-                                          <PoweredByLogo
-                                            className="mt-8 max-w-[10rem]"
-                                            sidebarRootId="sidebar"
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </AppShell.Sidebar>
-                              <AppShell.Content>
-                                <AppShell.FormContainer>
-                                  {localStorage.getItem('devmode') ? (
-                                    <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
-                                      <div className="mb-4 flex items-center gap-2">
-                                        <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
-                                        <span
-                                          className="cursor-help font-medium text-amber-900 hover:underline"
-                                          data-tooltip-id="debug-mode-tooltip"
-                                          data-tooltip-content="In debug mode you can navigate between steps without validation. Be aware that if required data is missing, plugins may fail when processing data at the end of the flow."
-                                        >
-                                          Debug Mode Active
-                                        </span>
-                                      </div>
-
-                                      <div className="mb-3 text-sm text-amber-800">
-                                        Current State:{' '}
-                                        {currentPage ? (
-                                          <span className="font-medium">
-                                            {currentPage.stateName}
-                                          </span>
-                                        ) : (
-                                          <span className="italic">
-                                            Page not found - state: {state}
-                                          </span>
+                  return (
+                    <DynamicUI.PageResolver state={state} pages={elements ?? []}>
+                      {({ currentPage }) => {
+                        return currentPage ? (
+                          <DynamicUI.Page page={currentPage}>
+                            <DynamicUI.ActionsHandler
+                              actions={currentPage.actions}
+                              stateApi={stateApi}
+                            >
+                              <AppShell>
+                                <AppShell.Sidebar>
+                                  <div className="flex h-full flex-col">
+                                    <div className="flex h-full flex-1 flex-col">
+                                      <div className="flex justify-between gap-8 pb-10">
+                                        <AppShell.Navigation />
+                                        {schema?.uiOptions?.disableLanguageSelection ? null : (
+                                          <div className="flex w-full justify-end">
+                                            <AppShell.LanguagePicker />
+                                          </div>
                                         )}
                                       </div>
+                                      <div className="pb-10">
+                                        {customer?.logoImageUri && (
+                                          <AppShell.Logo
+                                            // @ts-ignore
+                                            logoSrc={themeDefinition.logo || customer?.logoImageUri}
+                                            // @ts-ignore
+                                            appName={customer?.displayName}
+                                            onLoad={() => setLogoLoaded(true)}
+                                          />
+                                        )}
+                                      </div>
+                                      <div className="min-h-0 flex-1 pb-10">
+                                        {isLogoLoaded ? <StepperUI /> : null}
+                                      </div>
+                                      <div>
+                                        {customer?.displayName && (
+                                          <div>
+                                            {
+                                              t('contact', {
+                                                companyName: customer.displayName,
+                                              }) as string
+                                            }
+                                          </div>
+                                        )}
+                                        {themeDefinition.ui?.poweredBy !== false && (
+                                          <div className="flex flex-col">
+                                            <div className="border-b pb-12" />
+                                            <PoweredByLogo
+                                              className="mt-8 max-w-[10rem]"
+                                              sidebarRootId="sidebar"
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </AppShell.Sidebar>
+                                <AppShell.Content>
+                                  <AppShell.FormContainer>
+                                    {localStorage.getItem('devmode') ? (
+                                      <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                                        <div className="mb-4 flex items-center gap-2">
+                                          <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
+                                          <span
+                                            className="cursor-help font-medium text-amber-900 hover:underline"
+                                            data-tooltip-id="debug-mode-tooltip"
+                                            data-tooltip-content="In debug mode you can navigate between steps without validation. Be aware that if required data is missing, plugins may fail when processing data at the end of the flow."
+                                          >
+                                            Debug Mode Active
+                                          </span>
+                                        </div>
 
-                                      <div className="flex gap-3">
-                                        <button
-                                          onClick={() => stateApi.sendEvent('PREVIOUS')}
-                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
-                                        >
-                                          Previous
-                                        </button>
-                                        <button
-                                          onClick={() => stateApi.sendEvent('NEXT')}
-                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
-                                        >
-                                          Next
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            try {
-                                              const filledPayload = { ...stateApi.getContext() };
+                                        <div className="mb-3 text-sm text-amber-800">
+                                          Current State:{' '}
+                                          {currentPage ? (
+                                            <span className="font-medium">
+                                              {currentPage.stateName}
+                                            </span>
+                                          ) : (
+                                            <span className="italic">
+                                              Page not found - state: {state}
+                                            </span>
+                                          )}
+                                        </div>
 
-                                              const allElements: Array<{
-                                                valueDestination?: string;
-                                                placeholder?: string;
-                                              }> = [];
+                                        <div className="flex gap-3">
+                                          <button
+                                            onClick={() => stateApi.sendEvent('PREVIOUS')}
+                                            className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                          >
+                                            Previous
+                                          </button>
+                                          <button
+                                            onClick={() => stateApi.sendEvent('NEXT')}
+                                            className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                          >
+                                            Next
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              try {
+                                                const filledPayload = { ...stateApi.getContext() };
 
-                                              const findElementsWithPlaceholders = (
-                                                elements: Array<any>,
-                                              ) => {
-                                                if (!elements || !Array.isArray(elements)) return;
+                                                const allElements: Array<{
+                                                  valueDestination?: string;
+                                                  placeholder?: string;
+                                                }> = [];
 
-                                                elements.forEach((element: any) => {
-                                                  const isHidden =
-                                                    element?.hidden === true ||
-                                                    element?.options?.hidden === true ||
-                                                    element?.visibleOn === false;
-
-                                                  let isVisible = true;
-                                                  if (
-                                                    element?.visibleOn &&
-                                                    Array.isArray(element.visibleOn)
-                                                  ) {
-                                                    isVisible = false;
-                                                  }
-
-                                                  if (
-                                                    !isHidden &&
-                                                    isVisible &&
-                                                    element?.valueDestination
-                                                  ) {
-                                                    const placeholder =
-                                                      element?.options?.uiSchema?.[
-                                                        'ui:placeholder'
-                                                      ] || element?.options?.hint;
-
-                                                    if (placeholder) {
-                                                      allElements.push({
-                                                        valueDestination: element.valueDestination,
-                                                        placeholder,
-                                                      });
-                                                    }
-                                                  }
-
-                                                  const hasVisibilityConditions =
-                                                    element?.visibleOn &&
-                                                    Array.isArray(element.visibleOn);
-
-                                                  if (
-                                                    element?.type === 'json-form' &&
-                                                    hasVisibilityConditions
-                                                  ) {
-                                                    const visibilityRules = element.visibleOn;
+                                                const findElementsWithPlaceholders = (
+                                                  elements: any[],
+                                                ) => {
+                                                  if (!elements || !Array.isArray(elements)) {
                                                     return;
                                                   }
 
-                                                  if (
-                                                    element?.elements &&
-                                                    Array.isArray(element.elements)
-                                                  ) {
-                                                    findElementsWithPlaceholders(element.elements);
-                                                  }
+                                                  elements.forEach((element: any) => {
+                                                    const isHidden =
+                                                      element?.hidden === true ||
+                                                      element?.options?.hidden === true ||
+                                                      element?.visibleOn === false;
 
-                                                  if (
-                                                    element?.schema &&
-                                                    Array.isArray(element.schema)
-                                                  ) {
-                                                    findElementsWithPlaceholders(element.schema);
-                                                  }
+                                                    let isVisible = true;
 
-                                                  if (
-                                                    element?.children &&
-                                                    Array.isArray(element.children)
-                                                  ) {
-                                                    findElementsWithPlaceholders(element.children);
-                                                  }
-                                                });
-                                              };
-
-                                              if (currentPage?.elements) {
-                                                findElementsWithPlaceholders(currentPage.elements);
-                                              }
-
-                                              allElements.forEach(
-                                                ({ valueDestination, placeholder }) => {
-                                                  if (!valueDestination || !placeholder) return;
-
-                                                  const path = valueDestination.split('.');
-
-                                                  let current: any = filledPayload;
-
-                                                  for (let i = 0; i < path.length - 1; i++) {
-                                                    const key = path[i];
-                                                    if (!key) continue;
-
-                                                    if (!current[key]) {
-                                                      current[key] = {};
-                                                    }
-                                                    current = current[key];
-                                                  }
-
-                                                  const lastKey = path[path.length - 1];
-                                                  if (lastKey) {
                                                     if (
-                                                      lastKey.toLowerCase().includes('date') ||
-                                                      valueDestination
-                                                        .toLowerCase()
-                                                        .includes('date')
+                                                      element?.visibleOn &&
+                                                      Array.isArray(element.visibleOn)
                                                     ) {
-                                                      current[lastKey] = '11/11/1990';
-                                                    } else {
-                                                      current[lastKey] = placeholder;
+                                                      isVisible = false;
                                                     }
-                                                  }
-                                                },
-                                              );
 
-                                              stateApi.setContext(filledPayload);
-                                            } catch (error) {
-                                              console.error('Error filling placeholders:', error);
-                                            }
-                                          }}
-                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
-                                        >
-                                          Fill Placeholders
-                                        </button>
+                                                    if (
+                                                      !isHidden &&
+                                                      isVisible &&
+                                                      element?.valueDestination
+                                                    ) {
+                                                      const placeholder =
+                                                        element?.options?.uiSchema?.[
+                                                          'ui:placeholder'
+                                                        ] || element?.options?.hint;
+
+                                                      if (placeholder) {
+                                                        allElements.push({
+                                                          valueDestination:
+                                                            element.valueDestination,
+                                                          placeholder,
+                                                        });
+                                                      }
+                                                    }
+
+                                                    const hasVisibilityConditions =
+                                                      element?.visibleOn &&
+                                                      Array.isArray(element.visibleOn);
+
+                                                    if (
+                                                      element?.type === 'json-form' &&
+                                                      hasVisibilityConditions
+                                                    ) {
+                                                      const visibilityRules = element.visibleOn;
+
+                                                      return;
+                                                    }
+
+                                                    if (
+                                                      element?.elements &&
+                                                      Array.isArray(element.elements)
+                                                    ) {
+                                                      findElementsWithPlaceholders(
+                                                        element.elements,
+                                                      );
+                                                    }
+
+                                                    if (
+                                                      element?.schema &&
+                                                      Array.isArray(element.schema)
+                                                    ) {
+                                                      findElementsWithPlaceholders(element.schema);
+                                                    }
+
+                                                    if (
+                                                      element?.children &&
+                                                      Array.isArray(element.children)
+                                                    ) {
+                                                      findElementsWithPlaceholders(
+                                                        element.children,
+                                                      );
+                                                    }
+                                                  });
+                                                };
+
+                                                if (currentPage?.elements) {
+                                                  findElementsWithPlaceholders(
+                                                    currentPage.elements,
+                                                  );
+                                                }
+
+                                                allElements.forEach(
+                                                  ({ valueDestination, placeholder }) => {
+                                                    if (!valueDestination || !placeholder) {
+                                                      return;
+                                                    }
+
+                                                    const path = valueDestination.split('.');
+
+                                                    let current: any = filledPayload;
+
+                                                    for (let i = 0; i < path.length - 1; i++) {
+                                                      const key = path[i];
+
+                                                      if (!key) {
+                                                        continue;
+                                                      }
+
+                                                      if (!current[key]) {
+                                                        current[key] = {};
+                                                      }
+
+                                                      current = current[key];
+                                                    }
+
+                                                    const lastKey = path[path.length - 1];
+
+                                                    if (lastKey) {
+                                                      if (
+                                                        lastKey.toLowerCase().includes('date') ||
+                                                        valueDestination
+                                                          .toLowerCase()
+                                                          .includes('date')
+                                                      ) {
+                                                        current[lastKey] = '11/11/1990';
+                                                      } else {
+                                                        current[lastKey] = placeholder;
+                                                      }
+                                                    }
+                                                  },
+                                                );
+
+                                                stateApi.setContext(filledPayload);
+                                              } catch (error) {
+                                                console.error('Error filling placeholders:', error);
+                                              }
+                                            }}
+                                            className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
+                                          >
+                                            Fill Placeholders
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : null}
+                                    <div className="flex flex-col">
+                                      <div className="flex items-center gap-3 pb-3">
+                                        <StepperProgress
+                                          currentStep={
+                                            (elements?.findIndex(
+                                              page => page?.stateName === state,
+                                            ) ?? 0) + 1
+                                          }
+                                          totalSteps={elements?.length ?? 0}
+                                        />
+                                        <ProgressBar />
+                                      </div>
+                                      <div>
+                                        <UIRenderer
+                                          elements={elems}
+                                          schema={currentPage.elements as Array<UIElementV1<any>>}
+                                        />
                                       </div>
                                     </div>
-                                  ) : null}
-                                  <div className="flex flex-col">
-                                    <div className="flex items-center gap-3 pb-3">
-                                      <StepperProgress
-                                        currentStep={
-                                          (elements?.findIndex(page => page?.stateName === state) ??
-                                            0) + 1
-                                        }
-                                        totalSteps={elements?.length ?? 0}
-                                      />
-                                      <ProgressBar />
-                                    </div>
-                                    <div>
-                                      <UIRenderer
-                                        elements={elems}
-                                        schema={currentPage.elements as Array<UIElementV1<any>>}
-                                      />
-                                    </div>
-                                  </div>
-                                </AppShell.FormContainer>
-                              </AppShell.Content>
-                            </AppShell>
-                          </DynamicUI.ActionsHandler>
-                        </DynamicUI.Page>
-                      ) : null;
-                    }}
-                  </DynamicUI.PageResolver>
-                );
-              }}
-            </DynamicUI.TransitionListener>
-          );
-        }}
-      </DynamicUI.StateManager>
-    </DynamicUI>
+                                  </AppShell.FormContainer>
+                                </AppShell.Content>
+                              </AppShell>
+                            </DynamicUI.ActionsHandler>
+                          </DynamicUI.Page>
+                        ) : null;
+                      }}
+                    </DynamicUI.PageResolver>
+                  );
+                }}
+              </DynamicUI.TransitionListener>
+            );
+          }}
+        </DynamicUI.StateManager>
+      </DynamicUI>
+    </GlobalUIState>
   ) : (
     <LoadingScreen />
   );
