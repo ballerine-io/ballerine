@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.7.129
+
+### Patch Changes
+
+- DatePicker deserialization fix
+
 ## 0.7.127
 
 ### Patch Changes

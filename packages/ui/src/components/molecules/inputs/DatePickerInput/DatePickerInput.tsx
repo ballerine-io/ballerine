@@ -51,7 +51,7 @@ export const DatePickerInput = ({
   onFocus,
 }: DatePickerProps) => {
   const {
-    outputValueFormat = 'iso',
+    outputValueFormat,
     inputDateFormat = 'MM/DD/YYYY',
     disableFuture = false,
     disablePast = false,
@@ -59,10 +59,6 @@ export const DatePickerInput = ({
 
   const serializeValue = useCallback(
     (value: Dayjs): string => {
-      if (outputValueFormat.toLowerCase() === 'iso') {
-        return value.toISOString();
-      }
-
       const date = value.format(outputValueFormat);
 
       if (!dayjs(date).isValid()) {
@@ -79,9 +75,7 @@ export const DatePickerInput = ({
   );
 
   const deserializeValue = useCallback(
-    (value: DatePickerValue) => {
-      return dayjs(value, outputValueFormat);
-    },
+    (value: DatePickerValue) => dayjs(value, outputValueFormat),
     [outputValueFormat],
   );
 
