@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/kyb-app",
   "private": true,
-  "version": "0.3.158",
+  "version": "0.3.159",
   "type": "module",
   "scripts": {
     "dev": "vite",
