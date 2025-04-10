@@ -13,8 +13,9 @@ describe('DocumentService', () => {
     describe('Business Documents', () => {
       it('should parse business documents with root documents destination', () => {
         // Arrange
-        const uiSchema = [
+        const uiSchema: IUIDefinitionPage[] = [
           {
+            stateName: 'test',
             elements: [
               {
                 id: 'bank-information-bank-statement-document',
@@ -55,8 +56,9 @@ describe('DocumentService', () => {
 
       it('should parse business documents with explicit business destination', () => {
         // Arrange
-        const uiSchema = [
+        const uiSchema: IUIDefinitionPage[] = [
           {
+            stateName: 'test',
             elements: [
               {
                 id: 'proof-of-address-document',
@@ -99,10 +101,12 @@ describe('DocumentService', () => {
     describe('Individual Documents', () => {
       it('should parse UBO documents', () => {
         // Arrange
-        const uiSchema = [
+        const uiSchema: IUIDefinitionPage[] = [
           {
+            stateName: 'test',
             elements: [
               {
+                id: 'test-id-123',
                 element: 'entityfieldgroup',
                 params: {
                   type: 'ubo',
@@ -110,6 +114,7 @@ describe('DocumentService', () => {
                 valueDestination: 'entity.data.additionalInfo.ubos',
                 children: [
                   {
+                    id: 'test-id-1234',
                     element: 'documentfield',
                     params: {
                       template: {
@@ -127,7 +132,7 @@ describe('DocumentService', () => {
               },
             ],
           },
-        ] as IUIDefinitionPage[];
+        ];
 
         const context = {
           entity: {
@@ -163,10 +168,12 @@ describe('DocumentService', () => {
 
       it('should parse director documents', () => {
         // Arrange
-        const uiSchema = [
+        const uiSchema: IUIDefinitionPage[] = [
           {
+            stateName: 'test',
             elements: [
               {
+                id: 'test-id-123',
                 element: 'entityfieldgroup',
                 params: {
                   type: 'director',
@@ -174,6 +181,7 @@ describe('DocumentService', () => {
                 valueDestination: 'entity.data.additionalInfo.directors',
                 children: [
                   {
+                    id: 'test-id',
                     element: 'documentfield',
                     params: {
                       template: {
@@ -191,7 +199,7 @@ describe('DocumentService', () => {
               },
             ],
           },
-        ] as IUIDefinitionPage[];
+        ];
 
         const context = {
           entity: {
@@ -229,7 +237,7 @@ describe('DocumentService', () => {
     describe('Edge Cases', () => {
       it('should handle empty UI schema array', () => {
         // Arrange
-        const uiSchema: Array<{ elements: any[] }> = [];
+        const uiSchema: IUIDefinitionPage[] = [];
 
         // Act
         const result = documentService['parseDocumentsFromUISchema'](uiSchema, {});
@@ -248,6 +256,7 @@ describe('DocumentService', () => {
         // Arrange
         const uiSchema = [
           {
+            stateName: 'test',
             elements: [
               {
                 element: 'documentfield',

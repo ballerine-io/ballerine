@@ -34,25 +34,35 @@ describe('useRuleEngine', () => {
     expect(result.current).toEqual(expectedResults);
     expect(executeRules).toHaveBeenCalledWith(context, rules);
   });
+  it('should execute rules asynchronously when executeRulesSync is false', async () => {
+    // Arrange
+    const context = { foo: 'bar' };
+    const rules: IRule[] = [{ engine: 'json-logic', value: true }];
+    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0] as IRule, result: true }];
 
-  // it('should execute rules asynchronously when executeRulesSync is false', async () => {
-  //   // Arrange
-  //   const context = { foo: 'bar' };
-  //   const rules: IRule[] = [{ engine: 'json-logic', value: true }];
-  //   const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0] as IRule, result: true }];
+    vi.mocked(executeRules).mockReturnValue(expectedResults);
 
-  //   vi.mocked(executeRules).mockReturnValue(expectedResults);
+    // Act
+    const { result, rerender } = renderHook(() =>
+      useRuleEngine(context, { rules, executeRulesSync: false }),
+    );
 
-  //   // Act
-  //   const { result } = renderHook(() => useRuleEngine(context, { rules, executeRulesSync: false }));
+    // Assert initial empty state
+    expect(result.current).toEqual([]);
 
-  //   // Wait for debounced execution
-  //   await vi.advanceTimersByTimeAsync(500);
+    // Manually trigger the debounced function
+    vi.runAllTimers();
 
-  //   // Assert
-  //   expect(result.current).toEqual(expectedResults);
-  //   expect(executeRules).toHaveBeenCalledWith(context, rules);
-  // });
+    // Trigger a rerender after running all timers
+    rerender();
+
+    // Need to wait for the state update to be applied
+    await waitFor(() => {
+      expect(result.current).toEqual(expectedResults);
+    });
+
+    expect(executeRules).toHaveBeenCalledWith(context, rules);
+  });
 
   it('should execute rules on initialize when runOnInitialize is true', () => {
     // Arrange
@@ -87,7 +97,6 @@ describe('useRuleEngine', () => {
     expect(result.current).toEqual(expectedResults);
     expect(executeRules).toHaveBeenCalledWith(context, [rule]);
   });
-
   it('should use custom execution delay', async () => {
     // Arrange
     const context = { foo: 'bar' };
@@ -98,15 +107,18 @@ describe('useRuleEngine', () => {
     vi.mocked(executeRules).mockReturnValue(expectedResults);
 
     // Act
-    const { result } = renderHook(() =>
+    const { result, rerender } = renderHook(() =>
       useRuleEngine(context, { rules, executeRulesSync: false, executionDelay: customDelay }),
     );
 
     // Assert initial empty state
     expect(result.current).toEqual([]);
 
-    // Wait for custom delayed execution
-    await vi.advanceTimersByTimeAsync(customDelay);
+    // Run all timers instead of advancing by time
+    vi.runAllTimers();
+
+    // Trigger a rerender after running all timers
+    rerender();
 
     // Need to wait for the state update to be applied
     await waitFor(() => {

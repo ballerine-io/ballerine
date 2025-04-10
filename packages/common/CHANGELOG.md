@@ -1,5 +1,23 @@
 # @ballerine/common
 
+## 0.9.88
+
+### Patch Changes
+
+- bump
+
+## 0.9.87
+
+### Patch Changes
+
+- Moved country specific logic to common
+
+## 0.9.86
+
+### Patch Changes
+
+- bump
+
 ## 0.9.85
 
 ### Patch Changes

@@ -11,12 +11,16 @@ import { WorkflowRuntimeStatisticModel } from '@/metrics/repository/models/workf
 import { WorkflowRuntimeStatusCaseCountModel } from '@/metrics/repository/models/workflow-runtime-status-case-count.model';
 import { buildAggregateApprovalRateQuery } from '@/metrics/repository/sql/build-aggregate-approval-rate.sql';
 import { buildAggregateAverageAssignmentTimeQuery } from '@/metrics/repository/sql/build-aggregate-average-assignment-time.sql';
+import { buildAggregateAverageResolutionTimeQuery } from '@/metrics/repository/sql/build-aggregate-average-resolution-time.sql';
 import { buildAggregateAverageReviewTimeQuery } from '@/metrics/repository/sql/build-aggregate-average-review-time.sql';
 import { buildAggregateDailyCasesResolvedQuery } from '@/metrics/repository/sql/build-aggregate-daily-cases-resolved.sql';
 import { buildAggregateUsersAssignedCasesStatisticQuery } from '@/metrics/repository/sql/build-aggregate-users-assigned-cases-statistic.sql';
 import { buildAggregateUsersResolvedCasesStatisticQuery } from '@/metrics/repository/sql/build-aggregate-users-resolved-cases-statistic.sql';
 import { buildAggregateWorkflowDefinitionVariantsMetric } from '@/metrics/repository/sql/build-aggregate-workflow-definition-variants-metric.sql';
 import { buildAggregateWorkflowRuntimeStatisticQuery } from '@/metrics/repository/sql/build-aggregate-workflow-runtime-statistic.sql';
+import { buildAggregateWorkflowRuntimeStatusCaseCountQuery } from '@/metrics/repository/sql/build-aggregate-workflow-runtime-status-case-count.sql';
+import { buildCasesByRiskLevelQuery } from '@/metrics/repository/sql/build-cases-metrics.sql';
+import { buildDailyLiveCasesQuery } from '@/metrics/repository/sql/build-daily-live-cases.sql';
 import { buildSelectActiveUsersQuery } from '@/metrics/repository/sql/build-select-active-users.sql';
 import { IAggregateApprovalRate } from '@/metrics/repository/types/aggregate-approval-rate';
 import { IAggregateAverageAssignmentTime } from '@/metrics/repository/types/aggregate-average-assignment-time';
@@ -27,6 +31,8 @@ import { IAggregateUserResolvedCasesStatistic } from '@/metrics/repository/types
 import { IAggregateUsersWithCasesCount } from '@/metrics/repository/types/aggregate-users-with-cases-count';
 import { IAggregateWorkflowRuntimeStatistic } from '@/metrics/repository/types/aggregate-workflow-runtime-statistic';
 import { IAggregateWorkflowRuntimeStatusCaseCount } from '@/metrics/repository/types/aggregate-workflow-runtime-status-case-count';
+import { ICasesDailyAggregationResult } from '@/metrics/repository/types/cases-active-daily';
+import { ICasesByRiskLevelAggregationResult } from '@/metrics/repository/types/cases-by-risk-level';
 import { FindUsersAssignedCasesStatisticParams } from '@/metrics/repository/types/find-users-assigned-cases-statistic.params';
 import { FindUsersResolvedCasesStatisticParams } from '@/metrics/repository/types/find-users-resolved-cases-statistic.params';
 import { GetRuntimeStatusCaseCountParams } from '@/metrics/repository/types/get-runtime-status-case-count.params';
@@ -39,10 +45,11 @@ import { ISelectActiveUser } from '@/metrics/repository/types/select-active-user
 import { PrismaService } from '@/prisma/prisma.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { buildAggregateAverageResolutionTimeQuery } from './sql/build-aggregate-average-resolution-time.sql';
-import { buildAggregateWorkflowRuntimeStatusCaseCountQuery } from './sql/build-aggregate-workflow-runtime-status-case-count.sql';
 import { ApprovalState, BusinessReportStatus } from '@prisma/client';
+import { plainToClass } from 'class-transformer';
+import { CasesActiveDailyModel } from './models/cases-active-daily.model';
+import { CasesByRiskLevelMetricModel } from './models/cases-by-risk-level.model';
+import { CasesByStatusMetricModel } from './models/cases-by-status.model';
 
 const LOW_LTE_RISK_SCORE = 39;
 const MEDIUM_LTE_RISK_SCORE = 69;
@@ -64,6 +71,58 @@ export class MetricsRepository {
     return plainToClass(
       WorkflowRuntimeStatusCaseCountModel,
       results.length ? results.at(-1) : { active: 0, failed: 0, completed: 0 },
+    );
+  }
+
+  async getCasesByStatus(projectIds: TProjectIds) {
+    const results = await this.prismaService.workflowRuntimeData.groupBy({
+      by: ['status'],
+      where: {
+        projectId: { in: projectIds ?? [] },
+      },
+      _count: {
+        status: true,
+      },
+    });
+
+    return results.map(result =>
+      plainToClass(CasesByStatusMetricModel, {
+        status: result.status,
+        count: Number(result._count.status),
+      }),
+    );
+  }
+
+  async getCasesByRiskLevel(
+    projectIds: TProjectIds,
+    status: Parameters<typeof buildCasesByRiskLevelQuery>[1],
+  ): Promise<CasesByRiskLevelMetricModel[]> {
+    const results = await this.prismaService.$queryRaw<ICasesByRiskLevelAggregationResult[]>(
+      buildCasesByRiskLevelQuery(projectIds, status),
+    );
+
+    return results.map(result =>
+      plainToClass(CasesByRiskLevelMetricModel, {
+        riskLevel: result.risk_level,
+        count: Number(result.count),
+      }),
+    );
+  }
+
+  async getDailyActiveCases(
+    fromDate: string,
+    toDate: string,
+    projectIds: TProjectIds,
+  ): Promise<CasesActiveDailyModel[]> {
+    const results = await this.prismaService.$queryRaw<ICasesDailyAggregationResult[]>(
+      buildDailyLiveCasesQuery(fromDate, toDate, projectIds),
+    );
+
+    return results.map(result =>
+      plainToClass(CasesActiveDailyModel, {
+        date: result.date,
+        count: Number(result.count),
+      }),
     );
   }
 

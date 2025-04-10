@@ -19,6 +19,7 @@ import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
+import { CollectionFlowStateService } from './collection-flow-state.service';
 
 @Injectable()
 export class CollectionFlowService {
@@ -31,6 +32,7 @@ export class CollectionFlowService {
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly customerService: CustomerService,
     protected readonly fileService: FileService,
+    protected readonly collectionFlowStateService: CollectionFlowStateService,
   ) {}
 
   async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithFeatures> {
@@ -226,9 +228,22 @@ export class CollectionFlowService {
       { select: { context: true, state: true, config: true } },
       [tokenScope.projectId],
     );
+    const computedCollectionFlowState =
+      await this.collectionFlowStateService.getCollectionFlowState(
+        tokenScope.workflowRuntimeDataId,
+        [tokenScope.projectId],
+      );
+
+    const { collectionFlow, ...contextWithoutState } = workflowRuntimeData.context;
 
     return {
-      context: workflowRuntimeData.context,
+      context: {
+        ...contextWithoutState,
+        collectionFlow: {
+          ...collectionFlow,
+          state: computedCollectionFlowState,
+        },
+      },
       config: workflowRuntimeData.config,
     };
   }

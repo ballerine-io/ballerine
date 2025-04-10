@@ -5,7 +5,6 @@ import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useKycDocumentsAdapter } from '@/domains/documents/hooks/adapters/useKycDocumentsAdapter/useKycDocumentsAdapter';
@@ -24,6 +23,7 @@ import { Badge, Button } from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { titleCase } from 'string-ts';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -33,6 +33,7 @@ const motionBadgeProps = {
 } satisfies ComponentProps<typeof MotionBadge>;
 
 const RISK_TO_LABEL = {
+  none: 'None',
   allowedAge: 'Disallowed age',
   faceLiveness: 'Face is not lively',
   documentNotExpired: 'Document expired',
@@ -405,17 +406,17 @@ export const useKycBlock = ({
     path: 'entity.data',
   });
 
-  const [isEditable, _toggleIsEditable, toggleOnIsEditable, toggleOffIsEditable] = useToggle();
   const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
     workflowId: childWorkflow?.id,
-    onSuccess: () => {
-      toggleOffIsEditable();
-    },
   });
 
   const onSubmit = useCallback(
-    (values: Record<PropertyKey, any>) => {
-      mutateUpdateContextAndSyncEntity(values);
+    (values: Record<PropertyKey, any>, toggleOffIsEditable: () => void) => {
+      mutateUpdateContextAndSyncEntity(values, {
+        onSuccess: () => {
+          toggleOffIsEditable();
+        },
+      });
     },
     [mutateUpdateContextAndSyncEntity],
   );
@@ -430,8 +431,13 @@ export const useKycBlock = ({
           props: {
             title: 'Details',
             onSubmit,
-            onEnableIsEditable: toggleOnIsEditable,
-            onCancel: toggleOffIsEditable,
+            onEnableIsEditable: toggleOnIsEditable => {
+              toggleOnIsEditable();
+            },
+            onReRunChecks: () => {},
+            onCancel: toggleOffIsEditable => {
+              toggleOffIsEditable();
+            },
             config: {
               parse: {
                 date: true,
@@ -440,6 +446,7 @@ export const useKycBlock = ({
                 boolean: true,
                 url: true,
                 nullish: true,
+                country: true,
               },
               blacklist: [],
               actions: {
@@ -447,10 +454,13 @@ export const useKycBlock = ({
                   disabled: !caseState.writeEnabled,
                 },
                 enableEditing: {
-                  disabled: isEditable,
+                  disabled: false,
+                },
+                reRunChecks: {
+                  disabled: true,
                 },
                 editing: {
-                  disabled: !isEditable || !caseState.writeEnabled,
+                  disabled: !caseState.writeEnabled,
                 },
                 cancel: {
                   disabled: false,
@@ -461,6 +471,7 @@ export const useKycBlock = ({
               },
               inputTypes: {
                 dateOfBirth: 'date',
+                country: 'country',
               },
             },
           },
@@ -629,10 +640,11 @@ export const useKycBlock = ({
                                 {riskLabels.map(item => (
                                   <Badge
                                     key={item}
-                                    variant="destructive"
+                                    variant={item === 'none' ? 'success' : 'destructive'}
                                     className={`max-w-fit text-sm font-bold`}
                                   >
-                                    {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ?? item}
+                                    {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ??
+                                      titleCase(item)}
                                   </Badge>
                                 ))}
                               </div>

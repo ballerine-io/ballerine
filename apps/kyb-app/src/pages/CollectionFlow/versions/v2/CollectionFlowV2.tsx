@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
@@ -15,11 +15,7 @@ import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
-import {
-  CollectionFlowStatusesEnum,
-  CollectionFlowStepStatesEnum,
-  getCollectionFlowState,
-} from '@ballerine/common';
+import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 import { LoadingScreen } from '../v1/components/atoms/LoadingScreen';
 import { Approved } from '../v1/components/pages/Approved';
 import { CompletedScreen } from '../v1/components/pages/CompletedScreen';
@@ -49,27 +45,6 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const elements = schema?.uiSchema?.elements as unknown as Array<UIPage<'v2'>>;
   const definition = schema?.definition.definition;
 
-  const isRevision = useMemo(
-    () =>
-      getCollectionFlowState(collectionFlowData?.context)?.status ===
-      CollectionFlowStatusesEnum.revision,
-    [collectionFlowData],
-  );
-
-  const initialContext: CollectionFlowContext = useMemo(() => {
-    const contextCopy = { ...collectionFlowContext };
-    const collectionFlow = getCollectionFlowState(contextCopy);
-    const firstRevisionStep = collectionFlow?.steps?.find(
-      step => step.state === CollectionFlowStepStatesEnum.revision,
-    );
-
-    if (isRevision && collectionFlow) {
-      collectionFlow.currentStep = firstRevisionStep?.stepName || collectionFlow.currentStep;
-    }
-
-    return contextCopy as CollectionFlowContext;
-  }, [isRevision, collectionFlowContext]);
-
   // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
   // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
   // This workaround is needed to wait for logo to be loaded so scrollIntoView will work with correct dimensions of page.
@@ -84,26 +59,38 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.approved) {
+  if (
+    getCollectionFlowState(collectionFlowData?.context)?.status ===
+    CollectionFlowStatusesEnum.approved
+  ) {
     return <Approved />;
   }
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.rejected) {
+  if (
+    getCollectionFlowState(collectionFlowData?.context)?.status ===
+    CollectionFlowStatusesEnum.rejected
+  ) {
     return <Rejected />;
   }
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.completed) {
+  if (
+    getCollectionFlowState(collectionFlowData?.context)?.status ===
+    CollectionFlowStatusesEnum.completed
+  ) {
     return <CompletedScreen />;
   }
 
-  if (getCollectionFlowState(initialContext)?.status === CollectionFlowStatusesEnum.failed) {
+  if (
+    getCollectionFlowState(collectionFlowData?.context)?.status ===
+    CollectionFlowStatusesEnum.failed
+  ) {
     return <FailedScreen />;
   }
 
   return definition && collectionFlowContext ? (
     <DynamicUI>
       <DynamicUI.StateManager
-        initialContext={initialContext}
+        initialContext={collectionFlowContext as CollectionFlowContext}
         workflowId="1"
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
@@ -246,152 +233,6 @@ export const CollectionFlowV2 = withSessionProtected(() => {
                                           className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
                                         >
                                           Next
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            try {
-                                              const filledPayload = { ...stateApi.getContext() };
-
-                                              const allElements: Array<{
-                                                valueDestination?: string;
-                                                placeholder?: string;
-                                              }> = [];
-
-                                              const findElementsWithPlaceholders = (
-                                                elements: any[],
-                                              ) => {
-                                                if (!elements || !Array.isArray(elements)) {
-                                                  return;
-                                                }
-
-                                                elements.forEach((element: any) => {
-                                                  const isHidden =
-                                                    element?.hidden === true ||
-                                                    element?.options?.hidden === true ||
-                                                    element?.visibleOn === false;
-
-                                                  let isVisible = true;
-
-                                                  if (
-                                                    element?.visibleOn &&
-                                                    Array.isArray(element.visibleOn)
-                                                  ) {
-                                                    isVisible = false;
-                                                  }
-
-                                                  if (
-                                                    !isHidden &&
-                                                    isVisible &&
-                                                    element?.valueDestination
-                                                  ) {
-                                                    const placeholder =
-                                                      element?.options?.uiSchema?.[
-                                                        'ui:placeholder'
-                                                      ] || element?.options?.hint;
-
-                                                    if (placeholder) {
-                                                      allElements.push({
-                                                        valueDestination: element.valueDestination,
-                                                        placeholder,
-                                                      });
-                                                    }
-                                                  }
-
-                                                  const hasVisibilityConditions =
-                                                    element?.visibleOn &&
-                                                    Array.isArray(element.visibleOn);
-
-                                                  if (
-                                                    element?.type === 'json-form' &&
-                                                    hasVisibilityConditions
-                                                  ) {
-                                                    const visibilityRules = element.visibleOn;
-
-                                                    return;
-                                                  }
-
-                                                  if (
-                                                    element?.elements &&
-                                                    Array.isArray(element.elements)
-                                                  ) {
-                                                    findElementsWithPlaceholders(element.elements);
-                                                  }
-
-                                                  if (
-                                                    element?.schema &&
-                                                    Array.isArray(element.schema)
-                                                  ) {
-                                                    findElementsWithPlaceholders(element.schema);
-                                                  }
-
-                                                  if (
-                                                    element?.children &&
-                                                    Array.isArray(element.children)
-                                                  ) {
-                                                    findElementsWithPlaceholders(element.children);
-                                                  }
-                                                });
-                                              };
-
-                                              if (currentPage?.elements) {
-                                                findElementsWithPlaceholders(currentPage.elements);
-                                              }
-
-                                              allElements.forEach(
-                                                ({ valueDestination, placeholder }) => {
-                                                  if (!valueDestination || !placeholder) {
-                                                    return;
-                                                  }
-
-                                                  const path = valueDestination.split('.');
-
-                                                  let current: any = filledPayload;
-
-                                                  for (let i = 0; i < path.length - 1; i++) {
-                                                    const key = path[i];
-
-                                                    if (!key) {
-                                                      continue;
-                                                    }
-
-                                                    if (!current[key]) {
-                                                      current[key] = {};
-                                                    }
-
-                                                    current = current[key];
-                                                  }
-
-                                                  const lastKey = path[path.length - 1];
-
-                                                  if (lastKey) {
-                                                    let value = placeholder;
-
-                                                    if (
-                                                      lastKey.toLowerCase().includes('date') ||
-                                                      lastKey.toLowerCase().includes('birth') ||
-                                                      valueDestination
-                                                        .toLowerCase()
-                                                        .includes('date') ||
-                                                      valueDestination
-                                                        .toLowerCase()
-                                                        .includes('birth')
-                                                    ) {
-                                                      value = '11/11/1990';
-                                                    }
-
-                                                    current[lastKey] = value;
-                                                  }
-                                                },
-                                              );
-
-                                              stateApi.setContext(filledPayload);
-                                            } catch (error) {
-                                              console.error('Error filling placeholders:', error);
-                                            }
-                                          }}
-                                          className="rounded bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 transition-colors hover:bg-amber-200"
-                                        >
-                                          Fill Placeholders
                                         </button>
                                       </div>
                                     </div>
