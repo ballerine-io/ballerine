@@ -16,8 +16,8 @@ export const usePortfolioRiskStatisticsLogic = ({
   from,
   to,
 }: Pick<z.infer<typeof MetricsResponseSchema>, 'violationCounts'> & {
-  from: ReturnType<typeof useHomeLogic>['from'];
-  to: ReturnType<typeof useHomeLogic>['to'];
+  from: ReturnType<typeof useHomeLogic>['mmFrom'];
+  to: ReturnType<typeof useHomeLogic>['mmTo'];
 }) => {
   const [parent] = useAutoAnimate<HTMLTableSectionElement>();
   const [riskIndicatorsSorting, setRiskIndicatorsSorting] = useState<SortDirection>('desc');

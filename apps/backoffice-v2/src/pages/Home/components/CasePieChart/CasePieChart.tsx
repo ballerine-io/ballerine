@@ -6,12 +6,19 @@ import { titleCase } from 'string-ts';
 
 type PieChartData = { status?: string; riskLevel?: string; count: number };
 
-export const CasePieChart: FunctionComponent<{
+export type CasePieChartProps = {
   data: PieChartData[];
   getColor: (key: string) => string;
   nameKey: 'status' | 'riskLevel';
   config: Record<string, { label: string; color: string }>;
-}> = ({ data, getColor, nameKey, config }) => {
+};
+
+export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
+  data,
+  getColor,
+  nameKey,
+  config,
+}) => {
   const totalCount = useMemo(() => data.reduce((acc, curr) => acc + curr.count, 0), [data]);
 
   return (
@@ -19,24 +26,22 @@ export const CasePieChart: FunctionComponent<{
       <ChartContainer className="h-[184px] w-[184px]" config={config}>
         <PieChart width={184} height={184}>
           <text
-            x={92}
-            y={82}
+            x={184 / 2}
+            y={184 / 2}
             textAnchor="middle"
             dominantBaseline="middle"
-            className={'text-lg font-bold'}
+            className={'text-4xl font-bold'}
           >
             {totalCount}
           </text>
-          <text x={92} y={102} textAnchor="middle" dominantBaseline="middle">
-            Cases
-          </text>
+
           <Pie
             data={data}
             cx={87}
             cy={87}
-            innerRadius={78}
-            outerRadius={92}
-            paddingAngle={5}
+            innerRadius={60}
+            outerRadius={70}
+            paddingAngle={7}
             dataKey="count"
             nameKey={nameKey}
             cornerRadius={9999}
@@ -45,7 +50,7 @@ export const CasePieChart: FunctionComponent<{
               <Cell
                 key={`cell-${index}`}
                 fill={getColor(entry[nameKey] as string)}
-                className="cursor-pointer outline-none"
+                className="outline-none"
               />
             ))}
           </Pie>
