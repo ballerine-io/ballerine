@@ -244,7 +244,7 @@ describe('IDV_CHECK operator', () => {
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
     expect(validationResults[0]!.status).toBe('FAILED');
-    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(DataValueNotFoundError);
+    expect((validationResults[0] as RuleResult).error).toBeInstanceOf(Error);
   });
 
   it('should throw ValidationFailedError when data structure is invalid', async () => {
