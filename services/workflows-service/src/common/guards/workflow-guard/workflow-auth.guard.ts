@@ -31,7 +31,7 @@ export class WorkflowAuthGuard implements CanActivate {
       ) ||
       !workflowId
     ) {
-      return true;
+      throw new UnauthorizedException('Unauthorized');
     }
 
     const workflow = await this.workflowService.getWorkflowRuntimeDataById(
