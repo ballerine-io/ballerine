@@ -80,7 +80,6 @@ export const useHomeLogic = () => {
 
   const { data: currentStats, isLoading: isLoadingCurrentStats } = useCaseCurrentStats();
 
-  // Memoized color functions
   const getStatusColor = (status: string) => {
     return STATUS_COLORS[status.toLowerCase() as keyof typeof STATUS_COLORS] || '#65afff';
   };
@@ -89,8 +88,9 @@ export const useHomeLogic = () => {
     return RISK_LEVEL_COLORS[risk.toLowerCase() as keyof typeof RISK_LEVEL_COLORS] || '#65afff';
   };
 
-  // Pre-calculate configs with empty data to ensure hooks are called unconditionally
-  const statusConfig = useMemo(() => {
+  type ConfigItem = { label: string; color: string };
+
+  const statusConfig = useMemo<Record<string, ConfigItem>>(() => {
     if (!currentStats) return {};
     return currentStats.casesByStatus.reduce(
       (acc, curr) => ({
@@ -104,7 +104,7 @@ export const useHomeLogic = () => {
     );
   }, [currentStats]);
 
-  const ongoingRiskConfig = useMemo(() => {
+  const ongoingRiskConfig = useMemo<Record<string, ConfigItem>>(() => {
     if (!currentStats) return {};
     return currentStats.ongoingCasesByRisk.reduce(
       (acc, curr) => ({
@@ -118,7 +118,7 @@ export const useHomeLogic = () => {
     );
   }, [currentStats]);
 
-  const approvedRiskConfig = useMemo(() => {
+  const approvedRiskConfig = useMemo<Record<string, ConfigItem>>(() => {
     if (!currentStats) return {};
     return currentStats.approvedCasesByRisk.reduce(
       (acc, curr) => ({
