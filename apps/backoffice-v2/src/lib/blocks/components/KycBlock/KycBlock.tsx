@@ -6,6 +6,7 @@ import { BlocksComponent } from '@ballerine/blocks';
 export const KycBlock: FunctionComponent<Parameters<typeof useKycBlock>[0]> = ({
   documents,
   kycSession,
+  aml,
   entityData,
   status,
   isActionsDisabled,
@@ -24,6 +25,7 @@ export const KycBlock: FunctionComponent<Parameters<typeof useKycBlock>[0]> = ({
   const childTasks = useKycBlock({
     documents,
     kycSession,
+    aml,
     entityData,
     status,
     isActionsDisabled,

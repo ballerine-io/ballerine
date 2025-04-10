@@ -23,17 +23,19 @@ const isObjectWithKycInformation = (obj: unknown) => {
 const dateSchema = z.preprocess(arg => {
   if (typeof arg === 'string' || arg instanceof Date) {
     const date = new Date(arg);
+
     if (!isNaN(date.getTime())) {
       return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
     }
   }
+
   return arg;
 }, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'));
 
 const KycInformationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  dateOfBirth: dateSchema,
+  dateOfBirth: dateSchema.optional(),
 });
 
 const IndividualsSanctionsV2PluginPayloadSchema = z.object({
@@ -165,7 +167,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           return {
             firstName,
             lastName,
-            dateOfBirth,
+            ...(dateOfBirth && { dateOfBirth }),
           };
         }
 
@@ -175,7 +177,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           return {
             firstName,
             lastName,
-            dateOfBirth,
+            ...(dateOfBirth && { dateOfBirth }),
           };
         }
 

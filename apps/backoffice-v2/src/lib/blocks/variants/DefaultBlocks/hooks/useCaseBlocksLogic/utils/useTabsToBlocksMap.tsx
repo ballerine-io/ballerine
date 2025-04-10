@@ -89,8 +89,8 @@ export const useTabsToBlocksMap = ({
     }
   };
   const getInitiateSanctionsScreeningEvent = (nextEvents: string[]) => {
-    if (nextEvents?.includes('temp')) {
-      return 'temp';
+    if (nextEvents?.includes('initiate_sanctions_screening')) {
+      return 'initiate_sanctions_screening';
     }
   };
 
@@ -195,7 +195,9 @@ export const useTabsToBlocksMap = ({
       isReuploadNeededDisabled: isLoadingRevisionCase,
       isApproveDisabled: isLoadingApproveCase,
       isInitiateKycDisabled: !initiateKycEvent,
-      isInitiateSanctionsScreeningDisabled: !initiateSanctionsScreeningEvent,
+      isInitiateSanctionsScreeningDisabled:
+        !initiateSanctionsScreeningEvent ||
+        !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
     } satisfies Parameters<typeof createKycBlocks>[0][number];
   };
   const directorToIndividualAdapter = ({
@@ -282,7 +284,6 @@ export const useTabsToBlocksMap = ({
       ...entityAddressWithContainerBlock,
       ...headquartersAddressWithContainerBlock,
       ...entityAdditionalInfoBlock,
-      ...mainRepresentativeBlock,
       ...registryInfoBlock,
       // ...mapBlock,
       ...bankingDetailsBlock,
@@ -298,6 +299,7 @@ export const useTabsToBlocksMap = ({
     [Tab.INDIVIDUALS]: [
       ...individualsUserProvidedBlock,
       ...amlWithContainerBlock,
+      ...mainRepresentativeBlock,
       ...manageUbosBlock,
       ...uboDocumentBlocks,
       ...directorDocumentBlocks,

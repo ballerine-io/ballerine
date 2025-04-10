@@ -5,7 +5,9 @@ import { ComponentProps } from 'react';
 export const createKycBlocks = (individuals: ComponentProps<typeof KycBlock>[]) => {
   const blocks = createBlocksTyped().addBlock();
 
-  if (!individuals?.length) return [];
+  if (!individuals?.length) {
+    return [];
+  }
 
   individuals.forEach(
     ({
@@ -13,6 +15,7 @@ export const createKycBlocks = (individuals: ComponentProps<typeof KycBlock>[]) 
       entityData,
       status,
       kycSession,
+      aml,
       isActionsDisabled,
       isLoadingReuploadNeeded,
       isLoadingApprove,
@@ -34,6 +37,7 @@ export const createKycBlocks = (individuals: ComponentProps<typeof KycBlock>[]) 
             entityData={entityData}
             status={status}
             kycSession={kycSession}
+            aml={aml}
             isActionsDisabled={isActionsDisabled}
             isLoadingReuploadNeeded={isLoadingReuploadNeeded}
             isLoadingApprove={isLoadingApprove}

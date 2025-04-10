@@ -151,14 +151,12 @@ export const useDocumentBlocks = ({
     ({
       documents,
       documentsSchemas,
-      isBusinessDocument,
     }: {
       documents: TDocument[];
       documentsSchemas:
         | typeof businessDocumentsSchemas
         | typeof directorsDocumentsSchemas
         | typeof ubosDocumentsSchemas;
-      isBusinessDocument: boolean;
     }) =>
     ({
       id,
