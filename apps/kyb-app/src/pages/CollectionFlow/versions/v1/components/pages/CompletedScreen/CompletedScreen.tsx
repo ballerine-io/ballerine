@@ -3,14 +3,25 @@ import { useTranslation } from 'react-i18next';
 
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
+import { FunctionComponent, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
-export const CompletedScreen = withSessionProtected(() => {
+interface ICompletedScreenProps {
+  redirectUrl?: string;
+}
+
+export const CompletedScreen: FunctionComponent<ICompletedScreenProps> = ({ redirectUrl }) => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
 
   const { exit, isExitAvailable } = useAppExit();
+
+  useEffect(() => {
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }, [redirectUrl]);
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -36,7 +47,13 @@ export const CompletedScreen = withSessionProtected(() => {
             </Button>
           </div>
         )}
+        {redirectUrl && (
+          <div className="flex justify-center mt-4 items-center">
+            <Loader2 className="h-6 w-6 animate-spin text-gray-900" />
+            <span className="ml-2 text-sm text-gray-500">Redirecting...</span>
+          </div>
+        )}
       </Card>
     </div>
   );
-});
+};
