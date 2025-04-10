@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 
-export const CompletedScreen = withSessionProtected(() => {
+export const CompletedScreen = () => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
 
@@ -39,4 +38,4 @@ export const CompletedScreen = withSessionProtected(() => {
       </Card>
     </div>
   );
-});
+};
