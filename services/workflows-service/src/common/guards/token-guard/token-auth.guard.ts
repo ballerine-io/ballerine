@@ -13,19 +13,11 @@ export class TokenAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
-    const workflowId =
-      typeof req.params['workflowId'] === 'string' && req.params['workflowId'] !== 'null'
-        ? req.params['workflowId']
-        : null;
-
-    if (workflowId && (req as any).tokenScope) {
-      return true;
-    }
 
     const token = req.headers['authorization']?.split(' ')[1];
 
-    if (!token) {
-      throw new UnauthorizedException('Unauthorized');
+    if (!token || token === 'null') {
+      return true;
     }
 
     const tokenEntity = await this.workflowTokenService.findByTokenWithExpiredUnscoped(token);
