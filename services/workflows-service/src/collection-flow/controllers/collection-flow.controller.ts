@@ -20,7 +20,9 @@ import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
+import { UseTokenAuthGuard } from '@/common/guards/token-guard/token-auth.decorator';
 
+@UseTokenAuthGuard()
 @UseWorkflowAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
@@ -311,5 +313,15 @@ export class CollectionFlowController {
       [tokenScope.projectId],
       tokenScope.projectId,
     );
+  }
+
+  @common.Get('/workflow-id')
+  async getWorkflowId(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
+    return tokenScope.workflowRuntimeDataId;
+  }
+
+  @common.Get('/workflow-id/:workflowId')
+  async getWorkflowIdWithWorkflowId(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
+    return tokenScope.workflowRuntimeDataId;
   }
 }

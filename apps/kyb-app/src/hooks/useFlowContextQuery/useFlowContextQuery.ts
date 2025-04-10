@@ -1,4 +1,3 @@
-import { useAccessToken } from '@/common/providers/AccessTokenProvider';
 import { collectionFlowQuerykeys } from '@/domains/collection-flow';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
@@ -7,14 +6,13 @@ import { useWorkflowId } from '@/common/hooks/useWorkflowId';
 
 export const useFlowContextQuery = () => {
   const workflowId = useWorkflowId();
-  const { accessToken } = useAccessToken();
   const { data: endUser } = useEndUserQuery();
 
   const { data, isLoading, isFetched, error, refetch } = useQuery({
     ...collectionFlowQuerykeys.getContext(endUser?.id ?? null),
     // @ts-ignore
     staleTime: Infinity as const,
-    enabled: !!accessToken || !!workflowId,
+    enabled: !!workflowId,
   });
 
   return {

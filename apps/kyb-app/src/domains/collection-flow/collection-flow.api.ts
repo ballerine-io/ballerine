@@ -72,6 +72,14 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
+export const fetchWorkflowId = async (token: string | null): Promise<string> => {
+  if (!token) {
+    return '';
+  }
+
+  return await request.get(`collection-flow/workflow-id`).text();
+};
+
 export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   try {
     const result = await request.get('collection-flow/context');
