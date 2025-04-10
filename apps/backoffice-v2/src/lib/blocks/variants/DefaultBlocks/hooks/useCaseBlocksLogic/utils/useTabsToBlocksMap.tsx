@@ -97,20 +97,7 @@ export const useTabsToBlocksMap = ({
   const { data: session } = useAuthenticatedUserQuery();
   const { data: workflow } = useCurrentCaseQuery();
   const caseState = useCaseState(session?.user ?? null, workflow);
-  const directorsIds = useMemo(
-    () =>
-      workflow?.context?.entity?.data?.additionalInfo?.directors?.map(
-        director => director.ballerineEntityId,
-      ) ?? [],
-    [workflow?.context?.entity?.data?.additionalInfo?.directors],
-  );
-  const ubosIds = useMemo(
-    () =>
-      workflow?.context?.entity?.data?.additionalInfo?.ubos?.map(ubo => ubo.ballerineEntityId) ??
-      [],
-    [workflow?.context?.entity?.data?.additionalInfo?.ubos],
-  );
-  const { data: endUsers } = useEndUsersByIdsQuery({ ids: [...directorsIds, ...ubosIds] });
+  const { endUsers } = workflow ?? {};
 
   const getStatus = (tags: string[]) => {
     if (tags?.includes(StateTag.REVISION)) {

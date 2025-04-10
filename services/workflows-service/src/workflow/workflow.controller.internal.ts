@@ -114,12 +114,9 @@ export class WorkflowControllerInternal {
   @UsePipes(new ZodValidationPipe(FindWorkflowQuerySchema, 'query'))
   async getRunnableWorkflowDataById(
     @common.Param() { id }: FindWorkflowParamsDto,
-    @common.Query() { filterId }: FindWorkflowQueryDto,
     @ProjectIds() projectIds: TProjectIds,
   ) {
-    const filter = await this.filterService.getById(filterId, {}, projectIds);
-
-    return await this.service.getWorkflowByIdWithRelations(id, filter.query as any, projectIds);
+    return await this.service.getWorkflowByIdWithRelations(id, projectIds);
   }
 
   @common.Get('/active-states')

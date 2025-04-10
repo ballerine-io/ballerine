@@ -247,31 +247,8 @@ export class WorkflowService {
     });
   }
 
-  async getWorkflowByIdWithRelations(
-    id: string,
-    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-    projectIds: TProjectIds,
-  ) {
-    const allEntities = { endUser: true, business: true };
-    const childWorkflowSelectArgs = {
-      select: { ...args?.select, ...allEntities },
-      include: args?.include,
-      where: {
-        // @ts-expect-error - dynamically typed for all queries
-        deletedAt: args?.where?.deletedAt ?? null,
-      },
-    };
-    const workflow = (await this.workflowRuntimeDataRepository.findById(
-      id,
-      {
-        ...args,
-        select: {
-          ...(args?.select || {}),
-          childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
-        },
-      },
-      projectIds,
-    )) as TWorkflowWithRelations;
+  async getWorkflowByIdWithRelations(id: string, projectIds: TProjectIds) {
+    const workflow = await this.workflowRuntimeDataRepository.findByIdWithRelations(id, projectIds);
 
     return this.formatWorkflow(workflow);
   }
@@ -1207,6 +1184,7 @@ export class WorkflowService {
         runtimeData.workflowDefinitionId,
         {},
         projectIds,
+        transaction,
       );
 
       const correlationId: string = await this.getCorrelationIdFromWorkflow(

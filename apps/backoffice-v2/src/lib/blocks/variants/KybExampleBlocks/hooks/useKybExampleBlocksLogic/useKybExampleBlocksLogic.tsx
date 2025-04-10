@@ -34,10 +34,8 @@ import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutati
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId: workflowId ?? '',
-    filterId: filterId ?? '',
   });
   const { noAction } = useCaseDecision();
   const { data: session } = useAuthenticatedUserQuery();

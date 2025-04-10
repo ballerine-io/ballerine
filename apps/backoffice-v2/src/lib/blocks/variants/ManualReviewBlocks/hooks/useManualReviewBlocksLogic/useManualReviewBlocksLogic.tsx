@@ -12,10 +12,8 @@ import { toast } from 'sonner';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId: workflowId ?? '',
-    filterId: filterId ?? '',
   });
   const { noAction } = useCaseDecision();
   const { data: session } = useAuthenticatedUserQuery();

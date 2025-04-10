@@ -30,10 +30,8 @@ export const useChildDocumentBlocksLogic = ({
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
 }) => {
-  const filterId = useFilterId();
   const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
-    filterId,
   });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, parentWorkflow);

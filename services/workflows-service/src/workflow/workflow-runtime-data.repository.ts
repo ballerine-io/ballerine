@@ -1,11 +1,11 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { assertIsValidProjectIds, ProjectScopeService } from '@/project/project-scope.service';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { TEntityType } from '@/workflow/types';
+import { TEntityType, TWorkflowWithRelations } from '@/workflow/types';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   Prisma,
   PrismaClient,
@@ -90,6 +90,56 @@ export class WorkflowRuntimeDataRepository {
     return await transaction.workflowRuntimeData.findFirstOrThrow(
       this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
     );
+  }
+
+  async findByIdWithRelations(id: string, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
+
+    const [parentWorkflow] = (await this.prismaService.$queryRaw`
+      SELECT wrd.*,
+       jsonb_build_array(to_jsonb(eu1), to_jsonb(eu2)) AS "endUsers",
+       to_jsonb(b) AS "business",
+       to_jsonb(e) AS "endUser",
+       to_jsonb(wd) AS "workflowDefinition",
+       to_jsonb(a) - 'password' AS "assignee"
+      FROM "WorkflowRuntimeData" wrd
+      JOIN "Project" p ON wrd."projectId" = p.id
+      CROSS JOIN LATERAL jsonb_array_elements(wrd.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'directors') as directors
+      JOIN "EndUser" eu1 ON eu1.id = directors.value ->> 'ballerineEntityId'
+      CROSS JOIN LATERAL jsonb_array_elements(wrd.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'ubos') as ubos
+      JOIN "EndUser" eu2 ON eu2.id = ubos.value ->> 'ballerineEntityId'
+      LEFT JOIN "WorkflowDefinition" wd ON wd.id = wrd."workflowDefinitionId"
+      LEFT JOIN "Business" b ON b.id = wrd."businessId" AND wrd."businessId" IS NOT NULL
+      LEFT JOIN "EndUser" e ON e.id = wrd."endUserId" AND wrd."endUserId" IS NOT NULL
+      LEFT JOIN "User" a ON a.id = wrd."assigneeId" AND wrd."assigneeId" IS NOT NULL
+      WHERE wrd.id = ${id}
+      AND wrd."projectId" = ANY(${projectIds})
+      LIMIT 1
+    `) as TWorkflowWithRelations[];
+
+    if (!parentWorkflow) {
+      throw new NotFoundException(`A workflow with an id of "${id}" was not found`);
+    }
+
+    const childWorkflows = (await this.prismaService.$queryRaw`
+      SELECT 
+        child_wrd.*,
+        to_jsonb(child_b) AS "business",
+        to_jsonb(child_e) AS "endUser",
+        to_jsonb(child_wd) AS "workflowDefinition",
+        to_jsonb(child_a) - 'password' AS "assignee"
+      FROM "WorkflowRuntimeData" child_wrd
+      LEFT JOIN "WorkflowDefinition" child_wd ON child_wd.id = child_wrd."workflowDefinitionId"
+      LEFT JOIN "Business" child_b ON child_b.id = child_wrd."businessId" AND child_wrd."businessId" IS NOT NULL
+      LEFT JOIN "EndUser" child_e ON child_e.id = child_wrd."endUserId" AND child_wrd."endUserId" IS NOT NULL
+      LEFT JOIN "User" child_a ON child_a.id = child_wrd."assigneeId" AND child_wrd."assigneeId" IS NOT NULL
+      WHERE child_wrd."parent_runtime_data_id" = ${id}
+    `) as TWorkflowWithRelations['childWorkflowsRuntimeData'];
+
+    return {
+      ...parentWorkflow,
+      childWorkflowsRuntimeData: childWorkflows,
+    };
   }
 
   /**

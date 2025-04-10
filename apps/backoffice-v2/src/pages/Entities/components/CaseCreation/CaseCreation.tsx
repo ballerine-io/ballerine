@@ -27,24 +27,26 @@ export const CaseCreation = withCaseCreation(() => {
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              disabled={isDemoAccount}
-              className="flex w-full items-center justify-start gap-2 font-semibold disabled:!pointer-events-auto"
-              onClick={() => setOpen(true)}
-            >
-              <Plus />
-              <span>Add case manually</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
-            This feature is not available for trial accounts.
-            <br />
-            Talk to us to get full access.
-          </TooltipContent>
-        </Tooltip>
+        <div>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                disabled={isDemoAccount}
+                className="flex w-full items-center justify-start gap-2 font-semibold disabled:!pointer-events-auto"
+                onClick={() => setOpen(true)}
+              >
+                <Plus />
+                <span>Add case manually</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
+              This feature is not available for trial accounts.
+              <br />
+              Talk to us to get full access.
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </SheetTrigger>
       <SheetContent
         side="right"

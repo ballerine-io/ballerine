@@ -33,15 +33,11 @@ export const useCaseBlocks = ({
   config,
   activeTab,
 }: TCaseBlocksLogicParams) => {
-  const tabBlocks = useMemo(
-    () =>
-      useTabsToBlocksMap({
-        blocks,
-        blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
-        theme: config?.theme,
-      }),
-    [workflow, blocks, onReuploadNeeded, isLoadingReuploadNeeded, config?.theme],
-  );
+  const tabBlocks = useTabsToBlocksMap({
+    blocks,
+    blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
+    theme: config?.theme,
+  });
   const tabs = useMemo(() => {
     if (!config?.theme) {
       return [];

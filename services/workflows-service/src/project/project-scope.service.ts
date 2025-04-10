@@ -24,7 +24,7 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   where: Record<string, unknown> | null;
 }
 
-const assertIsValidProjectIds = (projectIds: unknown): asserts projectIds is TProjectIds => {
+export function assertIsValidProjectIds(projectIds: unknown): asserts projectIds is TProjectIds {
   if (checkIsNonEmptyArrayOfNonEmptyStrings(projectIds)) {
     return;
   }
@@ -32,7 +32,7 @@ const assertIsValidProjectIds = (projectIds: unknown): asserts projectIds is TPr
   throw new InternalServerErrorException(
     'Project IDs must be a non-empty array of non-empty strings',
   );
-};
+}
 
 @Injectable()
 export class ProjectScopeService {
