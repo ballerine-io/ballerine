@@ -43,6 +43,7 @@ import { Module } from '@nestjs/common';
 import { CollectionFlowEntityService } from './collection-flow-entity.service';
 import { CollectionFlowEntityController } from './controllers/collection-flow.entity.controller';
 import { DocumentModule } from '@/document/document.module';
+import { CollectionFlowStateService } from './collection-flow-state.service';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { DocumentModule } from '@/document/document.module';
     SalesforceIntegrationRepository,
     SentryService,
     CollectionFlowEntityService,
+    CollectionFlowStateService,
   ],
 })
 export class CollectionFlowModule {}
