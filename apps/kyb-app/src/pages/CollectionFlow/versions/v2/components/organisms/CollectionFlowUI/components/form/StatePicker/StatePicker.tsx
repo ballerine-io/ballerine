@@ -29,14 +29,6 @@ export const StatePickerField: TDynamicFormField<IStatePickerParams> = ({ elemen
       formatValueDestination(countryCodePath || '', stack as TDeepthLevelStack),
     ) as string | null;
 
-    console.log(
-      'countryCode',
-      countryCode,
-      countryCodePath,
-      formatValueDestination(countryCodePath || '', stack as TDeepthLevelStack),
-      values,
-    );
-
     return countryCode
       ? getCountryStates(countryCode).map(state => ({ title: state.name, const: state.isoCode }))
       : [];

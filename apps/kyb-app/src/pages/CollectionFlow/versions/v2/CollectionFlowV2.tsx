@@ -25,6 +25,8 @@ import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowC
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
 import { useCollectionFlowContext } from './hooks/useCollectionFlowContext/useCollectionFlowContext';
+import { useSuccessRedirectUrl } from './hooks/useSuccessRedirectUrl';
+import { useFailureRedirectUrl } from './hooks/useFailureRedirectUrl';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
@@ -41,6 +43,8 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
   const additionalContext = useAdditionalWorkflowContext();
+  const successRedirectUrl = useSuccessRedirectUrl(collectionFlowData?.config);
+  const failureRedirectUrl = useFailureRedirectUrl(collectionFlowData?.config);
 
   const elements = schema?.uiSchema?.elements as unknown as Array<UIPage<'v2'>>;
   const definition = schema?.definition.definition;
@@ -77,14 +81,14 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     getCollectionFlowState(collectionFlowData?.context)?.status ===
     CollectionFlowStatusesEnum.completed
   ) {
-    return <CompletedScreen />;
+    return <CompletedScreen redirectUrl={successRedirectUrl} />;
   }
 
   if (
     getCollectionFlowState(collectionFlowData?.context)?.status ===
     CollectionFlowStatusesEnum.failed
   ) {
-    return <FailedScreen />;
+    return <FailedScreen redirectUrl={failureRedirectUrl} />;
   }
 
   return definition && collectionFlowContext ? (
