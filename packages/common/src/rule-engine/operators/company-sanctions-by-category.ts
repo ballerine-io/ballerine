@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import isEmpty from 'lodash.isempty';
 import { z } from 'zod';
 
 import { Rule } from '@/rule-engine';
@@ -58,17 +57,19 @@ class CompanySanctionsCategories extends BaseOperator<string[], CompanySanctions
 
     const sourceCategories: string[] = [];
 
-    companySanctions.forEach(sanction => {
-      if (sanction?.entity?.sources) {
-        sanction.entity.sources.forEach(source => {
-          if (source?.categories && Array.isArray(source.categories)) {
-            source.categories.forEach(category => {
-              sourceCategories.push(category);
-            });
-          }
-        });
-      }
-    });
+    companySanctions.forEach(
+      (sanction: { entity?: { sources?: Array<{ categories?: string[] }> } }) => {
+        if (sanction?.entity?.sources) {
+          sanction.entity.sources.forEach((source: { categories?: string[] }) => {
+            if (source?.categories && Array.isArray(source.categories)) {
+              source.categories.forEach((category: string) => {
+                sourceCategories.push(category);
+              });
+            }
+          });
+        }
+      },
+    );
 
     return sourceCategories;
   }
