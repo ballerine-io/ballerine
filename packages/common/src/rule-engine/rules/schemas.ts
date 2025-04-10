@@ -10,6 +10,8 @@ import {
   LastYearsSchema,
   PrimitiveArraySchema,
   PrimitiveSchema,
+  IdvCheckSchema,
+  CompanySanctionsCategoriesSchema,
 } from '@/rule-engine';
 
 export const getValues = <T extends Record<string, unknown>>(obj: T) => {
@@ -34,6 +36,16 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     ]),
     operator: z.literal(OPERATION.AML_CHECK),
     value: AmlCheckSchema,
+  }),
+  z.object({
+    key: z.string().optional(),
+    operator: z.literal(OPERATION.IDV_CHECK),
+    value: IdvCheckSchema,
+  }),
+  z.object({
+    key: z.string().optional(),
+    operator: z.literal(OPERATION.COMPANY_SANCTIONS_CATEGORIES),
+    value: CompanySanctionsCategoriesSchema,
   }),
   z.object({
     key: z.string(),

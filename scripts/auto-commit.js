@@ -27,9 +27,11 @@ async function generateCommitMessage(diff) {
         {
           role: 'system',
           content:
-            'You are a commit message generator that follows the Conventional Commits spec. Analyze diffs and generate concise (up to 3 bullet points with one sentences) messages in a professional and serious tone.\n\n' +
+            'You are a commit message generator that follows the Conventional Commits spec. Analyze diffs and ' +
+            'generate concise (up to 3 bullet points with one sentences) messages in a professional and serious tone.\n\n' +
             'Format: <type>[optional scope]: <description>\n\n' +
-            'Types: feat (feature), fix (bug fix), docs (documentation), style (formatting), refactor, perf (performance), test, chore (build/deps)\n\n' +
+            'Types: feat (feature), fix (bug fix), docs (documentation), style (formatting), refactor, ' +
+            'perf (performance), test, chore (build/deps)\n\n' +
             'Guidelines:\n' +
             '- Use imperative mood ("add" not "added")\n' +
             "- Don't capitalize first letter\n" +
@@ -65,7 +67,38 @@ async function generateCommitMessage(diff) {
       .replace(/"/g, '\\"')
       .replace(/\$/g, '\\$');
 
-    return commitMessage;
+    // Ensure no line exceeds 100 characters without breaking words
+    const lines = commitMessage.split('\n');
+    const formattedLines = [];
+
+    for (const line of lines) {
+      if (line.length <= 100) {
+        formattedLines.push(line);
+        continue;
+      }
+
+      // For longer lines, wrap them properly
+      let currentLine = '';
+      const words = line.split(' ');
+
+      for (const word of words) {
+        // If adding this word doesn't exceed the limit, add it to the current line
+        if ((currentLine + (currentLine ? ' ' : '') + word).length <= 100) {
+          currentLine = currentLine ? currentLine + ' ' + word : word;
+        } else {
+          // Otherwise, push the current line and start a new one
+          formattedLines.push(currentLine);
+          currentLine = word;
+        }
+      }
+
+      // Don't forget the last line
+      if (currentLine) {
+        formattedLines.push(currentLine);
+      }
+    }
+
+    return formattedLines.join('\n');
   } catch (error) {
     console.error('Error generating commit message:', error);
     throw error;

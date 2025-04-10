@@ -18,7 +18,7 @@ import { ValidationFailedError, DataValueNotFoundError } from '../errors';
 import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
-import type { TUnifiedApiClient } from './constants';
+import { TUnifiedApiClient } from '.';
 
 export abstract class BaseOperator<
   TDataValue = Primitive,
@@ -49,9 +49,8 @@ export abstract class BaseOperator<
       threshold?: number;
     },
   ): TEvaluate;
-
   extractValue(data: unknown, rule: Rule) {
-    const value = get(data, rule.key);
+    const value = get(data, rule.key || '');
 
     const isPathComparison =
       !OPERATORS_WITHOUT_PATH_COMPARISON.includes(
@@ -62,7 +61,7 @@ export abstract class BaseOperator<
 
     if (!isPathComparison) {
       if (value === undefined || value === null) {
-        throw new DataValueNotFoundError(rule.key);
+        throw new DataValueNotFoundError(rule.key || '');
       }
 
       return value;
@@ -382,14 +381,14 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
       .filter(Boolean);
 
     if (isEmpty(hits)) {
-      throw new DataValueNotFoundError(rule.key);
+      throw new DataValueNotFoundError(rule.key as string);
     }
 
     if (!Array.isArray(hits) || hits.length === 0) {
       return false;
     }
 
-    return hits.map(hit => get(hit, rule.key)).filter(Boolean);
+    return hits.map(hit => get(hit, rule.key as string)).filter(Boolean);
   }
 
   evaluate = async (dataValue: any, conditionValue: AmlCheckParams) => {
@@ -539,3 +538,20 @@ export const NOT_IN = new NotIn();
 export const AML_CHECK = new AmlCheck();
 export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
 export const UBO_MISMATCH = new UboMismatch();
+
+export {
+  Equals,
+  NotEquals,
+  In,
+  InCaseInsensitive,
+  NotIn,
+  Between,
+  LastYear,
+  Exists,
+  GreaterThan,
+  GreaterThanOrEqual,
+  LessThan,
+  LessThanOrEqual,
+  AmlCheck,
+  FuzzyMatchScoreLt,
+};

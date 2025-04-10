@@ -9,6 +9,7 @@ export const replaceNullsWithUndefined = (obj: unknown) => {
 
   const objWithoutNulls = Object.entries(obj).reduce((acc, [key, value]) => {
     acc[key] = replaceNullsWithUndefined(value);
+
     return acc;
   }, {} as Record<PropertyKey, unknown>);
 

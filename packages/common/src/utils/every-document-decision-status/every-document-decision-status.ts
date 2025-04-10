@@ -7,7 +7,7 @@ export const everyDocumentDecisionStatus = <
     };
   },
 >(
-  documents: Array<TItem>,
+  documents: TItem[],
   status: string,
 ) => {
   return safeEvery(documents, document => document?.decision?.status === status);

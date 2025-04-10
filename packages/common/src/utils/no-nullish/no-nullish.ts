@@ -4,7 +4,7 @@
  * @param template
  * @param args
  */
-export const noNullish = <TArgs extends Array<unknown>>(
+export const noNullish = <TArgs extends unknown[]>(
   template: TemplateStringsArray,
   ...args: TArgs
 ) =>

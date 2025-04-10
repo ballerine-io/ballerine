@@ -32,6 +32,12 @@ export const COMMERCIAL_CREDIT_CHECK_DONE = `contains(${UnifiedApiStatusesString
 
 export const SANCTIONS_DONE = `pluginsOutput.companySanctions.data != null`;
 
+export const HAS_COMPANY_SANCTIONS_CATEGORIES = {
+  key: 'pluginsOutput.companySanctions.data',
+  operator: 'COMPANY_SANCTIONS_CATEGORIES',
+  value: { threshold: 1, category: 'Adverse Media' },
+};
+
 export const BUSINESS_UBO_AND_SANCTIONS_DONE = `
   ${BUSINESS_INFORMATION_DONE} &&
   ${UBO_DONE} &&

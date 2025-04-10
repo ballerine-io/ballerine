@@ -15,7 +15,7 @@ export class DataValueNotFoundError extends Error {
 }
 
 export class ValidationFailedError extends Error {
-  errors: { message: string; path: string }[] | undefined;
+  errors: Array<{ message: string; path: string }> | undefined;
   constructor(key: string, message: string, error?: ZodError) {
     const errors = error?.errors.map(zodIssue => ({
       message: zodIssue.message,

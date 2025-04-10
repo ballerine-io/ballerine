@@ -30,7 +30,9 @@ export const getDocumentId = (
   document: TDocument | DefaultContextSchema['documents'][number],
   useUuid = true,
 ) => {
-  if (useUuid && document?.id) return document.id;
+  if (useUuid && document?.id) {
+    return document.id;
+  }
 
   let id = `${document?.category}-${document?.type}-${document?.issuer?.country}`;
 
@@ -51,7 +53,9 @@ export const findDocumentSchemaByTypeAndCategory = (
     const documents = getDocuments();
     const document = documents.find(doc => doc.type === type && doc.category === category);
 
-    if (!document) continue;
+    if (!document) {
+      continue;
+    }
 
     return document;
   }
