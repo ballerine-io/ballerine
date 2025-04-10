@@ -13,8 +13,10 @@ import {
   EXISTS,
   NOT_IN,
   FUZZY_MATCH_SCORE_LT,
+  IDV_CHECK,
+  COMPANY_SANCTIONS_CATEGORIES,
   UBO_MISMATCH,
-} from './helpers';
+} from './index';
 
 import { OPERATION } from './enums';
 
@@ -33,6 +35,8 @@ export const OperationHelpers = {
   [OPERATION.NOT_IN]: NOT_IN,
   [OPERATION.AML_CHECK]: AML_CHECK,
   [OPERATION.FUZZY_MATCH_SCORE_LT]: FUZZY_MATCH_SCORE_LT,
+  [OPERATION.IDV_CHECK]: IDV_CHECK,
+  [OPERATION.COMPANY_SANCTIONS_CATEGORIES]: COMPANY_SANCTIONS_CATEGORIES,
   [OPERATION.UBO_MISMATCH]: UBO_MISMATCH,
 } as const;
 
@@ -44,11 +48,3 @@ export const OPERATORS_WITHOUT_PATH_COMPARISON = [
 ] as const;
 
 export const OPERATORS_WITH_THRESHOLD = [OPERATION.FUZZY_MATCH_SCORE_LT] as const;
-
-export type TUnifiedApiClient = {
-  runEntityMatchingV2: (payload: {
-    entity1: string;
-    entity2: string;
-    includeAnalysis: boolean;
-  }) => Promise<{ data: { similarityScore: number & Record<string, unknown> } }>;
-};

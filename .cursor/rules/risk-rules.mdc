@@ -1,0 +1,290 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Risk Rules Development Guide
+
+## Overview
+This guide explains how to create, organize, test, and implement risk rules in the Ballerine system. Risk rules are used to evaluate various conditions and make decisions based on workflow data.
+
+## Rule Structure
+A rule consists of the following components:
+```typescript
+type Rule = {
+  key: string;          // Path to the data being evaluated
+  operator: string;     // The operation to perform (e.g., EQUALS, IN, IDV_CHECK)
+  value: unknown;       // The value to compare against
+  isPathComparison?: boolean; // Whether to compare against another path in the data
+};
+```
+
+## Rule Organization
+
+### 1. Operator Files
+- Located in `packages/common/src/rule-engine/operators/`
+- Each operator is defined in its own file (e.g., `idv-check.ts`, `aml-check.ts`)
+- Operators export a factory function that creates the operator implementation
+
+Example operator structure:
+```typescript
+function createOperator() {
+  const operator = 'OPERATOR_NAME';
+
+  const extractValue = (data: unknown, rule: Rule) => {
+    // Extract and validate data
+  };
+
+  const evaluate = (dataValue: unknown, conditionValue: unknown): boolean => {
+    // Evaluate the condition
+  };
+
+  const execute = async (value: unknown, comparisonValue: unknown, options?: any) => {
+    return evaluate(value, comparisonValue);
+  };
+
+  return {
+    operator,
+    extractValue,
+    evaluate,
+    execute,
+  };
+}
+```
+
+### 2. Helper Files
+- Common utilities in `helpers.ts`
+- Type definitions in `types.ts`
+- Constants in `constants.ts`
+- Schemas in `schemas.ts`
+
+## Creating a New Rule
+
+1. **Define the Operator**
+```typescript
+// my-operator.ts
+import { Rule } from '@/rule-engine';
+import { z } from 'zod';
+
+function createMyOperator() {
+  const operator = 'MY_OPERATOR';
+
+  const extractValue = (data: unknown, rule: Rule) => {
+    // Validate input data
+    const result = z.record(z.string(), z.any()).safeParse(data);
+    if (!result.success) {
+      throw new ValidationFailedError('extract', 'parsing failed', result.error);
+    }
+
+    // Extract relevant data
+    const value = get(result.data, rule.key);
+    if (!value) {
+      throw new DataValueNotFoundError(rule.key);
+    }
+
+    return value;
+  };
+
+  const evaluate = (dataValue: unknown, conditionValue: unknown): boolean => {
+    // Implement evaluation logic
+    return someCondition;
+  };
+
+  return {
+    operator,
+    extractValue,
+    evaluate,
+    execute: evaluate,
+  };
+}
+
+export const MY_OPERATOR = createMyOperator();
+```
+
+2. **Export the Operator**
+Add to `packages/common/src/rule-engine/operators/index.ts`:
+```typescript
+export { MY_OPERATOR } from './my-operator';
+```
+
+## Workflow Context
+The rule engine receives a workflow context object that follows the schema defined in `default-context-schema.ts`. Key sections include:
+
+```typescript
+{
+  entity: {
+    // Business/individual information
+    ballerineEntityId: string;
+    // ... other entity fields
+  },
+  documents: {
+    // Document verification results
+  },
+  pluginsOutput: {
+    // Results from various verification plugins
+    kyc_session: { ... },
+    merchantScreening: { ... },
+    // ... other plugins
+  },
+  aml: {
+    // AML check results
+  },
+  childWorkflows: {
+    // Results from child workflows
+    [workflowName: string]: {
+      result: {
+        vendorResult: {
+          // Vendor-specific results
+        }
+      }
+    }
+  }
+}
+```
+
+## Testing Rules
+
+### 1. Test File Structure
+Create test files alongside the operator files:
+```typescript
+// my-operator.unit.test.ts
+import { MY_OPERATOR } from './my-operator';
+
+describe('MY_OPERATOR', () => {
+  describe('extractValue', () => {
+    it('should extract correct value from data', () => {
+      const data = { /* mock data */ };
+      const rule = { /* mock rule */ };
+      
+      const result = MY_OPERATOR.extractValue(data, rule);
+      expect(result).toEqual(expectedValue);
+    });
+
+    it('should throw when data is invalid', () => {
+      expect(() => 
+        MY_OPERATOR.extractValue(invalidData, rule)
+      ).toThrow(ValidationFailedError);
+    });
+  });
+
+  describe('evaluate', () => {
+    it('should correctly evaluate condition', () => {
+      const result = MY_OPERATOR.evaluate(mockValue, mockCondition);
+      expect(result).toBe(true);
+    });
+  });
+});
+```
+
+### 2. Test Cases to Include
+- Happy path with valid data
+- Invalid data handling
+- Edge cases (null, undefined, empty arrays)
+- Complex nested data structures
+- Error conditions
+
+### 3. Running Tests
+```bash
+# Run all tests
+cd services/workflows-service
+pnpm test:unit
+
+# Run specific test file
+pnpm test:unit src/rule-engine/core/test/my-operator.unit.test.ts
+
+# Update snapshots
+pnpm test:unit -- -u
+```
+
+## Best Practices
+
+1. **Error Handling**
+   - Use specific error types (`ValidationFailedError`, `DataValueNotFoundError`)
+   - Provide clear error messages
+   - Validate all inputs
+
+2. **Type Safety**
+   - Define and use TypeScript types for all parameters
+   - Use Zod schemas for runtime validation
+   - Export type definitions for reuse
+
+3. **Testing**
+   - Test both success and failure cases
+   - Include edge cases
+   - Use meaningful test data
+   - Keep tests focused and isolated
+
+4. **Documentation**
+   - Document the purpose of each operator
+   - Include examples in tests
+   - Document expected data structure
+   - Explain error conditions
+
+## Example Implementation
+
+Here's a complete example of implementing a rule that checks if a value exists in an array:
+
+```typescript
+// in-array.ts
+import { Rule } from '@/rule-engine';
+import { z } from 'zod';
+
+function createInArrayOperator() {
+  const operator = 'IN_ARRAY';
+
+  const extractValue = (data: unknown, rule: Rule) => {
+    const result = z.record(z.string(), z.any()).safeParse(data);
+    if (!result.success) {
+      throw new ValidationFailedError('extract', 'parsing failed', result.error);
+    }
+
+    const value = get(result.data, rule.key);
+    if (!value) {
+      throw new DataValueNotFoundError(rule.key);
+    }
+
+    return value;
+  };
+
+  const evaluate = (dataValue: unknown, conditionValue: unknown): boolean => {
+    if (!Array.isArray(conditionValue)) {
+      throw new ValidationFailedError(operator, 'Condition value must be an array');
+    }
+
+    return conditionValue.includes(dataValue);
+  };
+
+  return {
+    operator,
+    extractValue,
+    evaluate,
+    execute: evaluate,
+  };
+}
+
+export const IN_ARRAY = createInArrayOperator();
+
+// in-array.unit.test.ts
+describe('IN_ARRAY', () => {
+  const operator = IN_ARRAY;
+
+  describe('extractValue', () => {
+    it('should extract value from valid data', () => {
+      const data = { foo: { bar: 'test' } };
+      const rule = { key: 'foo.bar', operator: 'IN_ARRAY', value: ['test'] };
+      
+      expect(operator.extractValue(data, rule)).toBe('test');
+    });
+  });
+
+  describe('evaluate', () => {
+    it('should return true when value is in array', () => {
+      expect(operator.evaluate('test', ['test', 'other'])).toBe(true);
+    });
+
+    it('should return false when value is not in array', () => {
+      expect(operator.evaluate('test', ['other'])).toBe(false);
+    });
+  });
+});
+``` 
