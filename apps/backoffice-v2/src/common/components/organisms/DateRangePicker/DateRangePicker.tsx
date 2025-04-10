@@ -1,10 +1,11 @@
-import React, { ComponentProps, useMemo } from 'react';
-import { CalendarIcon } from '@radix-ui/react-icons';
 import { formatDate, Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Button } from '../../atoms/Button/Button';
-import { Calendar } from '../../molecules/Calendar/Calendar';
+import { CalendarIcon } from '@radix-ui/react-icons';
 import dayjs from 'dayjs';
+import { ComponentProps, useMemo } from 'react';
+
+import { Button } from '@/common/components/atoms/Button/Button';
+import { Calendar } from '@/common/components/molecules/Calendar/Calendar';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 type TDateRangePickerProps = {
   onChange: NonNullable<ComponentProps<typeof Calendar>['onSelect']>;
@@ -47,9 +48,7 @@ export const DateRangePicker = ({
               <div className={`flex`}>
                 <Button
                   variant={`ghost`}
-                  className={ctw(`!mt-0 h-8 select-none font-normal hover:bg-transparent`, {
-                    // 'pointer-events-none opacity-50':
-                  })}
+                  className={`!mt-0 h-8 select-none font-normal hover:bg-transparent`}
                   disabled={
                     value?.from &&
                     value.to &&
@@ -70,9 +69,7 @@ export const DateRangePicker = ({
 
                 <Button
                   variant={`ghost`}
-                  className={ctw(`!mt-0 h-8 select-none font-normal hover:bg-transparent`, {
-                    // 'pointer-events-none opacity-50':
-                  })}
+                  className={`!mt-0 h-8 select-none font-normal hover:bg-transparent`}
                   disabled={!value?.from || !value.to}
                   onClick={e => onChange({ from: undefined, to: undefined }, new Date(), {}, e)}
                 >
