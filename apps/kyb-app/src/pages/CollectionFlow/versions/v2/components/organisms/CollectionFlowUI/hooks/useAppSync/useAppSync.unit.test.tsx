@@ -5,6 +5,11 @@ import { act, renderHook } from '@testing-library/react';
 import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useAppSync } from './useAppSync';
+import { GlobalUIState } from '../../../../providers/GlobalUIState';
+
+const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  return <GlobalUIState>{children}</GlobalUIState>;
+};
 
 vi.mock('@/domains/collection-flow', () => ({
   syncContext: vi.fn(),
@@ -24,16 +29,6 @@ vi.mock('../../helpers/update-collection-flow-state', () => ({
   updateCollectionFlowState: vi.fn(),
 }));
 
-const mockSetLoading = vi.fn();
-
-vi.mock('@/components/organisms/DynamicUI/hooks/useDynamicUIContext', () => ({
-  useDynamicUIContext: () => ({
-    helpers: {
-      setLoading: mockSetLoading,
-    },
-  }),
-}));
-
 vi.mock('@/components/organisms/DynamicUI/StateManager/components/StateProvider', () => ({
   useStateManagerContext: () => ({
     state: 'test-state',
@@ -50,7 +45,7 @@ describe('useAppSync', () => {
   });
 
   it('should initialize with isSyncing false', () => {
-    const { result } = renderHook(() => useAppSync());
+    const { result } = renderHook(() => useAppSync(), { wrapper: Wrapper });
 
     expect(result.current.isSyncing).toBe(false);
   });
@@ -67,7 +62,7 @@ describe('useAppSync', () => {
         }),
     );
 
-    const { result } = renderHook(() => useAppSync());
+    const { result, rerender } = renderHook(() => useAppSync(), { wrapper: Wrapper });
 
     let syncPromise: Promise<void>;
 
@@ -75,15 +70,17 @@ describe('useAppSync', () => {
       syncPromise = result.current.sync(mockContext);
     });
 
+    rerender();
+
     expect(result.current.isSyncing).toBe(true);
-    expect(mockSetLoading).toHaveBeenCalledWith(true);
 
     await act(async () => {
       await syncPromise;
     });
 
+    rerender();
+
     expect(result.current.isSyncing).toBe(false);
-    expect(mockSetLoading).toHaveBeenCalledWith(false);
   });
 
   it('should handle errors and show toast message', async () => {
@@ -93,43 +90,52 @@ describe('useAppSync', () => {
     mockedSyncContext.mockRejectedValueOnce(mockError);
 
     const consoleSpy = vi.spyOn(console, 'error');
-    const { result } = renderHook(() => useAppSync());
+    const { result } = renderHook(() => useAppSync(), { wrapper: Wrapper });
 
     await act(async () => {
       await result.current.sync(mockContext);
     });
 
-    expect(mockSetLoading).toHaveBeenCalledWith(true);
     expect(toast.error).toHaveBeenCalledWith('Failed to sync.');
     expect(consoleSpy).toHaveBeenCalledWith(mockError);
-    expect(result.current.isSyncing).toBe(false);
-    expect(mockSetLoading).toHaveBeenCalledWith(false);
   });
 
   it('should return early if no collection flow state', async () => {
     const mockContext = { someData: 'test' } as unknown as CollectionFlowContext;
     vi.mocked(getCollectionFlowState).mockReturnValueOnce(undefined);
 
-    const { result } = renderHook(() => useAppSync());
+    const { result } = renderHook(() => useAppSync(), { wrapper: Wrapper });
 
     await act(async () => {
       await result.current.sync(mockContext);
     });
 
-    expect(mockSetLoading).not.toHaveBeenCalled();
     expect(syncContext).not.toHaveBeenCalled();
   });
 
-  it('should not call setLoading in syncStateless', async () => {
+  it('should not update isSyncing in syncStateless', async () => {
     const mockContext = { someData: 'test' } as unknown as CollectionFlowContext;
 
-    const { result } = renderHook(() => useAppSync());
+    const { result, rerender } = renderHook(() => useAppSync(), { wrapper: Wrapper });
+    let syncPromise: Promise<void>;
 
-    await act(async () => {
-      await result.current.syncStateless(mockContext);
+    expect(result.current.isSyncing).toBe(false);
+
+    act(() => {
+      syncPromise = result.current.syncStateless(mockContext);
     });
 
-    expect(mockSetLoading).not.toHaveBeenCalled();
+    rerender();
+
+    expect(result.current.isSyncing).toBe(false);
+
+    await act(async () => {
+      await syncPromise;
+    });
+
+    rerender();
+
+    expect(result.current.isSyncing).toBe(false);
     expect(syncContext).toHaveBeenCalledWith(mockContext);
   });
 });

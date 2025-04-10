@@ -1,10 +1,10 @@
 import { Chip } from '@/common/components/atoms/Chip';
 import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
-import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { ctw } from '@ballerine/ui';
 import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import styles from './ProgressBar.module.css';
+import { useGlobalUIState } from '@/pages/CollectionFlow/versions/v2/components/providers/GlobalUIState';
 
 interface Props {
   className?: string;
@@ -12,13 +12,12 @@ interface Props {
 
 export const ProgressBar = ({ className }: Props) => {
   const { t } = useTranslation();
-  const { state } = useDynamicUIContext();
-  const { isLoading } = state;
+  const { state: uiState } = useGlobalUIState();
 
   return (
     <Chip
       icon={
-        isLoading ? (
+        uiState.isSyncing ? (
           <LoadingSpinner size="14" />
         ) : (
           <div
@@ -32,8 +31,8 @@ export const ProgressBar = ({ className }: Props) => {
         )
       }
       className={className}
-      variant={isLoading ? 'primary' : 'success'}
-      text={isLoading ? t('saving') : t('progressSaved')}
+      variant={uiState.isSyncing ? 'primary' : 'success'}
+      text={uiState.isSyncing ? t('saving') : t('progressSaved')}
     />
   );
 };
