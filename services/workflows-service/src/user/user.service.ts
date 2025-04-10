@@ -15,13 +15,14 @@ export class UserService {
   async create(args: Parameters<UserRepository['create']>[0], projectId: TProjectId) {
     const user = await this.userRepository.create(args, projectId);
 
-    this.analyticsService.track({
+    this.analyticsService.trackSafe({
       event: EventNamesMap.USER_CREATED,
       distinctId: user.id,
       properties: {
         email: user.email,
         fullName: `${user.firstName} ${user.lastName}`,
       },
+      customerId: user.customerId,
     });
 
     return user;
