@@ -96,7 +96,6 @@ export class ProjectScopeService {
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
     projectIds: TProjectIds,
   ): T {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     // @ts-expect-error - dynamically typed for all queries

@@ -21,6 +21,6 @@ export function useSession() {
     isLoading,
     isAuthenticated,
     user,
-    refetch,
+    refresh: refetch,
   };
 }
