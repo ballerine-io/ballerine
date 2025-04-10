@@ -9,7 +9,6 @@ import {
   CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
-  setCollectionFlowStatus,
   TCollectionFlowState,
   TCollectionFlowStep,
   updateCollectionFlowStep,
@@ -102,8 +101,6 @@ export class CollectionFlowStateService {
         document.status === DocumentStatus.requested ||
         document.decision === DocumentDecision.revisions,
     );
-
-    setCollectionFlowStatus(context, CollectionFlowStatusesEnum.revision);
 
     const collectionFlowSteps = (
       uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }

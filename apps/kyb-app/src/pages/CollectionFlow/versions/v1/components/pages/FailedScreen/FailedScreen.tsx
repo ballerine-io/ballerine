@@ -1,10 +1,22 @@
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { Card } from '@ballerine/ui';
+import { Loader2 } from 'lucide-react';
+import { FunctionComponent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const FailedScreen = () => {
+interface IFailedScreenProps {
+  redirectUrl?: string;
+}
+
+export const FailedScreen: FunctionComponent<IFailedScreenProps> = ({ redirectUrl }) => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
+
+  useEffect(() => {
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }, [redirectUrl]);
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -19,6 +31,12 @@ export const FailedScreen = () => {
             {t('failed.content', { companyName: customer?.displayName })}
           </p>
         </div>
+        {redirectUrl && (
+          <div className="flex justify-center mt-4 items-center">
+            <Loader2 className="h-6 w-6 animate-spin text-gray-900" />
+            <span className="ml-2 text-sm text-gray-500">Redirecting...</span>
+          </div>
+        )}
       </Card>
     </div>
   );
