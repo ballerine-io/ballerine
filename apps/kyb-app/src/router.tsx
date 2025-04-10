@@ -35,7 +35,7 @@ export const router = sentryCreateBrowserRouter([
         Component: Root,
         children: [
           {
-            path: ':workflowId',
+            path: 'collection-flow',
             Component: withCustomer(CollectionFlow),
           },
           {
@@ -43,7 +43,7 @@ export const router = sentryCreateBrowserRouter([
             Component: withCustomer(CollectionFlow),
           },
           {
-            path: 'signup',
+            path: 'signup/:workflowId',
             Component: SignUpPage,
           },
           // TODO: 404 Page?

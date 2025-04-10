@@ -1,0 +1,58 @@
+import type { Request } from 'express';
+import { ClsService } from 'nestjs-cls';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+
+@Injectable()
+export class TokenAuthGuard implements CanActivate {
+  constructor(
+    private readonly cls: ClsService,
+    private readonly workflowTokenService: WorkflowTokenService,
+  ) {}
+
+  async canActivate(context: ExecutionContext) {
+    const req = context.switchToHttp().getRequest<Request>();
+    const workflowId =
+      typeof req.params['workflowId'] === 'string' && req.params['workflowId'] !== 'null'
+        ? req.params['workflowId']
+        : null;
+
+    if (workflowId && (req as any).tokenScope) {
+      return true;
+    }
+
+    const token = req.headers['authorization']?.split(' ')[1];
+
+    if (!token) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    const tokenEntity = await this.workflowTokenService.findByTokenWithExpiredUnscoped(token);
+
+    if (!tokenEntity) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    if (!tokenEntity.endUserId) {
+      throw new UnauthorizedException('No EndUser is set for this token');
+    }
+
+    if (tokenEntity.expiresAt < new Date()) {
+      throw new UnauthorizedException('Token has expired');
+    }
+
+    this.cls.set('entity', {
+      endUser: {
+        workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
+        endUserId: tokenEntity.endUserId,
+        id: tokenEntity.id,
+      },
+      type: 'endUser',
+    });
+
+    (req as any).tokenScope = tokenEntity;
+
+    return true;
+  }
+}
