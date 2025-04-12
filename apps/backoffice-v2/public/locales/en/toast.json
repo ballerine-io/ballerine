@@ -136,5 +136,13 @@
   "step_cancel": {
     "success": "Step request cancelled successfully.",
     "error": "Error occurred while cancelling step request.\n\n{{errorMessage}}"
+  },
+  "edit_collection_flow": {
+    "success": "Collection flow now can be edited.",
+    "error": "Error occurred while updating collection flow."
+  },
+  "edit_case_state": {
+    "success": "Case state updated successfully.",
+    "error": "Error occurred while updating case state."
   }
 }

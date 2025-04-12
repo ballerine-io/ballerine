@@ -8,11 +8,12 @@ import { FileText, Link, MoreVertical } from 'lucide-react';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { EditCollectionFlow } from './options/EditCollectionFlow';
 
 export const CaseOptions = () => {
   const {
+    workflow,
     isDemoAccount,
-    isGeneratingPDF,
     generateAndOpenPDFInNewTab,
     isCopyingCollectionFlowLink,
     copyCollectionFlowLink,
@@ -59,6 +60,7 @@ export const CaseOptions = () => {
             <Link size={18} className="mr-2" /> Copy Collection Flow Link
           </Button>
         </DropdownMenuItem>
+        {workflow && <EditCollectionFlow workflow={workflow} />}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -18,6 +18,7 @@ export const useCaseOptionsLogic = () => {
     !workflow?.context?.metadata?.collectionFlowUrl || !workflow?.context?.metadata?.token;
 
   return {
+    workflow,
     isGeneratingPDF: isLoading,
     generateAndOpenPDFInNewTab,
     isCopyingCollectionFlowLink,
