@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.7.131",
+  "version": "0.7.132",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "type": "module",
@@ -53,11 +53,11 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.2.40",
-    "@ballerine/common": "0.9.88",
+    "@ballerine/common": "0.9.89",
     "@ballerine/react-pdf-toolkit": "^1.2.102",
     "@ballerine/ui": "0.7.130",
-    "@ballerine/workflow-browser-sdk": "0.6.110",
-    "@ballerine/workflow-node-sdk": "0.6.110",
+    "@ballerine/workflow-browser-sdk": "0.6.111",
+    "@ballerine/workflow-node-sdk": "0.6.111",
     "@botpress/webchat": "^2.1.10",
     "@botpress/webchat-generator": "^0.2.9",
     "@fontsource/inter": "^4.5.15",
