@@ -11,12 +11,12 @@ import { baseBreadcrumbTheme } from './theme/base-theme';
 
 const { Provider } = breadcrumbContext;
 
-export function Item({
+export const Item = ({
   active = false,
   theme = baseBreadcrumbTheme,
   state = 'idle',
   children,
-}: BreadcrumbProps) {
+}: BreadcrumbProps) => {
   const context: BreadcrumbContext = useMemo(() => {
     const ctx: BreadcrumbContext = {
       isActive: active,
@@ -31,8 +31,13 @@ export function Item({
   }, [theme, active, state]);
 
   const child = useMemo(() => {
-    if (typeof children === 'function') return children(context);
-    if (children) return children;
+    if (typeof children === 'function') {
+      return children(context);
+    }
+
+    if (children) {
+      return children;
+    }
 
     return (
       <Item.Outer>
@@ -44,7 +49,7 @@ export function Item({
   }, [context, children]);
 
   return <Provider value={context}>{child}</Provider>;
-}
+};
 
 Item.Inner = Inner;
 Item.Outer = Outer;

@@ -6,6 +6,7 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import {
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
+  TCollectionFlowStep,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
@@ -151,7 +152,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         const currentStep = getCollectionFlowState(context)?.steps?.find(
           step => step.stepName === page.stateName,
         );
-        const state = currentStep?.state;
+        const state = currentStep?.state as TCollectionFlowStep['state'];
 
         // Transition to revised to avoid user visit same revision step again after revision
         if (state === CollectionFlowStepStatesEnum.revision) {
@@ -161,7 +162,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         }
 
         // Completing step after submission
-        if (state === CollectionFlowStepStatesEnum.inProgress) {
+        if (
+          [CollectionFlowStepStatesEnum.inProgress, CollectionFlowStepStatesEnum.edit].includes(
+            state,
+          )
+        ) {
           updateCollectionFlowStep(values, page.stateName, {
             state: CollectionFlowStepStatesEnum.completed,
           });

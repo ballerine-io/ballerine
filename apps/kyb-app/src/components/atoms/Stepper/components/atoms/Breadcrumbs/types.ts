@@ -1,7 +1,7 @@
 import { AnyChildren } from '@ballerine/ui';
 import React from 'react';
 
-export type BreadcrumbState = 'idle' | 'warning' | 'completed';
+export type BreadcrumbState = 'idle' | 'warning' | 'completed' | 'edit';
 export type BreadcrumbElements = 'wrapper' | 'outer' | 'inner';
 
 export interface BreadcrumbsOuterProps {
