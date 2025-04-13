@@ -92,6 +92,7 @@ describe('DynamicFormV2', () => {
     onSubmit: vi.fn(),
     onEvent: vi.fn(),
     metadata: {},
+    disabled: false,
   } as unknown as IDynamicFormProps<any>;
 
   it('should render without crashing', () => {
@@ -197,6 +198,7 @@ describe('DynamicFormV2', () => {
       },
       metadata: mockProps.metadata,
       validationParams: mockProps.validationParams,
+      disabled: mockProps.disabled,
     });
   });
 
