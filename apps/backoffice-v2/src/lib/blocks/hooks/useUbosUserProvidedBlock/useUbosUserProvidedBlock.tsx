@@ -1,50 +1,36 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { TextWithNAFallback } from '@ballerine/ui';
-import { createColumnHelper } from '@tanstack/react-table';
+import { Users } from 'lucide-react';
 import { useMemo } from 'react';
+import { ubosUserProvidedColumns } from './columns';
+import { IUBOSUserProvided } from './types';
 
-export const useUbosUserProvidedBlock = (
-  ubosUserProvided: Array<{
-    name: string;
-    nationality: string;
-    identityNumber: string;
-    percentageOfOwnership: number;
-    email: string;
-    address: string;
-  }>,
-) => {
-  const columnHelper = createColumnHelper<(typeof ubosUserProvided)[number]>();
-  const columns = [
-    columnHelper.accessor('name', {
-      header: 'Name',
-    }),
-    columnHelper.accessor('nationality', {
-      header: 'Nationality',
-    }),
-    columnHelper.accessor('identityNumber', {
-      header: 'Identity number',
-    }),
-    columnHelper.accessor('percentageOfOwnership', {
-      header: '% of Ownership',
-      cell: ({ getValue }) => {
-        const value = getValue();
-
-        return (
-          <TextWithNAFallback>{value || value === 0 ? `${value}%` : value}</TextWithNAFallback>
-        );
-      },
-    }),
-    columnHelper.accessor('email', {
-      header: 'Email',
-    }),
-    columnHelper.accessor('address', {
-      header: 'Address',
-    }),
-  ];
-
+export const useUbosUserProvidedBlock = (ubosUserProvided: IUBOSUserProvided[]) => {
   return useMemo(() => {
-    if (Object.keys(ubosUserProvided ?? {}).length === 0) {
-      return [];
+    const isEmpty = !ubosUserProvided?.length;
+
+    if (isEmpty) {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'block',
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'node',
+              value: (
+                <div className="flex flex-col items-center justify-center rounded-lg  p-6 text-center">
+                  <Users className="mb-4 h-12 w-12 text-gray-400" />
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">No UBOs Available</h3>
+                  <p className="text-sm text-gray-500">
+                    UBO's information is being collected or not available
+                  </p>
+                </div>
+              ),
+            })
+            .build()
+            .flat(1),
+        })
+        .build();
     }
 
     return createBlocksTyped()
@@ -67,7 +53,7 @@ export const useUbosUserProvidedBlock = (
           .addCell({
             type: 'table',
             value: {
-              columns,
+              columns: ubosUserProvidedColumns,
               data: ubosUserProvided,
             },
           })
