@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Bump
 - Added defaultValue to field definitions
 
 ## 0.7.130
