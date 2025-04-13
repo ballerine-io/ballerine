@@ -418,4 +418,20 @@ describe('useField', () => {
 
     expect(result.current.onFocus).toBe(initialOnFocus);
   });
+
+  it('should be disabled when disabled prop is true', () => {
+    vi.mocked(useDynamicForm).mockReturnValue({
+      fieldHelpers: mockFieldHelpers,
+      values: {},
+      metadata: mockMetadata,
+      validationParams: {
+        validateOnBlur: true,
+      },
+      disabled: true,
+    } as unknown as IDynamicFormContext<object>);
+
+    const { result } = renderHook(() => useField(mockElement, mockStack));
+
+    expect(result.current.disabled).toBe(true);
+  });
 });

@@ -197,6 +197,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         onChange={handleChange as (newValues: object) => void}
         onEvent={handleEvent}
         onSubmit={handleSubmit as (values: object) => void}
+        disabled={uiState.isSyncing}
         priorityFields={revisionFields}
         validationParams={validationParams}
         metadata={metadata}

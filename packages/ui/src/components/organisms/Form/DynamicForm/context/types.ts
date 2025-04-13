@@ -15,6 +15,7 @@ export interface IDynamicFormCallbacks {
 export interface IDynamicFormContext<TValues extends object> {
   values: TValues;
   touched: ITouchedState;
+  disabled?: boolean;
   elementsMap: TElementsMap;
   fieldHelpers: IFieldHelpers;
   submit: (values: TValues) => void;

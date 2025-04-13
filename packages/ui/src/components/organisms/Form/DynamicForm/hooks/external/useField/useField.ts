@@ -18,7 +18,7 @@ export const useField = <TValue>(
   const fieldId = useElementId(element, stack);
   const valueDestination = useValueDestination(element, stack);
 
-  const { fieldHelpers, values, validationParams, metadata } = useDynamicForm();
+  const { fieldHelpers, values, validationParams, metadata, disabled } = useDynamicForm();
   const { sendEvent, sendEventAsync } = useEvents(element);
   const { validate } = useValidator();
   const { setValue, getValue, setTouched, getTouched } = fieldHelpers;
@@ -38,12 +38,16 @@ export const useField = <TValue>(
   });
 
   const isDisabled = useMemo(() => {
+    if (disabled) {
+      return true;
+    }
+
     if (!disabledRulesResult.length) {
       return false;
     }
 
     return disabledRulesResult.some(result => result.result === true);
-  }, [disabledRulesResult]);
+  }, [disabledRulesResult, disabled]);
 
   const onChange = useCallback(
     <TValue>(value: TValue, ignoreEvent = false) => {

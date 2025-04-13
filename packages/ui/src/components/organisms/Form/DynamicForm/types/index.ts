@@ -74,6 +74,10 @@ export interface IDynamicFormProps<TValues extends object> {
   validationParams?: IDynamicFormValidationParams;
   priorityFields?: IPriorityField[];
   priorityFieldsParams?: IPriorityFieldParams;
+
+  // Disables all field elements
+  disabled?: boolean;
+
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;
