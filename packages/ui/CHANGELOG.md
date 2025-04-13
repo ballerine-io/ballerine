@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.7.132
+
+### Patch Changes
+
+- Added defaultValue to field definitions
+
 ## 0.7.130
 
 ### Patch Changes

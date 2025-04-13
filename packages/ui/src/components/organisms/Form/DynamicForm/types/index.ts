@@ -20,6 +20,7 @@ export interface IFormElement<TElements = string, TParams = object> {
   id: string;
   valueDestination: string;
   element: TElements;
+  defaultValue?: unknown;
   validate?: TValidators;
   disable?: IRule[];
   hidden?: IRule[];
