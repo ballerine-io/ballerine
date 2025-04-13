@@ -16,24 +16,30 @@ import { IApiPluginParams, PluginPayloadProperty } from '../types';
 import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
 import { handleJmespathTransformers } from '../shared/handle-jmespath-transformers';
 
-const isObjectWithKycInformation = (obj: unknown) => {
-  return isType(KycInformationSchema)(obj);
-};
-
 const dateSchema = z.preprocess(arg => {
   if (typeof arg === 'string' || arg instanceof Date) {
     const date = new Date(arg);
+
     if (!isNaN(date.getTime())) {
       return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
     }
   }
+
   return arg;
 }, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'));
 
 const KycInformationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  dateOfBirth: dateSchema,
+  dateOfBirth: dateSchema.optional(),
+});
+
+const KycInformationSchemaWithAdditionalInfo = KycInformationSchema.omit({
+  dateOfBirth: true,
+}).extend({
+  additionalInfo: z.object({
+    dateOfBirth: KycInformationSchema.shape.dateOfBirth,
+  }),
 });
 
 const IndividualsSanctionsV2PluginPayloadSchema = z.object({
@@ -54,6 +60,7 @@ const IndividualsSanctionsV2PluginPayloadSchema = z.object({
         }),
       }),
     ),
+    KycInformationSchemaWithAdditionalInfo,
     KycInformationSchema,
     z.array(
       KycInformationSchema.pick({
@@ -76,6 +83,14 @@ const IndividualsSanctionsV2PluginPayloadSchema = z.object({
     // TODO: proabably can be kept undefined and let the parent class handle it, for now keeping our old path as default
     .default('pluginsOutput.kyc_session.kyc_session_1.result.aml'),
 });
+
+const isObjectWithKycInformation = (obj: unknown) => {
+  return isType(KycInformationSchema)(obj);
+};
+
+const isObjectWithKycInformationWithAdditionalInfo = (obj: unknown) => {
+  return isType(KycInformationSchemaWithAdditionalInfo)(obj);
+};
 
 export class IndividualsSanctionsV2Plugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -165,7 +180,18 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           return {
             firstName,
             lastName,
-            dateOfBirth,
+            ...(dateOfBirth && { dateOfBirth }),
+          };
+        }
+
+        if (isObjectWithKycInformationWithAdditionalInfo(kycInformation)) {
+          const { firstName, lastName, additionalInfo } = kycInformation;
+          const { dateOfBirth } = additionalInfo;
+
+          return {
+            firstName,
+            lastName,
+            ...(dateOfBirth && { dateOfBirth }),
           };
         }
 
@@ -175,7 +201,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           return {
             firstName,
             lastName,
-            dateOfBirth,
+            ...(dateOfBirth && { dateOfBirth }),
           };
         }
 
@@ -188,6 +214,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           );
 
           const data = kycInformation[firstKey].result.vendorResult.entity.data;
+
           return data;
         }
 
