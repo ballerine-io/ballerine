@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Bump
+- Added defaultValue to field definitions
 - Updated dependencies
   - @ballerine/ui@0.7.132
 

@@ -126,6 +126,7 @@ describe('DynamicFormV2', () => {
     render(<DynamicFormV2 {...mockProps} />);
     expect(useValues).toHaveBeenCalledWith({
       values: mockProps.values,
+      schema: mockProps.elements,
       onChange: mockProps.onChange,
       onFieldChange: mockProps.onFieldChange,
     });

@@ -35,6 +35,7 @@ export const DynamicFormV2 = forwardRef(
     const validationSchema = useValidationSchema(elements);
     const valuesApi = useValues<TValues>({
       values: initialValues,
+      schema: elements,
       onChange,
       onFieldChange,
     });

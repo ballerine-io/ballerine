@@ -51,7 +51,9 @@ export const useField = <TValue>(
 
   const onChange = useCallback(
     <TValue>(value: TValue, ignoreEvent = false) => {
-      setValue(fieldId, valueDestination, value);
+      const resolvedValue = value === undefined ? element.defaultValue : value;
+
+      setValue(fieldId, valueDestination, resolvedValue);
 
       if (!ignoreEvent) {
         if (element?.params?.syncEvents) {
