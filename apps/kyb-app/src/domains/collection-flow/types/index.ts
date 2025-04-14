@@ -10,6 +10,9 @@ import {
 } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { CollectionFlowConfig, CollectionFlowContext } from './flow-context.types';
+import { z } from 'zod';
+
+export * from './ui-schema.types';
 
 export interface TUser {
   id: string;
@@ -140,8 +143,6 @@ export interface UISchema {
   };
 }
 
-export * from './ui-schema.types';
-
 export interface IDocumentRecord {
   id: string;
   status: TDocumentStatus;
@@ -152,13 +153,26 @@ export interface IDocumentRecord {
   comment?: string;
 }
 
-export type UpdateEndUserPluginData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  additionalInfo: {
-    title: string;
-  };
-};
+export const UpdateEndUserPluginDataSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  dateOfBirth: z.string().date().optional(),
+  additionalInfo: z.object({
+    title: z.string().min(1),
+  }),
+});
+
+export type TUpdateEndUserPluginData = z.infer<typeof UpdateEndUserPluginDataSchema>;
+
+export const FetchCompanyInformationPluginDataSchena = z.object({
+  registrationNumber: z.string().min(1),
+  countryCode: z.string().min(2),
+  state: z.union([z.string().optional(), z.null()]),
+  vendor: z.string().optional(),
+});
+
+export type TFetchCompanyInformationPluginData = z.infer<
+  typeof FetchCompanyInformationPluginDataSchena
+>;
