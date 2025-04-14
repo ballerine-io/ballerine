@@ -10,6 +10,8 @@
   - @ballerine/workflow-browser-sdk@0.6.112
   - @ballerine/workflow-node-sdk@0.6.112
   - @ballerine/react-pdf-toolkit@1.2.104
+  - @ballerine/workflow-browser-sdk@0.6.111
+  - @ballerine/workflow-node-sdk@0.6.111
 
 ## 0.7.132
 

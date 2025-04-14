@@ -8,6 +8,7 @@
 - Updated dependencies
   - @ballerine/ui@0.7.133
   - @ballerine/workflow-browser-sdk@0.6.112
+- @ballerine/workflow-browser-sdk@0.6.111
 
 ## 0.3.162
 

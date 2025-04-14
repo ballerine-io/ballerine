@@ -12,6 +12,7 @@
 
 - Updated dependencies
   - @ballerine/common@0.9.89
+- bump
 
 ## 0.6.110
 
