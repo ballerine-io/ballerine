@@ -547,11 +547,11 @@ describe('IndividualsSanctionsV2Plugin', () => {
           data: {
             firstName: 'John',
             lastName: 'Doe',
-            dateOfBirth: '1980-01-01',
             additionalInfo: {
               mainRepresentative: {
                 ballerineEntityId: 'ballerineEntityId',
               },
+              dateOfBirth: '1980-01-01',
             },
           },
         },
