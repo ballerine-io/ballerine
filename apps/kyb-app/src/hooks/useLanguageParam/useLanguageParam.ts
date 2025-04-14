@@ -18,7 +18,7 @@ export const useLanguageParam = () => {
       const token = getAccessToken();
 
       navigate(
-        `/collection-flow/${workflowId}${createQueryParamsString({ lng: language, token })}`,
+        `/collection-flow/${createQueryParamsString({ workflowId, token, lng: language })}`,
         {
           replace: true,
           state: {
