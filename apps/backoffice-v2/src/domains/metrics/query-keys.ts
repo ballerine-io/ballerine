@@ -14,7 +14,7 @@ export const metricsQueryKeys = createQueryKeys('metrics', {
     queryKey: ['case-stats'],
     queryFn: () => fetchCaseAnalytics(),
   }),
-  caseDailyStats: (params: { from: string; to: string }) => ({
+  caseDailyStats: (params: { from?: string; to?: string }) => ({
     queryKey: ['case-daily', params],
     queryFn: () => fetchCaseDailyStats(params),
   }),

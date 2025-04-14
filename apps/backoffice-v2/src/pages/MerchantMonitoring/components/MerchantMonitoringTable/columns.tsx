@@ -104,62 +104,6 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: () => <p className="text-center">Risk Level</p>,
       }),
-      columnHelper.accessor('monitoringStatus', {
-        cell: ({ getValue }) => {
-          const value = getValue();
-
-          return (
-            <ContentTooltip
-              description={
-                <p>This merchant is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
-              }
-              props={{
-                tooltipTrigger: { className: 'flex w-full justify-start' },
-                tooltipContent: { align: 'center', side: 'top' },
-              }}
-            >
-              <div className="mx-auto">
-                {value ? (
-                  <CheckCircle
-                    size={18}
-                    className={`stroke-background`}
-                    containerProps={{
-                      className: 'bg-success',
-                    }}
-                  />
-                ) : (
-                  <IndicatorCircle
-                    size={18}
-                    className={`stroke-transparent`}
-                    containerProps={{
-                      className: 'bg-slate-500/20',
-                    }}
-                  />
-                )}
-              </div>
-            </ContentTooltip>
-          );
-        },
-        header: () => (
-          <ContentTooltip
-            description={<p>Indicates whether the merchant is subscribed to ongoing monitoring</p>}
-            props={{
-              tooltipTrigger: { className: 'mx-auto' },
-              tooltipContent: { align: 'center', side: 'top' },
-            }}
-          >
-            <span className={`max-w-[20ch] truncate text-sm`}>Monitored</span>
-          </ContentTooltip>
-        ),
-      }),
-      columnHelper.accessor('reportType', {
-        cell: info => {
-          const scanType = REPORT_TYPE_TO_SCAN_TYPE[info.getValue()];
-
-          return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
-        },
-        header: 'Scan Type',
-      }),
       columnHelper.accessor('data.allViolations', {
         cell: ({ row }) => {
           let violations = (row.original.data?.allViolations ?? [])
@@ -234,6 +178,62 @@ export const useColumns = ({ isDemoAccount = false }) => {
           );
         },
         header: 'Findings',
+      }),
+      columnHelper.accessor('reportType', {
+        cell: info => {
+          const scanType = REPORT_TYPE_TO_SCAN_TYPE[info.getValue()];
+
+          return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
+        },
+        header: 'Scan Type',
+      }),
+      columnHelper.accessor('monitoringStatus', {
+        cell: ({ getValue }) => {
+          const value = getValue();
+
+          return (
+            <ContentTooltip
+              description={
+                <p>This merchant is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
+              }
+              props={{
+                tooltipTrigger: { className: 'flex w-full justify-start' },
+                tooltipContent: { align: 'center', side: 'top' },
+              }}
+            >
+              <div className="mx-auto">
+                {value ? (
+                  <CheckCircle
+                    size={18}
+                    className={`stroke-background`}
+                    containerProps={{
+                      className: 'bg-success',
+                    }}
+                  />
+                ) : (
+                  <IndicatorCircle
+                    size={18}
+                    className={`stroke-transparent`}
+                    containerProps={{
+                      className: 'bg-slate-500/20',
+                    }}
+                  />
+                )}
+              </div>
+            </ContentTooltip>
+          );
+        },
+        header: () => (
+          <ContentTooltip
+            description={<p>Indicates whether the merchant is subscribed to ongoing monitoring</p>}
+            props={{
+              tooltipTrigger: { className: 'mx-auto' },
+              tooltipContent: { align: 'center', side: 'top' },
+            }}
+          >
+            <span className={`max-w-[20ch] truncate text-sm`}>Monitored</span>
+          </ContentTooltip>
+        ),
       }),
       columnHelper.accessor('isAlert', {
         cell: ({ getValue }) => {

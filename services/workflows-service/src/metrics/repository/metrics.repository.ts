@@ -110,12 +110,12 @@ export class MetricsRepository {
   }
 
   async getDailyActiveCases(
-    fromDate: string,
-    toDate: string,
     projectIds: TProjectIds,
+    fromDate?: string,
+    toDate?: string,
   ): Promise<CasesActiveDailyModel[]> {
     const results = await this.prismaService.$queryRaw<ICasesDailyAggregationResult[]>(
-      buildDailyLiveCasesQuery(fromDate, toDate, projectIds),
+      buildDailyLiveCasesQuery(projectIds, fromDate, toDate),
     );
 
     return results.map(result =>

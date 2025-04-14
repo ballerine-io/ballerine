@@ -3,6 +3,7 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { useQuery } from '@tanstack/react-query';
+import qs from 'qs';
 import { z } from 'zod';
 
 export const MetricsResponseSchema = z.object({
@@ -25,8 +26,10 @@ export const MetricsResponseSchema = z.object({
 });
 
 export const fetchBusinessReportMetrics = async ({ from, to }: { from?: string; to?: string }) => {
+  const queryString = qs.stringify({ from, to }, { encode: false });
+
   const [businessReportMetrics, error] = await apiClient({
-    endpoint: `../external/business-reports/metrics?from=${from}&to=${to}`,
+    endpoint: `../external/business-reports/metrics?${queryString}`,
     method: Method.GET,
     schema: MetricsResponseSchema,
   });
@@ -40,7 +43,7 @@ export const useBusinessReportMetricsQuery = ({ from, to }: { from?: string; to?
   return useQuery({
     queryKey: ['business-report-metrics', from, to],
     queryFn: () => fetchBusinessReportMetrics({ from, to }),
-    enabled: !!from && !!to && isAuthenticated,
+    enabled: isAuthenticated,
     keepPreviousData: true,
   });
 };

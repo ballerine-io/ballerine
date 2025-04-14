@@ -64,7 +64,7 @@ export const CaseDailyStatsOutputSchema = z.array(
   }),
 );
 
-export const fetchCaseDailyStats = async (params: { from: string; to: string }) => {
+export const fetchCaseDailyStats = async (params: { from?: string; to?: string }) => {
   const queryParams = qs.stringify(params, { encode: false });
 
   const [stats, error] = await apiClient({

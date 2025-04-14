@@ -32,7 +32,7 @@ export const useSidebarItems = () => {
   );
   const { data: customer } = useCustomerQuery();
 
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const checkIsActiveFilterGroup = useCallback(
     (navItem: TRouteWithChildren) => {
       return navItem.children?.some(
@@ -175,6 +175,7 @@ export const useSidebarItems = () => {
     navItems,
     filterId,
     pathname,
+    search,
     checkIsActiveFilterGroup,
   };
 };
