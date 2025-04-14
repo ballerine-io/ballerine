@@ -13,7 +13,7 @@ export const Pencil: FunctionComponent<IPencil> = ({ containerProps, size = 24, 
       <PencilIcon
         {...props}
         size={size * 0.55}
-        className={ctw('fill-slate-200 stroke-slate-200 stroke-[4px]', props.className)}
+        className={ctw('fill-slate-200 stroke-slate-200 stroke-1', props.className)}
       />
     </IconContainer>
   );
