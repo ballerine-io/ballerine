@@ -42,18 +42,7 @@ export const IndividualsSanctionsV2PluginPayloadSchema = z.object({
       }),
     ),
     KycInformationSchemaWithAdditionalInfo,
-    z.array(
-      KycInformationSchemaWithAdditionalInfo.pick({
-        firstName: true,
-        lastName: true,
-      }).extend({
-        additionalInfo: z
-          .object({
-            dateOfBirth: dateSchema.optional(),
-          })
-          .optional(),
-      }),
-    ),
+    z.array(KycInformationSchemaWithAdditionalInfo),
   ]),
   endUserId: z.string().min(1),
   clientId: z.string().min(1),

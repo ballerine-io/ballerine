@@ -104,8 +104,13 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
             `${this.pluginName} - no KYC information found at ${this.payload.kycInformation.value}`,
           );
 
-          const { firstName, lastName, additionalInfo } = firstKycInformation;
-          const { dateOfBirth } = additionalInfo ?? {};
+          const {
+            firstName,
+            lastName,
+            dateOfBirth: dateOfBirthFromKycInformation,
+          } = firstKycInformation;
+          const dateOfBirth =
+            dateOfBirthFromKycInformation || firstKycInformation.additionalInfo?.dateOfBirth;
 
           return {
             firstName,
