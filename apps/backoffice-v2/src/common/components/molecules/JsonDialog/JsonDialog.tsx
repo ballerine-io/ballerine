@@ -4,7 +4,6 @@ import { Loader2 } from 'lucide-react';
 import { ctw } from '../../../utils/ctw/ctw';
 import { Button } from '../../atoms/Button/Button';
 
-// Lazily load ReactJson to reduce bundle size
 const ReactJson = lazy(() => import('react-json-view'));
 
 export interface JsonDialogProps {
