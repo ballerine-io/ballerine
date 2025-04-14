@@ -6,7 +6,6 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import {
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
-  TCollectionFlowStep,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
@@ -152,7 +151,12 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         const currentStep = getCollectionFlowState(context)?.steps?.find(
           step => step.stepName === page.stateName,
         );
-        const state = currentStep?.state as TCollectionFlowStep['state'];
+        const state = currentStep?.state;
+
+        if (!state) {
+          toast.error('Collection flow state property, cannot continue. Please contact support.');
+          throw new Error('Collection flow state property is missing in the context.');
+        }
 
         // Transition to revised to avoid user visit same revision step again after revision
         if (state === CollectionFlowStepStatesEnum.revision) {

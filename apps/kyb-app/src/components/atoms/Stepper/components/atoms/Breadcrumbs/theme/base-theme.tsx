@@ -6,7 +6,7 @@ import {
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs/theme/common';
 import { BreadcrumbTheme } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 import { ctw } from '@ballerine/ui';
-import { PencilIcon } from '../components/PencilIcon';
+import { Pencil } from 'lucide-react';
 
 export const baseBreadcrumbTheme: BreadcrumbTheme = {
   idle: {
@@ -53,7 +53,7 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
   edit: {
     inner: {
       className: ctw('w-full', 'h-full bg-[#4A90E2]'),
-      icon: <PencilIcon size={8} />,
+      icon: <Pencil size={8} />,
     },
     outer: {
       className: outerCommonClassName,
