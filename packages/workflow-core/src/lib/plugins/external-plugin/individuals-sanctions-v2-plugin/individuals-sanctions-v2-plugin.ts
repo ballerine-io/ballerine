@@ -18,7 +18,7 @@ import { handleJmespathTransformers } from '../shared/handle-jmespath-transforme
 import { KycInformationSchemaWithAdditionalInfo } from './schemas/individual-sanctions-v2-plugin-schema';
 import { IndividualsSanctionsV2PluginPayloadSchema } from './schemas/individual-sanctions-v2-plugin-schema';
 
-const isObjectWithKycInformation = (obj: unknown) => {
+const isObjectWithKycInformationWithAdditionalInfo = (obj: unknown) => {
   return isType(KycInformationSchemaWithAdditionalInfo)(obj);
 };
 
@@ -119,7 +119,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           };
         }
 
-        if (isObjectWithKycInformation(kycInformation)) {
+        if (isObjectWithKycInformationWithAdditionalInfo(kycInformation)) {
           const {
             firstName,
             lastName,
