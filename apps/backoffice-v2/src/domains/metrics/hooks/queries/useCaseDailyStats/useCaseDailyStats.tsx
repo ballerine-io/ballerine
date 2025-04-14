@@ -7,8 +7,8 @@ export const useCaseDailyStats = ({ from, to }: { from?: string; to?: string } =
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...metricsQueryKeys.caseDailyStats({ from: from!, to: to! }),
-    enabled: !!from && !!to && isAuthenticated,
+    ...metricsQueryKeys.caseDailyStats({ from, to }),
+    enabled: isAuthenticated,
     staleTime: 100_000,
   });
 };

@@ -66,6 +66,7 @@ export const ConfigSchema = z
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
     isOngoingMonitoringEnabled: z.boolean().optional(),
+    isCasesOnboardingEnabled: z.boolean().optional(),
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
@@ -109,6 +110,7 @@ export const CustomerConfigSchema = z.object({
   isExample: z.boolean().optional(),
   isMerchantMonitoringEnabled: z.boolean().optional(),
   isOngoingMonitoringEnabled: z.boolean().optional(),
+  isCasesOnboardingEnabled: z.boolean().optional(),
   isDemo: z.boolean().optional(),
   maxBusinessReports: z.number().optional(),
 });
