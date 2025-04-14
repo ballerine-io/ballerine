@@ -42,7 +42,7 @@ export default defineConfig(configEnv => {
       setupFiles: ['./src/tests-setup.ts'],
     },
     build: {
-      sourcemap: true,
+      sourcemap: false,
     },
   };
 });
