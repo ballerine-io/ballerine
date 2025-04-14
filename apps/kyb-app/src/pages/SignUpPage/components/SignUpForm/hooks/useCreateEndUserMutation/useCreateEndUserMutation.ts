@@ -20,7 +20,8 @@ export const useCreateEndUserMutation = () => {
       void queryClient.invalidateQueries(collectionFlowQuerykeys.getEndUser());
 
       navigate(
-        `/collection-flow/${workflowId}${createQueryParamsString({
+        `/collection-flow/${createQueryParamsString({
+          workflowId,
           token: accessToken,
           lng: language,
         })}`,

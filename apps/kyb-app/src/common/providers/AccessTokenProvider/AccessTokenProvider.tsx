@@ -33,7 +33,8 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
     if (accessToken) {
       if (!workflowId && workflowIdFromServer) {
         navigate(
-          `/collection-flow/${workflowIdFromServer}${createQueryParamsString({
+          `/collection-flow/${createQueryParamsString({
+            workflowId: workflowIdFromServer,
             token: accessToken,
             lng: language,
           })}`,

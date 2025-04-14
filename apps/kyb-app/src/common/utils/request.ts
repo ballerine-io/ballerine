@@ -1,10 +1,9 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
-import ky, { HTTPError } from 'ky';
+import ky, { HTTPError, Options } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
 const instance = ky.create({
-  //@ts-ignore
   prefixUrl:
     (globalThis as any).env?.VITE_API_URL ??
     (import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`),
@@ -71,25 +70,32 @@ const instance = ky.create({
   },
 });
 
-const addWorkflowId = (url: string) => {
-  const workflowId = window.location.pathname.split('/')[2] || null;
+const addWorkflowId = (options: Options = {}): Options => {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const workflowId = urlParams.get('workflowId');
 
   if (!workflowId) {
-    return url;
+    return options;
   }
 
-  return `${url.replace(/\/$/, '')}/${workflowId}`;
+  const searchParams = new URLSearchParams(
+    options.searchParams as string | URLSearchParams | Record<string, string> | undefined,
+  );
+
+  searchParams.append('workflowId', workflowId);
+
+  return {
+    ...options,
+    searchParams,
+  };
 };
 
 export const request = {
-  get: (url: string, options?: Parameters<typeof instance.get>[1]) =>
-    instance.get(addWorkflowId(url), options),
-  post: (url: string, options?: Parameters<typeof instance.post>[1]) =>
-    instance.post(addWorkflowId(url), options),
-  put: (url: string, options?: Parameters<typeof instance.put>[1]) =>
-    instance.put(addWorkflowId(url), options),
-  patch: (url: string, options?: Parameters<typeof instance.patch>[1]) =>
-    instance.patch(addWorkflowId(url), options),
-  delete: (url: string, options?: Parameters<typeof instance.delete>[1]) =>
-    instance.delete(addWorkflowId(url), options),
+  ...instance,
+  get: (url: string, options?: Options) => instance.get(url, addWorkflowId(options)),
+  post: (url: string, options?: Options) => instance.post(url, addWorkflowId(options)),
+  put: (url: string, options?: Options) => instance.put(url, addWorkflowId(options)),
+  patch: (url: string, options?: Options) => instance.patch(url, addWorkflowId(options)),
+  delete: (url: string, options?: Options) => instance.delete(url, addWorkflowId(options)),
 };

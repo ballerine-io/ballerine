@@ -19,12 +19,13 @@ export const Root = () => {
     }
 
     void navigate(
-      `/${isSignupRequired ? 'signup' : 'collection-flow'}/${workflowId}${createQueryParamsString({
+      `/${isSignupRequired ? 'signup' : 'collection-flow'}/${createQueryParamsString({
+        workflowId,
         token: accessToken,
         lng: language,
       })}`,
     );
-  }, [isSignupRequired, isLoading, accessToken, workflowId, navigate]);
+  }, [isSignupRequired, isLoading, accessToken, workflowId, navigate, language]);
 
   return <Outlet />;
 };
