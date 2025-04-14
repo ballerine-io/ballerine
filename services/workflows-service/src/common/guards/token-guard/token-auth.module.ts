@@ -36,6 +36,7 @@ import { NotionService } from '@/notion/notion.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { WebhookHttpService } from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
+import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 
 @Module({
   imports: [HttpModule],
@@ -79,6 +80,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
     PasswordService,
     SecretsManagerFactory,
     WorkflowEventEmitterService,
+    WorkflowRuntimeDataActorService,
   ],
   exports: [WorkflowTokenRepository, WorkflowTokenService, WorkflowAuthGuard],
 })

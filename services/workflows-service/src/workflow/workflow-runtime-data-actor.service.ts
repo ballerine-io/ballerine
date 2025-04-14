@@ -14,8 +14,8 @@ export class WorkflowRuntimeDataActorService {
     const entity = this.cls.get('entity');
     return {
       ...data,
-      actorEndUserId: entity?.endUser?.endUserId,
-      actorUserId: entity?.user?.id,
+      actorEndUserId: entity?.endUser?.endUserId || null,
+      actorUserId: entity?.user?.id || null,
     };
   }
 }
