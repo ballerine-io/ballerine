@@ -14,8 +14,10 @@ import {
   TFlowStep,
   TUser,
   UISchema,
-  UpdateEndUserPluginData,
+  TUpdateEndUserPluginData,
+  TFetchCompanyInformationPluginData,
 } from '@/domains/collection-flow/types';
+import { createQueryParamsString } from '@/common/utils/create-query-params-string';
 
 export const fetchUser = async (): Promise<TUser> => {
   const user = await request.get('collection-flow/user').json<TUser>();
@@ -128,10 +130,18 @@ export const syncContext = async (context: CollectionFlowContext) => {
   return result.json();
 };
 
-export const updateEndUser = async (data: UpdateEndUserPluginData) => {
+export const updateEndUser = async (data: TUpdateEndUserPluginData) => {
   const result = await request.post('collection-flow/end-user', {
     json: data,
   });
+
+  return result.json();
+};
+
+export const fetchCompanyInformation = async (data: TFetchCompanyInformationPluginData) => {
+  const result = await request.get(
+    `collection-flow/business/business-information${createQueryParamsString(data)}`,
+  );
 
   return result.json();
 };
