@@ -1,6 +1,8 @@
-import React, { FunctionComponent } from 'react';
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 
-export const WelcomeSvg: FunctionComponent = () => (
+export const WelcomeSvg = () => (
   <svg
     width="96"
     height="91"

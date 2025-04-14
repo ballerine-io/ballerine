@@ -1,9 +1,12 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetDailyLiveCasesDto {
   @ApiProperty()
-  from!: string;
+  @Optional()
+  from?: string;
 
   @ApiProperty()
-  to!: string;
+  @Optional()
+  to?: string;
 }
