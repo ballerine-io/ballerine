@@ -1,4 +1,8 @@
+import get from 'lodash/get';
+import posthog from 'posthog-js';
+
 import { request } from '@/common/utils/request';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
   CreateEndUserDto,
   DocumentConfiguration,
@@ -10,10 +14,8 @@ import {
   TFlowStep,
   TUser,
   UISchema,
+  UpdateEndUserPluginData,
 } from '@/domains/collection-flow/types';
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import get from 'lodash/get';
-import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
   const user = await request.get('collection-flow/user').json<TUser>();
@@ -121,6 +123,14 @@ export const syncContext = async (context: CollectionFlowContext) => {
         ballerineEntityId: get(context, 'entity.ballerineEntityId'),
       },
     },
+  });
+
+  return result.json();
+};
+
+export const updateEndUser = async (data: UpdateEndUserPluginData) => {
+  const result = await request.post('collection-flow/end-user', {
+    json: data,
   });
 
   return result.json();

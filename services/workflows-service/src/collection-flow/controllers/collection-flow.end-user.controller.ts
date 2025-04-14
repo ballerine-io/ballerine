@@ -22,7 +22,7 @@ export class CollectionFlowEndUserController {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
-  getCompanyInfo(
+  updateEndUser(
     @TokenScope() tokenScope: ITokenScopeWithEndUserId,
     @common.Body() data: EndUserUpdateDto,
   ) {
