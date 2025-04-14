@@ -92,6 +92,8 @@ describe('WorkflowAuthGuard', () => {
         salesforceRecordId: null,
         parentRuntimeDataId: null,
         deletedBy: null,
+        actorEndUserId: null,
+        actorUserId: null,
       };
 
       const context = mockExecutionContext({
@@ -100,7 +102,7 @@ describe('WorkflowAuthGuard', () => {
           type: 'customer',
           projectIds: ['project-1'],
         },
-        query: { 'wf-id': 'workflow-1' },
+        query: { workflowId: 'workflow-1' },
       });
 
       workflowService.getWorkflowRuntimeDataById?.mockImplementation(() =>
@@ -119,7 +121,7 @@ describe('WorkflowAuthGuard', () => {
           type: 'customer',
           projectIds: ['project-1'],
         },
-        query: { 'wf-id': 'invalid-workflow' },
+        query: { workflowId: 'invalid-workflow' },
       });
 
       workflowService.getWorkflowRuntimeDataById?.mockImplementation(() => Promise.resolve(null));
@@ -186,7 +188,7 @@ describe('WorkflowAuthGuard', () => {
       const context = mockExecutionContext({
         isAuthenticated: jest.fn().mockReturnValue(false),
         headers: { authorization: 'Bearer valid-token' },
-        query: { 'wf-id': 'workflow-1' },
+        query: { workflowId: 'workflow-1' },
       });
 
       workflowTokenService.findByTokenWithExpiredUnscoped?.mockImplementation(() =>
@@ -203,7 +205,7 @@ describe('WorkflowAuthGuard', () => {
       const context = mockExecutionContext({
         isAuthenticated: jest.fn().mockReturnValue(false),
         headers: { authorization: 'Bearer valid-token' },
-        query: { 'wf-id': 'different-workflow' },
+        query: { workflowId: 'different-workflow' },
       });
 
       workflowTokenService.findByTokenWithExpiredUnscoped?.mockImplementation(() =>
