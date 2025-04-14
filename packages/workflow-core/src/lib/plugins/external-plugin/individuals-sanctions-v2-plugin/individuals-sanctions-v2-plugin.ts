@@ -15,80 +15,10 @@ import { validateEnv } from '../shared/validate-env';
 import { IApiPluginParams, PluginPayloadProperty } from '../types';
 import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
 import { handleJmespathTransformers } from '../shared/handle-jmespath-transformers';
-
-const dateSchema = z.preprocess(arg => {
-  if (typeof arg === 'string' || arg instanceof Date) {
-    const date = new Date(arg);
-
-    if (!isNaN(date.getTime())) {
-      return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
-    }
-  }
-
-  return arg;
-}, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'));
-
-const KycInformationSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  dateOfBirth: dateSchema.optional(),
-});
-
-const KycInformationSchemaWithAdditionalInfo = KycInformationSchema.omit({
-  dateOfBirth: true,
-}).extend({
-  additionalInfo: z.object({
-    dateOfBirth: KycInformationSchema.shape.dateOfBirth,
-  }),
-});
-
-const IndividualsSanctionsV2PluginPayloadSchema = z.object({
-  vendor: z.enum(['veriff', 'test', 'dow-jones']),
-  ongoingMonitoring: z.boolean(),
-  immediateResults: z.boolean(),
-  workflowRuntimeId: z.string().min(1),
-  kycInformation: z.union([
-    z.record(
-      z.union([z.string(), z.number(), z.symbol()]),
-      z.object({
-        result: z.object({
-          vendorResult: z.object({
-            entity: z.object({
-              data: KycInformationSchema,
-            }),
-          }),
-        }),
-      }),
-    ),
-    KycInformationSchemaWithAdditionalInfo,
-    KycInformationSchema,
-    z.array(
-      KycInformationSchema.pick({
-        firstName: true,
-        lastName: true,
-      }).extend({
-        additionalInfo: z
-          .object({
-            dateOfBirth: KycInformationSchema.shape.dateOfBirth,
-          })
-          .optional(),
-      }),
-    ),
-  ]),
-  endUserId: z.string().min(1),
-  clientId: z.string().min(1),
-  resultDestination: z
-    .string()
-    .min(1)
-    // TODO: proabably can be kept undefined and let the parent class handle it, for now keeping our old path as default
-    .default('pluginsOutput.kyc_session.kyc_session_1.result.aml'),
-});
+import { KycInformationSchemaWithAdditionalInfo } from './schemas/individual-sanctions-v2-plugin-schema';
+import { IndividualsSanctionsV2PluginPayloadSchema } from './schemas/individual-sanctions-v2-plugin-schema';
 
 const isObjectWithKycInformation = (obj: unknown) => {
-  return isType(KycInformationSchema)(obj);
-};
-
-const isObjectWithKycInformationWithAdditionalInfo = (obj: unknown) => {
   return isType(KycInformationSchemaWithAdditionalInfo)(obj);
 };
 
@@ -184,19 +114,14 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
           };
         }
 
-        if (isObjectWithKycInformationWithAdditionalInfo(kycInformation)) {
-          const { firstName, lastName, additionalInfo } = kycInformation;
-          const { dateOfBirth } = additionalInfo;
-
-          return {
+        if (isObjectWithKycInformation(kycInformation)) {
+          const {
             firstName,
             lastName,
-            ...(dateOfBirth && { dateOfBirth }),
-          };
-        }
-
-        if (isObjectWithKycInformation(kycInformation)) {
-          const { firstName, lastName, dateOfBirth } = kycInformation;
+            dateOfBirth: dateOfBirthFromKycInformation,
+          } = kycInformation;
+          const dateOfBirth =
+            dateOfBirthFromKycInformation || kycInformation.additionalInfo?.dateOfBirth;
 
           return {
             firstName,
