@@ -45,7 +45,7 @@ export const DateRangePicker = ({
             onSelect={onChange}
             numberOfMonths={2}
             bottomActions={
-              <div className={`flex space-x-2 p-2`}>
+              <div className={`flex space-x-2 p-2 pt-0`}>
                 <Button
                   variant={`ghost`}
                   className={`!mt-0 h-8 select-none px-4 font-normal`}
