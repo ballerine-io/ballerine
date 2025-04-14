@@ -5,6 +5,7 @@ import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEd
 import { updateStateForEditing } from './helpers/update-state-for-editing';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
+import { t } from 'i18next';
 import { toast } from 'sonner';
 
 export const useEditCollectionFlow = () => {
@@ -34,21 +35,22 @@ export const useEditCollectionFlow = () => {
   });
 
   const onEditCollectionFlow = useCallback(async () => {
-    try {
-      const updatedWorkflowContext = updateStateForEditing(
-        workflow?.context || ({} as TWorkflowById['context']),
-      );
+    const updatedWorkflowContext = updateStateForEditing(
+      workflow?.context || ({} as TWorkflowById['context']),
+    );
 
+    try {
       // Updating case state first to avoid unnecessary context update in case this step fails
       await editCaseState({ workflowId: workflow?.id || '' });
-      updateWorkflowById({
-        context: updatedWorkflowContext,
-        action: 'edit_collection_flow',
-      });
     } catch (error) {
-      toast.error('Failed to edit collection flow. Please contact support.');
+      toast.error(t('toast:edit_collection_flow_state_transition.error'));
       throw new Error('Failed move to edit collection flow. State missing.');
     }
+
+    updateWorkflowById({
+      context: updatedWorkflowContext,
+      action: 'edit_collection_flow',
+    });
   }, [updateWorkflowById, editCaseState, workflow]);
 
   const isLoading = useMemo(

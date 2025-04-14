@@ -144,5 +144,8 @@
   "edit_case_state": {
     "success": "Case state updated successfully.",
     "error": "Error occurred while updating case state."
+  },
+  "edit_collection_flow_state_transition": {
+    "error": "Error occurred while transitioning to edit collection flow."
   }
 }
