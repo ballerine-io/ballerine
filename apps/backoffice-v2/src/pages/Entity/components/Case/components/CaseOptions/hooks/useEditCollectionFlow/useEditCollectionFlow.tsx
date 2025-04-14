@@ -1,11 +1,11 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useUpdateWorkflowByIdMutation } from '@/domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
 import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEditCaseStateMutation';
 import { updateStateForEditing } from './helpers/update-state-for-editing';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
+import { toast } from 'sonner';
 
 export const useEditCollectionFlow = () => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
@@ -46,8 +46,8 @@ export const useEditCollectionFlow = () => {
         action: 'edit_collection_flow',
       });
     } catch (error) {
-      console.error(error);
-      toast.error('Collection flow missing state.');
+      toast.error('Failed to edit collection flow. Please contact support.');
+      throw new Error('Failed move to edit collection flow. State missing.');
     }
   }, [updateWorkflowById, editCaseState, workflow]);
 
