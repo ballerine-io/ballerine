@@ -28,7 +28,6 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { titleCase } from 'string-ts';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -612,26 +611,6 @@ export const useKycBlock = ({
                         },
                       },
                     })
-                    .addCell({
-                      type: 'node',
-                      value: (
-                        <div className="m-2 mt-4 flex flex-col gap-4 p-1">
-                          <p className="text-sm font-medium">Issues</p>
-                          <div className="flex flex-col space-y-4">
-                            {riskLabels.map(item => (
-                              <Badge
-                                key={item}
-                                variant={item === 'none' ? 'success' : 'destructive'}
-                                className={`max-w-fit text-sm font-bold`}
-                              >
-                                {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ??
-                                  titleCase(item)}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      ),
-                    })
                     .buildFlat(),
                 })
                 .addCell({
@@ -690,12 +669,6 @@ export const useKycBlock = ({
                               },
                             },
                           },
-                          workflowId: childWorkflow?.id,
-                          documents: documents?.map(
-                            ({ details: _details, ...document }) => document,
-                          ),
-                          isDocumentsV2:
-                            !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
                         })
                         .addCell({
                           type: 'node',
@@ -706,7 +679,7 @@ export const useKycBlock = ({
                                 {riskLabels.map(item => (
                                   <Badge
                                     key={item}
-                                    variant="destructive"
+                                    variant={item === 'none' ? 'success' : 'destructive'}
                                     className={`max-w-fit text-sm font-bold`}
                                   >
                                     {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ?? item}

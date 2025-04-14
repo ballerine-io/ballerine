@@ -24,7 +24,9 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   where: Record<string, unknown> | null;
 }
 
-export function assertIsValidProjectIds(projectIds: unknown): asserts projectIds is TProjectIds {
+export function assertIsValidProjectIds(
+  projectIds: unknown,
+): asserts projectIds is NonNullable<TProjectIds> {
   if (checkIsNonEmptyArrayOfNonEmptyStrings(projectIds)) {
     return;
   }

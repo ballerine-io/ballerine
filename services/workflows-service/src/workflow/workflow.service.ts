@@ -261,7 +261,9 @@ export class WorkflowService {
       if ('endUser' in workflow && !!workflow?.endUser) {
         return {
           id: workflow?.endUser?.id,
-          name: `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`,
+          name: [workflow?.endUser?.firstName, workflow?.endUser?.lastName]
+            .filter(Boolean)
+            .join(' '),
           avatarUrl: workflow?.endUser?.avatarUrl,
           approvalState: workflow?.endUser?.approvalState,
         };
@@ -300,6 +302,7 @@ export class WorkflowService {
 
     return {
       ...workflow,
+      endUsers: workflow.endUsers ?? [],
       context: {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
