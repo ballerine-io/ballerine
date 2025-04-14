@@ -1,10 +1,10 @@
-import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
 import {
   CompanyOwnershipPage,
   CompanyOwnershipSchema,
   EmptyCompanyOwnershipPage,
   TCompanyOwnershipData,
 } from '@/pages/Entity/pdfs/case-information/pages/CompanyOwnershipPage';
+import { IPDFRenderer } from './pdf-renderer.abstract';
 
 export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData> {
   static PDF_NAME = 'companyOwnershipPage';
@@ -13,7 +13,9 @@ export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData>
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyCompanyOwnershipPage {...pdfData} />;
+    if (this.isEmpty(pdfData)) {
+      return <EmptyCompanyOwnershipPage {...pdfData} />;
+    }
 
     return <CompanyOwnershipPage {...pdfData} />;
   }

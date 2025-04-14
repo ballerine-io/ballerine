@@ -3,21 +3,22 @@ import { DropdownMenu } from '@/common/components/molecules/DropdownMenu/Dropdow
 import { DropdownMenuContent } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Content';
 import { DropdownMenuItem } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { useCaseOptionsLogic } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/useCaseOptionsLogic';
-import { FileText, Link, MoreVertical } from 'lucide-react';
+import { Edit, FileText, Link, MoreVertical } from 'lucide-react';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
-import { EditCollectionFlow } from './options/EditCollectionFlow';
+import { useEditCollectionFlow } from './hooks/useEditCollectionFlow';
+import { useGeneratePDF } from './hooks/useGeneratePDF';
+import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { useCopyCollectionFlowLink } from './hooks/useCopyCollectionFlowLink';
 
 export const CaseOptions = () => {
-  const {
-    workflow,
-    isDemoAccount,
-    generateAndOpenPDFInNewTab,
-    isCopyingCollectionFlowLink,
-    copyCollectionFlowLink,
-  } = useCaseOptionsLogic();
+  const { data: customer } = useCustomerQuery();
+  const isDemoAccount = Boolean(customer?.config?.isDemoAccount);
+
+  const { copyCollectionFlowLink, isCopyingCollectionFlowLink } = useCopyCollectionFlowLink();
+  const { onEditCollectionFlow, isCanEditCollectionFlow, isLoading } = useEditCollectionFlow();
+  const { generateAndOpenPDFInNewTab } = useGeneratePDF();
 
   return (
     <DropdownMenu>
@@ -60,7 +61,16 @@ export const CaseOptions = () => {
             <Link size={18} className="mr-2" /> Copy Collection Flow Link
           </Button>
         </DropdownMenuItem>
-        {workflow && <EditCollectionFlow workflow={workflow} />}
+        <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
+          <Button
+            onClick={onEditCollectionFlow}
+            variant={'ghost'}
+            className="justify-start"
+            disabled={!isCanEditCollectionFlow || isLoading}
+          >
+            <Edit size={18} className="mr-2" /> Edit Collection Flow
+          </Button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
