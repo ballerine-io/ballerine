@@ -45,10 +45,10 @@ export const DateRangePicker = ({
             onSelect={onChange}
             numberOfMonths={2}
             bottomActions={
-              <div className={`flex`}>
+              <div className={`flex space-x-2 p-2`}>
                 <Button
                   variant={`ghost`}
-                  className={`!mt-0 h-8 select-none font-normal hover:bg-transparent`}
+                  className={`!mt-0 h-8 select-none px-4 font-normal`}
                   disabled={
                     value?.from &&
                     value.to &&
@@ -69,7 +69,7 @@ export const DateRangePicker = ({
 
                 <Button
                   variant={`ghost`}
-                  className={`!mt-0 h-8 select-none font-normal hover:bg-transparent`}
+                  className={`!mt-0 h-8 select-none px-4 font-normal`}
                   disabled={!value?.from || !value.to}
                   onClick={e => onChange({ from: undefined, to: undefined }, new Date(), {}, e)}
                 >
