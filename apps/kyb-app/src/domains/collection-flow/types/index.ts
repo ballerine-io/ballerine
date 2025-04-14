@@ -151,3 +151,14 @@ export interface IDocumentRecord {
   decisionReason?: string;
   comment?: string;
 }
+
+export type UpdateEndUserPluginData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  additionalInfo: {
+    title: string;
+  };
+};
