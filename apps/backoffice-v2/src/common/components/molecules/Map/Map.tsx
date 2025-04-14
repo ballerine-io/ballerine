@@ -13,7 +13,6 @@ export const Map: FunctionComponent<IMapProps> = ({
   popupContent,
   className,
 }) => {
-  // Render a placeholder div with location information since Leaflet has been removed
   return (
     <div
       className={className}

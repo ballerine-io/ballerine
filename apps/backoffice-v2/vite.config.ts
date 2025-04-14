@@ -5,9 +5,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import { visualizer } from 'rollup-plugin-visualizer';
 
-// Minimum size in bytes for a separate chunk (50KB)
-const MIN_CHUNK_SIZE = 50 * 1024;
-
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
 
@@ -34,13 +31,13 @@ export default defineConfig(configEnv => {
       react(),
       tsconfigPaths(),
       // mkcert(),
-      visualizer({
-        open: true,
-        filename: 'dist/stats.html',
-        gzipSize: true,
-        brotliSize: true,
-        template: 'treemap',
-      }),
+      // visualizer({
+      //   open: true,
+      //   filename: 'dist/stats.html',
+      //   gzipSize: true,
+      //   brotliSize: true,
+      //   template: 'treemap',
+      // }),
     ],
     css: {
       modules: {
