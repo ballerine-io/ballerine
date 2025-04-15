@@ -24,6 +24,7 @@ export type CompleteWorkflowData = WorkflowRuntimeData & {
 export type TEntityType = 'endUser' | 'business';
 
 export type TWorkflowWithRelations = WorkflowRuntimeData & {
+  workflowType: 'parent' | 'child';
   workflowDefinition: WorkflowDefinition;
   assignee: User;
   parentRuntimeId?: string;
