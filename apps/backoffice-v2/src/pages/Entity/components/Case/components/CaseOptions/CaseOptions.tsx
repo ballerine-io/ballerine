@@ -7,18 +7,18 @@ import { Edit, FileText, Link, MoreVertical } from 'lucide-react';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
-import { useEditCollectionFlow } from './hooks/useEditCollectionFlow';
-import { useGeneratePDF } from './hooks/useGeneratePDF';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { useCopyCollectionFlowLink } from './hooks/useCopyCollectionFlowLink';
+import { useCaseOptionsLogic } from './hooks/useCaseOptionsLogic';
 
 export const CaseOptions = () => {
-  const { data: customer } = useCustomerQuery();
-  const isDemoAccount = Boolean(customer?.config?.isDemoAccount);
-
-  const { copyCollectionFlowLink, isCopyingCollectionFlowLink } = useCopyCollectionFlowLink();
-  const { onEditCollectionFlow, isCanEditCollectionFlow, isLoading } = useEditCollectionFlow();
-  const { generateAndOpenPDFInNewTab } = useGeneratePDF();
+  const {
+    copyCollectionFlowLink,
+    isCopyingCollectionFlowLink,
+    onEditCollectionFlow,
+    isCanEditCollectionFlow,
+    isLoading,
+    generateAndOpenPDFInNewTab,
+    isDemoAccount,
+  } = useCaseOptionsLogic();
 
   return (
     <DropdownMenu>
