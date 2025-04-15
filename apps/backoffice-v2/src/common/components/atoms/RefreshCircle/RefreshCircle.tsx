@@ -14,7 +14,7 @@ export const RefreshCircle: FunctionComponent<IRefreshCircle> = ({
 }) => {
   return (
     <IconContainer {...containerProps} size={size}>
-      <Undo2 {...props} size={size * 0.55} className={ctw('stroke-[4px]', props.className)} />
+      <Undo2 {...props} size={size * 0.55} className={ctw('stroke-1', props.className)} />
     </IconContainer>
   );
 };

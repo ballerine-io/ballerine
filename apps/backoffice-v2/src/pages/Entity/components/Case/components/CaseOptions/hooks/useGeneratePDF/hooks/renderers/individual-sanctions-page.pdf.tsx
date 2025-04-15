@@ -1,5 +1,4 @@
 import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
-import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
 import {
   EmptyIndividualSanctionsPage,
   IndividualSanctionsPage,
@@ -8,6 +7,7 @@ import {
   IndividualSanctionsSchema,
   TIndividualSanctionsData,
 } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/individual-sanctions.schema';
+import { IPDFRenderer } from './pdf-renderer.abstract';
 
 export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanctionsData> {
   static PDF_NAME = 'individualSanctionsPage';
@@ -16,7 +16,9 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyIndividualSanctionsPage {...pdfData} />;
+    if (this.isEmpty(pdfData)) {
+      return <EmptyIndividualSanctionsPage {...pdfData} />;
+    }
 
     return <IndividualSanctionsPage {...pdfData} />;
   }

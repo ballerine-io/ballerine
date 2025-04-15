@@ -3,6 +3,7 @@ import { StateTag } from '@ballerine/common';
 export const tagToBadgeData = {
   [StateTag.APPROVED]: { variant: 'success', text: 'Approved' },
   [StateTag.REVISION]: { variant: 'warning', text: 'Revisions' },
+  [StateTag.EDIT]: { variant: 'warning', text: 'Edit' },
   [StateTag.REJECTED]: { variant: 'destructive', text: 'Rejected' },
   [StateTag.RESOLVED]: { variant: 'success', text: 'Resolved' },
   [StateTag.MANUAL_REVIEW]: { variant: 'info', text: 'Manual Review' },

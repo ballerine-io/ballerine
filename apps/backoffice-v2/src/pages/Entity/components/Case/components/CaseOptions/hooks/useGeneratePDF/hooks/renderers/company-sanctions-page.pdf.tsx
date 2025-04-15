@@ -1,10 +1,10 @@
-import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
 import {
   CompanySanctionsPage,
   CompanySanctionsSchema,
   EmptyCompanySanctionsPage,
   TCompanySanctionsData,
 } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage';
+import { IPDFRenderer } from './pdf-renderer.abstract';
 
 export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData> {
   static PDF_NAME = 'companySanctionsPage';
@@ -13,7 +13,9 @@ export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData>
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyCompanySanctionsPage {...pdfData} />;
+    if (this.isEmpty(pdfData)) {
+      return <EmptyCompanySanctionsPage {...pdfData} />;
+    }
 
     return <CompanySanctionsPage {...pdfData} />;
   }
