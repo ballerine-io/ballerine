@@ -76,7 +76,7 @@ describe('CollectionFlowSignupController', () => {
         { provide: UserService, useValue: noop },
         { provide: EventEmitter2, useValue: noop },
         { provide: AppLoggerService, useValue: { log: noop } },
-        { provide: AnalyticsService, useValue: { log: noop } },
+        { provide: AnalyticsService, useValue: { track: jest.fn() } },
         { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,

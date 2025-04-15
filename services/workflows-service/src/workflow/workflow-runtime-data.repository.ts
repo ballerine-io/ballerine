@@ -14,6 +14,7 @@ import {
 } from '@prisma/client';
 import { merge } from 'lodash';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
 
 /**
  * Columns that are related to the state of the workflow runtime data.
@@ -27,13 +28,14 @@ export class WorkflowRuntimeDataRepository {
     protected readonly prismaService: PrismaService,
     protected readonly scopeService: ProjectScopeService,
     protected readonly actorService: WorkflowRuntimeDataActorService,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ): Promise<WorkflowRuntimeData> {
-    return await transaction.workflowRuntimeData.create<T>({
+    const runtimeData = await transaction.workflowRuntimeData.create<T>({
       ...args,
       data: this.actorService.addActorIds({
         ...args.data,
@@ -43,6 +45,9 @@ export class WorkflowRuntimeDataRepository {
         },
       }),
     } as any);
+
+    this.trackChanges(runtimeData);
+    return runtimeData;
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
@@ -152,10 +157,13 @@ export class WorkflowRuntimeDataRepository {
     },
     transaction: PrismaTransaction | PrismaService = this.prismaService,
   ): Promise<WorkflowRuntimeData> {
-    return await transaction.workflowRuntimeData.update({
+    const runtimeData = await transaction.workflowRuntimeData.update({
       where: { id },
       data: this.actorService.addActorIds(args.data),
     });
+
+    this.trackChanges(runtimeData);
+    return runtimeData;
   }
 
   async updateStateById(
@@ -169,11 +177,14 @@ export class WorkflowRuntimeDataRepository {
     },
     transaction: PrismaTransaction = this.prismaService,
   ) {
-    return await transaction.workflowRuntimeData.update({
+    const runtimeData = await transaction.workflowRuntimeData.update({
       where: { id },
       data: this.actorService.addActorIds(data),
       include,
     });
+
+    this.trackChanges(runtimeData);
+    return runtimeData;
   }
 
   async updateRuntimeConfigById(
@@ -398,5 +409,23 @@ export class WorkflowRuntimeDataRepository {
     `;
 
     return (await this.prismaService.$queryRaw(sql)) as WorkflowRuntimeData[];
+  }
+
+  private trackChanges(workflowRuntimeData: WorkflowRuntimeData) {
+    const distinctId =
+      workflowRuntimeData.actorUserId || workflowRuntimeData.actorEndUserId || 'SYSTEM';
+    this.analyticsService.track({
+      event: EventNamesMap.CASE_CHANGED,
+      distinctId,
+      // TODO(jonathan.shemer): add customerId when merging with dev,
+      properties: {
+        workflowRuntimeDataId: workflowRuntimeData.id,
+        endUserId: workflowRuntimeData.endUserId,
+        businessId: workflowRuntimeData.businessId,
+        projectId: workflowRuntimeData.projectId,
+        actorUserId: workflowRuntimeData.actorUserId,
+        actorEndUserId: workflowRuntimeData.actorEndUserId,
+      },
+    });
   }
 }

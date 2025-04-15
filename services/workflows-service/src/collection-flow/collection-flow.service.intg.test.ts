@@ -51,7 +51,7 @@ const deps: Provider[] = [
   },
   {
     provide: AnalyticsService,
-    useValue: noop,
+    useValue: { track: jest.fn() },
   },
   {
     provide: EndUserService,

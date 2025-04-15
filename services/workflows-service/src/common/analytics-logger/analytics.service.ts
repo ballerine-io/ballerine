@@ -9,6 +9,7 @@ export const EventNamesMap = {
   USER_MAGIC_LINK_LOGIN: 'user logged in magic link',
   CUSTOMER_CREATED: 'customer created',
   USER_CREATED: 'user created',
+  CASE_CHANGED: 'case changed',
 } as const;
 
 type AnalyticsEvents = {
@@ -17,6 +18,14 @@ type AnalyticsEvents = {
   [EventNamesMap.USER_MAGIC_LINK_LOGIN]: { email: string; customerId: string };
   [EventNamesMap.CUSTOMER_CREATED]: { isDemoAccount: boolean };
   [EventNamesMap.USER_CREATED]: { email: string; fullName: string };
+  [EventNamesMap.CASE_CHANGED]: {
+    workflowRuntimeDataId: string;
+    endUserId: string | null;
+    businessId: string | null;
+    projectId: string;
+    actorUserId: string | null;
+    actorEndUserId: string | null;
+  };
 };
 
 @Injectable()
