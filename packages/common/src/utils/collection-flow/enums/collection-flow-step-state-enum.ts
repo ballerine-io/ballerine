@@ -4,6 +4,7 @@ export const CollectionFlowStepStatesEnum = {
   completed: 'completed',
   revision: 'revision',
   revised: 'revised',
+  edit: 'edit',
 } as const;
 
 export type CollectionFlowStepStates =
