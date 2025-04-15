@@ -71,7 +71,9 @@ export const DateRangePicker = ({
                   variant={`ghost`}
                   className={`!mt-0 h-8 select-none px-4 font-normal`}
                   disabled={!value?.from || !value.to}
-                  onClick={e => onChange({ from: undefined, to: undefined }, new Date(), {}, e)}
+                  onClick={e => {
+                    onChange({ from: undefined, to: undefined }, new Date(), {}, e);
+                  }}
                 >
                   All Dates
                 </Button>

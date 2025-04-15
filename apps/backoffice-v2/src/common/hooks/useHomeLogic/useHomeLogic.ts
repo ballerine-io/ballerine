@@ -16,6 +16,10 @@ export const HomeSearchSchema = z.object({
   mmTo: z.string().date().optional(),
   casesFrom: z.string().date().optional(),
   casesTo: z.string().date().optional(),
+  allowAllDates: z
+    .string()
+    .transform(value => (value === 'true' ? true : false))
+    .optional(),
 });
 
 const RISK_LEVEL_COLORS = {
@@ -38,54 +42,62 @@ export const useHomeLogic = () => {
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
   const { firstName, fullName, avatarUrl } = session?.user ?? {};
 
-  const [{ mmFrom, mmTo, casesFrom, casesTo }, setSearchParams] = useZodSearchParams(
+  const isMerchantMonitoringEnabled = customer?.config?.isMerchantMonitoringEnabled ?? false;
+  const isOngoingMonitoringEnabled = customer?.config?.isOngoingMonitoringEnabled ?? false;
+  const isCasesOnboardingEnabled = customer?.config?.isCasesOnboardingEnabled ?? false;
+
+  const [{ mmFrom, mmTo, casesFrom, casesTo, allowAllDates }, setSearchParams] = useZodSearchParams(
     HomeSearchSchema,
     { replace: true },
   );
 
   useEffect(() => {
+    if (allowAllDates) {
+      return;
+    }
+
     const toSet: Partial<z.infer<typeof HomeSearchSchema>> = {};
 
-    if (!mmFrom && !mmTo) {
+    if (!mmFrom && !mmTo && isMerchantMonitoringEnabled) {
       toSet.mmFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.mmTo = dayjs().format('YYYY-MM-DD');
     }
 
-    if (!casesFrom && !casesTo) {
+    if (!casesFrom && !casesTo && isCasesOnboardingEnabled) {
       toSet.casesFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.casesTo = dayjs().format('YYYY-MM-DD');
     }
 
     setSearchParams(toSet);
-  }, []);
+  }, [customer]);
 
   const { data: metrics, isLoading: isLoadingMetrics } = useBusinessReportMetricsQuery({
     from: mmFrom,
-    to: mmTo,
+    to: mmTo ? dayjs(mmTo).add(1, 'day').format('YYYY-MM-DD') : undefined,
   });
 
   const onMMDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
-    setSearchParams({ mmFrom: from, mmTo: to });
+    setSearchParams({ mmFrom: from, mmTo: to, allowAllDates: !from && !to });
   };
 
   const onCasesDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
-    setSearchParams({ casesFrom: from, casesTo: to });
+    setSearchParams({ casesFrom: from, casesTo: to, allowAllDates: !from && !to });
   };
 
   const { data: currentStats, isLoading: isLoadingCurrentStats } = useCaseCurrentStats();
 
   const getStatusColor = (status: string) => {
-    return STATUS_COLORS[status.toLowerCase() as keyof typeof STATUS_COLORS] || '#65afff';
+    return STATUS_COLORS[status.toLowerCase() as keyof typeof STATUS_COLORS] ?? '#65afff';
   };
 
   const getRiskColor = (risk: string) => {
-    return RISK_LEVEL_COLORS[risk.toLowerCase() as keyof typeof RISK_LEVEL_COLORS] || '#65afff';
+    return RISK_LEVEL_COLORS[risk.toLowerCase() as keyof typeof RISK_LEVEL_COLORS] ?? '#65afff';
   };
 
   type ConfigItem = { label: string; color: string };
@@ -132,15 +144,39 @@ export const useHomeLogic = () => {
     );
   }, [currentStats]);
 
+  const casesByStatus = useMemo(() => {
+    if (!currentStats) return [];
+    return currentStats.casesByStatus.map(item => ({
+      ...item,
+      href: `/${locale}/case-management?filter[status][0]=${item.status}`,
+    }));
+  }, [currentStats]);
+
+  const ongoingCasesByRisk = useMemo(() => {
+    if (!currentStats) return [];
+    return currentStats.ongoingCasesByRisk.map(item => ({
+      ...item,
+      href: `/${locale}/case-management?filter[status][0]=active&filter[riskLevel][0]=${item.riskLevel}`,
+    }));
+  }, [currentStats]);
+
+  const approvedCasesByRisk = useMemo(() => {
+    if (!currentStats) return [];
+    return currentStats.approvedCasesByRisk.map(item => ({
+      ...item,
+      href: `/${locale}/case-management?filter[status][0]=completed&filter[riskLevel][0]=${item.riskLevel}`,
+    }));
+  }, [currentStats]);
+
   return {
     firstName,
     fullName,
     avatarUrl,
     locale,
 
-    isMerchantMonitoringEnabled: customer?.config?.isMerchantMonitoringEnabled ?? false,
-    isOngoingMonitoringEnabled: customer?.config?.isOngoingMonitoringEnabled ?? false,
-    isCasesOnboardingEnabled: customer?.config?.isCasesOnboardingEnabled ?? false,
+    isMerchantMonitoringEnabled,
+    isOngoingMonitoringEnabled,
+    isCasesOnboardingEnabled,
 
     isLoadingCustomer,
     isLoadingMetrics,
@@ -154,9 +190,9 @@ export const useHomeLogic = () => {
     casesTo,
     setCasesDate: onCasesDatesChange,
 
-    casesByStatus: currentStats?.casesByStatus ?? [],
-    ongoingCasesByRisk: currentStats?.ongoingCasesByRisk ?? [],
-    approvedCasesByRisk: currentStats?.approvedCasesByRisk ?? [],
+    casesByStatus,
+    ongoingCasesByRisk,
+    approvedCasesByRisk,
 
     totalActiveMerchants: metrics?.totalActiveMerchants ?? 0,
     addedMerchantsCount: metrics?.addedMerchantsCount ?? 0,

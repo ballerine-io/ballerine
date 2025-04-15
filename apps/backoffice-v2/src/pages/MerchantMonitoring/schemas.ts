@@ -125,6 +125,10 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .catch('All'),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
+  allowAllDates: z
+    .string()
+    .transform(value => (value === 'true' ? true : false))
+    .optional(),
   isCreating: z
     .string()
     .transform(value => (value === 'true' ? true : false))

@@ -1,5 +1,6 @@
 import { SortDirection } from '@ballerine/common';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import qs from 'qs';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
