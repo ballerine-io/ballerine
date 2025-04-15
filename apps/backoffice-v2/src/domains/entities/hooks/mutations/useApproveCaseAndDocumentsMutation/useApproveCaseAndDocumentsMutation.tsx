@@ -7,18 +7,14 @@ import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 
 export const useApproveCaseAndDocumentsMutation = ({
-  workflowId,
-  ids,
   isDocumentsV2,
 }: {
-  workflowId: string;
-  ids: string[];
   isDocumentsV2: boolean;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ ids, workflowId }: { ids: string[]; workflowId: string }) => {
       if (isDocumentsV2) {
         await updateDocumentsDecisionByIds({
           ids,
