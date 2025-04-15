@@ -10,11 +10,7 @@ import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-p
 import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentUpdateQueryInput } from '@/workflow/dtos/document-update-query-input';
-import {
-  FindWorkflowParamsDto,
-  FindWorkflowQueryDto,
-  FindWorkflowQuerySchema,
-} from '@/workflow/dtos/find-workflow.dto';
+import { FindWorkflowParamsDto } from '@/workflow/dtos/find-workflow.dto';
 import {
   FindWorkflowsListDto,
   FindWorkflowsListLogicSchema,
@@ -110,8 +106,6 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse()
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @ApiNestedQuery(FindWorkflowQueryDto)
-  @UsePipes(new ZodValidationPipe(FindWorkflowQuerySchema, 'query'))
   async getRunnableWorkflowDataById(
     @common.Param() { id }: FindWorkflowParamsDto,
     @ProjectIds() projectIds: TProjectIds,
