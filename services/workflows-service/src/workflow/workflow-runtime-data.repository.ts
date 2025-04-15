@@ -279,7 +279,7 @@ export class WorkflowRuntimeDataRepository {
         SELECT
           workflows.*,
           CASE
-            WHEN workflows.workflowType = 'parent' THEN indie.endUsers
+            WHEN workflows."workflowType" = 'parent' THEN indie.endUsers
             ELSE NULL
           END AS "endUsers"
         FROM
