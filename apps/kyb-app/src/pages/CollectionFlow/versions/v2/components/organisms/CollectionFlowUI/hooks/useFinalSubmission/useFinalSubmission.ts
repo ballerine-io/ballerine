@@ -33,37 +33,30 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
   const isFinalSubmissionAvailable = useMemo(() => state === collectionFlowSteps.at(-1), [state]);
 
   const handleFinalSubmission = useCallback(async () => {
-    if (redirectUrls) {
-      try {
-        await finalSubmissionRequest();
+    try {
+      await finalSubmissionRequest();
 
-        setIsFinalSubmitted(true);
+      setIsFinalSubmitted(true);
+      trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
 
-        trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
-
-        if (redirectUrls.success) {
-          location.href = redirectUrls.success;
-        }
-      } catch (error) {
-        trackEvent(CollectionFlowEvents.FLOW_FAILED);
-
-        if (redirectUrls.failure) {
-          location.href = redirectUrls.failure;
-        }
+      if (redirectUrls?.success) {
+        location.href = redirectUrls.success;
+        return;
       }
-    } else {
-      try {
-        await finalSubmissionRequest();
 
-        setIsFinalSubmitted(true);
-        await stateApi.sendEvent('NEXT');
-        await stateApi.sendEvent('COMPLETED');
-        trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
-      } catch (error) {
-        await stateApi.sendEvent('NEXT');
-        await stateApi.sendEvent('FAILURE');
-        trackEvent(CollectionFlowEvents.FLOW_FAILED);
-      }
+      await stateApi.sendEvent('NEXT');
+      await stateApi.sendEvent('COMPLETED');
+    } catch (error) {
+      trackEvent(CollectionFlowEvents.FLOW_FAILED);
+      throw error;
+
+      // if (redirectUrls?.failure) {
+      //   location.href = redirectUrls.failure;
+      //   return;
+      // }
+
+      // await stateApi.sendEvent('NEXT');
+      // await stateApi.sendEvent('FAILURE');
     }
   }, [stateApi, redirectUrls, trackEvent]);
 
