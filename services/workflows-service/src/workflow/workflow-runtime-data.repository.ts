@@ -101,7 +101,7 @@ export class WorkflowRuntimeDataRepository {
             CASE
               WHEN wrd.parent_runtime_data_id IS NULL THEN 'parent'
               ELSE 'child'
-            END AS workflowType,
+            END AS "workflowType",
             wrd.id,
             wrd.status,
             wrd."assigneeId",
