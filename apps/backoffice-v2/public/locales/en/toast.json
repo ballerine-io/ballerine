@@ -139,7 +139,8 @@
   },
   "edit_collection_flow": {
     "success": "Collection flow's edit mode enabled successfully.",
-    "error": "Error occurred while enabling collection flow's edit mode."
+    "error": "Error occurred while enabling collection flow's edit mode.",
+    "error_opening_collection_flow": "Error occurred while opening collection flow in new tab."
   },
   "edit_case_state": {
     "success": "Case state updated successfully.",

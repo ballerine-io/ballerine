@@ -7,10 +7,11 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
 import { t } from 'i18next';
 import { toast } from 'sonner';
+import { getCollectionFlowLinkFromWorkflow } from '../useCopyCollectionFlowLink/helpers/get-collection-flow-link-from-workflow';
 
 export const useEditCollectionFlow = () => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
-  const { mutate: updateWorkflowById, isLoading: isUpdatingWorkflow } =
+  const { mutateAsync: updateWorkflowById, isLoading: isUpdatingWorkflow } =
     useUpdateWorkflowByIdMutation({
       workflowId: workflow?.id || '',
     });
@@ -47,10 +48,17 @@ export const useEditCollectionFlow = () => {
       throw new Error('Failed move to edit collection flow. State missing.');
     }
 
-    updateWorkflowById({
+    await updateWorkflowById({
       context: updatedWorkflowContext,
       action: 'edit_collection_flow',
     });
+
+    try {
+      window.open(getCollectionFlowLinkFromWorkflow(workflow as TWorkflowById), '_blank');
+    } catch (error) {
+      toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
+      throw new Error('Failed to open collection flow in new tab.');
+    }
   }, [updateWorkflowById, editCaseState, workflow]);
 
   const isLoading = useMemo(
