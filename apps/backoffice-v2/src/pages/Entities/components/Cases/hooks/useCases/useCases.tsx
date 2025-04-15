@@ -40,10 +40,10 @@ const businessesSortByOptions = [
 
 export const useCases = () => {
   const { entityId: workflowId } = useParams();
-  const [{ filterId, filter, sortBy }] = useSearchParamsByEntity();
+  const [{ filter, sortBy }] = useSearchParamsByEntity();
   const entity = useEntityType();
 
-  const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId });
 
   const states = useMemo(
     () => workflow?.workflowDefinition.definition.states,
