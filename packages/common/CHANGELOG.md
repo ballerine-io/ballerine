@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.89
+
+### Patch Changes
+
+- Bump
+
 ## 0.9.88
 
 ### Patch Changes

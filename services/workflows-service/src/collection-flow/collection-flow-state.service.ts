@@ -162,6 +162,7 @@ export class CollectionFlowStateService {
 
   private computeCurrentStep(collectionFlowState: TCollectionFlowState) {
     const isRevision = collectionFlowState.status === CollectionFlowStatusesEnum.revision;
+    const isEdit = collectionFlowState.status === CollectionFlowStatusesEnum.edit;
 
     if (isRevision) {
       const revisionStep = collectionFlowState.steps.find(
@@ -173,6 +174,16 @@ export class CollectionFlowStateService {
       }
     }
 
+    if (isEdit) {
+      const editStep = collectionFlowState.steps.find(
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.edit,
+      );
+
+      if (editStep) {
+        return editStep.stepName;
+      }
+    }
+
     return collectionFlowState.steps.find(
       (step: TCollectionFlowStep) => step.state !== CollectionFlowStepStatesEnum.completed,
     )?.stepName;
@@ -181,6 +192,10 @@ export class CollectionFlowStateService {
   private computeCurrentStatus(collectionFlowState: TCollectionFlowState) {
     if (collectionFlowState.status === CollectionFlowStatusesEnum.failed) {
       return CollectionFlowStatusesEnum.failed;
+    }
+
+    if (collectionFlowState.status === CollectionFlowStatusesEnum.edit) {
+      return CollectionFlowStatusesEnum.edit;
     }
 
     if (

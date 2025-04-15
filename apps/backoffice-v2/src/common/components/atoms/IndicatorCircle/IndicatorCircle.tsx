@@ -17,7 +17,7 @@ export const IndicatorCircle: FunctionComponent<IIndicatorCircle> = ({
       <Circle
         {...props}
         size={size * 0.55}
-        className={ctw('fill-slate-200 stroke-slate-200 stroke-[4px]', props.className)}
+        className={ctw('fill-slate-200 stroke-slate-200 stroke-1', props.className)}
       />
     </IconContainer>
   );

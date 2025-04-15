@@ -41,6 +41,7 @@ export const Action = {
   CASE_REVIEWED: 'CASE_REVIEWED',
   DISMISS: 'dismiss',
   FLAG: 'flag',
+  EDIT_COLLECTION_FLOW: 'edit',
 } as const;
 export const Resource = {
   INDIVIDUAL: 'INDIVIDUAL',

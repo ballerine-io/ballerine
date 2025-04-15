@@ -35,7 +35,7 @@ export const CaseVideoGuide: FunctionComponent<CaseVideoGuideProps> = ({
                   height: 0,
                 }}
               >
-                <Skeleton className="size-full absolute inset-0" />
+                <Skeleton className="absolute inset-0 size-full" />
                 <iframe
                   src={videoSrc}
                   frameBorder="0"

@@ -1,28 +1,20 @@
-import { TAuthenticatedUser } from '@/domains/auth/types';
+import { useIsAssignedToMe } from '@/common/hooks/useIsAssignedToMe';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { StateTag } from '@ballerine/common';
 import { useMemo } from 'react';
 
 export interface IUseIsWorkflowStepsCanBeRevisedProps {
-  authenticatedUser: TAuthenticatedUser;
   workflowAssigneeId: string | undefined;
   workflowConfig?: TWorkflowById['workflowDefinition']['config'];
   workflowTags: TWorkflowById['tags'];
 }
 
 export const useIsWorkflowStepsCanBeRevised = ({
-  authenticatedUser,
   workflowAssigneeId,
   workflowConfig,
   workflowTags,
 }: IUseIsWorkflowStepsCanBeRevisedProps) => {
-  const isAssignedToMe = useMemo(() => {
-    if (!authenticatedUser || !workflowAssigneeId) {
-      return false;
-    }
-
-    return workflowAssigneeId === authenticatedUser.id;
-  }, [authenticatedUser, workflowAssigneeId]);
+  const isAssignedToMe = useIsAssignedToMe({ assigneeId: workflowAssigneeId || '' });
 
   const isCanRequestSteps = useMemo(() => {
     if (!workflowConfig?.isCollectionFlowPageRevisionEnabled) {
