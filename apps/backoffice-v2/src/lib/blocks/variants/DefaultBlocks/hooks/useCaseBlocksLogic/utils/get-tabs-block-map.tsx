@@ -97,7 +97,6 @@ export const getTabsToBlocksMap = ({
     [Tab.UBOS_KYC]: [
       ...ubosUserProvidedBlock,
       ...amlWithContainerBlock,
-      ...manageUbosBlock,
       ...(createKycBlocks(blocksCreationParams?.workflow as TWorkflowById) || []),
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
