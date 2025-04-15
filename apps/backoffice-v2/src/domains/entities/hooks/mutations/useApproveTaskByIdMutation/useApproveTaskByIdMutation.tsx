@@ -2,14 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import { toast } from 'sonner';
 import { Action } from '../../../../../common/enums';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 
 export const useApproveTaskByIdMutation = (workflowId: string) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+  const workflowById = workflowsQueryKeys.byId({ workflowId });
 
   return useMutation({
     mutationFn: ({

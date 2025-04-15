@@ -15,8 +15,7 @@ export const useUpdateDocumentByIdMutation = ({
   documentId: string;
 }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+  const workflowById = workflowsQueryKeys.byId({ workflowId });
 
   return useMutation({
     mutationFn: ({

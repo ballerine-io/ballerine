@@ -7,14 +7,12 @@ import { safeEvery, someDocumentDecisionStatus } from '@ballerine/common';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Action } from '../../../../../../common/enums';
-import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
 
 export const useCaseDecision = () => {
-  const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
-  const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId: workflowId ?? '' });
   const [
     { documents: businessDocuments },
     { documents: directorsDocuments },
