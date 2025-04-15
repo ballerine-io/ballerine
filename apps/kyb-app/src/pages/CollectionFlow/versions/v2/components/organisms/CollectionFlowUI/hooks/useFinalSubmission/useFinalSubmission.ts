@@ -32,33 +32,36 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
 
   const isFinalSubmissionAvailable = useMemo(() => state === collectionFlowSteps.at(-1), [state]);
 
-  const handleFinalSubmission = useCallback(async () => {
-    try {
-      await finalSubmissionRequest();
+  const handleFinalSubmission = useCallback(
+    async (values: CollectionFlowContext) => {
+      try {
+        await finalSubmissionRequest(values);
 
-      setIsFinalSubmitted(true);
-      trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
+        setIsFinalSubmitted(true);
+        trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
 
-      if (redirectUrls?.success) {
-        location.href = redirectUrls.success;
-        return;
+        if (redirectUrls?.success) {
+          location.href = redirectUrls.success;
+          return;
+        }
+
+        await stateApi.sendEvent('NEXT');
+        await stateApi.sendEvent('COMPLETED');
+      } catch (error) {
+        trackEvent(CollectionFlowEvents.FLOW_FAILED);
+        throw error;
+
+        // if (redirectUrls?.failure) {
+        //   location.href = redirectUrls.failure;
+        //   return;
+        // }
+
+        // await stateApi.sendEvent('NEXT');
+        // await stateApi.sendEvent('FAILURE');
       }
-
-      await stateApi.sendEvent('NEXT');
-      await stateApi.sendEvent('COMPLETED');
-    } catch (error) {
-      trackEvent(CollectionFlowEvents.FLOW_FAILED);
-      throw error;
-
-      // if (redirectUrls?.failure) {
-      //   location.href = redirectUrls.failure;
-      //   return;
-      // }
-
-      // await stateApi.sendEvent('NEXT');
-      // await stateApi.sendEvent('FAILURE');
-    }
-  }, [stateApi, redirectUrls, trackEvent]);
+    },
+    [stateApi, redirectUrls, trackEvent],
+  );
 
   return {
     isFinalSubmissionAvailable,
