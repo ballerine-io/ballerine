@@ -14,7 +14,7 @@ export const MinusCircle: FunctionComponent<IMinusCircle> = ({
 }) => {
   return (
     <IconContainer {...containerProps} size={size}>
-      <Minus {...props} size={size * 0.55} className={ctw('stroke-[4px]', props.className)} />
+      <Minus {...props} size={size * 0.55} className={ctw('stroke-1', props.className)} />
     </IconContainer>
   );
 };

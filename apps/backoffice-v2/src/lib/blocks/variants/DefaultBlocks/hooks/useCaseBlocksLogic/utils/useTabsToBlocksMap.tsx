@@ -12,7 +12,6 @@ import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mut
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
-import { useEndUsersByIdsQuery } from '@/domains/individuals/queries/useEndUsersByIdsQuery/useEndUsersByIdsQuery';
 import { useMemo } from 'react';
 
 export type TCaseBlocksCreationProps = {
@@ -287,7 +286,6 @@ export const useTabsToBlocksMap = ({
       ...individualsUserProvidedBlock,
       ...amlWithContainerBlock,
       ...mainRepresentativeBlock,
-      ...manageUbosBlock,
       ...uboDocumentBlocks,
       ...directorDocumentBlocks,
       ...createKycBlocks(individuals),

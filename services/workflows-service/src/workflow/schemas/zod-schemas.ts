@@ -20,6 +20,7 @@ export const ConfigSchema = z
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
     isCollectionFlowPageRevisionEnabled: z.boolean().optional(),
+    isAgentEditingEnabled: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
     initialEvent: z.string().optional(),
     availableDocuments: z.array(z.object({ category: z.string(), type: z.string() })).optional(),

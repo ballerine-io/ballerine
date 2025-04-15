@@ -3,7 +3,6 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useIsWorkflowStepsCanBeRevised } from '../../hooks/useIsWorkflowStepsCanBeRevised';
 import { RequestProcesses } from './components/RequestProcesses';
 import { useStepsRequesting } from './hooks/useStepsRequesting';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 interface ICollectionFlowProcessTitleProps {
   workflow: TWorkflowById;
@@ -12,12 +11,9 @@ interface ICollectionFlowProcessTitleProps {
 export const CollectionFlowProcessTitle = ({ workflow }: ICollectionFlowProcessTitleProps) => {
   const { stepsCountToRequest, isLoading, sendRequestedStepsToRevision } =
     useStepsRequesting(workflow);
-  const { data: session } = useAuthenticatedUserQuery();
-  const authenticatedUser = session?.user || null;
   const isShouldDisplayRequestButton = stepsCountToRequest > 0;
 
   const isCanRequestSteps = useIsWorkflowStepsCanBeRevised({
-    authenticatedUser: authenticatedUser,
     workflowAssigneeId: workflow.assigneeId || workflow.assignee?.id,
     workflowConfig: workflow.workflowDefinition.config,
     workflowTags: workflow.tags,

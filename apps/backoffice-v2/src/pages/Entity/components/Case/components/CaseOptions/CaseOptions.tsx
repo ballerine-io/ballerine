@@ -3,19 +3,21 @@ import { DropdownMenu } from '@/common/components/molecules/DropdownMenu/Dropdow
 import { DropdownMenuContent } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Content';
 import { DropdownMenuItem } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { useCaseOptionsLogic } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/useCaseOptionsLogic';
-import { FileText, Link, MoreVertical } from 'lucide-react';
+import { Edit, FileText, Link, MoreVertical } from 'lucide-react';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { useCaseOptionsLogic } from './hooks/useCaseOptionsLogic';
 
 export const CaseOptions = () => {
   const {
-    isDemoAccount,
-    isGeneratingPDF,
-    generateAndOpenPDFInNewTab,
-    isCopyingCollectionFlowLink,
     copyCollectionFlowLink,
+    isCopyingCollectionFlowLink,
+    onEditCollectionFlow,
+    isCanEditCollectionFlow,
+    isLoading,
+    generateAndOpenPDFInNewTab,
+    isDemoAccount,
   } = useCaseOptionsLogic();
 
   return (
@@ -57,6 +59,16 @@ export const CaseOptions = () => {
             className="justify-start"
           >
             <Link size={18} className="mr-2" /> Copy Collection Flow Link
+          </Button>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
+          <Button
+            onClick={onEditCollectionFlow}
+            variant={'ghost'}
+            className="justify-start"
+            disabled={!isCanEditCollectionFlow || isLoading}
+          >
+            <Edit size={18} className="mr-2" /> Edit Collection Flow
           </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>

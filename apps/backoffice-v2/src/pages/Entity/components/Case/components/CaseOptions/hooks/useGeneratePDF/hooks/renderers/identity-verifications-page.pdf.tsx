@@ -1,9 +1,9 @@
-import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
 import {
   EmptyIdentityVerificationsPage,
   IdentityVerificationsPage,
   TIdentityVerificationsData,
 } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage';
+import { IPDFRenderer } from './pdf-renderer.abstract';
 
 export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerificationsData> {
   static PDF_NAME = 'identityVerificationsPage';
@@ -12,7 +12,9 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyIdentityVerificationsPage {...pdfData} />;
+    if (this.isEmpty(pdfData)) {
+      return <EmptyIdentityVerificationsPage {...pdfData} />;
+    }
 
     return <IdentityVerificationsPage {...pdfData} />;
   }
