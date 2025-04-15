@@ -24,6 +24,7 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   where: Record<string, unknown> | null;
 }
 
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function assertIsValidProjectIds(
   projectIds: unknown,
 ): asserts projectIds is NonNullable<TProjectIds> {
