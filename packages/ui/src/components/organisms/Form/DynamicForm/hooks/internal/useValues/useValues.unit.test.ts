@@ -11,7 +11,7 @@ describe('useValues', () => {
   };
 
   it('should initialize with provided values', () => {
-    const { result } = renderHook(() => useValues({ values: initialValues }));
+    const { result } = renderHook(() => useValues({ values: initialValues, onChange: vi.fn() }));
 
     expect(result.current.values).toEqual(initialValues);
   });

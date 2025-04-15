@@ -13,7 +13,7 @@ import { useSidebarItems } from '../hooks/useSidebarItems/useSidebarItems';
 import { NavItem } from './NavItem';
 
 export const NavMain: FunctionComponent<{ className?: string }> = ({ className }) => {
-  const { navItems, pathname, filterId, checkIsActiveFilterGroup } = useSidebarItems();
+  const { navItems, pathname, search, filterId, checkIsActiveFilterGroup } = useSidebarItems();
 
   return (
     <SidebarGroup>
@@ -61,12 +61,19 @@ export const NavMain: FunctionComponent<{ className?: string }> = ({ className }
             );
           }
 
+          // Don't reset search state if on the same page
+          if ('href' in navItem && navItem.href && pathname === navItem.href && search) {
+            navItem.href = `${navItem.href}${search}`;
+          }
+
           return (
             <SidebarMenuItem key={navItem.key}>
               <NavItem
                 navItem={navItem}
                 className={ctw('p-0', {
-                  'bg-background text-primary': navItem.href && pathname.includes(navItem.href),
+                  'bg-background text-primary':
+                    navItem.href &&
+                    pathname.includes(navItem.href.slice(0, navItem.href.indexOf('?'))),
                 })}
                 linkClassName="p-2 group-data-[collapsible=icon]:p-0"
               />

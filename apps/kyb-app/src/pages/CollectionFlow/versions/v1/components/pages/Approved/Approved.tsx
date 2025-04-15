@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { useAppExit } from '@/hooks/useAppExit/useAppExit';
-import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 
-export const Approved = withSessionProtected(() => {
+export const Approved = () => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
   const { exit, isExitAvailable } = useAppExit();
@@ -39,4 +38,4 @@ export const Approved = withSessionProtected(() => {
       </Card>
     </div>
   );
-});
+};
