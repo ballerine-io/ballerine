@@ -13,6 +13,8 @@ export const CollectionFlowStatusesEnum = {
   failed: 'failed',
   // Collection Flow is completed (by end user)
   completed: 'completed',
+  // Collection Flow is being edited by Agent
+  edit: 'edit',
 } as const;
 
 export type CollectionFlowStatuses =

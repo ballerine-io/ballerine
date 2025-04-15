@@ -1,10 +1,10 @@
-import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
 import {
   EmptyRegistryInformationPage,
   RegistryInformationPage,
 } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import { BaseCaseInformationPdfSchema } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
+import { IPDFRenderer } from './pdf-renderer.abstract';
 
 export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
   static PDF_NAME = 'titlePage';
@@ -13,7 +13,9 @@ export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
     const pdfData = await this.getData();
     this.isValid(pdfData);
 
-    if (this.isEmpty(pdfData)) return <EmptyRegistryInformationPage {...pdfData} />;
+    if (this.isEmpty(pdfData)) {
+      return <EmptyRegistryInformationPage {...pdfData} />;
+    }
 
     return <RegistryInformationPage {...pdfData} />;
   }

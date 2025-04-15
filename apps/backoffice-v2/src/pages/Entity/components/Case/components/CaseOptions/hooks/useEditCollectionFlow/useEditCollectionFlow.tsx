@@ -1,0 +1,74 @@
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { useUpdateWorkflowByIdMutation } from '@/domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
+import { useCallback, useMemo } from 'react';
+import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEditCaseStateMutation';
+import { updateStateForEditing } from './helpers/update-state-for-editing';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
+import { t } from 'i18next';
+import { toast } from 'sonner';
+import { getCollectionFlowLinkFromWorkflow } from '../useCopyCollectionFlowLink/helpers/get-collection-flow-link-from-workflow';
+
+export const useEditCollectionFlow = () => {
+  const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
+  const { mutateAsync: updateWorkflowById, isLoading: isUpdatingWorkflow } =
+    useUpdateWorkflowByIdMutation({
+      workflowId: workflow?.id || '',
+    });
+  const { mutateAsync: editCaseState, isLoading: isEditCaseStateLoading } =
+    useEditCaseStateMutation();
+
+  const assigneeId = useMemo(
+    () => workflow?.assigneeId || workflow?.assignee?.id || '',
+    [workflow],
+  );
+  const tags = useMemo(() => workflow?.tags || [], [workflow]);
+  const workflowConfig = useMemo(
+    () =>
+      workflow?.workflowDefinition.config || ({} as TWorkflowById['workflowDefinition']['config']),
+    [workflow],
+  );
+
+  const isCanEditCollectionFlow = useIsCanEditCollectionFlow({
+    assigneeId,
+    tags,
+    config: workflowConfig,
+  });
+
+  const onEditCollectionFlow = useCallback(async () => {
+    const updatedWorkflowContext = updateStateForEditing(
+      workflow?.context || ({} as TWorkflowById['context']),
+    );
+
+    try {
+      // Updating case state first to avoid unnecessary context update in case this step fails
+      await editCaseState({ workflowId: workflow?.id || '' });
+    } catch (error) {
+      toast.error(t('toast:edit_collection_flow_state_transition.error'));
+      throw new Error('Failed move to edit collection flow. State missing.');
+    }
+
+    await updateWorkflowById({
+      context: updatedWorkflowContext,
+      action: 'edit_collection_flow',
+    });
+
+    try {
+      window.open(getCollectionFlowLinkFromWorkflow(workflow as TWorkflowById), '_blank');
+    } catch (error) {
+      toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
+      throw new Error('Failed to open collection flow in new tab.');
+    }
+  }, [updateWorkflowById, editCaseState, workflow]);
+
+  const isLoading = useMemo(
+    () => [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow].some(Boolean),
+    [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow],
+  );
+
+  return {
+    onEditCollectionFlow,
+    isCanEditCollectionFlow,
+    isLoading,
+  };
+};

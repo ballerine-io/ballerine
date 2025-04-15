@@ -6,7 +6,6 @@ import {
 } from '@/common/components/molecules/DemoAccessCards/ExperienceBallerineCard';
 import { GetFullAccessCard } from '@/common/components/molecules/DemoAccessCards/GetFullAccessCard';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
-import { env } from '@/common/env/env';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { ctw } from '@/common/utils/ctw/ctw';
 

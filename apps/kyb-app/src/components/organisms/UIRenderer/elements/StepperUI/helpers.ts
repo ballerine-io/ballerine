@@ -16,6 +16,10 @@ export const computeStepStatus = ({
     return 'warning';
   }
 
+  if (step?.state === CollectionFlowStepStatesEnum.edit) {
+    return 'edit';
+  }
+
   const isCompleted = [
     step?.state === CollectionFlowStepStatesEnum.completed,
     step?.isCompleted,

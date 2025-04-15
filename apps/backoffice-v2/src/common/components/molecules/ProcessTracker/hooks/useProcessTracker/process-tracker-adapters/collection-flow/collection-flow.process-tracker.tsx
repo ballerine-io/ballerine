@@ -72,6 +72,10 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
       return stepStatusToIcon[CollectionFlowStepStatesEnum.revision];
     }
 
+    if (stepItem?.state === CollectionFlowStepStatesEnum.edit) {
+      return stepStatusToIcon[CollectionFlowStepStatesEnum.edit];
+    }
+
     return stepStatusToIcon[CollectionFlowStepStatesEnum.inProgress];
   }
 }

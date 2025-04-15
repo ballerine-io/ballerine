@@ -23,6 +23,16 @@ export const pickLabelProps = (state: BreadcrumbState, active: boolean) => {
           : 'var(--stepper-breadcrumbs-warning-label-text-active-opacity)',
       },
     },
+    edit: {
+      style: {
+        color: active
+          ? 'var(--stepper-breadcrumbs-warning-label-text-color)'
+          : 'var(--stepper-breadcrumbs-warning-label-text-active-color)',
+        opacity: active
+          ? 'var(--stepper-breadcrumbs-warning-label-text-opacity)'
+          : 'var(--stepper-breadcrumbs-warning-label-text-active-opacity)',
+      },
+    },
     completed: {
       style: {
         color: active

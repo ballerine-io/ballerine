@@ -5,6 +5,7 @@ export const StateTag = {
   REJECTED: 'rejected',
   RESOLVED: 'resolved',
   REVISION: 'revision',
+  EDIT: 'edit',
   MANUAL_REVIEW: 'manual_review',
   PENDING_PROCESS: 'pending_process',
   COLLECTION_FLOW: 'collection_flow',
@@ -19,6 +20,7 @@ export const StateTags = [
   StateTag.REJECTED,
   StateTag.RESOLVED,
   StateTag.REVISION,
+  StateTag.EDIT,
   StateTag.MANUAL_REVIEW,
   StateTag.PENDING_PROCESS,
   StateTag.COLLECTION_FLOW,
@@ -39,6 +41,7 @@ export const CommonWorkflowEvent = {
   RESOLVE: 'resolve',
   FLAG: 'flag',
   DISMISS: 'dismiss',
+  EDIT: 'edit',
 } as const;
 
 export const CommonWorkflowStates = {

@@ -153,6 +153,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         );
         const state = currentStep?.state;
 
+        if (!state) {
+          toast.error('Collection flow state property, cannot continue. Please contact support.');
+          throw new Error('Collection flow state property is missing in the context.');
+        }
+
         // Transition to revised to avoid user visit same revision step again after revision
         if (state === CollectionFlowStepStatesEnum.revision) {
           updateCollectionFlowStep(values, page.stateName, {
@@ -161,7 +166,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         }
 
         // Completing step after submission
-        if (state === CollectionFlowStepStatesEnum.inProgress) {
+        if (
+          [CollectionFlowStepStatesEnum.inProgress, CollectionFlowStepStatesEnum.edit].includes(
+            state,
+          )
+        ) {
           updateCollectionFlowStep(values, page.stateName, {
             state: CollectionFlowStepStatesEnum.completed,
           });

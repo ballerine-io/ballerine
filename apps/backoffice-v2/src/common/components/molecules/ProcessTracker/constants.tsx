@@ -5,6 +5,7 @@ import { RefreshCircle } from '@/common/components/atoms/RefreshCircle/RefreshCi
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 import { CollectionFlowStepStatesEnum, ProcessStatus, StateTag } from '@ballerine/common';
 import { CheckCircle } from '@ballerine/ui';
+import { Pencil } from '../../atoms/Pencil/Pencil';
 
 export const tagToAccordionCardItem = {
   [StateTag.COLLECTION_FLOW]: 'Collection flow',
@@ -68,6 +69,15 @@ export const Icon = {
       }}
     />
   ),
+  EDIT: (
+    <Pencil
+      size={18}
+      className={`stroke-slate-500`}
+      containerProps={{
+        className: 'bg-blue-500/20',
+      }}
+    />
+  ),
 } as const;
 
 export const processStatusToIcon = {
@@ -84,6 +94,7 @@ export const stepStatusToIcon = {
   [CollectionFlowStepStatesEnum.inProgress]: Icon.INDICATOR,
   [CollectionFlowStepStatesEnum.completed]: Icon.CHECK,
   [CollectionFlowStepStatesEnum.revision]: Icon.REFRESH,
+  [CollectionFlowStepStatesEnum.edit]: Icon.EDIT,
 } as const;
 
 export const tagToIcon = {
