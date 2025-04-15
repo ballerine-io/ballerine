@@ -21,6 +21,7 @@ import { useFinalSubmission } from './hooks/useFinalSubmission/useFinalSubmissio
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { useRevisionFields } from './hooks/useRevisionFields';
 import { formElementsExtends } from './ui-elemenets.extends';
+import { useGlobalUIState } from '../../providers/GlobalUIState';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   page: UIPage<'v2'>;
@@ -44,12 +45,14 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   metadata: _uiSchemaMetadata,
 }) => {
   const { stateApi, state } = useStateManagerContext();
+  const { updateUIState, state: uiState } = useGlobalUIState();
   const { handleEvent } = usePluginsHandler();
-  const { isSyncing, sync, syncStateless, setIsSyncing } = useAppSync();
+  const { sync, syncStateless, setIsSyncing } = useAppSync();
   const appMetadata = useAppMetadata();
   const { pluginStatuses } = usePlugins();
   const revisionFields = useRevisionFields(pages, context);
-  const { isFinalSubmissionAvailable, handleFinalSubmission } = useFinalSubmission(context, state);
+  const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
+    useFinalSubmission(context, state);
   const validationParams: IDynamicFormValidationParams = useMemo(
     () => ({ ...DEFAULT_VALIDATION_PARAMS, globalValidationRules: page.globalValidate }),
     [page.globalValidate],
@@ -72,12 +75,21 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       _app: appMetadata,
       _plugins: pluginStatuses,
       _appState: {
-        isSyncing,
+        isSyncing: uiState.isSyncing,
+        isFinalSubmitted: uiState.isFinalSubmitted,
       },
       $page: getCollectionFlowState(context)?.steps?.find(step => step.stepName === page.stateName),
       ..._uiSchemaMetadata,
     }),
-    [appMetadata, pluginStatuses, isSyncing, _uiSchemaMetadata, page, context],
+    [
+      appMetadata,
+      pluginStatuses,
+      uiState.isSyncing,
+      uiState.isFinalSubmitted,
+      _uiSchemaMetadata,
+      page,
+      context,
+    ],
   );
 
   useEffect(() => {
@@ -93,6 +105,12 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       stateApi.setContext(context);
     }
   }, [page, context, stateApi]);
+
+  useEffect(() => {
+    if (isFinalSubmitted) {
+      updateUIState({ isFinalSubmitted });
+    }
+  }, [isFinalSubmitted, updateUIState]);
 
   const handleChange = useCallback(
     (values: CollectionFlowContext) => {
@@ -135,6 +153,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         );
         const state = currentStep?.state;
 
+        if (!state) {
+          toast.error('Collection flow state property, cannot continue. Please contact support.');
+          throw new Error('Collection flow state property is missing in the context.');
+        }
+
         // Transition to revised to avoid user visit same revision step again after revision
         if (state === CollectionFlowStepStatesEnum.revision) {
           updateCollectionFlowStep(values, page.stateName, {
@@ -143,7 +166,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         }
 
         // Completing step after submission
-        if (state === CollectionFlowStepStatesEnum.inProgress) {
+        if (
+          [CollectionFlowStepStatesEnum.inProgress, CollectionFlowStepStatesEnum.edit].includes(
+            state,
+          )
+        ) {
           updateCollectionFlowStep(values, page.stateName, {
             state: CollectionFlowStepStatesEnum.completed,
           });
@@ -179,6 +206,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         onChange={handleChange as (newValues: object) => void}
         onEvent={handleEvent}
         onSubmit={handleSubmit as (values: object) => void}
+        disabled={uiState.isSyncing}
         priorityFields={revisionFields}
         validationParams={validationParams}
         metadata={metadata}

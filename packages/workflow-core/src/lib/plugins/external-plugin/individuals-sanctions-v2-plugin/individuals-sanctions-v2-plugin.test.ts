@@ -492,84 +492,167 @@ describe('IndividualsSanctionsV2Plugin', () => {
   });
 
   describe('when an object with KYC information at its root is passed to kycInformation', () => {
-    it('should pass validation', async () => {
-      // Arrange
-      vi.stubEnv('UNIFIED_API_URL', 'http://unified-api.test.com');
-      vi.stubEnv('UNIFIED_API_TOKEN', 'test');
-      vi.stubEnv('APP_API_URL', 'http://workflows-service.test.com');
-      let response: { body: string } | undefined;
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async (_url, { body }) => {
-          response = {
-            body,
-          };
+    describe('when dateOfBirth is present in additionalInfo', () => {
+      it('should pass validation', async () => {
+        // Arrange
+        vi.stubEnv('UNIFIED_API_URL', 'http://unified-api.test.com');
+        vi.stubEnv('UNIFIED_API_TOKEN', 'test');
+        vi.stubEnv('APP_API_URL', 'http://workflows-service.test.com');
+        let response: { body: string } | undefined;
+        vi.stubGlobal(
+          'fetch',
+          vi.fn(async (_url, { body }) => {
+            response = {
+              body,
+            };
 
-          return new Response(
-            JSON.stringify({
-              data: {},
-            }),
-          );
-        }),
-      );
-      const pluginParams = {
-        url: 'http://test.com',
-        method: 'POST',
-        name: 'sanctionsScreening',
-        pluginKind: 'individual-sanctions-v2',
-        stateNames: ['run_ongoing_aml'],
-        displayName: 'Sanctions Screening',
-        errorAction: 'ONGOING_AML_FAILED',
-        successAction: 'ONGOING_AML_SUCCESS',
-        payload: {
-          clientId: 'clientId',
-          vendor: 'dow-jones',
-          ongoingMonitoring: true,
-          immediateResults: false,
-          workflowRuntimeId: {
-            __type: 'path',
-            value: 'workflowRuntimeId',
+            return new Response(
+              JSON.stringify({
+                data: {},
+              }),
+            );
+          }),
+        );
+        const pluginParams = {
+          url: 'http://test.com',
+          method: 'POST',
+          name: 'sanctionsScreening',
+          pluginKind: 'individual-sanctions-v2',
+          stateNames: ['run_ongoing_aml'],
+          displayName: 'Sanctions Screening',
+          errorAction: 'ONGOING_AML_FAILED',
+          successAction: 'ONGOING_AML_SUCCESS',
+          payload: {
+            clientId: 'clientId',
+            vendor: 'dow-jones',
+            ongoingMonitoring: true,
+            immediateResults: false,
+            workflowRuntimeId: {
+              __type: 'path',
+              value: 'workflowRuntimeId',
+            },
+            endUserId: {
+              __type: 'path',
+              value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
+            },
+            kycInformation: {
+              __type: 'path',
+              value: 'entity.data',
+            },
           },
-          endUserId: {
-            __type: 'path',
-            value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
-          },
-          kycInformation: {
-            __type: 'path',
-            value: 'entity.data',
-          },
-        },
-      } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
-      const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
-      const invokePayload = {
-        workflowRuntimeId: 'workflowRuntimeId',
-        entity: {
-          data: {
-            firstName: 'John',
-            lastName: 'Doe',
-            dateOfBirth: '1980-01-01',
-            additionalInfo: {
-              mainRepresentative: {
-                ballerineEntityId: 'ballerineEntityId',
+        } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+        const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+        const invokePayload = {
+          workflowRuntimeId: 'workflowRuntimeId',
+          entity: {
+            data: {
+              firstName: 'John',
+              lastName: 'Doe',
+              additionalInfo: {
+                mainRepresentative: {
+                  ballerineEntityId: 'ballerineEntityId',
+                },
+                dateOfBirth: '1980-01-01',
               },
             },
           },
-        },
-      };
+        };
 
-      // Act
-      const invokeResponse = await plugin.invoke(invokePayload);
+        // Act
+        const invokeResponse = await plugin.invoke(invokePayload);
 
-      // Assert
-      expect(invokeResponse).toHaveProperty('callbackAction', 'ONGOING_AML_SUCCESS');
-      expect(invokeResponse).not.toHaveProperty('error');
-      expect(JSON.parse(response?.body ?? '')).toMatchObject(
-        expect.objectContaining({
-          firstName: 'John',
-          lastName: 'Doe',
-          dateOfBirth: '1980-01-01',
-        }),
-      );
+        // Assert
+        expect(invokeResponse).toHaveProperty('callbackAction', 'ONGOING_AML_SUCCESS');
+        expect(invokeResponse).not.toHaveProperty('error');
+        expect(JSON.parse(response?.body ?? '')).toMatchObject(
+          expect.objectContaining({
+            firstName: 'John',
+            lastName: 'Doe',
+            dateOfBirth: '1980-01-01',
+          }),
+        );
+      });
+    });
+    describe('when dateOfBirth is present at root level', () => {
+      it('should pass validation', async () => {
+        // Arrange
+        vi.stubEnv('UNIFIED_API_URL', 'http://unified-api.test.com');
+        vi.stubEnv('UNIFIED_API_TOKEN', 'test');
+        vi.stubEnv('APP_API_URL', 'http://workflows-service.test.com');
+        let response: { body: string } | undefined;
+        vi.stubGlobal(
+          'fetch',
+          vi.fn(async (_url, { body }) => {
+            response = {
+              body,
+            };
+
+            return new Response(
+              JSON.stringify({
+                data: {},
+              }),
+            );
+          }),
+        );
+        const pluginParams = {
+          url: 'http://test.com',
+          method: 'POST',
+          name: 'sanctionsScreening',
+          pluginKind: 'individual-sanctions-v2',
+          stateNames: ['run_ongoing_aml'],
+          displayName: 'Sanctions Screening',
+          errorAction: 'ONGOING_AML_FAILED',
+          successAction: 'ONGOING_AML_SUCCESS',
+          payload: {
+            clientId: 'clientId',
+            vendor: 'dow-jones',
+            ongoingMonitoring: true,
+            immediateResults: false,
+            workflowRuntimeId: {
+              __type: 'path',
+              value: 'workflowRuntimeId',
+            },
+            endUserId: {
+              __type: 'path',
+              value: 'entity.data.additionalInfo.mainRepresentative.ballerineEntityId',
+            },
+            kycInformation: {
+              __type: 'path',
+              value: 'entity.data',
+            },
+          },
+        } satisfies ConstructorParameters<typeof IndividualsSanctionsV2Plugin>[0];
+        const plugin = new IndividualsSanctionsV2Plugin(pluginParams);
+        const invokePayload = {
+          workflowRuntimeId: 'workflowRuntimeId',
+          entity: {
+            data: {
+              firstName: 'John',
+              lastName: 'Doe',
+              dateOfBirth: '1980-01-01',
+              additionalInfo: {
+                mainRepresentative: {
+                  ballerineEntityId: 'ballerineEntityId',
+                },
+              },
+            },
+          },
+        };
+
+        // Act
+        const invokeResponse = await plugin.invoke(invokePayload);
+
+        // Assert
+        expect(invokeResponse).toHaveProperty('callbackAction', 'ONGOING_AML_SUCCESS');
+        expect(invokeResponse).not.toHaveProperty('error');
+        expect(JSON.parse(response?.body ?? '')).toMatchObject(
+          expect.objectContaining({
+            firstName: 'John',
+            lastName: 'Doe',
+            dateOfBirth: '1980-01-01',
+          }),
+        );
+      });
     });
   });
 

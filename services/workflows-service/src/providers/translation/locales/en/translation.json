@@ -730,6 +730,8 @@
       "averageTransactionValueInput": "Maximum value is 1000 000 000",
       "transactionValue": "Maximum value is 1000000000",
       "annualVolume": "Maximum value is 1000000000"
-    }
+    },
+    "pastDate": "Date must be in the past.",
+    "futureDate": "Date must be in the future."
   }
 }

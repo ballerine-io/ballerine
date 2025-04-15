@@ -1,38 +1,40 @@
-import { useState } from 'react';
-
-import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { syncContext } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { getCollectionFlowState } from '@ballerine/common';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { useGlobalUIState } from '../../../../providers/GlobalUIState';
 
 export const useAppSync = () => {
-  const [isSyncing, setIsSyncing] = useState(false);
-  const { state } = useStateManagerContext();
-  const { helpers } = useDynamicUIContext();
-  const { setLoading } = helpers;
+  const { updateUIState, state: uiState } = useGlobalUIState();
 
-  const sync = useCallback(async (context: CollectionFlowContext) => {
-    const collectionFlow = getCollectionFlowState(context);
+  const setIsSyncing = useCallback(
+    (isSyncing: boolean) => {
+      updateUIState({ isSyncing });
+    },
+    [updateUIState],
+  );
 
-    if (!collectionFlow) {
-      return;
-    }
+  const sync = useCallback(
+    async (context: CollectionFlowContext) => {
+      const collectionFlow = getCollectionFlowState(context);
 
-    try {
-      setLoading(true);
-      setIsSyncing(true);
-      await syncContext(context);
-    } catch (error) {
-      toast.error('Failed to sync.');
-      console.error(error);
-    } finally {
-      setIsSyncing(false);
-      setLoading(false);
-    }
-  }, []);
+      if (!collectionFlow) {
+        return;
+      }
+
+      try {
+        setIsSyncing(true);
+        await syncContext(context);
+      } catch (error) {
+        toast.error('Failed to sync.');
+        console.error(error);
+      } finally {
+        setIsSyncing(false);
+      }
+    },
+    [setIsSyncing],
+  );
 
   const syncStateless = useCallback(async (context: CollectionFlowContext) => {
     const collectionFlow = getCollectionFlowState(context);
@@ -49,5 +51,5 @@ export const useAppSync = () => {
     }
   }, []);
 
-  return { isSyncing, sync, syncStateless, setIsSyncing };
+  return { sync, syncStateless, setIsSyncing, isSyncing: uiState.isSyncing };
 };

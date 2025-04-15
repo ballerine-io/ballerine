@@ -19,6 +19,7 @@ export const ConfigSchema = z
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
     isCollectionFlowPageRevisionEnabled: z.boolean().optional(),
+    isAgentEditingEnabled: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
     initialEvent: z.string().optional(),
     availableDocuments: z.array(z.object({ category: z.string(), type: z.string() })).optional(),
@@ -65,6 +66,7 @@ export const ConfigSchema = z
     maxBusinessReports: z.number().nonnegative().optional(),
     isMerchantMonitoringEnabled: z.boolean().optional(),
     isOngoingMonitoringEnabled: z.boolean().optional(),
+    isCasesOnboardingEnabled: z.boolean().optional(),
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
@@ -108,6 +110,7 @@ export const CustomerConfigSchema = z.object({
   isExample: z.boolean().optional(),
   isMerchantMonitoringEnabled: z.boolean().optional(),
   isOngoingMonitoringEnabled: z.boolean().optional(),
+  isCasesOnboardingEnabled: z.boolean().optional(),
   isDemo: z.boolean().optional(),
   maxBusinessReports: z.number().optional(),
 });

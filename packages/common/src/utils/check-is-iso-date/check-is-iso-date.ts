@@ -19,7 +19,9 @@ export const checkIsIsoDate = (value: unknown): value is string => {
     .string()
     .refine(
       (value: unknown) => {
-        if (typeof value !== 'string') return false;
+        if (typeof value !== 'string') {
+          return false;
+        }
 
         const parsedDate = dayjs.utc(value, 'YYYY-MM-DDTHH:mm:ssZ', true);
 

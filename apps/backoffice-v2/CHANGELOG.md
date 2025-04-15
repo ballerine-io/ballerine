@@ -1,5 +1,56 @@
 # @ballerine/backoffice-v2
 
+## 0.7.133
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/ui@0.7.133
+  - @ballerine/workflow-browser-sdk@0.6.112
+  - @ballerine/workflow-node-sdk@0.6.112
+  - @ballerine/react-pdf-toolkit@1.2.104
+  - @ballerine/workflow-browser-sdk@0.6.111
+  - @ballerine/workflow-node-sdk@0.6.111
+
+## 0.7.132
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.89
+  - @ballerine/workflow-browser-sdk@0.6.111
+  - @ballerine/workflow-node-sdk@0.6.111
+  - @ballerine/ui@0.7.132
+  - @ballerine/react-pdf-toolkit@1.2.103
+
+## 0.7.131
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.88
+  - @ballerine/workflow-browser-sdk@0.6.110
+  - @ballerine/workflow-node-sdk@0.6.110
+
+## 0.7.130
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.130
+  - @ballerine/react-pdf-toolkit@1.2.102
+
+## 0.7.129
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.129
+  - @ballerine/react-pdf-toolkit@1.2.101
+
 ## 0.7.128
 
 ### Patch Changes
