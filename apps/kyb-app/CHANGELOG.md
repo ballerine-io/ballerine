@@ -1,5 +1,20 @@
 # kyb-app
 
+## 0.3.163
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.6.111
+
+## 0.3.162
+
+### Patch Changes
+
+- Bump
+- Added defaultValue to field definitions
+- Updated dependencies
+  - @ballerine/ui@0.7.132
+
 ## 0.3.161
 
 ### Patch Changes

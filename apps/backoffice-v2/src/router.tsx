@@ -23,12 +23,10 @@ import { RootError } from '@/pages/Root/Root.error';
 import { rootLoader } from '@/pages/Root/Root.loader';
 import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
-import { Statistics } from '@/pages/Statistics/Statistics.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
-import { Workflows } from '@/pages/Workflows/Workflows.page';
-import { FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
@@ -157,18 +155,6 @@ const router = createBrowserRouter([
               {
                 path: '/:locale/home',
                 element: <Home />,
-                children: [
-                  {
-                    path: '/:locale/home/statistics',
-                    element: <Statistics />,
-                    errorElement: <RouteError />,
-                  },
-                  {
-                    path: '/:locale/home/workflows',
-                    element: <Workflows />,
-                    errorElement: <RouteError />,
-                  },
-                ],
                 errorElement: <RouteError />,
               },
             ],
