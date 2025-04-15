@@ -244,22 +244,19 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const eventPayload: Parameters<(typeof WorkflowService)['prototype']['event']>[0] = {
-        id: tokenScope.workflowRuntimeDataId,
-        name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-        payload: {
-          arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
-        },
-      };
-
       if (!body.context) {
         return;
       }
 
-      eventPayload.payload!.newContext = body.context;
-
       return await this.workflowService.event(
-        eventPayload,
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: body.context,
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
         [tokenScope.projectId],
         tokenScope.projectId,
       );

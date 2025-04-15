@@ -33,7 +33,7 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
   const isFinalSubmissionAvailable = useMemo(() => state === collectionFlowSteps.at(-1), [state]);
 
   const handleFinalSubmission = useCallback(
-    async (values: CollectionFlowContext) => {
+    async (values?: CollectionFlowContext) => {
       try {
         await finalSubmissionRequest(values);
 
