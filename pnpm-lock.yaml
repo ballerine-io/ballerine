@@ -73,22 +73,22 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.40
+        specifier: 0.2.41
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.90
+        specifier: 0.9.91
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.105
+        specifier: ^1.2.106
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: 0.7.134
+        specifier: 0.7.135
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../sdks/workflow-node-sdk
       '@botpress/webchat':
         specifier: ^2.1.10
@@ -374,10 +374,10 @@ importers:
         version: 3.23.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.37
+        specifier: ^2.0.38
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -536,16 +536,16 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.40
+        specifier: 0.2.41
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.90
+        specifier: ^0.9.91
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.7.134
+        specifier: 0.7.135
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -678,10 +678,10 @@ importers:
         version: 3.23.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.37
+        specifier: ^2.0.38
         version: link:../../packages/eslint-config-react
       '@jest/globals':
         specifier: ^29.7.0
@@ -786,10 +786,10 @@ importers:
   apps/workflows-dashboard:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.86
+        specifier: ^0.9.90
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: ^0.7.126
+        specifier: ^0.7.134
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -931,10 +931,10 @@ importers:
         version: 3.23.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.37
+        specifier: ^2.0.38
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1024,10 +1024,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.90
+        specifier: 0.9.91
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1121,7 +1121,7 @@ importers:
   examples/report-generation-example:
     dependencies:
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.96
+        specifier: ^1.2.105
         version: link:../../packages/react-pdf-toolkit
       react:
         specifier: ^18.2.0
@@ -1164,7 +1164,7 @@ importers:
   packages/blocks:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.84
+        specifier: ^0.9.90
         version: link:../common
     devDependencies:
       '@babel/core':
@@ -1180,10 +1180,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../eslint-config
       '@rollup/plugin-babel':
         specifier: 5.3.1
@@ -1373,10 +1373,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1525,7 +1525,7 @@ importers:
   packages/eslint-config-react:
     dependencies:
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../eslint-config
       eslint-plugin-react:
         specifier: ^7.33.2
@@ -1537,10 +1537,10 @@ importers:
   packages/react-pdf-toolkit:
     dependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.7.134
+        specifier: 0.7.135
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1659,10 +1659,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1705,7 +1705,7 @@ importers:
         version: 6.31.3
       cz-conventional-changelog:
         specifier: ^3.3.0
-        version: 3.3.0(@types/node@22.13.5)(typescript@4.9.5)
+        version: 3.3.0(@types/node@18.17.19)(typescript@4.9.5)
       eslint:
         specifier: ^8.32.0
         version: 8.57.1
@@ -1750,13 +1750,13 @@ importers:
         version: 5.6.0(rollup@2.70.2)
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@4.9.5)
+        version: 10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@18.17.19)(typescript@4.9.5)
       typescript:
         specifier: 4.9.5
         version: 4.9.5
       vite:
         specifier: ^4.5.3
-        version: 4.5.3(@types/node@22.13.5)(sass@1.85.1)(terser@5.39.0)
+        version: 4.5.3(@types/node@18.17.19)(sass@1.85.1)(terser@5.39.0)
       vitest:
         specifier: ^0.28.4
         version: 0.28.5(jsdom@20.0.3)(sass@1.85.1)(terser@5.39.0)
@@ -1764,7 +1764,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.90
+        specifier: ^0.9.91
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -1924,10 +1924,10 @@ importers:
         version: 3.23.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.37
+        specifier: ^2.0.38
         version: link:../eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2059,7 +2059,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.90
+        specifier: 0.9.91
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2105,10 +2105,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2249,7 +2249,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.90
+        specifier: 0.9.91
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2376,10 +2376,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.90
+        specifier: 0.9.91
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2395,10 +2395,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2518,7 +2518,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2537,10 +2537,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2686,7 +2686,7 @@ importers:
         version: 9.3.0(@swc/core@1.11.5(@swc/helpers@0.5.15))
       '@nestjs/schematics':
         specifier: ^9.0.0
-        version: 9.2.0(chokidar@3.5.3)(typescript@4.9.5)
+        version: 9.2.0(chokidar@3.6.0)(typescript@4.9.5)
       '@nestjs/testing':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
@@ -2763,13 +2763,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.90
+        specifier: 0.9.91
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.113
+        specifier: 0.6.114
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2953,10 +2953,10 @@ importers:
         version: 3.23.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -3121,7 +3121,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3(@types/node@22.13.5)(sass@1.85.1)(terser@5.39.0)(typescript@5.8.2))(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@5.8.2)))(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@5.8.2))
       '@ballerine/common':
-        specifier: ^0.9.90
+        specifier: ^0.9.91
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -3134,10 +3134,10 @@ importers:
         version: 0.14.7
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.37
+        specifier: ^1.1.38
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
@@ -19377,6 +19377,16 @@ snapshots:
     optionalDependencies:
       chokidar: 3.5.3
 
+  '@angular-devkit/core@16.0.1(chokidar@3.6.0)':
+    dependencies:
+      ajv: 8.12.0
+      ajv-formats: 2.1.1(ajv@8.12.0)
+      jsonc-parser: 3.2.0
+      rxjs: 7.8.1
+      source-map: 0.7.4
+    optionalDependencies:
+      chokidar: 3.6.0
+
   '@angular-devkit/schematics-cli@15.2.4(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 15.2.4(chokidar@3.5.3)
@@ -19401,6 +19411,16 @@ snapshots:
   '@angular-devkit/schematics@16.0.1(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
+      jsonc-parser: 3.2.0
+      magic-string: 0.30.0
+      ora: 5.4.1
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - chokidar
+
+  '@angular-devkit/schematics@16.0.1(chokidar@3.6.0)':
+    dependencies:
+      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       magic-string: 0.30.0
       ora: 5.4.1
@@ -22494,23 +22514,6 @@ snapshots:
       - typescript
     optional: true
 
-  '@commitlint/load@19.6.1(@types/node@22.13.5)(typescript@4.9.5)':
-    dependencies:
-      '@commitlint/config-validator': 19.5.0
-      '@commitlint/execute-rule': 19.5.0
-      '@commitlint/resolve-extends': 19.5.0
-      '@commitlint/types': 19.5.0
-      chalk: 5.4.1
-      cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
-      lodash.isplainobject: 4.0.6
-      lodash.merge: 4.6.2
-      lodash.uniq: 4.5.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - typescript
-    optional: true
-
   '@commitlint/load@19.6.1(@types/node@22.13.5)(typescript@5.1.6)':
     dependencies:
       '@commitlint/config-validator': 19.5.0
@@ -24318,6 +24321,16 @@ snapshots:
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
       '@angular-devkit/schematics': 16.0.1(chokidar@3.5.3)
+      jsonc-parser: 3.2.0
+      pluralize: 8.0.0
+      typescript: 4.9.5
+    transitivePeerDependencies:
+      - chokidar
+
+  '@nestjs/schematics@9.2.0(chokidar@3.6.0)(typescript@4.9.5)':
+    dependencies:
+      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
+      '@angular-devkit/schematics': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       pluralize: 8.0.0
       typescript: 4.9.5
@@ -31000,26 +31013,6 @@ snapshots:
       - '@types/node'
       - typescript
 
-  commitizen@4.3.1(@types/node@22.13.5)(typescript@4.9.5):
-    dependencies:
-      cachedir: 2.3.0
-      cz-conventional-changelog: 3.3.0(@types/node@22.13.5)(typescript@4.9.5)
-      dedent: 0.7.0
-      detect-indent: 6.1.0
-      find-node-modules: 2.1.3
-      find-root: 1.1.0
-      fs-extra: 9.1.0
-      glob: 7.2.3
-      inquirer: 8.2.5
-      is-utf8: 0.2.1
-      lodash: 4.17.21
-      minimist: 1.2.7
-      strip-bom: 4.0.0
-      strip-json-comments: 3.1.1
-    transitivePeerDependencies:
-      - '@types/node'
-      - typescript
-
   commitizen@4.3.1(@types/node@22.13.5)(typescript@5.1.6):
     dependencies:
       cachedir: 2.3.0
@@ -31252,14 +31245,6 @@ snapshots:
       cosmiconfig: 9.0.0(typescript@5.8.2)
       jiti: 2.4.2
       typescript: 5.8.2
-    optional: true
-
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
-    dependencies:
-      '@types/node': 22.13.5
-      cosmiconfig: 9.0.0(typescript@4.9.5)
-      jiti: 2.4.2
-      typescript: 4.9.5
     optional: true
 
   cosmiconfig-typescript-loader@6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
@@ -31616,20 +31601,6 @@ snapshots:
       word-wrap: 1.2.5
     optionalDependencies:
       '@commitlint/load': 19.6.1(@types/node@20.5.1)(typescript@5.8.2)
-    transitivePeerDependencies:
-      - '@types/node'
-      - typescript
-
-  cz-conventional-changelog@3.3.0(@types/node@22.13.5)(typescript@4.9.5):
-    dependencies:
-      chalk: 2.4.2
-      commitizen: 4.3.1(@types/node@22.13.5)(typescript@4.9.5)
-      conventional-commit-types: 3.0.0
-      lodash.map: 4.6.0
-      longest: 2.0.1
-      word-wrap: 1.2.5
-    optionalDependencies:
-      '@commitlint/load': 19.6.1(@types/node@22.13.5)(typescript@4.9.5)
     transitivePeerDependencies:
       - '@types/node'
       - typescript
@@ -32602,7 +32573,7 @@ snapshots:
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.1)(typescript@5.8.2)
       eslint: 8.57.1
       eslint-config-standard: 17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
       typescript: 5.8.2
@@ -32612,7 +32583,7 @@ snapshots:
   eslint-config-standard@17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
 
@@ -32635,7 +32606,7 @@ snapshots:
       stable-hash: 0.0.4
       tinyglobby: 0.2.12
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.8.3)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -40822,26 +40793,6 @@ snapshots:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 5.8.2
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.11.5(@swc/helpers@0.5.15)
-
-  ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@22.13.5)(typescript@4.9.5):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 22.13.5
-      acorn: 8.14.0
-      acorn-walk: 8.3.4
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optionalDependencies:
