@@ -6,6 +6,7 @@ import {
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs/theme/common';
 import { BreadcrumbTheme } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs/types';
 import { ctw } from '@ballerine/ui';
+import { Pencil } from 'lucide-react';
 
 export const baseBreadcrumbTheme: BreadcrumbTheme = {
   idle: {
@@ -43,6 +44,24 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
       },
       activeStyles: {
         borderColor: 'var(--stepper-breadcrumbs-warning-outer-active-border-color)',
+      },
+    },
+    wrapper: {
+      className: wrapperCommonClassName,
+    },
+  },
+  edit: {
+    inner: {
+      className: ctw('w-full', 'h-full bg-[#4A90E2]'),
+      icon: <Pencil size={8} />,
+    },
+    outer: {
+      className: outerCommonClassName,
+      styles: {
+        borderColor: 'var(--stepper-breadcrumbs-edit-outer-border-color)',
+      },
+      activeStyles: {
+        borderColor: 'var(--stepper-breadcrumbs-edit-outer-active-border-color)',
       },
     },
     wrapper: {

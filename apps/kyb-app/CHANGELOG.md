@@ -4,15 +4,20 @@
 
 ### Patch Changes
 
+- Bump
+- Updated dependencies
+  - @ballerine/ui@0.7.133
+  - @ballerine/workflow-browser-sdk@0.6.112
 - @ballerine/workflow-browser-sdk@0.6.111
 
 ## 0.3.162
 
 ### Patch Changes
 
-- Bump
-- Added defaultValue to field definitions
 - Updated dependencies
+  - @ballerine/common@0.9.89
+  - @ballerine/workflow-browser-sdk@0.6.111
+  - Added defaultValue to field definitions
   - @ballerine/ui@0.7.132
 
 ## 0.3.161
