@@ -18,7 +18,7 @@ export const HomeSearchSchema = z.object({
   casesTo: z.string().date().optional(),
   allowAllDates: z
     .string()
-    .transform(value => (value === 'true' ? true : false))
+    .transform(value => value === 'true')
     .optional(),
 });
 

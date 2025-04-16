@@ -127,11 +127,11 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
   to: z.string().date().optional(),
   allowAllDates: z
     .string()
-    .transform(value => (value === 'true' ? true : false))
+    .transform(value => value === 'true')
     .optional(),
   isCreating: z
     .string()
-    .transform(value => (value === 'true' ? true : false))
+    .transform(value => value === 'true')
     .optional(),
 });
 
