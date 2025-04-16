@@ -14,8 +14,8 @@ export const StaticMetricsSection = ({
   statusConfig,
   ongoingRiskConfig,
   approvedRiskConfig,
-  getStatusColor,
-  getRiskColor,
+  getStatusDefinition,
+  getRiskDefinition,
 }: Pick<
   ReturnType<typeof useHomeLogic>,
   | 'isOngoingMonitoringEnabled'
@@ -27,8 +27,8 @@ export const StaticMetricsSection = ({
   | 'statusConfig'
   | 'ongoingRiskConfig'
   | 'approvedRiskConfig'
-  | 'getStatusColor'
-  | 'getRiskColor'
+  | 'getStatusDefinition'
+  | 'getRiskDefinition'
 >) => {
   return (
     <div className="grid grid-cols-4 gap-6 2xl:grid-cols-6">
@@ -46,7 +46,7 @@ export const StaticMetricsSection = ({
           <PieChartCard
             title="Active (ongoing) Cases By Status"
             data={casesByStatus}
-            getColor={getStatusColor}
+            getDefinition={getStatusDefinition}
             nameKey="status"
             config={statusConfig}
           />
@@ -54,7 +54,7 @@ export const StaticMetricsSection = ({
           <PieChartCard
             title="Active (ongoing) Cases By Risk Level"
             data={ongoingCasesByRisk}
-            getColor={getRiskColor}
+            getDefinition={getRiskDefinition}
             nameKey="riskLevel"
             config={ongoingRiskConfig}
           />
@@ -62,7 +62,7 @@ export const StaticMetricsSection = ({
           <PieChartCard
             title="Approved (done) Cases By Risk Level"
             data={approvedCasesByRisk}
-            getColor={getRiskColor}
+            getDefinition={getRiskDefinition}
             nameKey="riskLevel"
             config={approvedRiskConfig}
           />

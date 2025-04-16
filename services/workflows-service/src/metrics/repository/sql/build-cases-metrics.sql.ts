@@ -29,4 +29,5 @@ WHERE "projectId" IN (${projectIds?.join(',')})
     context->'pluginsOutput'->'riskEvaluation'->>'riskScore' IS NOT NULL
     OR context->'pluginsOutput'->'risk_evaluation'->>'riskScore' IS NOT NULL
   )
+  AND parent_runtime_data_id IS NULL
 GROUP BY risk_level`;
