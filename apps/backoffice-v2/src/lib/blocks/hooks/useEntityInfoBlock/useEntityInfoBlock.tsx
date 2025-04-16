@@ -1,5 +1,8 @@
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
@@ -12,6 +15,9 @@ export const useEntityInfoBlock = ({
   entity: TWorkflowById['context']['entity'];
   workflow: TWorkflowById;
 }) => {
+  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user ?? null, workflow);
   const predefinedOrder = useMemo(
     () =>
       workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
@@ -37,18 +43,36 @@ export const useEntityInfoBlock = ({
           .addBlock()
           .addCell({
             type: 'container',
+            props: {
+              className: 'flex justify-between space-x-4 py-4',
+            },
             value: createBlocksTyped()
               .addBlock()
               .addCell({
-                type: 'heading',
-                value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'heading',
+                    value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
               })
               .addCell({
-                type: 'subheading',
-                value: 'User-Provided Data',
+                type: 'callToAction',
+                value: {
+                  text: 'Edit',
+                  onClick: onEditCollectionFlow({ steps: ['company_details'] }),
+                  props: {
+                    disabled: [!caseState.actionButtonsEnabled].some(Boolean),
+                  },
+                },
               })
-              .build()
-              .flat(1),
+              .buildFlat(),
           })
           .addCell({
             id: 'entity-details',
