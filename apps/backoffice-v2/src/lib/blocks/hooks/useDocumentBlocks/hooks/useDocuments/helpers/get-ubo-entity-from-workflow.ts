@@ -16,7 +16,8 @@ export const getUboEntityFromWorkflow = (
 
   return {
     id: foundUbo.context?.entity?.ballerineEntityId,
-    firstName: foundUbo.context?.entity?.data?.firstName,
-    lastName: foundUbo.context?.entity?.data?.lastName,
+    name: [foundUbo.context?.entity?.data?.firstName, foundUbo.context?.entity?.data?.lastName]
+      .filter(Boolean)
+      .join(' '),
   };
 };

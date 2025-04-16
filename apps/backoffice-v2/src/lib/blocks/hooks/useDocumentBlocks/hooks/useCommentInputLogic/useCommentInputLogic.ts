@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 export const useCommentInputLogic = () => {
   const [comment, setComment] = useState<string>();
 
-  const onCommentChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const onCommentChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
   }, []);
 

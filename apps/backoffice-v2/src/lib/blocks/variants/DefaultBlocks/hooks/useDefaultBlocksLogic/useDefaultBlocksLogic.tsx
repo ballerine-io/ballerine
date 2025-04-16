@@ -13,7 +13,6 @@ import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
-import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
 import { directorAdapter } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/helpers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useAISummaryBlock } from '@/lib/blocks/hooks/useAISummaryBlock/useAISummaryBlock';
@@ -31,8 +30,6 @@ import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEnt
 import { useCaseOverviewBlock } from '@/lib/blocks/hooks/useCaseOverviewBlock/useCaseOverviewBlock';
 import { useCommercialCreditCheckBlock } from '@/lib/blocks/hooks/useCommercialCreditCheckBlock/useCommercialCreditCheckBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
-import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocuments } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useDocuments';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
@@ -48,7 +45,7 @@ import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetai
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
 import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
-import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
+import { useIndividualsUserProvidedBlock } from '@/lib/blocks/hooks/useIndividualsUserProvidedBlock/useIndividualsUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
@@ -62,6 +59,7 @@ import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
+import { TAllBlocks } from './constants';
 import { titleCase } from 'string-ts';
 import { valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
@@ -166,13 +164,6 @@ export const useDefaultBlocksLogic = () => {
     }),
   );
 
-  const directorsRegistryProvided = workflow?.context?.pluginsOutput?.directors?.data?.map(
-    ({ name, position }) => ({
-      name,
-      position,
-    }),
-  );
-
   const { documents } = useDocuments(workflow as TWorkflowById);
   const registryInfoBlock = useRegistryInfoBlock({
     registryInfo,
@@ -197,7 +188,7 @@ export const useDefaultBlocksLogic = () => {
     isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
   });
 
-  const parentDocumentBlocks = useDocumentBlocks({
+  const { businessDocumentBlocks, uboDocumentBlocks, directorDocumentBlocks } = useDocumentBlocks({
     workflow,
     parentMachine: workflow?.context?.parentMachine,
     noAction,
@@ -327,34 +318,67 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
-  const childWorkflowToUboAdapter = (childWorkflow: TWorkflowById) => {
+  const entityDataToIndividualAdapter = ({
+    additionalInfo,
+    ...entityData
+  }: TWorkflowById['context']['entity']['data']) => {
+    const {
+      firstName,
+      lastName,
+      role,
+      percentageOfOwnership,
+      ownershipPercentage,
+      ...collapsibleData
+    } = entityData;
+    const {
+      percentageOfOwnership: percentageOfOwnershipAdditionalInfo,
+      ownershipPercentage: ownershipPercentageAdditionalInfo,
+      ...collapsibleDataAdditionalInfo
+    } = additionalInfo ?? {};
+
     return {
-      name: [
-        childWorkflow?.context?.entity?.data?.firstName,
-        childWorkflow?.context?.entity?.data?.lastName,
-      ]
-        .filter(Boolean)
-        .join(' '),
-      nationality: childWorkflow?.context?.entity?.data?.additionalInfo?.nationality,
-      email: childWorkflow?.context?.entity?.data?.email,
-      identityNumber: childWorkflow?.context?.entity?.data?.nationalId,
+      name: [firstName, lastName].filter(Boolean).join(' '),
+      role,
       percentageOfOwnership:
-        childWorkflow?.context?.entity?.data?.percentageOfOwnership ??
-        childWorkflow?.context?.entity?.data?.ownershipPercentage ??
-        childWorkflow?.context?.entity?.data?.additionalInfo?.percentageOfOwnership ??
-        childWorkflow?.context?.entity?.data?.additionalInfo?.ownershipPercentage,
-      address: childWorkflow?.context?.entity?.data?.additionalInfo?.fullAddress,
-    } satisfies Parameters<typeof useUbosUserProvidedBlock>[0][number];
+        percentageOfOwnership ??
+        percentageOfOwnershipAdditionalInfo ??
+        ownershipPercentage ??
+        ownershipPercentageAdditionalInfo,
+      collapsibleData: {
+        ...collapsibleData,
+        additionalInfo: collapsibleDataAdditionalInfo,
+      },
+    } satisfies Parameters<typeof useIndividualsUserProvidedBlock>[0][number];
   };
 
-  const ubosUserProvided = useMemo(() => {
-    return (
-      workflow?.childWorkflows
-        ?.filter(childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo')
-        ?.map(childWorkflowToUboAdapter) ?? []
-    );
-  }, [workflow?.childWorkflows]);
-  const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
+  const childWorkflows = useMemo(
+    () =>
+      workflow?.childWorkflows?.filter(
+        childWorkflow => childWorkflow?.context?.entity?.variant === 'ubo',
+      ),
+    [workflow?.childWorkflows],
+  );
+  const deDupedDirectors = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.directors?.filter(
+        director =>
+          !childWorkflows?.some(
+            childWorkflow =>
+              childWorkflow?.context?.entity?.data?.ballerineEntityId ===
+              director.ballerineEntityId,
+          ),
+      ),
+    [workflow?.context?.entity?.data?.additionalInfo?.directors, childWorkflows],
+  );
+  const individualsUserProvided = useMemo(() => {
+    return [
+      ...(childWorkflows?.map(childWorkflow =>
+        entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
+      ) ?? []),
+      ...(deDupedDirectors?.map(entityDataToIndividualAdapter) ?? []),
+    ];
+  }, [workflow?.childWorkflows, workflow?.context?.entity?.data?.additionalInfo?.directors]);
+  const individualsUserProvidedBlock = useIndividualsUserProvidedBlock(individualsUserProvided);
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
     nodes: workflow?.context?.pluginsOutput?.ubo?.data?.nodes ?? [],
@@ -371,8 +395,6 @@ export const useDefaultBlocksLogic = () => {
       enabled: workflow?.workflowDefinition?.config?.ubos?.create?.enabled ?? false,
     },
   });
-
-  const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
   const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
   const {
@@ -464,22 +486,6 @@ export const useDefaultBlocksLogic = () => {
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
       ({ enum: enum_ }) => !!enum_,
     )?.enum ?? [];
-  const directorsDocumentsBlocks = createDirectorsBlocks({
-    workflowId: workflow?.id ?? '',
-    onReuploadNeeded: onReuploadNeededDirectors,
-    onRemoveDecision: onMutateRemoveTaskDecisionByIdDirectors,
-    onApprove: onMutateApproveTaskByIdDirectors,
-    directors,
-    tags: workflow?.tags ?? [],
-    revisionReasons,
-    isEditable: caseState.writeEnabled,
-    isApproveDisabled: isLoadingApproveTaskById || isLoadingApproveDocumentById,
-    // Remove once callToActionLegacy is removed
-    workflow,
-  });
-
-  const directorsRegistryProvidedBlock =
-    useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
 
   const websiteMonitoringBlock = useWebsiteMonitoringBlock({
     pluginsOutput: workflow?.context?.pluginsOutput,
@@ -621,20 +627,17 @@ export const useDefaultBlocksLogic = () => {
 
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) {
-      return [];
+      return {};
     }
 
-    return [
+    return {
       websiteMonitoringBlock,
       entityInfoBlock,
       registryInfoBlock,
       kybRegistryInfoBlock,
       companySanctionsBlock,
-      ubosUserProvidedBlock,
+      individualsUserProvidedBlock,
       ubosRegistryProvidedBlock,
-      directorsUserProvidedBlock,
-      directorsRegistryProvidedBlock,
-      directorsDocumentsBlocks,
       storeInfoBlock,
       websiteBasicRequirementBlock,
       bankingDetailsBlock,
@@ -643,7 +646,9 @@ export const useDefaultBlocksLogic = () => {
       mainRepresentativeBlock,
       mapBlock,
       headquartersAddressWithContainerBlock,
-      parentDocumentBlocks,
+      businessDocumentBlocks,
+      uboDocumentBlocks,
+      directorDocumentBlocks,
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
       websiteMonitoringBlocks,
@@ -659,26 +664,25 @@ export const useDefaultBlocksLogic = () => {
       aiSummaryBlock,
       entityAddressWithContainerBlock,
       entityAdditionalInfoBlock,
-    ];
+    } satisfies TAllBlocks;
   }, [
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
     bankingDetailsBlock,
     companySanctionsBlock,
-    directorsDocumentsBlocks,
-    directorsRegistryProvidedBlock,
-    directorsUserProvidedBlock,
     entityInfoBlock,
     kybRegistryInfoBlock,
     mainContactBlock,
     mainRepresentativeBlock,
     mapBlock,
     headquartersAddressWithContainerBlock,
-    parentDocumentBlocks,
+    businessDocumentBlocks,
+    uboDocumentBlocks,
+    directorDocumentBlocks,
     processingDetailsBlock,
     registryInfoBlock,
     storeInfoBlock,
-    ubosUserProvidedBlock,
+    individualsUserProvidedBlock,
     ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,

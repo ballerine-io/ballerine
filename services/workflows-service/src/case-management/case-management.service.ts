@@ -10,7 +10,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { randomUUID } from 'crypto';
 import { BusinessPosition } from '@prisma/client';
-import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { UboToEntityAdapter } from './types';
 
 @Injectable()
@@ -129,18 +129,39 @@ export class CaseManagementService {
         };
       }) satisfies UboToEntityAdapter;
 
-      const [{ ballerineEntityId }] = await this.workflowService.createOrUpdateWorkflowRuntime(
-        {
-          workflowDefinitionId: 'kyc_email_session_example',
-          parentWorkflowId: workflowId,
-          currentProjectId: projectId,
-          projectIds: [projectId],
-          context: {
-            entity: uboToEntityAdapter(ubo),
-            documents: [],
+      const [{ workflowRuntimeData: childWorkflowRuntimeData, ballerineEntityId }] =
+        await this.workflowService.createOrUpdateWorkflowRuntime(
+          {
+            workflowDefinitionId: 'kyc_email_session_example',
+            parentWorkflowId: workflowId,
+            currentProjectId: projectId,
+            projectIds: [projectId],
+            context: {
+              entity: uboToEntityAdapter(ubo),
+              documents: [],
+            },
+            config: {},
           },
-          config: {},
+          transaction,
+        );
+
+      await this.workflowService.event(
+        {
+          id: childWorkflowRuntimeData.id,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              entity: {
+                data: {
+                  ballerineEntityId,
+                },
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
+          },
         },
+        [projectId],
+        projectId,
         transaction,
       );
 

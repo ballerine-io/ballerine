@@ -4,12 +4,10 @@ import { t } from 'i18next';
 import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
 export const useRejectTaskByIdMutation = (workflowId: string) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+  const workflowById = workflowsQueryKeys.byId({ workflowId });
 
   return useMutation({
     mutationFn: ({ documentId, reason }: { documentId: string; reason?: string }) =>
@@ -20,6 +18,7 @@ export const useRejectTaskByIdMutation = (workflowId: string) => {
           decision: Action.REJECT,
           reason,
         },
+        contextUpdateMethod: 'base',
       }),
     onMutate: async ({ documentId, reason }) => {
       await queryClient.cancelQueries({
