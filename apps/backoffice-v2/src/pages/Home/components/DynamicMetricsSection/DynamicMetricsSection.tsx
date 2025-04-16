@@ -1,11 +1,10 @@
 import { Separator } from '@radix-ui/react-separator';
+import qs from 'qs';
 
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
-import { REPORT_TYPE_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { StatsCard } from '@/pages/Home/components/StatsCard/StatsCard';
-import qs from 'qs';
-import { useMemo } from 'react';
+import { REPORT_TYPE_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 
 export const DynamicMetricsSection = ({
   locale,

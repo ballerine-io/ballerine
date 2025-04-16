@@ -3,6 +3,7 @@ import { useEffect, useMemo, type ComponentProps } from 'react';
 import { titleCase } from 'string-ts';
 import { z } from 'zod';
 
+import { StateTag } from '@ballerine/common';
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
@@ -22,19 +23,29 @@ export const HomeSearchSchema = z.object({
     .optional(),
 });
 
-const RISK_LEVEL_COLORS = {
-  low: '#4CAF50',
-  medium: '#FFB74D',
-  high: '#FF5722',
-  critical: '#F44336',
+type PieChartDefinition = Record<string, { color: string; text: string }>;
+
+const RISK_LEVEL_DEFINITION: PieChartDefinition = {
+  low: { color: '#4CAF50', text: 'Low Risk' },
+  medium: { color: '#FFB74D', text: 'Medium Risk' },
+  high: { color: '#FF5722', text: 'High Risk' },
+  critical: { color: '#F44336', text: 'Critical Risk' },
 };
 
-const STATUS_COLORS = {
-  active: '#007aff',
-  completed: '#4CAF50',
-  failed: '#F44336',
-  // pending: '#FFB74D',
-};
+const STATUS_DEFINITION: PieChartDefinition = {
+  [StateTag.APPROVED]: { color: '#4CAF50', text: 'Approved' },
+  [StateTag.REVISION]: { color: '#FFB74D', text: 'Revisions' },
+  [StateTag.EDIT]: { color: '#FFB74D', text: 'Edit' },
+  [StateTag.REJECTED]: { color: '#F44336', text: 'Rejected' },
+  [StateTag.RESOLVED]: { color: '#4CAF50', text: 'Resolved' },
+  [StateTag.MANUAL_REVIEW]: { color: '#007AFF', text: 'Manual Review' },
+  [StateTag.COLLECTION_FLOW]: { color: '#961EEE', text: 'Collection in Progress' },
+  [StateTag.PENDING_PROCESS]: { color: '#FFB74D', text: 'Pending ID Verification' },
+  [StateTag.FAILURE]: { color: '#F44336', text: 'Failed' },
+  [StateTag.DATA_ENRICHMENT]: { color: '#961EEE', text: 'Awaiting 3rd Party Data' },
+  [StateTag.DISMISSED]: { color: '#4CAF50', text: 'Dismissed' },
+  [StateTag.FLAGGED]: { color: '#F44336', text: 'Flagged' },
+} as const;
 
 export const useHomeLogic = () => {
   const locale = useLocale();
@@ -92,12 +103,22 @@ export const useHomeLogic = () => {
 
   const { data: currentStats, isLoading: isLoadingCurrentStats } = useCaseCurrentStats();
 
-  const getStatusColor = (status: string) => {
-    return STATUS_COLORS[status.toLowerCase() as keyof typeof STATUS_COLORS] ?? '#65afff';
+  const getStatusDefinition = (status: string) => {
+    return (
+      STATUS_DEFINITION[status.toLowerCase() as keyof typeof STATUS_DEFINITION] ?? {
+        color: '#65afff',
+        text: 'Unknown',
+      }
+    );
   };
 
-  const getRiskColor = (risk: string) => {
-    return RISK_LEVEL_COLORS[risk.toLowerCase() as keyof typeof RISK_LEVEL_COLORS] ?? '#65afff';
+  const getRiskDefinition = (risk: string) => {
+    return (
+      RISK_LEVEL_DEFINITION[risk.toLowerCase() as keyof typeof RISK_LEVEL_DEFINITION] ?? {
+        color: '#65afff',
+        text: 'Unknown',
+      }
+    );
   };
 
   type ConfigItem = { label: string; color: string };
@@ -109,7 +130,7 @@ export const useHomeLogic = () => {
         ...acc,
         [curr.status]: {
           label: titleCase(curr.status),
-          color: getStatusColor(curr.status),
+          color: getStatusDefinition(curr.status),
         },
       }),
       {},
@@ -123,7 +144,7 @@ export const useHomeLogic = () => {
         ...acc,
         [curr.riskLevel]: {
           label: titleCase(curr.riskLevel),
-          color: getRiskColor(curr.riskLevel),
+          color: getRiskDefinition(curr.riskLevel),
         },
       }),
       {},
@@ -137,35 +158,11 @@ export const useHomeLogic = () => {
         ...acc,
         [curr.riskLevel]: {
           label: titleCase(curr.riskLevel),
-          color: getRiskColor(curr.riskLevel),
+          color: getRiskDefinition(curr.riskLevel),
         },
       }),
       {},
     );
-  }, [currentStats]);
-
-  const casesByStatus = useMemo(() => {
-    if (!currentStats) return [];
-    return currentStats.casesByStatus.map(item => ({
-      ...item,
-      href: `/${locale}/case-management?filter[status][0]=${item.status}`,
-    }));
-  }, [currentStats]);
-
-  const ongoingCasesByRisk = useMemo(() => {
-    if (!currentStats) return [];
-    return currentStats.ongoingCasesByRisk.map(item => ({
-      ...item,
-      href: `/${locale}/case-management?filter[status][0]=active&filter[riskLevel][0]=${item.riskLevel}`,
-    }));
-  }, [currentStats]);
-
-  const approvedCasesByRisk = useMemo(() => {
-    if (!currentStats) return [];
-    return currentStats.approvedCasesByRisk.map(item => ({
-      ...item,
-      href: `/${locale}/case-management?filter[status][0]=completed&filter[riskLevel][0]=${item.riskLevel}`,
-    }));
   }, [currentStats]);
 
   return {
@@ -190,9 +187,9 @@ export const useHomeLogic = () => {
     casesTo,
     setCasesDate: onCasesDatesChange,
 
-    casesByStatus,
-    ongoingCasesByRisk,
-    approvedCasesByRisk,
+    casesByStatus: currentStats?.casesByStatus ?? [],
+    ongoingCasesByRisk: currentStats?.ongoingCasesByRisk ?? [],
+    approvedCasesByRisk: currentStats?.approvedCasesByRisk ?? [],
 
     totalActiveMerchants: metrics?.totalActiveMerchants ?? 0,
     addedMerchantsCount: metrics?.addedMerchantsCount ?? 0,
@@ -204,7 +201,7 @@ export const useHomeLogic = () => {
     statusConfig,
     ongoingRiskConfig,
     approvedRiskConfig,
-    getStatusColor,
-    getRiskColor,
+    getStatusDefinition,
+    getRiskDefinition,
   };
 };
