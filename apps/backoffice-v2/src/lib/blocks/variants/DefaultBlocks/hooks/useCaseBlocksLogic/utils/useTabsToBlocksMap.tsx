@@ -180,10 +180,12 @@ export const useTabsToBlocksMap = ({
         )?.enum as string[],
       isReuploadNeededDisabled: isLoadingRevisionCase,
       isApproveDisabled: isLoadingApproveCase,
-      isInitiateKycDisabled: !initiateKycEvent,
-      isInitiateSanctionsScreeningDisabled:
-        !initiateSanctionsScreeningEvent ||
+      isInitiateKycDisabled: !initiateKycEvent || !caseState.actionButtonsEnabled,
+      isInitiateSanctionsScreeningDisabled: [
+        !initiateSanctionsScreeningEvent,
         !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+        !caseState.actionButtonsEnabled,
+      ].some(Boolean),
     } satisfies Parameters<typeof createKycBlocks>[0][number];
   };
   const directorToIndividualAdapter = ({
