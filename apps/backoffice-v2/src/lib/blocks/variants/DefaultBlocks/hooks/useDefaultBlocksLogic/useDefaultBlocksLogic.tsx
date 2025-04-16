@@ -571,11 +571,26 @@ export const useDefaultBlocksLogic = () => {
     heading: 'Custom Data',
   });
 
-  const amlData = useMemo(() => [workflow?.context?.aml], [workflow?.context?.aml]);
+  const { data: mainRepresentativeEndUser } = useEndUserByIdQuery({
+    id: workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.ballerineEntityId,
+  });
+
+  const amlVendor = useMemo(
+    () => mainRepresentativeEndUser?.amlHits?.find(({ vendor }) => !!vendor)?.vendor ?? '',
+    [mainRepresentativeEndUser?.amlHits],
+  );
+  const amlData = useMemo(
+    () => [
+      {
+        hits: mainRepresentativeEndUser?.amlHits,
+      },
+    ],
+    [mainRepresentativeEndUser?.amlHits],
+  );
 
   const amlBlock = useAmlBlock({
     data: amlData,
-    vendor: workflow?.context?.aml?.vendor ?? '',
+    vendor: amlVendor,
   });
 
   const amlWithContainerBlock = useMemo(() => {
