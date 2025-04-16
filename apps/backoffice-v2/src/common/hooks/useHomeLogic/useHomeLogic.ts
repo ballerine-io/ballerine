@@ -23,14 +23,16 @@ export const HomeSearchSchema = z.object({
     .optional(),
 });
 
-const RISK_LEVEL_DEFINITION = {
+type PieChartDefinition = Record<string, { color: string; text: string }>;
+
+const RISK_LEVEL_DEFINITION: PieChartDefinition = {
   low: { color: '#4CAF50', text: 'Low Risk' },
   medium: { color: '#FFB74D', text: 'Medium Risk' },
   high: { color: '#FF5722', text: 'High Risk' },
   critical: { color: '#F44336', text: 'Critical Risk' },
 };
 
-const STATUS_DEFINITION = {
+const STATUS_DEFINITION: PieChartDefinition = {
   [StateTag.APPROVED]: { color: '#4CAF50', text: 'Approved' },
   [StateTag.REVISION]: { color: '#FFB74D', text: 'Revisions' },
   [StateTag.EDIT]: { color: '#FFB74D', text: 'Edit' },
@@ -163,33 +165,6 @@ export const useHomeLogic = () => {
     );
   }, [currentStats]);
 
-  const casesByStatus = useMemo(() => {
-    if (!currentStats) return [];
-    return currentStats.casesByStatus;
-    // return currentStats.casesByStatus.map(item => ({
-    //   ...item,
-    //   href: `/${locale}/case-management?filter[status][0]=${item.status}`,
-    // }));
-  }, [currentStats]);
-
-  const ongoingCasesByRisk = useMemo(() => {
-    if (!currentStats) return [];
-    return currentStats.ongoingCasesByRisk;
-    // return currentStats.ongoingCasesByRisk.map(item => ({
-    //   ...item,
-    //   href: `/${locale}/case-management?filter[status][0]=active&filter[riskLevel][0]=${item.riskLevel}`,
-    // }));
-  }, [currentStats]);
-
-  const approvedCasesByRisk = useMemo(() => {
-    if (!currentStats) return [];
-    return currentStats.approvedCasesByRisk;
-    // return currentStats.approvedCasesByRisk.map(item => ({
-    //   ...item,
-    //   href: `/${locale}/case-management?filter[status][0]=completed&filter[riskLevel][0]=${item.riskLevel}`,
-    // }));
-  }, [currentStats]);
-
   return {
     firstName,
     fullName,
@@ -212,9 +187,9 @@ export const useHomeLogic = () => {
     casesTo,
     setCasesDate: onCasesDatesChange,
 
-    casesByStatus,
-    ongoingCasesByRisk,
-    approvedCasesByRisk,
+    casesByStatus: currentStats?.casesByStatus ?? [],
+    ongoingCasesByRisk: currentStats?.ongoingCasesByRisk ?? [],
+    approvedCasesByRisk: currentStats?.approvedCasesByRisk ?? [],
 
     totalActiveMerchants: metrics?.totalActiveMerchants ?? 0,
     addedMerchantsCount: metrics?.addedMerchantsCount ?? 0,
