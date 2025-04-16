@@ -23,7 +23,11 @@ export const buildDailyLiveCasesQuery = (
     ? Prisma.sql`${fromDate}::timestamp`
     : Prisma.sql`(SELECT MIN("createdAt") FROM "WorkflowRuntimeData" WHERE ${projectIdsSubqueryFilter} AND parent_runtime_data_id IS NULL)`; // Default: earliest relevant record
 
-  const toDateSql = toDate ? Prisma.sql`${toDate}::timestamp` : Prisma.sql`CURRENT_DATE`; // Default: today
+  const toDateSql = toDate
+    ? Prisma.sql`${toDate}::timestamp`
+    : fromDate
+    ? Prisma.sql`${fromDate}::timestamp`
+    : Prisma.sql`CURRENT_DATE`; // Default: today
 
   return Prisma.sql`
     WITH RECURSIVE dates AS (
