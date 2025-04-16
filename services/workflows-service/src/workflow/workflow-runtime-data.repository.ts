@@ -95,13 +95,13 @@ export class WorkflowRuntimeDataRepository {
   async findByIdWithRelations(id: string, projectIds: TProjectIds) {
     assertIsValidProjectIds(projectIds);
 
-    const [parentWorkflow, ...childWorkflows] = (await this.prismaService.$queryRaw`
+    const workflows = (await this.prismaService.$queryRaw`
         WITH workflows AS (
           SELECT
             CASE
               WHEN wrd.parent_runtime_data_id IS NULL THEN 'parent'
               ELSE 'child'
-            END AS workflowType,
+            END AS "workflowType",
             wrd.id,
             wrd.status,
             wrd."assigneeId",
@@ -279,7 +279,7 @@ export class WorkflowRuntimeDataRepository {
         SELECT
           workflows.*,
           CASE
-            WHEN workflows.workflowType = 'parent' THEN indie.endUsers
+            WHEN workflows."workflowType" = 'parent' THEN indie.endUsers
             ELSE NULL
           END AS "endUsers"
         FROM
@@ -291,6 +291,9 @@ export class WorkflowRuntimeDataRepository {
               individuals
           ) AS indie ON TRUE
   `) as TWorkflowWithRelations[];
+
+    const parentWorkflow = workflows.find(workflow => workflow.workflowType === 'parent');
+    const childWorkflows = workflows.filter(workflow => workflow.workflowType === 'child');
 
     if (!parentWorkflow) {
       throw new NotFoundException(`A workflow with an id of "${id}" was not found`);
