@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Loader2 } from 'lucide-react';
 import type { FunctionComponent } from 'react';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
@@ -12,7 +13,10 @@ export const CaseGraphs: FunctionComponent<{
   from: ReturnType<typeof useHomeLogic>['mmFrom'];
   to: ReturnType<typeof useHomeLogic>['mmTo'];
 }> = ({ from, to }) => {
-  const { data: liveCasesData, isLoading } = useCaseDailyStats({ from, to });
+  const { data: liveCasesData, isLoading } = useCaseDailyStats({
+    from,
+    to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
+  });
 
   return (
     <div className="grid grid-cols-6">

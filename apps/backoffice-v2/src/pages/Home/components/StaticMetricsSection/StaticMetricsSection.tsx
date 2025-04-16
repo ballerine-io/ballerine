@@ -44,6 +44,7 @@ export const StaticMetricsSection = ({
       {isCasesOnboardingEnabled && (
         <>
           <PieChartCard
+            title="Active (ongoing) Cases By Status"
             data={casesByStatus}
             getColor={getStatusColor}
             nameKey="status"
@@ -51,6 +52,7 @@ export const StaticMetricsSection = ({
           />
 
           <PieChartCard
+            title="Active (ongoing) Cases By Risk Level"
             data={ongoingCasesByRisk}
             getColor={getRiskColor}
             nameKey="riskLevel"
@@ -58,6 +60,7 @@ export const StaticMetricsSection = ({
           />
 
           <PieChartCard
+            title="Approved (done) Cases By Risk Level"
             data={approvedCasesByRisk}
             getColor={getRiskColor}
             nameKey="riskLevel"

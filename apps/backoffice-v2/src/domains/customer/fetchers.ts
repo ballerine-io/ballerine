@@ -37,7 +37,7 @@ const CustomerSchema = z.object({
     .object({
       isMerchantMonitoringEnabled: z.boolean().default(false),
       isOngoingMonitoringEnabled: z.boolean().default(false),
-      isCasesOnboardingEnabled: z.boolean().default(true),
+      isCasesOnboardingEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemoAccount: z.boolean().default(false),
       demoAccessDetails: z

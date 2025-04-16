@@ -3,8 +3,10 @@ import { Cell, Pie, PieChart } from 'recharts';
 
 import { ChartContainer } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
+import { useNavigate } from 'react-router-dom';
+import { ctw } from '@/common/utils/ctw/ctw';
 
-type PieChartData = { status?: string; riskLevel?: string; count: number };
+type PieChartData = { status?: string; riskLevel?: string; count: number; href?: string };
 
 export type CasePieChartProps = {
   data: PieChartData[];
@@ -20,6 +22,8 @@ export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
   config,
 }) => {
   const totalCount = useMemo(() => data.reduce((acc, curr) => acc + curr.count, 0), [data]);
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -50,7 +54,12 @@ export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
               <Cell
                 key={`cell-${index}`}
                 fill={getColor(entry[nameKey] as string)}
-                className="outline-none"
+                className={ctw('outline-none', entry.href && 'cursor-pointer')}
+                onClick={() => {
+                  if (entry.href) {
+                    navigate(entry.href);
+                  }
+                }}
               />
             ))}
           </Pie>

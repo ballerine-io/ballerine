@@ -1,4 +1,5 @@
 import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
+import qs from 'qs';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart } from 'recharts';
@@ -81,11 +82,16 @@ export const PortfolioRiskStatistics: FunctionComponent<
                         riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
                         'cursor-pointer outline-none',
                       )}
-                      onClick={() =>
+                      onClick={() => {
                         navigate(
-                          `/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}&from=${from}&to=${to}`,
-                        )
-                      }
+                          `/${locale}/merchant-monitoring?${qs.stringify({
+                            allowAllDates: !from && !to,
+                            'riskLevels[0]': riskLevel,
+                            from: from ?? undefined,
+                            to: to ?? undefined,
+                          })}`,
+                        );
+                      }}
                     />
                   ))}
                 </Pie>
@@ -133,7 +139,11 @@ export const PortfolioRiskStatistics: FunctionComponent<
                   <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
                     <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
                       <Link
-                        to={`/${locale}/merchant-monitoring?findings[0]=${id}&from=${from}&to=${to}`}
+                        to={`/${locale}/merchant-monitoring?${qs.stringify({
+                          'findings[0]': id,
+                          from: from ?? undefined,
+                          to: to ?? undefined,
+                        })}`}
                         className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
                         style={{ width: `${widths[index]}%` }}
                       >
@@ -163,7 +173,11 @@ export const PortfolioRiskStatistics: FunctionComponent<
                   </span>
                 </div>
                 <Link
-                  to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
+                  to={`/${locale}/merchant-monitoring?${qs.stringify({
+                    isAlert: 'Alerted',
+                    from: from ?? undefined,
+                    to: to ?? undefined,
+                  })}`}
                   className={ctw(
                     buttonVariants({
                       variant: 'link',
