@@ -69,6 +69,9 @@ export const useEntityInfoBlock = ({
                   onClick: onEditCollectionFlow({ steps: ['company_details'] }),
                   props: {
                     disabled: [!caseState.actionButtonsEnabled].some(Boolean),
+                    variant: 'outline',
+                    className:
+                      'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 min-w-[3.9169rem]',
                   },
                 },
               })

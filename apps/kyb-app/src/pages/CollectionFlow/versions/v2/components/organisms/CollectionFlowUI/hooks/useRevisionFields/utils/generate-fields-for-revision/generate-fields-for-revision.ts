@@ -9,6 +9,7 @@ import {
 import { checkIfStepInRevision } from '../../../../helpers/check-if-step-in-revision';
 import { generateGranularRevisionFields } from './helpers/generate-granular-revision-fields';
 import { generateRevisionFieldsForAllElements } from './helpers/generate-revision-fields-for-all-elements';
+import { checkIfStepInEdit } from '../../../../helpers/check-if-step-in-edit';
 
 export const generateFieldsForRevision = (
   pages: Array<UIPage<'v2'>>,
@@ -18,11 +19,13 @@ export const generateFieldsForRevision = (
 
   pages.forEach(page => {
     const isPageInRevision = checkIfStepInRevision(page.stateName, context);
+    const isPageInEdit = checkIfStepInEdit(page.stateName, context);
+    const isPageInEditOrRevision = isPageInRevision || isPageInEdit;
     const fieldDefinitions = getFieldDefinitionsFromSchema(page.elements) as Array<
       IFormElement<TBaseFields, any>
     >;
 
-    if (isPageInRevision) {
+    if (isPageInEditOrRevision) {
       const granularRevisionFields = generateGranularRevisionFields(context, fieldDefinitions);
 
       // If there specific fields to revise marking only them (Documents currently)
