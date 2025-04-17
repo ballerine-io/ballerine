@@ -123,9 +123,10 @@ export const useTabsToBlocksMap = ({
     const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
       childWorkflow?.nextEvents ?? [],
     );
-    const endUser = endUsers?.find(
-      endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
-    );
+    const { amlHits, ...endUser } =
+      endUsers?.find(
+        endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+      ) ?? {};
 
     return {
       status,
@@ -135,9 +136,9 @@ export const useTabsToBlocksMap = ({
         'invokedAt',
       ),
       aml: {
-        hits: endUser?.amlHits,
+        hits: amlHits,
       },
-      entityData: childWorkflow?.context?.entity?.data,
+      entityData: endUser,
       isActionsDisabled:
         !caseState.actionButtonsEnabled || !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       isLoadingReuploadNeeded: isLoadingRevisionCase,
@@ -236,15 +237,14 @@ export const useTabsToBlocksMap = ({
             ),
         )
         ?.map(director => {
-          const directorEndUser = endUsers?.find(
-            endUser => endUser.id === director.ballerineEntityId,
-          );
+          const { amlHits, ...directorEndUser } =
+            endUsers?.find(endUser => endUser.id === director.ballerineEntityId) ?? {};
 
           return directorToIndividualAdapter({
-            ...director,
+            ...directorEndUser,
             kycSession: {},
             aml: {
-              hits: directorEndUser?.amlHits,
+              hits: amlHits,
             },
           });
         }) ?? [],
