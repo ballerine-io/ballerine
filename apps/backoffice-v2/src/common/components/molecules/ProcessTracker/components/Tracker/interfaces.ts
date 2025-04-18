@@ -1,8 +1,8 @@
 import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { TTrackerComponentProps } from './components/Tracker/interfaces';
+import { ITrackerProps } from './Tracker';
 
-export interface IProcessTrackerProps {
+export interface ITrackerContext {
   workflow: TWorkflowById;
   plugins: Array<
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
@@ -14,7 +14,4 @@ export interface IProcessTrackerProps {
   processes: string[];
 }
 
-export interface IProcessTracker {
-  name: string;
-  Component: React.ComponentType<TTrackerComponentProps>;
-}
+export type TTrackerComponentProps = Omit<ITrackerProps, 'children'>;
