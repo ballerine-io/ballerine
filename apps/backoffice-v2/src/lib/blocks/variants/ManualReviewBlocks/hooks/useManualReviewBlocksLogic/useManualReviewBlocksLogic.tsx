@@ -12,10 +12,8 @@ import { toast } from 'sonner';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId: workflowId ?? '',
-    filterId: filterId ?? '',
   });
   const { noAction } = useCaseDecision();
   const { data: session } = useAuthenticatedUserQuery();
@@ -66,7 +64,7 @@ export const useManualReviewBlocksLogic = () => {
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
-  const documentsBlocks = useDocumentBlocks({
+  const { businessDocumentBlocks: documentsBlocks } = useDocumentBlocks({
     workflow,
     parentMachine: workflow?.context?.parentMachine,
     noAction,

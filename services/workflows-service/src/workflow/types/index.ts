@@ -24,10 +24,12 @@ export type CompleteWorkflowData = WorkflowRuntimeData & {
 export type TEntityType = 'endUser' | 'business';
 
 export type TWorkflowWithRelations = WorkflowRuntimeData & {
+  workflowType: 'parent' | 'child';
   workflowDefinition: WorkflowDefinition;
   assignee: User;
   parentRuntimeId?: string;
   childWorkflowsRuntimeData?: TWorkflowWithRelations[];
+  endUsers: EndUser[] | null;
 } & ({ endUser: EndUser } | { business: Business });
 
 export interface ListWorkflowsRuntimeParams {

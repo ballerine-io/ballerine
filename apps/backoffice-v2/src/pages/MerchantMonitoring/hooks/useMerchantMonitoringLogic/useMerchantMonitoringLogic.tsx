@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { SlidersHorizontal } from 'lucide-react';
 import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 
-import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
@@ -103,20 +103,23 @@ export const useMerchantMonitoringLogic = () => {
       findings,
       isAlert,
       isCreating,
+      allowAllDates,
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
 
   useEffect(() => {
-    if (from || to) {
+    if (from || to || !customer || allowAllDates) {
       return;
     }
 
-    setSearchParams({
-      from: dayjs().subtract(90, 'day').format('YYYY-MM-DD'),
-      to: dayjs().format('YYYY-MM-DD'),
-    });
-  }, [from, to, setSearchParams]);
+    if (!customer.config?.demoAccessDetails) {
+      setSearchParams({
+        from: dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+        to: dayjs().format('YYYY-MM-DD'),
+      });
+    }
+  }, []);
 
   const open = isCreating ?? false;
   const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
@@ -137,7 +140,6 @@ export const useMerchantMonitoringLogic = () => {
     sortDir,
     findings,
     riskLevels: riskLevels ?? [],
-    // TODO: fix type
     statuses: statuses
       ?.map(status => REPORT_STATUS_LABEL_TO_VALUE_MAP[status])
       .flatMap(status =>
@@ -218,11 +220,19 @@ export const useMerchantMonitoringLogic = () => {
     totalPages: data?.totalPages ?? 0,
   });
 
+  const dates = useMemo(
+    () => ({
+      from: from ? dayjs(from).toDate() : undefined,
+      to: to ? dayjs(to).toDate() : undefined,
+    }),
+    [from, to],
+  );
+
   const onDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
-    setSearchParams({ from, to });
+    setSearchParams({ from, to, allowAllDates: !from && !to });
   };
 
   const multiselectProps = useMemo(
@@ -278,7 +288,7 @@ export const useMerchantMonitoringLogic = () => {
     findings,
     isAlert,
     IS_ALERT_TO_DISPLAY_TEXT,
-    dates: { from, to },
+    dates,
     onDatesChange,
     onIsAlertChange,
     onClearAllFilters,

@@ -21,15 +21,15 @@ import {
   composePickableCategoryType,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { CommonWorkflowStates, StateTag, valueOrNA } from '@ballerine/common';
+import { CommonWorkflowStates, StateTag, TDocument, valueOrNA } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback } from 'react';
-import { toTitleCase } from 'string-ts';
-import { isBusinessDocument } from './helpers/is-business-document';
+import { titleCase } from 'string-ts';
 import { useDocuments } from './hooks/useDocuments';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
+import { ExtractCellProps } from '@ballerine/blocks';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -69,9 +69,12 @@ export const useDocumentBlocks = ({
   };
 }) => {
   const {
-    documents,
     businessDocuments,
-    documentsSchemas,
+    directorsDocuments,
+    ubosDocuments,
+    businessDocumentsSchemas,
+    directorsDocumentsSchemas,
+    ubosDocumentsSchemas,
     isLoading: isLoadingDocuments,
   } = useDocuments(workflow);
 
@@ -144,19 +147,28 @@ export const useDocumentBlocks = ({
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
-
-  return (
-    documents?.flatMap(document => {
-      const {
-        id,
-        type: docType,
-        category,
-        properties,
-        propertiesSchema,
-        decision,
-        details,
-      } = document;
-
+  const formatDocument =
+    ({
+      documents,
+      documentsSchemas,
+    }: {
+      documents: TDocument[];
+      documentsSchemas:
+        | typeof businessDocumentsSchemas
+        | typeof directorsDocumentsSchemas
+        | typeof ubosDocumentsSchemas;
+    }) =>
+    ({
+      id,
+      type: docType,
+      category,
+      properties,
+      propertiesSchema,
+      decision,
+      details,
+      entityType,
+      entity,
+    }: TDocument) => {
       const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
         ? composePickableCategoryType(
             category,
@@ -238,8 +250,7 @@ export const useDocumentBlocks = ({
                 className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
               },
             })
-            .build()
-            .flat(1);
+            .buildFlat();
         }
 
         if (decision?.status === StateTag.APPROVED) {
@@ -254,8 +265,7 @@ export const useDocumentBlocks = ({
                 className: `${badgeClassNames} bg-success/20`,
               },
             })
-            .build()
-            .flat(1);
+            .buildFlat();
         }
 
         if (decision?.status === StateTag.REJECTED) {
@@ -270,8 +280,7 @@ export const useDocumentBlocks = ({
                 className: badgeClassNames,
               },
             })
-            .build()
-            .flat(1);
+            .buildFlat();
         }
 
         const revisionReasons =
@@ -359,57 +368,33 @@ export const useDocumentBlocks = ({
               },
             },
           })
-          .build()
-          .flat(1);
+          .buildFlat();
       };
 
-      const entityNameOrNA = valueOrNA(toTitleCase(workflow?.entity?.name ?? ''));
-      const categoryOrNA = valueOrNA(toTitleCase(category ?? ''));
-      const documentTypeOrNA = valueOrNA(toTitleCase(docType ?? ''));
-      const documentNameOrNA = `${categoryOrNA}${
-        withEntityNameInHeader ? '' : ` - ${documentTypeOrNA}`
-      }`;
+      const categoryOrNA = valueOrNA(titleCase(category ?? ''));
+      const documentTypeOrNA = valueOrNA(titleCase(docType ?? ''));
+      const documentNameOrNA = `${categoryOrNA} - ${documentTypeOrNA}`;
 
-      let headerContentCell = createBlocksTyped().addBlock();
+      const getHeaderContentCell = (): ExtractCellProps<'heading'>['value'] => {
+        if (entity?.id === workflow?.context?.entity?.data?.ballerineEntityId) {
+          return documentNameOrNA;
+        }
 
-      if (!isBusinessDocument(businessDocuments, document)) {
-        const { entityType, entity } = document;
-        const entityName =
-          entity?.firstName && entity?.lastName
-            ? `${entity?.firstName} ${entity?.lastName}`
-            : undefined;
-
-        headerContentCell = headerContentCell.addCell({
-          type: 'heading',
-          value: (
-            <div className="flex flex-col">
-              <span>{documentNameOrNA}</span>
-              <div className="mt-1 flex items-center gap-1.5">
-                <span className="rounded-md bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-700">
-                  {entityType}
-                </span>
-                {entityName && (
-                  <span className="text-sm text-gray-500">{`${toTitleCase(entityName)}`}</span>
-                )}
-              </div>
+        return (
+          <div className="flex flex-col">
+            <span>{documentNameOrNA}</span>
+            <div className="mt-1 flex items-center gap-1.5">
+              <span className="rounded-md bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-700">
+                {entityType}
+              </span>
+              {(entityType !== 'business' || withEntityNameInHeader) && entity?.name && (
+                <span className="text-sm text-gray-500">{valueOrNA(titleCase(entity?.name))}</span>
+              )}
             </div>
-          ),
-        });
-      } else {
-        headerContentCell = headerContentCell.addCell({
-          type: 'heading',
-          value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
-        });
-      }
+          </div>
+        );
+      };
 
-      headerContentCell = headerContentCell
-        .addCell({
-          id: 'actions',
-          type: 'container',
-          value: getDecisionStatusOrAction(isDocumentRevision),
-        })
-        .build()
-        .flat(1);
       const headerCell = createBlocksTyped()
         .addBlock()
         .addCell({
@@ -418,7 +403,18 @@ export const useDocumentBlocks = ({
           props: {
             className: 'items-start',
           },
-          value: headerContentCell,
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'heading',
+              value: getHeaderContentCell(),
+            })
+            .addCell({
+              id: 'actions',
+              type: 'container',
+              value: getDecisionStatusOrAction(isDocumentRevision),
+            })
+            .buildFlat(),
         })
         .cellAt(0, 0);
 
@@ -550,8 +546,7 @@ export const useDocumentBlocks = ({
               isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
             })
             .addCell(decisionCell)
-            .build()
-            .flat(1),
+            .buildFlat(),
         })
         .cellAt(0, 0);
 
@@ -589,10 +584,35 @@ export const useDocumentBlocks = ({
             .addCell(headerCell)
             .addCell(detailsCell)
             .addCell(documentsCell)
-            .build()
-            .flat(1),
+            .buildFlat(),
         })
         .build();
-    }) ?? []
-  );
+    };
+
+  return {
+    businessDocumentBlocks:
+      businessDocuments?.flatMap(
+        formatDocument({
+          documents: businessDocuments,
+          documentsSchemas: businessDocumentsSchemas,
+          isBusinessDocument: true,
+        }),
+      ) ?? [],
+    directorDocumentBlocks:
+      directorsDocuments?.flatMap(
+        formatDocument({
+          documents: directorsDocuments,
+          documentsSchemas: directorsDocumentsSchemas,
+          isBusinessDocument: false,
+        }),
+      ) ?? [],
+    uboDocumentBlocks:
+      ubosDocuments?.flatMap(
+        formatDocument({
+          documents: ubosDocuments,
+          documentsSchemas: ubosDocumentsSchemas,
+          isBusinessDocument: false,
+        }),
+      ) ?? [],
+  };
 };

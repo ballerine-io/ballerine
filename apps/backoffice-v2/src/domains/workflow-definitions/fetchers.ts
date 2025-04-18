@@ -24,10 +24,12 @@ export const WorkflowDefinitionConfigSchema = z
   .object({
     enableManualCreation: z.boolean().default(false),
     isDocumentsV2: z.boolean().default(false),
+    isInitiateSanctionsScreeningEnabled: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
     isCaseOverviewEnabled: z.boolean().default(false),
     isCollectionFlowPageRevisionEnabled: z.boolean().default(false),
+    isAgentEditingEnabled: z.boolean().default(false),
     isCaseRiskOverviewEnabled: z.boolean().default(false),
     isDocumentTrackerEnabled: z.boolean().default(false),
     theme: WorkflowDefinitionConfigThemeSchema.default({

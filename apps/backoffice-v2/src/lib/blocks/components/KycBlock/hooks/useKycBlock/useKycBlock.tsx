@@ -1,29 +1,33 @@
-import { isObject, StateTag, TStateTags, valueOrNA } from '@ballerine/common';
-import { ComponentProps, useCallback, useMemo } from 'react';
+import { isObject, TDocument, valueOrNA } from '@ballerine/common';
+import { ComponentProps, useCallback, useMemo, useState } from 'react';
 
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { generateEditableDetailsV2Fields } from '@/common/components/organisms/EditableDetailsV2/utils/generate-editable-details-v2-fields';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useKycDocumentsAdapter } from '@/domains/documents/hooks/adapters/useKycDocumentsAdapter/useKycDocumentsAdapter';
-import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
-import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
-import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { useUpdateContextAndSyncEntityMutation } from '@/domains/workflows/hooks/mutations/useUpdateContextAndSyncEntity/useUpdateContextAndSyncEntity';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { Badge, Button } from '@ballerine/ui';
+import {
+  Badge,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Input,
+} from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { titleCase } from 'string-ts';
+import { PlayCircle, Send } from 'lucide-react';
+import { ExtendedJson } from '@/common/types';
+import { Select } from '@/common/components/atoms/Select/Select';
+import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
+import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
+import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -56,92 +60,157 @@ const RISK_TO_LABEL = {
 } as const;
 
 export const useKycBlock = ({
-  parentWorkflowId,
-  childWorkflow,
+  onInitiateKyc,
+  onInitiateSanctionsScreening,
+  onApprove,
+  onReuploadNeeded,
+  documents: passedDocuments,
+  kycSession,
+  aml,
+  entityData,
+  status,
+  isActionsDisabled,
+  isLoadingReuploadNeeded,
+  isLoadingApprove,
+  isInitiateKycDisabled,
+  isInitiateSanctionsScreeningDisabled,
+  isApproveDisabled,
+  isReuploadNeededDisabled,
+  reasons,
 }: {
-  childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number];
-  parentWorkflowId: string;
+  onInitiateKyc: () => void;
+  onInitiateSanctionsScreening: () => void;
+  onApprove: ({ ids }: { ids: string[] }) => () => void;
+  onReuploadNeeded: ({ reason, ids }: { reason: string; ids: string[] }) => () => void;
+  documents: TDocument[];
+  kycSession: Record<
+    string,
+    {
+      vendor: string;
+      decision: {
+        status: string;
+        riskLabels: string[];
+      };
+      result:
+        | {
+            entity: {
+              data: Record<string, ExtendedJson>;
+            };
+            aml: {
+              vendor: string;
+            };
+            documents: TDocument[];
+            decision: {
+              status: string;
+              riskLabels: string[];
+            };
+          }
+        | {
+            vendorResult: {
+              aml: {
+                vendor: string;
+              };
+            };
+            documents: TDocument[];
+          };
+    }
+  >;
+  aml: {
+    vendor: string;
+  };
+  entityData: Record<string, ExtendedJson>;
+  status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined;
+  isActionsDisabled: boolean;
+  isLoadingReuploadNeeded: boolean;
+  isLoadingApprove: boolean;
+  isInitiateKycDisabled: boolean;
+  isInitiateSanctionsScreeningDisabled: boolean;
+  isApproveDisabled: boolean;
+  isReuploadNeededDisabled: boolean;
+  reasons: string[];
 }) => {
-  const filterId = useFilterId();
-  const { data: parentWorkflow } = useWorkflowByIdQuery({
-    workflowId: parentWorkflowId,
-    filterId,
-  });
+  const noReasons = !reasons?.length;
+  const [reason, setReason] = useState(reasons?.[0] ?? '');
+  const [comment, setComment] = useState('');
+  const reasonWithComment = comment ? `${reason} - ${comment}` : reason;
+  const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
+  const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
+
   const { noAction } = useCaseDecision();
-  const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
+  const kycSessionKeys = Object.keys(kycSession ?? {});
 
   const { documents: allDocuments, isLoading: isLoadingDocuments } = useKycDocumentsAdapter({
-    documents: childWorkflow?.context?.documents ?? [],
+    documents: passedDocuments ?? [],
   });
 
   const documents = useMemo(() => {
     return allDocuments?.filter(document => document.type === 'identification_document') ?? [];
   }, [allDocuments]);
 
-  const riskLabels: string[] = kycSessionKeys?.length
+  const nonIdentificationDocumentsIds = useMemo(() => {
+    return (
+      documents
+        // 'identification_document' is exclusive to Veriff
+        ?.filter(document => document.type !== 'identification_document')
+        ?.map(document => document.id) ?? []
+    );
+  }, [documents]);
+
+  const riskLabels = kycSessionKeys?.length
     ? kycSessionKeys.flatMap(key => {
-        if (key === 'invokedAt') {
-          return [];
+        if (!kycSession[key]?.result?.decision?.riskLabels?.length) {
+          return 'none';
         }
 
-        return childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
-          ?.length
-          ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.riskLabels
-          : 'none';
+        return kycSession[key]?.result?.decision?.riskLabels;
       })
     : [];
 
   const decision = kycSessionKeys?.length
-    ? kycSessionKeys
-        .flatMap(key =>
-          key === 'invokedAt'
-            ? []
-            : [
-                {
-                  title: 'Verified With',
-                  value: capitalize(
-                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor,
-                  ),
-                  pattern: '',
-                  isEditable: false,
-                  dropdownOptions: undefined,
-                },
-                {
-                  title: 'Result',
-                  value:
-                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision
-                      ?.status,
-                  pattern: '',
-                  isEditable: false,
-                  dropdownOptions: undefined,
-                },
-                ...(isObject(childWorkflow?.context?.pluginsOutput?.kyc_session[key])
-                  ? [
-                      {
-                        title: 'Full report',
-                        value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
-                        pattern: '',
-                        isEditable: false,
-                        dropdownOptions: undefined,
-                      },
-                    ]
-                  : []),
-              ],
-        )
-        .filter(x => Boolean(x)) ?? []
+    ? kycSessionKeys?.flatMap(key => [
+        {
+          label: 'Verified With',
+          value: capitalize(kycSession[key]?.vendor ?? ''),
+        },
+        {
+          label: 'Result',
+          value: kycSession[key]?.result?.decision?.status,
+          props: {
+            className: ctw({
+              'text-success': kycSession[key]?.result?.decision?.status === 'approved',
+              'text-destructive': kycSession[key]?.result?.decision?.status === 'rejected',
+              'font-bold':
+                kycSession[key]?.result?.decision?.status === 'approved' ||
+                kycSession[key]?.result?.decision?.status === 'rejected',
+            }),
+          },
+        },
+        {
+          label: 'Issues',
+          value: kycSession[key]?.decision?.riskLabels?.length
+            ? kycSession[key]?.decision?.riskLabels?.join(', ')
+            : 'none',
+        },
+        ...(isObject(kycSession[key])
+          ? [
+              {
+                label: 'Full report',
+                value: kycSession[key],
+              },
+            ]
+          : []),
+      ]) ?? []
     : [];
 
   const amlData = useMemo(() => {
-    if (!kycSessionKeys?.length) {
+    if (!Object.keys(aml ?? {}).length && !kycSessionKeys?.length) {
       return [];
     }
 
     return kycSessionKeys.map(
-      key =>
-        childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
-        childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
+      key => aml ?? kycSession[key]?.result?.vendorResult?.aml ?? kycSession[key]?.result?.aml,
     );
-  }, [childWorkflow?.context?.pluginsOutput?.kyc_session, kycSessionKeys]);
+  }, [kycSession, kycSessionKeys]);
   const vendor = useMemo(() => {
     if (!kycSessionKeys?.length) {
       return;
@@ -150,22 +219,20 @@ export const useKycBlock = ({
     const amlVendor = kycSessionKeys
       .map(
         key =>
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml
-            ?.vendor ??
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml?.vendor,
+          aml?.vendor ??
+          kycSession[key]?.result?.vendorResult?.aml?.vendor ??
+          kycSession[key]?.result?.aml?.vendor,
       )
       .filter(Boolean);
 
     if (!amlVendor.length) {
-      const kycVendor = kycSessionKeys
-        .map(key => childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor)
-        .filter(Boolean);
+      const kycVendor = kycSessionKeys.map(key => kycSession[key]?.vendor).filter(Boolean);
 
       return kycVendor.join(', ');
     }
 
     return amlVendor.join(', ');
-  }, [childWorkflow?.context?.pluginsOutput?.kyc_session, kycSessionKeys]);
+  }, [kycSession, kycSessionKeys]);
 
   const amlBlock = useAmlBlock({
     data: amlData,
@@ -177,74 +244,44 @@ export const useKycBlock = ({
         createBlocksTyped()
           .addBlock()
           .addCell({
-            id: 'decision',
-            type: 'details',
-            hideSeparator: index === collection.length - 1,
-            value: {
-              id: childWorkflow?.id,
-              title: `Details`,
-              data: Object.entries({
-                ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
-                ...omitPropsFromObject(
-                  childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                    ?.properties,
-                  'issuer',
-                ),
-                issuer:
-                  childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                    ?.issuer?.country,
-              })?.map(([title, value]) => ({
-                title,
-                value,
-                pattern: '',
-                isEditable: false,
-                dropdownOptions: undefined,
-              })),
+            type: 'readOnlyDetails',
+            value: Object.entries({
+              ...kycSession[key]?.result?.entity?.data,
+              ...omitPropsFromObject(kycSession[key]?.result?.documents?.[0]?.properties, 'issuer'),
+              issuer: kycSession[key]?.result?.documents?.[0]?.issuer?.country,
+            })?.map(([label, value]) => ({
+              label,
+              value: value as ExtendedJson,
+            })),
+            props: {
+              config: {
+                parse: {
+                  boolean: true,
+                  date: true,
+                  datetime: true,
+                  isoDate: true,
+                  nullish: true,
+                  url: true,
+                },
+              },
             },
-            workflowId: childWorkflow?.id,
-            documents: documents?.map(({ details: _details, ...document }) => document),
-            isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
           })
-          .cellAt(0, 0),
+          .addCell({
+            type: 'node',
+            value: index !== collection.length - 1 && <Separator className={`my-2`} />,
+          })
+          .buildFlat(),
       ) ?? []
     : [];
 
-  const nonIdentificationDocumentsIds = useMemo(() => {
-    return (
-      documents
-        // 'identification_document' is exclusive to Veriff
-        ?.filter(document => document.type !== 'identification_document')
-        ?.map(document => document.id) ?? []
-    );
-  }, [documents]);
+  const isDisabled = isActionsDisabled || noAction || isLoadingApprove || isLoadingReuploadNeeded;
 
-  const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
-    useApproveCaseAndDocumentsMutation({
-      workflowId: childWorkflow?.id,
-      ids: nonIdentificationDocumentsIds,
-      // Shouldnt be v2 for KYC
-      isDocumentsV2: false,
-    });
-  const { isLoading: isLoadingRevisionCase } = useRevisionCaseAndDocumentsMutation({
-    workflowId: childWorkflow?.id,
-    ids: nonIdentificationDocumentsIds,
-    // Shouldnt be v2 for KYC
-    isDocumentsV2: false,
-  });
-  const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, parentWorkflow);
-  const isDisabled =
-    !caseState.actionButtonsEnabled ||
-    !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW) ||
-    noAction ||
-    isLoadingApproveCase ||
-    isLoadingRevisionCase;
-
-  const getDecisionStatusOrAction = (tags?: TStateTags) => {
+  const getDecisionStatusOrAction = (
+    status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined,
+  ) => {
     const badgeClassNames = 'text-sm font-bold';
 
-    if (tags?.includes(StateTag.REVISION)) {
+    if (status === 'revision') {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -259,7 +296,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (tags?.includes(StateTag.APPROVED)) {
+    if (status === 'approved') {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -274,7 +311,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (tags?.includes(StateTag.REJECTED)) {
+    if (status === 'rejected') {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -289,7 +326,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (tags?.includes(StateTag.PENDING_PROCESS)) {
+    if (status === 'pending') {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -307,14 +344,96 @@ export const useKycBlock = ({
     return createBlocksTyped()
       .addBlock()
       .addCell({
-        type: 'caseCallToActionLegacy',
-        value: 'Re-upload needed',
-        data: {
-          parentWorkflowId: parentWorkflowId,
-          childWorkflowId: childWorkflow?.id,
-          childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-          disabled: isDisabled,
-          isKYC: true,
+        type: 'dialog',
+        value: {
+          title: 'Ask to re-upload',
+          trigger: (
+            <MotionButton
+              {...motionButtonProps}
+              animate={{
+                ...motionButtonProps.animate,
+                opacity: isDisabled ? 0.5 : motionButtonProps.animate.opacity,
+              }}
+              size="wide"
+              variant="warning"
+              disabled={isDisabled || isReuploadNeededDisabled}
+            >
+              Re-upload needed
+            </MotionButton>
+          ),
+          description: (
+            <>
+              <span className="mb-[10px] block">
+                By clicking the button below, an email with a link will be sent to the customer,
+                directing them to re-upload the documents you have marked as “re-upload needed”.
+              </span>
+              <span>
+                The case’s status will then change to “Revisions” until the customer will provide
+                the needed documents and fixes.
+              </span>
+            </>
+          ),
+          content: (
+            <>
+              {!noReasons && (
+                <div>
+                  <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
+                    Reason
+                  </label>
+                  <Select onValueChange={onReasonChange} value={reason}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {reasons?.map(reason => {
+                        const reasonWithSpace = reason.replace(/_/g, ' ').toLowerCase();
+                        const capitalizedReason = capitalize(reasonWithSpace);
+
+                        return (
+                          <SelectItem key={reason} value={reason} className={`capitalize`}>
+                            {capitalizedReason}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div>
+                <label className={`mb-2 block font-bold`} htmlFor={`comment`}>
+                  {noReasons ? 'Reason' : 'Comment'}
+                </label>
+                <Input
+                  onChange={event => {
+                    if (noReasons) {
+                      onReasonChange(event.target.value);
+
+                      return;
+                    }
+
+                    onCommentChange(event.target.value);
+                  }}
+                  value={noReasons ? reason : comment}
+                  id={noReasons ? `reason` : `comment`}
+                />
+              </div>
+            </>
+          ),
+          close: (
+            <Button
+              className={ctw(`gap-x-2 !bg-foreground`, {
+                loading: isLoadingReuploadNeeded,
+              })}
+              disabled={isLoadingReuploadNeeded || isReuploadNeededDisabled}
+              onClick={onReuploadNeeded({
+                reason: reasonWithComment,
+                ids: nonIdentificationDocumentsIds,
+              })}
+            >
+              <Send size={18} />
+              Send email
+            </Button>
+          ),
         },
       })
       .addCell({
@@ -327,7 +446,7 @@ export const useKycBlock = ({
                 ...motionButtonProps.animate,
                 opacity: isDisabled ? 0.5 : motionButtonProps.animate.opacity,
               }}
-              disabled={isDisabled}
+              disabled={isDisabled || isApproveDisabled}
               size={'wide'}
               variant={'success'}
               className={'enabled:bg-success enabled:hover:bg-success/90'}
@@ -337,12 +456,16 @@ export const useKycBlock = ({
           ),
           title: `Approval confirmation`,
           description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+          content: null,
           close: (
             <div className={`space-x-2`}>
               <Button type={'button'} variant={`secondary`}>
                 Cancel
               </Button>
-              <Button disabled={isDisabled} onClick={onMutateApproveCase}>
+              <Button
+                disabled={isDisabled || isApproveDisabled}
+                onClick={onApprove({ ids: nonIdentificationDocumentsIds })}
+              >
                 Approve
               </Button>
             </div>
@@ -360,25 +483,6 @@ export const useKycBlock = ({
       .buildFlat();
   };
 
-  const { mutate: mutateInitiateKyc } = useEventMutation();
-
-  const getEvent = () => {
-    if (childWorkflow?.nextEvents?.includes('start')) {
-      return 'start';
-    }
-  };
-  const event = getEvent();
-  const onInitiateKyc = useCallback(() => {
-    if (!event) {
-      return;
-    }
-
-    mutateInitiateKyc({
-      workflowId: childWorkflow?.id,
-      event,
-    });
-  }, [mutateInitiateKyc, event, childWorkflow?.id]);
-
   const headerCell = createBlocksTyped()
     .addBlock()
     .addCell({
@@ -391,132 +495,58 @@ export const useKycBlock = ({
         .addBlock()
         .addCell({
           type: 'heading',
-          value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
-            childWorkflow?.context?.entity?.data?.lastName,
-          )}`,
+          value: `${valueOrNA(entityData?.firstName)} ${valueOrNA(entityData?.lastName)}`,
           props: {
             className: 'mt-0',
           },
+        })
+        .addCell({
+          type: 'node',
+          value: (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={
+                    'ms-auto px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50'
+                  }
+                >
+                  Options
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className={`h-6 w-full`} asChild>
+                  <Button
+                    variant={'ghost'}
+                    className="justify-start text-xs leading-tight aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                    onClick={onInitiateKyc}
+                    disabled={isInitiateKycDisabled}
+                  >
+                    <PlayCircle size={16} className="me-2" /> Initiate KYC
+                  </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem className={`h-6 w-full`} asChild>
+                  <Button
+                    variant={'ghost'}
+                    className="justify-start text-xs leading-tight aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                    onClick={onInitiateSanctionsScreening}
+                    disabled={isInitiateSanctionsScreeningDisabled}
+                  >
+                    <PlayCircle size={16} className="me-2" /> Initiate Sanctions Screening
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ),
         })
         .buildFlat(),
     })
     .cellAt(0, 0);
 
-  const fields = generateEditableDetailsV2Fields(childWorkflow?.context)({
-    path: 'entity.data',
-  });
-
-  const { mutate: mutateUpdateContextAndSyncEntity } = useUpdateContextAndSyncEntityMutation({
-    workflowId: childWorkflow?.id,
-  });
-
-  const onSubmit = useCallback(
-    (values: Record<PropertyKey, any>, toggleOffIsEditable: () => void) => {
-      mutateUpdateContextAndSyncEntity(values, {
-        onSuccess: () => {
-          toggleOffIsEditable();
-        },
-      });
-    },
-    [mutateUpdateContextAndSyncEntity],
-  );
-
-  const getEntityDataBlock = () => {
-    if (parentWorkflow?.workflowDefinition?.config?.editableContext?.kyc?.entity) {
-      return createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'editableDetails',
-          value: fields,
-          props: {
-            title: 'Details',
-            onSubmit,
-            onEnableIsEditable: toggleOnIsEditable => {
-              toggleOnIsEditable();
-            },
-            onReRunChecks: () => {},
-            onCancel: toggleOffIsEditable => {
-              toggleOffIsEditable();
-            },
-            config: {
-              parse: {
-                date: true,
-                isoDate: true,
-                datetime: true,
-                boolean: true,
-                url: true,
-                nullish: true,
-                country: true,
-              },
-              blacklist: [],
-              actions: {
-                options: {
-                  disabled: !caseState.writeEnabled,
-                },
-                enableEditing: {
-                  disabled: false,
-                },
-                reRunChecks: {
-                  disabled: true,
-                },
-                editing: {
-                  disabled: !caseState.writeEnabled,
-                },
-                cancel: {
-                  disabled: false,
-                },
-                save: {
-                  disabled: !caseState.writeEnabled,
-                },
-              },
-              inputTypes: {
-                dateOfBirth: 'date',
-                country: 'country',
-              },
-            },
-          },
-        })
-        .buildFlat();
-    }
-
-    return createBlocksTyped()
-      .addBlock()
-      .addCell({
-        id: 'header',
-        type: 'heading',
-        value: 'Details',
-      })
-      .addCell({
-        id: 'decision',
-        type: 'details',
-        value: {
-          id: 1,
-          title: 'Details',
-          data: Object.entries(childWorkflow?.context?.entity?.data ?? {}).map(
-            ([title, value]) => ({
-              title,
-              value,
-              pattern: '',
-              isEditable: false,
-              dropdownOptions: undefined,
-            }),
-          ),
-        },
-        workflowId: childWorkflow?.id,
-        documents: documents?.map(({ details: _details, ...document }) => document),
-        isDocumentsV2: !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
-      })
-      .buildFlat();
-  };
-
   return createBlocksTyped()
     .addBlock()
     .addCell({
       type: 'block',
-      className: ctw({
-        'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
-          childWorkflow.state === 'revision',
-      }),
       value: createBlocksTyped()
         .addBlock()
         .addCell(headerCell)
@@ -540,7 +570,7 @@ export const useKycBlock = ({
             .addCell({
               type: 'container',
               props: { className: 'space-x-4' },
-              value: getDecisionStatusOrAction(childWorkflow?.tags),
+              value: getDecisionStatusOrAction(status),
             })
             .buildFlat(),
         })
@@ -555,7 +585,33 @@ export const useKycBlock = ({
                 .addBlock()
                 .addCell({
                   type: 'container',
-                  value: getEntityDataBlock(),
+                  value: createBlocksTyped()
+                    .addBlock()
+                    .addCell({
+                      id: 'header',
+                      type: 'heading',
+                      value: 'Details',
+                    })
+                    .addCell({
+                      type: 'readOnlyDetails',
+                      value: Object.entries(entityData ?? {}).map(([label, value]) => ({
+                        label,
+                        value,
+                      })),
+                      props: {
+                        config: {
+                          parse: {
+                            boolean: true,
+                            date: true,
+                            datetime: true,
+                            isoDate: true,
+                            nullish: true,
+                            url: true,
+                          },
+                        },
+                      },
+                    })
+                    .buildFlat(),
                 })
                 .addCell({
                   type: 'container',
@@ -583,19 +639,6 @@ export const useKycBlock = ({
                             className: 'py-4 text-slate-500',
                           },
                         })
-                        .addCell({
-                          type: 'callToAction',
-                          value: {
-                            text: 'Initiate KYC',
-                            onClick: onInitiateKyc,
-                            props: {
-                              className:
-                                'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 ms-3',
-                              variant: 'outline',
-                              disabled: !event,
-                            },
-                          },
-                        })
                         .buildFlat(),
                 })
                 .addCell({
@@ -609,27 +652,23 @@ export const useKycBlock = ({
                           value: 'Document Verification Results',
                         })
                         .addCell({
-                          id: 'decision',
-                          type: 'details',
-                          hideSeparator: true,
-                          value: {
-                            id: 1,
-                            title: 'Decision',
-                            data: decision,
-                          },
+                          type: 'readOnlyDetails',
+                          value: decision,
                           props: {
                             config: {
                               sort: {
                                 predefinedOrder: ['Result', 'Verified With', 'Full report'],
                               },
+                              parse: {
+                                boolean: true,
+                                date: true,
+                                datetime: true,
+                                isoDate: true,
+                                nullish: true,
+                                url: true,
+                              },
                             },
                           },
-                          workflowId: childWorkflow?.id,
-                          documents: documents?.map(
-                            ({ details: _details, ...document }) => document,
-                          ),
-                          isDocumentsV2:
-                            !!parentWorkflow?.workflowDefinition?.config?.isDocumentsV2,
                         })
                         .addCell({
                           type: 'node',
@@ -643,8 +682,7 @@ export const useKycBlock = ({
                                     variant={item === 'none' ? 'success' : 'destructive'}
                                     className={`max-w-fit text-sm font-bold`}
                                   >
-                                    {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ??
-                                      titleCase(item)}
+                                    {RISK_TO_LABEL[item as keyof typeof RISK_TO_LABEL] ?? item}
                                   </Badge>
                                 ))}
                               </div>
@@ -687,6 +725,12 @@ export const useKycBlock = ({
           value: amlBlock,
         })
         .buildFlat(),
+      props: {
+        className: ctw({
+          'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
+            status === 'revision',
+        }),
+      },
     })
     .build();
 };

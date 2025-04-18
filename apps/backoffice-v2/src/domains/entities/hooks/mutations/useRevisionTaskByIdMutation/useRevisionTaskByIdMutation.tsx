@@ -3,12 +3,10 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { Action } from '../../../../../common/enums';
 
 export const useRevisionTaskByIdMutation = () => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
 
   return useMutation({
     mutationFn: ({
@@ -27,7 +25,7 @@ export const useRevisionTaskByIdMutation = () => {
       updateWorkflowDecision({
         workflowId,
         documentId,
-        contextUpdateMethod,
+        contextUpdateMethod: contextUpdateMethod ?? 'base',
         body: {
           directorId,
           decision: Action.REVISION,
@@ -35,7 +33,7 @@ export const useRevisionTaskByIdMutation = () => {
         },
       }),
     onMutate: async ({ workflowId, documentId, reason }) => {
-      const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+      const workflowById = workflowsQueryKeys.byId({ workflowId });
       await queryClient.cancelQueries({
         queryKey: workflowById.queryKey,
       });
@@ -74,7 +72,7 @@ export const useRevisionTaskByIdMutation = () => {
       toast.success(t(`toast:ask_revision_document.success`));
     },
     onError: (_error, variables, context) => {
-      const workflowById = workflowsQueryKeys.byId({ workflowId: variables?.workflowId, filterId });
+      const workflowById = workflowsQueryKeys.byId({ workflowId: variables?.workflowId });
 
       toast.error(
         t(`toast:ask_revision_document.error`, {

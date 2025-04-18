@@ -92,7 +92,7 @@ export class CaseManagementController {
       [StateTag.DATA_ENRICHMENT]: 'PROCESSED',
       [StateTag.MANUAL_REVIEW]: 'PROCESSED',
     } as const satisfies Record<
-      Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
+      Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed' | 'edit'>,
       'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
     >;
 
