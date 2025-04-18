@@ -23,6 +23,7 @@ import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
 import { EditableDetailsV2Cell } from '../components/EditableDetailsV2Cell/EditableDetailsV2Cell';
+import { EmptyPlaceholderCell } from '../components/EmptyBlock/EmptyBlock';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -58,4 +59,5 @@ export const cells: CellsMap = {
   readOnlyDetails: ReadOnlyDetailsCell,
   image: ImageCell,
   editableDetails: EditableDetailsV2Cell,
+  emptyPlaceholder: EmptyPlaceholderCell,
 };
