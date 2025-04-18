@@ -50,14 +50,6 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
       } catch (error) {
         trackEvent(CollectionFlowEvents.FLOW_FAILED);
         throw error;
-
-        // if (redirectUrls?.failure) {
-        //   location.href = redirectUrls.failure;
-        //   return;
-        // }
-
-        // await stateApi.sendEvent('NEXT');
-        // await stateApi.sendEvent('FAILURE');
       }
     },
     [stateApi, redirectUrls, trackEvent],
