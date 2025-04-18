@@ -12,6 +12,7 @@ import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
 import { IWorkflowId } from './interfaces';
+import { EndUsersSchema } from '../individuals/fetchers';
 
 export const updateContextAndSyncEntity = async ({
   workflowId,
@@ -93,6 +94,7 @@ export const BaseWorkflowByIdSchema = z.object({
     }).optional(),
     pluginsOutput: z
       .object({
+        kyc_session: z.record(z.string(), z.any()).optional(),
         ubo: z
           .object({
             data: z
@@ -188,6 +190,7 @@ export const BaseWorkflowByIdSchema = z.object({
     avatarUrl: z.string().nullable().optional(),
   }).nullable(),
   config: z.record(z.string(), z.unknown()).optional(),
+  endUsers: EndUsersSchema.default([]),
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
@@ -206,16 +209,9 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
 
 export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
-export const fetchWorkflowById = async ({
-  workflowId,
-  filterId,
-}: {
-  workflowId: string;
-  filterId: string;
-}) => {
+export const fetchWorkflowById = async ({ workflowId }: { workflowId: string }) => {
   const [workflow, error] = await apiClient({
-    // TODO: filterId supposedly doesn't do anything on the backend in this endpoint
-    endpoint: `workflows/${workflowId}?filterId=${filterId}`,
+    endpoint: `workflows/${workflowId}`,
     method: Method.GET,
     schema: WorkflowByIdSchema.transform(data => ({
       ...data,

@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@ballerine/ui';
 import {
   Brain,
-  AlertTriangle,
   FileSearch,
   UserCheck,
   Building,
@@ -11,8 +10,6 @@ import {
   Ban,
   Sparkles,
   Info,
-  Database,
-  Shield,
   MessagesSquare,
   ThumbsUp,
   ThumbsDown,
@@ -752,38 +749,40 @@ export const useAISummaryBlock = ({
   modelInfo?: AIModelInfo;
   useAdvancedAI?: boolean; // Feature flag parameter
 }) => {
-  return isDemoAccount
-    ? createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'node',
-          value: (
-            <Card className="col-span-full overflow-hidden">
-              <CardHeader className="flex flex-row items-center gap-2 bg-gradient-to-r from-slate-50 to-slate-100 py-3 font-bold">
-                <AITechIcon />
-                <span className="bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent">
-                  AI Risk Assessment
-                </span>
-              </CardHeader>
-              <CardContent className="bg-white p-6">
-                {useAdvancedAI ? (
-                  <AISummaryContent
-                    sections={sections}
-                    summaryData={summaryData}
-                    actions={actions}
-                    modelInfo={modelInfo}
-                  />
-                ) : (
-                  <SimpleAISummaryContent
-                    sections={sections}
-                    summaryData={summaryData}
-                    actions={actions}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          ),
-        })
-        .build()
-    : null;
+  if (!isDemoAccount) {
+    return [];
+  }
+
+  return createBlocksTyped()
+    .addBlock()
+    .addCell({
+      type: 'node',
+      value: (
+        <Card className="col-span-full overflow-hidden">
+          <CardHeader className="flex flex-row items-center gap-2 bg-gradient-to-r from-slate-50 to-slate-100 py-3 font-bold">
+            <AITechIcon />
+            <span className="bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent">
+              AI Risk Assessment
+            </span>
+          </CardHeader>
+          <CardContent className="bg-white p-6">
+            {useAdvancedAI ? (
+              <AISummaryContent
+                sections={sections}
+                summaryData={summaryData}
+                actions={actions}
+                modelInfo={modelInfo}
+              />
+            ) : (
+              <SimpleAISummaryContent
+                sections={sections}
+                summaryData={summaryData}
+                actions={actions}
+              />
+            )}
+          </CardContent>
+        </Card>
+      ),
+    })
+    .build();
 };

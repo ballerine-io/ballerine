@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/atoms';
 import { RiskIndicator } from '@/components/molecules/RiskIndicator/RiskIndicator';
-import { RiskIndicatorSchema } from '@ballerine/common';
+import { RiskIndicatorSchema, safeEvery } from '@ballerine/common';
 import { ComponentProps, FunctionComponent } from 'react';
 import { z } from 'zod';
 
@@ -25,6 +25,7 @@ export const RiskIndicatorsSummary: FunctionComponent<{
             Link={Link}
           />
         ))}
+        {!sections.length && <p>No risk indicators detected.</p>}
       </CardContent>
     </Card>
   );

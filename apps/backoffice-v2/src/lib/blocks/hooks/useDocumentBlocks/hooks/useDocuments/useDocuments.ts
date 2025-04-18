@@ -36,22 +36,45 @@ export const useDocuments = (workflow: TWorkflowById) => {
     useUbosDocuments(workflow as TWorkflowById),
   ];
 
+  const businessDocumentsWithEntity = useMemo(
+    () =>
+      businessDocuments.map(document => ({
+        ...document,
+        entity: {
+          id: workflow.context.entity.data.ballerineEntityId,
+          name: workflow.context.entity.data.companyName,
+        } satisfies IDocumentEntity,
+        entityType: 'business',
+      })),
+    [businessDocuments, workflow],
+  );
+  const ubosDocumentsWithEntity = useMemo(
+    () =>
+      ubosDocuments.map(document => ({
+        ...document,
+        entity: getUboEntityFromWorkflow(workflow, document),
+        entityType: 'ubo',
+      })),
+    [ubosDocuments, workflow],
+  );
+  const directorsDocumentsWithEntity = useMemo(
+    () =>
+      directorsDocuments.map(document => ({
+        ...document,
+        entityType: 'director',
+        entity: getDirectorEntityFromWorkflow(workflow, document),
+      })),
+    [directorsDocuments, workflow],
+  );
+
   const documents = useMemo(
     () =>
       [
-        ...businessDocuments,
-        ...directorsDocuments.map(document => ({
-          ...document,
-          entityType: 'director',
-          entity: getDirectorEntityFromWorkflow(workflow, document),
-        })),
-        ...ubosDocuments.map(document => ({
-          ...document,
-          entity: getUboEntityFromWorkflow(workflow, document),
-          entityType: 'ubo',
-        })),
+        ...businessDocumentsWithEntity,
+        ...directorsDocumentsWithEntity,
+        ...ubosDocumentsWithEntity,
       ] as TDocumentWithEntityTypeAndEntity[],
-    [businessDocuments, directorsDocuments, ubosDocuments, workflow],
+    [businessDocumentsWithEntity, directorsDocumentsWithEntity, ubosDocumentsWithEntity],
   );
   const documentsSchemas = useMemo(
     () => [
@@ -72,10 +95,19 @@ export const useDocuments = (workflow: TWorkflowById) => {
 
   return {
     documents,
-    businessDocuments,
-    directorsDocuments,
-    ubosDocuments,
     documentsSchemas,
+
+    businessDocuments: businessDocumentsWithEntity,
+    directorsDocuments: directorsDocumentsWithEntity,
+    ubosDocuments: ubosDocumentsWithEntity,
+
+    businessDocumentsSchemas,
+    directorsDocumentsSchemas,
+    ubosDocumentsSchemas,
+
     isLoading,
+    isLoadingBusinessDocuments,
+    isLoadingDirectorsDocuments,
+    isLoadingUbosDocuments,
   };
 };
