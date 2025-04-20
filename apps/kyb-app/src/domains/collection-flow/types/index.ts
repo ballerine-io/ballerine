@@ -166,13 +166,40 @@ export const UpdateEndUserPluginDataSchema = z.object({
 
 export type TUpdateEndUserPluginData = z.infer<typeof UpdateEndUserPluginDataSchema>;
 
-export const FetchCompanyInformationPluginDataSchena = z.object({
-  registrationNumber: z.string().min(1),
-  countryCode: z.string().min(2),
-  state: z.union([z.string().optional(), z.null()]),
-  vendor: z.string().optional(),
-});
+export const FetchCompanyInformationPluginDataSchena = z
+  .object({
+    registrationNumber: z.string().min(1),
+    countryCode: z.string().min(2),
+    state: z.union([z.string().optional(), z.null()]),
+    vendor: z.enum(['open-corporates']).optional(),
+  })
+  .transform(data => ({
+    ...data,
+    state: data.state || '',
+  }));
 
 export type TFetchCompanyInformationPluginData = z.infer<
   typeof FetchCompanyInformationPluginDataSchena
 >;
+
+export const FetchCompanyInformationResultSchema = z
+  .object({
+    name: z.string(),
+    companyNumber: z.string(),
+    vat: z.string().optional(),
+    numberOfEmployees: z.number().optional(),
+    companyType: z.string(),
+    currentStatus: z.string(),
+    jurisdictionCode: z.string(),
+    incorporationDate: z.string(),
+  })
+  .transform(data => ({
+    companyName: data.name,
+    taxIdentificationNumber: data.vat,
+    businessType: data.companyType,
+    additionalInfo: {
+      status: data.currentStatus,
+      incorporationDate: data.incorporationDate,
+      openCorporate: data,
+    },
+  }));

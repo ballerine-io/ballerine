@@ -17,7 +17,6 @@ import {
   TUpdateEndUserPluginData,
   TFetchCompanyInformationPluginData,
 } from '@/domains/collection-flow/types';
-import { createQueryParamsString } from '@/common/utils/create-query-params-string';
 
 export const fetchUser = async (): Promise<TUser> => {
   const user = await request.get('collection-flow/user').json<TUser>();
@@ -139,9 +138,9 @@ export const updateEndUser = async (data: TUpdateEndUserPluginData) => {
 };
 
 export const fetchCompanyInformation = async (data: TFetchCompanyInformationPluginData) => {
-  const result = await request.get(
-    `collection-flow/business/business-information${createQueryParamsString(data)}`,
-  );
+  const result = await request.get(`collection-flow/business/business-information`, {
+    searchParams: data,
+  });
 
   return result.json();
 };
