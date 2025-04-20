@@ -6,9 +6,5 @@ export const checkIfStepInEdit = (stepName: string, context: CollectionFlowConte
 
   const step = collectionFlow?.steps?.find(step => step.stepName === stepName);
 
-  if (!step) {
-    return false;
-  }
-
-  return step.state === CollectionFlowStepStatesEnum.edit;
+  return step?.state === CollectionFlowStepStatesEnum.edit;
 };
