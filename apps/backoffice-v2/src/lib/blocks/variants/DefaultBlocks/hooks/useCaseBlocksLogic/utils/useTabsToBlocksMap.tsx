@@ -13,6 +13,7 @@ import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMu
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
 import { useMemo } from 'react';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -81,7 +82,7 @@ export const useTabsToBlocksMap = ({
     });
 
   const { mutate: mutateEvent } = useEventMutation();
-
+  const { onEditCollectionFlow } = useEditCollectionFlow();
   const getInitiateKycEvent = (nextEvents: string[]) => {
     if (nextEvents?.includes('start')) {
       return 'start';
@@ -175,6 +176,7 @@ export const useTabsToBlocksMap = ({
             ids,
             workflowId: childWorkflow?.id,
           }),
+      onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
       reasons:
         childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
           ({ enum: enum_ }) => !!enum_,
@@ -185,6 +187,10 @@ export const useTabsToBlocksMap = ({
       isInitiateSanctionsScreeningDisabled:
         !initiateSanctionsScreeningEvent ||
         !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+      isEditDisabled: [
+        !caseState.actionButtonsEnabled,
+        !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      ].some(Boolean),
     } satisfies Parameters<typeof createKycBlocks>[0][number];
   };
   const directorToIndividualAdapter = ({
@@ -211,11 +217,16 @@ export const useTabsToBlocksMap = ({
       onReuploadNeeded:
         ({ reason, ids }: { reason: string; ids: string[] }) =>
         () => {},
+      onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
       reasons: [],
       isReuploadNeededDisabled: true,
       isApproveDisabled: true,
       isInitiateKycDisabled: true,
       isInitiateSanctionsScreeningDisabled: true,
+      isEditDisabled: [
+        !caseState.actionButtonsEnabled,
+        !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      ].some(Boolean),
     } satisfies Parameters<typeof createKycBlocks>[0][number];
   };
   const childWorkflows =
@@ -238,8 +249,6 @@ export const useTabsToBlocksMap = ({
           const directorEndUser = endUsers?.find(
             endUser => endUser.id === director.ballerineEntityId,
           );
-
-          console.log('director', directorEndUser?.amlHits);
 
           return directorToIndividualAdapter({
             ...director,
