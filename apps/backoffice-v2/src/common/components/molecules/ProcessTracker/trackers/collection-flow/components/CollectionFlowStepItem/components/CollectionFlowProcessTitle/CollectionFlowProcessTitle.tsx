@@ -24,9 +24,8 @@ export const CollectionFlowProcessTitle = () => {
           ['max-w-[60px] overflow-hidden text-ellipsis']: isShouldDisplayRequestButton,
         })}
         title={isShouldDisplayRequestButton ? 'Collection Flow' : undefined}
-      >
-        Collection Flow
-      </Tracker.Title>
+        text="Collection Flow"
+      />
       {stepsCountToRequest > 0 && (
         <RequestProcesses
           requestCount={stepsCountToRequest}
