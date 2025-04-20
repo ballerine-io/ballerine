@@ -226,8 +226,6 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const { onEditCollectionFlow } = useEditCollectionFlow();
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user ?? null, workflow);
 
   const entityInfoBlock = useEntityInfoBlock({
     entity: workflow?.context?.entity,
