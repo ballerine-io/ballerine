@@ -21,9 +21,13 @@ export const buildDailyLiveCasesQuery = (
   // Determine the date range boundaries
   const fromDateSql = fromDate
     ? Prisma.sql`${fromDate}::timestamp`
-    : Prisma.sql`(SELECT MIN("createdAt") FROM "WorkflowRuntimeData" WHERE ${projectIdsSubqueryFilter})`; // Default: earliest relevant record
+    : Prisma.sql`(SELECT MIN("createdAt") FROM "WorkflowRuntimeData" WHERE ${projectIdsSubqueryFilter} AND parent_runtime_data_id IS NULL)`; // Default: earliest relevant record
 
-  const toDateSql = toDate ? Prisma.sql`${toDate}::timestamp` : Prisma.sql`CURRENT_DATE`; // Default: today
+  const toDateSql = toDate
+    ? Prisma.sql`${toDate}::timestamp`
+    : fromDate
+    ? Prisma.sql`${fromDate}::timestamp`
+    : Prisma.sql`CURRENT_DATE`; // Default: today
 
   return Prisma.sql`
     WITH RECURSIVE dates AS (
@@ -41,7 +45,8 @@ export const buildDailyLiveCasesQuery = (
       LEFT JOIN "WorkflowRuntimeData" w ON
         w."createdAt" <= d.date AND
         (w."resolvedAt" IS NULL OR w."resolvedAt" >= d.date) AND
-        w."projectId" ${projectIdsInClause}
+        w."projectId" ${projectIdsInClause} AND
+        w.parent_runtime_data_id IS NULL
       GROUP BY d.date
     )
     SELECT

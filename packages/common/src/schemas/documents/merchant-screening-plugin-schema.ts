@@ -58,12 +58,14 @@ const AddressSchema = Type.Object({
       maxLength: 3,
     }),
   ),
-  PostalCode: Type.String({
-    description: 'The postal code for the location (only supported for US and Canada merchants).',
-    example: '66579',
-    minLength: 1,
-    maxLength: 10,
-  }),
+  PostalCode: Type.Optional(
+    Type.String({
+      description: 'The postal code for the location (only supported for US and Canada merchants).',
+      example: '66579',
+      minLength: 1,
+      maxLength: 10,
+    }),
+  ),
   Country: Type.String({
     description:
       'The three-digit country code. Valid values are Three digit alpha country codes as defined in ISO 3166-1.',

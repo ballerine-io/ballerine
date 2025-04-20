@@ -1,9 +1,10 @@
 import { Separator } from '@radix-ui/react-separator';
+import qs from 'qs';
 
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
-import { REPORT_TYPE_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { StatsCard } from '@/pages/Home/components/StatsCard/StatsCard';
+import { REPORT_TYPE_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 
 export const DynamicMetricsSection = ({
   locale,
@@ -54,7 +55,12 @@ export const DynamicMetricsSection = ({
         {isMerchantMonitoringEnabled && (
           <StatsCard
             prefix="+"
-            href={`/${locale}/merchant-monitoring?reportType=${REPORT_TYPE_TO_DISPLAY_TEXT.MERCHANT_REPORT_T1}`}
+            href={`/${locale}/merchant-monitoring?${qs.stringify({
+              allowAllDates: !from && !to,
+              reportType: REPORT_TYPE_TO_DISPLAY_TEXT.MERCHANT_REPORT_T1,
+              from: from ?? undefined,
+              to: to ?? undefined,
+            })}`}
             count={addedMerchantsCount}
             title="New Merchants"
             description="Merchants added within the selected time range"

@@ -24,7 +24,10 @@ export interface PrismaGeneralUpsertArgs extends PrismaGeneralQueryArgs {
   where: Record<string, unknown> | null;
 }
 
-const assertIsValidProjectIds = (projectIds: unknown): asserts projectIds is TProjectIds => {
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function assertIsValidProjectIds(
+  projectIds: unknown,
+): asserts projectIds is NonNullable<TProjectIds> {
   if (checkIsNonEmptyArrayOfNonEmptyStrings(projectIds)) {
     return;
   }
@@ -32,7 +35,7 @@ const assertIsValidProjectIds = (projectIds: unknown): asserts projectIds is TPr
   throw new InternalServerErrorException(
     'Project IDs must be a non-empty array of non-empty strings',
   );
-};
+}
 
 @Injectable()
 export class ProjectScopeService {
@@ -40,7 +43,6 @@ export class ProjectScopeService {
     args?: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds?: TProjectIds,
   ): T {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     // @ts-expect-error - dynamically typed for all queries
@@ -62,7 +64,6 @@ export class ProjectScopeService {
     args: Prisma.SelectSubset<T, PrismaGeneralQueryArgs>,
     projectIds: TProjectIds,
   ): T {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     // @ts-expect-error
@@ -81,7 +82,6 @@ export class ProjectScopeService {
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
     projectIds: TProjectIds,
   ): T {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
     // @ts-expect-error - dynamically typed for all queries
     args.where = {
@@ -99,7 +99,6 @@ export class ProjectScopeService {
     args: Prisma.SelectSubset<T, Prisma.FilterUpdateArgs>,
     projectIds: TProjectIds,
   ): T {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     // @ts-expect-error - dynamically typed for all queries
@@ -117,7 +116,6 @@ export class ProjectScopeService {
   }
 
   scopeFindFirst<T>(args: any, projectIds?: TProjectIds): any {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     args.where = {
@@ -133,7 +131,6 @@ export class ProjectScopeService {
   }
 
   scopeDelete<T>(args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>, projectIds?: TProjectIds) {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     // @ts-expect-error - dynamically typed for all queries
@@ -158,7 +155,6 @@ export class ProjectScopeService {
     args: Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any>,
     projectIds?: TProjectIds,
   ): Prisma.SubsetIntersection<T, Prisma.WorkflowRuntimeDataGroupByArgs, any> {
-    // @ts-expect-error - dynamically typed for all queries
     assertIsValidProjectIds(projectIds);
 
     args.where = {

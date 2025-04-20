@@ -6,9 +6,5 @@ export const checkIfStepInRevision = (stepName: string, context: CollectionFlowC
 
   const step = collectionFlow?.steps?.find(step => step.stepName === stepName);
 
-  if (!step) {
-    return false;
-  }
-
-  return step.state === CollectionFlowStepStatesEnum.revision;
+  return step?.state === CollectionFlowStepStatesEnum.revision;
 };

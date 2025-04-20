@@ -7,6 +7,7 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
+import { useMemo } from 'react';
 
 export const useChildDocumentBlocksLogic = ({
   parentWorkflowId,
@@ -29,10 +30,8 @@ export const useChildDocumentBlocksLogic = ({
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
 }) => {
-  const filterId = useFilterId();
   const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
-    filterId,
   });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, parentWorkflow);
@@ -42,7 +41,7 @@ export const useChildDocumentBlocksLogic = ({
     parentWorkflow?.context?.entity?.type === 'business';
   const isKybExampleVariant = checkIsKybExampleVariant(parentWorkflow?.workflowDefinition);
 
-  const childDocumentBlocks = useDocumentBlocks({
+  const { uboDocumentBlocks, directorDocumentBlocks } = useDocumentBlocks({
     workflow: childWorkflow,
     parentMachine,
     noAction,
@@ -84,5 +83,8 @@ export const useChildDocumentBlocksLogic = ({
     },
   });
 
-  return childDocumentBlocks;
+  return useMemo(
+    () => [...uboDocumentBlocks, ...directorDocumentBlocks],
+    [uboDocumentBlocks, directorDocumentBlocks],
+  );
 };

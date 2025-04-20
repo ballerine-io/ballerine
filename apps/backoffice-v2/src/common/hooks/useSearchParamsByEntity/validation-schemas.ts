@@ -42,9 +42,8 @@ export const CaseTabs = [
   'kyb',
   'storeInfo',
   'documents',
-  'ubosKyc',
+  'individuals',
   'associatedCompanies',
-  'directors',
   'monitoringReports',
   'customData',
 ] as const;
@@ -54,9 +53,8 @@ export const TabToLabel = {
   kyb: 'KYB',
   storeInfo: 'Store',
   documents: 'Documents',
-  ubosKyc: 'KYC',
+  individuals: 'Individuals',
   associatedCompanies: 'Associated Companies',
-  directors: 'Directors',
   monitoringReports: 'Web Presence',
   customData: 'Custom Data',
 } as const;

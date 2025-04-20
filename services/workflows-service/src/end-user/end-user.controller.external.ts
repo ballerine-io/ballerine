@@ -24,6 +24,9 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { EndUserCreateWithBusinessDto } from '@/end-user/dtos/end-user-create-with-business';
+import { ApiResponse } from '@nestjs/swagger';
+import { Validate } from 'ballerine-nestjs-typebox';
+import { Type } from '@sinclair/typebox';
 
 @swagger.ApiTags('End Users')
 @common.Controller('external/end-users')
@@ -116,6 +119,35 @@ export class EndUserControllerExternal {
 
       throw err;
     }
+  }
+
+  @common.Post('by-ids')
+  @ApiResponse({
+    status: 200,
+    description: 'End users retrieved successfully',
+    schema: Type.Array(Type.Record(Type.String(), Type.Any())),
+  })
+  @Validate({
+    request: [
+      {
+        type: 'body',
+        schema: Type.Object({
+          ids: Type.Array(Type.String()),
+        }),
+      },
+    ],
+    response: Type.Any(),
+  })
+  @common.HttpCode(200)
+  async getByIds(@common.Body() { ids }: { ids: string[] }, @ProjectIds() projectIds: TProjectIds) {
+    return this.service.list(
+      {
+        where: {
+          id: { in: ids },
+        },
+      },
+      projectIds,
+    );
   }
 
   // curl -v http://localhost:3000/api/v1/external/end-users/:endUserId/workflows

@@ -15,7 +15,6 @@ export const getDirectorEntityFromWorkflow = (workflow: TWorkflowById, document:
 
   return {
     id: foundDirector.ballerineEntityId,
-    firstName: foundDirector.firstName,
-    lastName: foundDirector.lastName,
+    name: [foundDirector.firstName, foundDirector.lastName].filter(Boolean).join(' '),
   };
 };

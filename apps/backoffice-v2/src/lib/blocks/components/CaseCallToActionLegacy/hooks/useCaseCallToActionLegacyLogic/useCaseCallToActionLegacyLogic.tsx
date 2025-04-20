@@ -22,8 +22,6 @@ export const useCaseCallToActionLegacyLogic = ({
   >[number]['workflowDefinition']['contextSchema'];
   isKYC: boolean;
 }) => {
-  const filterId = useFilterId();
-
   // State
   const revisionReasons =
     childWorkflowContextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
@@ -42,7 +40,6 @@ export const useCaseCallToActionLegacyLogic = ({
   // Parent workflow
   const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
-    filterId,
   });
 
   const childWorkflow = parentWorkflow?.childWorkflows?.find(
@@ -91,14 +88,19 @@ export const useCaseCallToActionLegacyLogic = ({
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
   const onMutateApproveCase = useCallback(() => {
-    mutateApproveCase();
-  }, [mutateApproveCase]);
+    mutateApproveCase({
+      ids: documentIds,
+      workflowId: childWorkflowId,
+    });
+  }, [mutateApproveCase, documentIds, childWorkflowId]);
   const onMutateRevisionCase = useCallback(
     (revisionReason: string) => () =>
       mutateRevisionCase({
+        ids: documentIds,
+        workflowId: childWorkflowId,
         revisionReason,
       }),
-    [mutateRevisionCase],
+    [mutateRevisionCase, documentIds, childWorkflowId],
   );
   // /Callbacks
 

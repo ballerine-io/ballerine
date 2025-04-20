@@ -1,4 +1,5 @@
 import { buttonVariants, WarningFilledSvg } from '@ballerine/ui';
+import qs from 'qs';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart } from 'recharts';
@@ -81,11 +82,16 @@ export const PortfolioRiskStatistics: FunctionComponent<
                         riskLevelToFillColor[riskLevel as keyof typeof riskLevelToFillColor],
                         'cursor-pointer outline-none',
                       )}
-                      onClick={() =>
+                      onClick={() => {
                         navigate(
-                          `/${locale}/merchant-monitoring?riskLevels[0]=${riskLevel}&from=${from}&to=${to}`,
-                        )
-                      }
+                          `/${locale}/merchant-monitoring?${qs.stringify({
+                            allowAllDates: !from && !to,
+                            'riskLevels[0]': riskLevel,
+                            from: from ?? undefined,
+                            to: to ?? undefined,
+                          })}`,
+                        );
+                      }}
                     />
                   ))}
                 </Pie>
@@ -121,32 +127,43 @@ export const PortfolioRiskStatistics: FunctionComponent<
         <Card className={'flex h-full flex-col px-3'}>
           <CardHeader className={'pb-2 font-bold'}>Top 10 Content Violations</CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader className={'[&_tr]:border-b-0'}>
-                <TableRow className={'hover:bg-[unset]'}>
-                  <TableHead className={'h-0 ps-0 text-foreground'}>Indicator</TableHead>
-                  <TableHead className={'h-0 px-0 text-foreground'}>Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody ref={parent}>
-                {filteredRiskIndicators.map(({ name, count, id }, index) => (
-                  <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
-                    <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
-                      <Link
-                        to={`/${locale}/merchant-monitoring?findings[0]=${id}&from=${from}&to=${to}`}
-                        className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
-                        style={{ width: `${widths[index]}%` }}
-                      >
-                        {titleCase(name ?? '')}
-                      </Link>
-                    </TableCell>
-                    <TableCell className={'!px-0 pb-0'}>
-                      {Intl.NumberFormat().format(count)}
-                    </TableCell>
+            {filteredRiskIndicators.length ? (
+              <Table>
+                <TableHeader className={'[&_tr]:border-b-0'}>
+                  <TableRow className={'hover:bg-[unset]'}>
+                    <TableHead className={'h-0 ps-0 text-foreground'}>Indicator</TableHead>
+                    <TableHead className={'h-0 px-0 text-foreground'}>Amount</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody ref={parent}>
+                  {filteredRiskIndicators.map(({ name, count, id }, index) => (
+                    <TableRow key={name} className={'border-b-0 hover:bg-[unset]'}>
+                      <TableCell className={ctw('pb-0 ps-0', index !== 0 && 'pt-2')}>
+                        <Link
+                          to={`/${locale}/merchant-monitoring?${qs.stringify({
+                            allowAllDates: !from && !to,
+                            'findings[0]': id,
+                            from: from ?? undefined,
+                            to: to ?? undefined,
+                          })}`}
+                          className={`block h-full cursor-pointer rounded bg-blue-200 p-1 transition-all`}
+                          style={{ width: `${widths[index]}%` }}
+                        >
+                          {titleCase(name ?? '')}
+                        </Link>
+                      </TableCell>
+                      <TableCell className={'!px-0 pb-0'}>
+                        {Intl.NumberFormat().format(count)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className={'flex h-72 w-full items-center justify-center text-slate-500'}>
+                No Data Available
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -163,7 +180,12 @@ export const PortfolioRiskStatistics: FunctionComponent<
                   </span>
                 </div>
                 <Link
-                  to={`/${locale}/merchant-monitoring?from=${from}&to=${to}&isAlert=Alerted`}
+                  to={`/${locale}/merchant-monitoring?${qs.stringify({
+                    allowAllDates: !from && !to,
+                    isAlert: 'Alerted',
+                    from: from ?? undefined,
+                    to: to ?? undefined,
+                  })}`}
                   className={ctw(
                     buttonVariants({
                       variant: 'link',

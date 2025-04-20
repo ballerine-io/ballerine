@@ -19,9 +19,6 @@ const composeDataFormCell = (
     },
   };
 };
-const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
-  return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
-};
 
 export const composePickableCategoryType = (
   categoryValue: string,
@@ -31,6 +28,7 @@ export const composePickableCategoryType = (
 ) => {
   const documentCategoryDropdownOptions: TDropdownOption[] = [];
   const documentTypesDropdownOptions: TDropdownOption[] = [];
+
   documentsSchemas.forEach(document => {
     const { type, category } = document;
     const isCategoryInDropdownOptions = documentCategoryDropdownOptions.some(
