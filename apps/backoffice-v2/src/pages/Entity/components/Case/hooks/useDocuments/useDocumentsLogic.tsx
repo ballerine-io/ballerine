@@ -3,7 +3,6 @@ import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react';
 import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
 import { useCrop } from '@/common/hooks/useCrop/useCrop';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
 import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
@@ -18,7 +17,6 @@ export const useDocumentsLogic = (_initialDocuments: IDocumentsProps['documents'
   const { data: customer } = useCustomerQuery();
   const { crop, isCropping, onCrop, onCancelCrop } = useCrop();
   const selectedImageRef = useRef<HTMLImageElement>();
-  const recognize = useTesseract();
   const filterId = useFilterId();
 
   const skeletons = createArrayOfNumbers(4);
