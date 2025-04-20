@@ -17,6 +17,7 @@ export const initializeMonitoring = () => {
   if (env.VITE_POSTHOG_KEY && env.VITE_POSTHOG_HOST) {
     posthog.init(env.VITE_POSTHOG_KEY, {
       api_host: env.VITE_POSTHOG_HOST,
+      persistence: 'sessionStorage',
       person_profiles: 'identified_only',
       loaded: ph => {
         ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
