@@ -337,12 +337,10 @@ export const useDirectorBlock = ({
                       contextUpdateMethod: 'director',
                       value: {
                         id: document.id,
-                        data: Object.entries(
-                          {
-                            ...additionalProperties,
-                            ...document.propertiesSchema?.properties,
-                          } ?? {},
-                        )?.map(
+                        data: Object.entries({
+                          ...additionalProperties,
+                          ...document.propertiesSchema?.properties,
+                        })?.map(
                           ([
                             title,
                             {
