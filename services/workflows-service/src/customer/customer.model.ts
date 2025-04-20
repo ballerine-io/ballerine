@@ -53,6 +53,13 @@ export class CustomerModel {
   })
   @IsString()
   country?: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'Customer ID in HubSpot CRM',
+  })
+  @IsString()
+  hubspotCustomerId?: string;
 }
 
 export class Subscription {
