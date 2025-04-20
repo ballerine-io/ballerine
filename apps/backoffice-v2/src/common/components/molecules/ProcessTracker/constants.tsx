@@ -6,6 +6,9 @@ import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 import { CollectionFlowStepStatesEnum, ProcessStatus, StateTag } from '@ballerine/common';
 import { CheckCircle } from '@ballerine/ui';
 import { Pencil } from '../../atoms/Pencil/Pencil';
+import { COLLECTION_FLOW_PROCESS_NAME } from './trackers/collection-flow/consts';
+import { UBO_FLOW_PROCESS_NAME } from './trackers/ubo-flows/consts';
+import { THIRD_PARTY_PROCESS_NAME } from './trackers/third-party/consts';
 
 export const tagToAccordionCardItem = {
   [StateTag.COLLECTION_FLOW]: 'Collection flow',
@@ -108,17 +111,8 @@ export const tagToIcon = {
   [StateTag.REVISION]: Icon.REFRESH,
 } as const;
 
-export const pluginsWhiteList = [
-  'kyb',
-  'ubo',
-  'company_sanctions',
-  'merchant_monitoring',
-  'businessInformation',
-  'companySanctions',
-  'merchantMonitoring',
-  'merchantScreening',
-  'bankAccountVerification',
-  'commercialCreditCheck',
-] as const;
-
-export const DEFAULT_PROCESS_TRACKER_PROCESSES = ['collection-flow', 'third-party', 'ubos'];
+export const DEFAULT_PROCESS_TRACKER_PROCESSES = [
+  COLLECTION_FLOW_PROCESS_NAME,
+  THIRD_PARTY_PROCESS_NAME,
+  UBO_FLOW_PROCESS_NAME,
+];
