@@ -21,9 +21,6 @@ export class SessionSerializer extends PassportSerializer {
     done(null, {
       user: {
         id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
       },
       expires: date,
       type: 'user',
