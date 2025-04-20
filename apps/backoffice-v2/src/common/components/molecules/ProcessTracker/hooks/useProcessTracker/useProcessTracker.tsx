@@ -1,14 +1,9 @@
 import { tagToAccordionCardItem } from '@/common/components/molecules/ProcessTracker/constants';
 import { IUseProcessTrackerLogicParams } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/interfaces';
-import { processTrackersMap } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters';
-import { IProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PROCESS_TRACKERS } from '../../process-trackers';
 
-export const useProcessTracker = ({
-  plugins,
-  workflow,
-  processes,
-}: IUseProcessTrackerLogicParams) => {
+export const useProcessTracker = ({ workflow, processes }: IUseProcessTrackerLogicParams) => {
   const tags = useMemo(() => workflow?.tags || [], [workflow]);
   const tag = useMemo(
     () => tags?.find(tag => tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]),
@@ -20,34 +15,26 @@ export const useProcessTracker = ({
     setUncollapsedItemValue(value);
   }, []);
 
-  const processTrackers = useMemo(
+  const trackedProcesses = useMemo(
     () =>
-      processes.reduce((list, processName) => {
-        const ProcessTracker = processTrackersMap[processName as keyof typeof processTrackersMap];
+      processes
+        .map(process => {
+          const ProcessTracker = PROCESS_TRACKERS[process as keyof typeof PROCESS_TRACKERS];
 
-        if (!ProcessTracker) {
-          console.warn(`${processName} is unsupported.`);
+          if (!ProcessTracker) {
+            console.warn(`${process} is unsupported.`);
 
-          return list;
-        }
+            return null;
+          }
 
-        list.push(new ProcessTracker(workflow, plugins));
-
-        return list;
-      }, [] as IProcessTracker[]),
-    [workflow, plugins, processes],
+          return {
+            name: process,
+            Component: ProcessTracker,
+          };
+        })
+        .filter(Boolean),
+    [processes],
   );
-
-  const trackedProcesses = useMemo(() => {
-    return processTrackers.map(processTracker => {
-      return {
-        title: processTracker.getTitle(),
-        name: processTracker.PROCESS_NAME,
-        params: processTracker.getItemParams(),
-        subitems: processTracker.buildItems(),
-      };
-    });
-  }, [processTrackers]);
 
   useEffect(() => {
     onValueChange(tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]);
