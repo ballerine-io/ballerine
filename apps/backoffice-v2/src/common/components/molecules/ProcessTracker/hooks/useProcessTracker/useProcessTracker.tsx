@@ -19,7 +19,7 @@ export const useProcessTracker = ({ workflow, processes }: IUseProcessTrackerLog
     () =>
       processes
         .map(process => {
-          const ProcessTracker = PROCESS_TRACKERS.find(tracker => tracker.name === process);
+          const ProcessTracker = PROCESS_TRACKERS[process as keyof typeof PROCESS_TRACKERS];
 
           if (!ProcessTracker) {
             console.warn(`${process} is unsupported.`);
@@ -29,7 +29,7 @@ export const useProcessTracker = ({ workflow, processes }: IUseProcessTrackerLog
 
           return {
             name: process,
-            Component: ProcessTracker?.Component,
+            Component: ProcessTracker,
           };
         })
         .filter(Boolean),

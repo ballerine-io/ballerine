@@ -1,4 +1,4 @@
-import { IProcessTracker } from './interfaces';
+import { TTrackerComponentProps } from './components/Tracker/interfaces';
 import { CollectionFlowTracker } from './trackers/collection-flow';
 import { COLLECTION_FLOW_PROCESS_NAME } from './trackers/collection-flow/consts';
 import { MerchantMonitoringTracker } from './trackers/merchant-monitoring';
@@ -8,21 +8,9 @@ import { THIRD_PARTY_PROCESS_NAME } from './trackers/third-party/consts';
 import { UBOFlowsTracker } from './trackers/ubo-flows';
 import { UBO_FLOW_PROCESS_NAME } from './trackers/ubo-flows/consts';
 
-export const PROCESS_TRACKERS: IProcessTracker[] = [
-  {
-    name: COLLECTION_FLOW_PROCESS_NAME,
-    Component: CollectionFlowTracker,
-  },
-  {
-    name: THIRD_PARTY_PROCESS_NAME,
-    Component: ThirdPartyTracker,
-  },
-  {
-    name: UBO_FLOW_PROCESS_NAME,
-    Component: UBOFlowsTracker,
-  },
-  {
-    name: MERCHANT_MONITORING_PROCESS_NAME,
-    Component: MerchantMonitoringTracker,
-  },
-] as const;
+export const PROCESS_TRACKERS: Record<string, React.ComponentType<TTrackerComponentProps>> = {
+  [COLLECTION_FLOW_PROCESS_NAME]: CollectionFlowTracker,
+  [THIRD_PARTY_PROCESS_NAME]: ThirdPartyTracker,
+  [UBO_FLOW_PROCESS_NAME]: UBOFlowsTracker,
+  [MERCHANT_MONITORING_PROCESS_NAME]: MerchantMonitoringTracker,
+} as const;

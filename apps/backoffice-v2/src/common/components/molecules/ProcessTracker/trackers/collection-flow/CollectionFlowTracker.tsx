@@ -1,6 +1,6 @@
 import { TTrackerComponentProps } from '../../components/Tracker/interfaces';
 import { Tracker } from '../../components/Tracker/Tracker';
-import { CollectionFlowProcessTitle } from './components/CollectionFlowProcessTitle';
+import { CollectionFlowProcessTitle } from './components/CollectionFlowStepItem/components/CollectionFlowProcessTitle';
 import { COLLECTION_FLOW_PROCESS_NAME } from './consts';
 import { useCollectionFlowSteps } from './hooks/useCollectionFlowSteps';
 import { useCollectionFlowTrackerItems } from './hooks/useCollectionFlowTrackerItems';
