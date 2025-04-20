@@ -42,19 +42,19 @@ export const serverEnvSchema = {
 
       return val;
     })
-    .default(false),
+    .default(true),
 
   SESSION_HTTP_ONLY: z
     .union([z.literal('true'), z.literal('false'), z.boolean()])
     .transform(val => {
       return val === 'true';
     })
-    .default(false),
+    .default(true),
 
   SESSION_SECURE_COOKIE: z
     .union([z.literal('true'), z.literal('false'), z.boolean()])
     .transform((val: unknown) => val === 'true')
-    .default(false),
+    .default(true),
 
   SESSION_SECURE_PROXY: z
     .union([z.literal('true'), z.literal('false'), z.boolean()])
