@@ -14,6 +14,14 @@ const urlArrayTransformer = (value: string) => {
   return urlArray.map(url => urlSchema.parse(url)).sort((a, b) => a.length - b.length);
 };
 
+const booleanSchema = z
+  .union([z.literal('true'), z.literal('false'), z.boolean()])
+  .transform(val => val === 'true' || val === true);
+
+const optionalBooleanSchema = z
+  .preprocess(val => val === 'true' || val === true, z.boolean())
+  .optional();
+
 export const serverEnvSchema = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
@@ -23,6 +31,12 @@ export const serverEnvSchema = {
   PORT: z.coerce.number(),
   DB_URL: z.string().url(),
   SESSION_SECRET: z.string(),
+  SESSION_SAME_SITE: z
+    .union([z.literal('strict'), z.literal('lax'), z.literal('none')])
+    .default('strict'),
+  SESSION_HTTP_ONLY: booleanSchema.default(true),
+  SESSION_SECURE_COOKIE: booleanSchema.default(true),
+  SESSION_SECURE_PROXY: booleanSchema.default(false),
   HASHING_KEY_SECRET: z.string().optional(),
   HASHING_KEY_SECRET_BASE64: z.string().refine(Base64.isValid).optional(),
   SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
@@ -93,19 +107,13 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
-  SYNC_UNIFIED_API: z
-    .preprocess(val => val === 'true' || val === true, z.boolean())
-    .optional()
-    .default(true),
+  SYNC_UNIFIED_API: optionalBooleanSchema.default(true),
   DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
   MAGIC_LINK_AUTH_JWT_SECRET: z.string(),
   MAGIC_LINK_AUTH_JWT_ALGORITHMS: z.string().default('HS256'),
   POSTHOG_HOST: z.string().optional(),
   POSTHOG_KEY: z.string().optional(),
-  WORKFLOW_LOGGING_ENABLED: z
-    .preprocess(val => val === 'true' || val === true, z.boolean())
-    .optional()
-    .default(false),
+  WORKFLOW_LOGGING_ENABLED: optionalBooleanSchema.default(false),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

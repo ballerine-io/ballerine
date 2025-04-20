@@ -59,7 +59,12 @@ export const ReadOnlyDetail: FunctionComponent<{
 
   if (parse?.boolean && typeof children === 'boolean') {
     return (
-      <Checkbox_ {...props} checked={children} className={ctw('border-[#E5E7EB]', className)} />
+      <Checkbox_
+        {...props}
+        checked={children}
+        className={ctw('border-[#E5E7EB]', className)}
+        disabled
+      />
     );
   }
 
