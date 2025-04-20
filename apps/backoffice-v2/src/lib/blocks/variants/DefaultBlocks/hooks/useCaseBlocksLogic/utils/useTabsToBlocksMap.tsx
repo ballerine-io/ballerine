@@ -123,10 +123,22 @@ export const useTabsToBlocksMap = ({
     const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
       childWorkflow?.nextEvents ?? [],
     );
-    const { amlHits, ...endUser } =
-      endUsers?.find(
-        endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
-      ) ?? {};
+    const {
+      amlHits,
+      id: _id,
+      additionalInfo,
+      ...endUserRest
+    } = endUsers?.find(
+      endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+    ) ?? {};
+    const {
+      gender,
+      dateOfBirth,
+      role,
+      isAuthorizedSignatory,
+      percentageOfOwnership,
+      ...additionalInfoRest
+    } = additionalInfo ?? {};
 
     return {
       status,
@@ -134,11 +146,23 @@ export const useTabsToBlocksMap = ({
       kycSession: omitPropsFromObject(
         childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
         'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
       ),
       aml: {
         hits: amlHits,
       },
-      entityData: endUser,
+      entityData: {
+        ...endUserRest,
+        additionalInfo: additionalInfoRest,
+        gender,
+        dateOfBirth,
+        role,
+        isAuthorizedSignatory,
+        percentageOfOwnership,
+      },
       isActionsDisabled:
         !caseState.actionButtonsEnabled || !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       isLoadingReuploadNeeded: isLoadingRevisionCase,
@@ -196,12 +220,30 @@ export const useTabsToBlocksMap = ({
   }: NonNullable<
     TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
   >[number]) => {
+    const { id: _id, additionalInfo, ...directorRest } = director ?? {};
+    const {
+      gender,
+      dateOfBirth,
+      role,
+      isAuthorizedSignatory,
+      percentageOfOwnership,
+      ...additionalInfoRest
+    } = additionalInfo ?? {};
+
     return {
       status: undefined,
       documents: director?.documents,
       kycSession,
       aml,
-      entityData: director,
+      entityData: {
+        ...directorRest,
+        additionalInfo: additionalInfoRest,
+        gender,
+        dateOfBirth,
+        role,
+        isAuthorizedSignatory,
+        percentageOfOwnership,
+      },
       isActionsDisabled: true,
       isLoadingReuploadNeeded: false,
       isLoadingApprove: false,
