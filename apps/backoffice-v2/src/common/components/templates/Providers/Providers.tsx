@@ -10,10 +10,11 @@ import { env } from '@/common/env/env';
 export const Providers: FunctionComponent<PropsWithChildren> = ({ children }) => {
   return (
     <PostHogProvider
-      apiKey={env.VITE_POSTHOG_KEY}
+      apiKey={env.VITE_POSTHOG_KEY ?? ''}
       options={{
-        api_host: env.VITE_POSTHOG_HOST,
+        api_host: env.VITE_POSTHOG_HOST ?? '',
         person_profiles: 'identified_only',
+        persistence: 'sessionStorage',
         loaded: ph => {
           ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
         },

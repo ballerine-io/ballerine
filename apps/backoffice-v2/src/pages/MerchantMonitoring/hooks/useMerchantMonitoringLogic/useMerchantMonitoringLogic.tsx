@@ -103,12 +103,13 @@ export const useMerchantMonitoringLogic = () => {
       findings,
       isAlert,
       isCreating,
+      allowAllDates,
     },
     setSearchParams,
   ] = useZodSearchParams(MerchantMonitoringSearchSchema, { replace: true });
 
   useEffect(() => {
-    if (from || to || !customer) {
+    if (from || to || !customer || allowAllDates) {
       return;
     }
 
@@ -145,7 +146,7 @@ export const useMerchantMonitoringLogic = () => {
         status === 'in-progress' ? ['in-progress', 'quality-control', 'failed'] : [status],
       ) as TReportStatusValue[],
     from,
-    to,
+    to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
     ...(isAlert !== 'All' && { isAlert: DISPLAY_TEXT_TO_IS_ALERT[isAlert] }),
   };
 
@@ -231,7 +232,7 @@ export const useMerchantMonitoringLogic = () => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
-    setSearchParams({ from, to });
+    setSearchParams({ from, to, allowAllDates: !from && !to });
   };
 
   const multiselectProps = useMemo(

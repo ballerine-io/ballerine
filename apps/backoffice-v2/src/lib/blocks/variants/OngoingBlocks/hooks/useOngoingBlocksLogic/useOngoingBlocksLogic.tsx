@@ -7,11 +7,9 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 
 export const useOngoingBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
 
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId: workflowId ?? '',
-    filterId: filterId ?? '',
   });
 
   const amlData = useMemo(() => [workflow?.context?.aml], [workflow?.context?.aml]);

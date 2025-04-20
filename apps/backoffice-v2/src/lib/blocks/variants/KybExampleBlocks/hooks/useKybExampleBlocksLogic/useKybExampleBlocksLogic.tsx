@@ -34,10 +34,8 @@ import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutati
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId: workflowId ?? '',
-    filterId: filterId ?? '',
   });
   const { noAction } = useCaseDecision();
   const { data: session } = useAuthenticatedUserQuery();
@@ -51,12 +49,6 @@ export const useKybExampleBlocksLogic = () => {
     openCorporate: _openCorporate,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const directorsRegistryProvided = useMemo(() => {
-    return workflow?.context?.pluginsOutput?.directors?.data?.map(({ name, position }) => ({
-      name,
-      position,
-    }));
-  }, [workflow?.context?.pluginsOutput?.directors?.data]);
 
   const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
   const onClose = useCallback(
@@ -121,7 +113,7 @@ export const useKybExampleBlocksLogic = () => {
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
-  const documentsBlocks = useDocumentBlocks({
+  const { businessDocumentBlocks: documentsBlocks } = useDocumentBlocks({
     workflow,
     parentMachine: workflow?.context?.parentMachine,
     noAction,
@@ -163,10 +155,6 @@ export const useKybExampleBlocksLogic = () => {
     workflow,
     mainRepresentative,
   });
-
-  const directorsRegistryProvidedBlock =
-    useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
-  const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
   const { mutate: mutateRemoveTaskDecisionById } = useRemoveTaskDecisionByIdMutation(workflow?.id);
   const {
@@ -353,8 +341,6 @@ export const useKybExampleBlocksLogic = () => {
       ...businessInformation,
       ...mainRepresentativeBlock,
       ...documentsBlocks,
-      ...directorsRegistryProvidedBlock,
-      ...directorsUserProvidedBlock,
       ...directorsBlock,
       ...associatedCompaniesBlock,
       ...associatedCompaniesInformationBlock,
@@ -363,8 +349,6 @@ export const useKybExampleBlocksLogic = () => {
     businessInformation,
     mainRepresentativeBlock,
     documentsBlocks,
-    directorsRegistryProvidedBlock,
-    directorsUserProvidedBlock,
     directorsBlock,
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
