@@ -23,6 +23,25 @@ export const serverEnvSchema = {
   PORT: z.coerce.number(),
   DB_URL: z.string().url(),
   SESSION_SECRET: z.string(),
+  SESSION_SAME_SITE: z
+    .union([z.literal('strict'), z.literal('lax'), z.literal('none')])
+    .default('strict'),
+  SESSION_HTTP_ONLY: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .transform(val => {
+      return val === 'true';
+    })
+    .default(true),
+  SESSION_SECURE_COOKIE: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .transform((val: unknown) => val === 'true')
+    .default(true),
+  SESSION_SECURE_PROXY: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .transform(val => {
+      return val === 'true';
+    })
+    .default(false),
   HASHING_KEY_SECRET: z.string().optional(),
   HASHING_KEY_SECRET_BASE64: z.string().refine(Base64.isValid).optional(),
   SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
