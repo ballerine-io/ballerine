@@ -22,6 +22,16 @@ export const initializeMonitoring = () => {
         ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
       },
     });
+
+    const originalCapture = posthog.capture;
+    posthog.capture = (eventName, properties = {}, options) => {
+      const propertiesWithEnv = {
+        ...properties,
+        environment: env.VITE_ENVIRONMENT_NAME,
+      };
+
+      return originalCapture.call(posthog, eventName, propertiesWithEnv, options);
+    };
   }
 
   if (env.VITE_SENTRY_DSN) {

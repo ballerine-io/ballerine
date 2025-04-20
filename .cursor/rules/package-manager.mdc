@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: package-manager.mdc
+Description: Use pnpm as the package manager for the project
+
+# Package Manager Requirements
+
+## Always Use pnpm
+- Always use `pnpm` instead of `npm` or `yarn`
+- Never suggest or run `npm install` or `yarn install` - use `pnpm install` instead
+- Never suggest or run `npm run` or `yarn` - use `pnpm` instead
+- Use `pnpm add` for adding dependencies instead of `npm install` or `yarn add`
+- Use `pnpm remove` for removing dependencies instead of `npm uninstall` or `yarn remove`
+- Use `pnpm` for all script execution (e.g., `pnpm start`, `pnpm build`, `pnpm test`, etc.)
+
+## Examples
+```bash
+# ✅ Correct usage
+pnpm install
+pnpm add react
+pnpm remove lodash
+pnpm start
+pnpm run build
+pnpm test
+
+# ❌ Incorrect usage - don't use these
+npm install
+npm run start
+yarn
+yarn add react
+yarn remove lodash
+```
+
+## Project Structure
+- The project uses `pnpm-workspace.yaml` for monorepo management
+- All package installation and script execution should be done through pnpm
+- Always respect the existing lock files (pnpm-lock.yaml)
+
+## Troubleshooting
+- If encountering issues with dependencies, suggest running `pnpm install` first
+- For cleaning node_modules, suggest `rm -rf node_modules && pnpm install`
+- Use `pnpm why <package>` to explain why a package is installed 

@@ -4,8 +4,7 @@ import { KYBParentKYCSessionExampleContext } from '@/workflow/types';
 import { Customer, WorkflowRuntimeData } from '@prisma/client';
 
 export class KYBParentKYCSessionExampleAdapter
-  implements IWorkflowAdapter<KYBParentKYCSessionExampleFlowData>
-{
+  implements IWorkflowAdapter<KYBParentKYCSessionExampleFlowData> {
   serialize(workflow: WorkflowRuntimeData): KYBParentKYCSessionExampleFlowData {
     const flowData = new KYBParentKYCSessionExampleFlowData();
     const context = workflow.context as KYBParentKYCSessionExampleContext;
