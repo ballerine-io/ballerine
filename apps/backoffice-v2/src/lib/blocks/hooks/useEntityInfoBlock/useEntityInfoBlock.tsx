@@ -1,8 +1,5 @@
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
@@ -11,13 +8,14 @@ import { titleCase } from 'string-ts';
 export const useEntityInfoBlock = ({
   entity,
   workflow,
+  onEdit,
+  isEditDisabled,
 }: {
   entity: TWorkflowById['context']['entity'];
   workflow: TWorkflowById;
+  onEdit: () => void;
+  isEditDisabled: boolean;
 }) => {
-  const { onEditCollectionFlow } = useEditCollectionFlow();
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user ?? null, workflow);
   const predefinedOrder = useMemo(
     () =>
       workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
@@ -66,9 +64,9 @@ export const useEntityInfoBlock = ({
                 type: 'callToAction',
                 value: {
                   text: 'Edit',
-                  onClick: onEditCollectionFlow({ steps: ['company_details'] }),
+                  onClick: onEdit,
                   props: {
-                    disabled: [!caseState.actionButtonsEnabled].some(Boolean),
+                    disabled: isEditDisabled,
                     variant: 'outline',
                     className:
                       'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 min-w-[3.9169rem]',
@@ -104,8 +102,7 @@ export const useEntityInfoBlock = ({
             ),
             isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
-          .build()
-          .flat(1),
+          .buildFlat(),
       })
       .build();
   }, [entity, workflow]);

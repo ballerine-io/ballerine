@@ -61,9 +61,9 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { TAllBlocks } from './constants';
 import { titleCase } from 'string-ts';
-import { valueOrNA } from '@ballerine/common';
+import { StateTag, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
-import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -225,9 +225,18 @@ export const useDefaultBlocksLogic = () => {
     },
   });
 
+  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user ?? null, workflow);
+
   const entityInfoBlock = useEntityInfoBlock({
     entity: workflow?.context?.entity,
     workflow,
+    isEditDisabled: [
+      !caseState.actionButtonsEnabled,
+      !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+    ].some(Boolean),
+    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
 
   const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({

@@ -1,6 +1,5 @@
 import { Button } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
@@ -14,8 +13,6 @@ import {
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { createDirectorsBlocks } from '@/lib/blocks/components/DirectorBlock/hooks/useDirectorBlock/create-directors-blocks';
-import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
-import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
@@ -31,6 +28,8 @@ import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/u
 import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useReviseDocumentByIdMutation/useReviseDocumentByIdMutation';
 import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
+import { StateTag } from '@ballerine/common';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -105,11 +104,18 @@ export const useKybExampleBlocksLogic = () => {
   );
 
   // Blocks
+  const { onEditCollectionFlow } = useEditCollectionFlow();
+
   const businessInformation = useEntityInfoBlock({
-    entity: workflow?.context?.entity ?? {},
+    entity: workflow?.context?.entity,
     workflow,
-    entityDataAdditionalInfo,
+    isEditDisabled: [
+      !caseState.actionButtonsEnabled,
+      !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+    ].some(Boolean),
+    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
+
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';

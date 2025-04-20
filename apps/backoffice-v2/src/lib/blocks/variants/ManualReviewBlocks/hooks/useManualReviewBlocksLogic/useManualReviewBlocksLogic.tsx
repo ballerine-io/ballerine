@@ -1,4 +1,3 @@
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
@@ -9,6 +8,8 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
+import { StateTag } from '@ballerine/common';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -56,10 +57,16 @@ export const useManualReviewBlocksLogic = () => {
     [mutateRevisionTaskById],
   );
 
+  const { onEditCollectionFlow } = useEditCollectionFlow();
+
   const businessInformation = useEntityInfoBlock({
-    entity: workflow?.context?.entity ?? {},
+    entity: workflow?.context?.entity,
     workflow,
-    entityDataAdditionalInfo,
+    isEditDisabled: [
+      !caseState.actionButtonsEnabled,
+      !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+    ].some(Boolean),
+    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
