@@ -399,10 +399,10 @@ importers:
         version: 6.6.3
       '@testing-library/react':
         specifier: ^16.1.0
-        version: 16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 16.2.0(@testing-library/dom@8.20.1)(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/user-event':
         specifier: ^14.5.2
-        version: 14.6.1(@testing-library/dom@10.4.0)
+        version: 14.6.1(@testing-library/dom@8.20.1)
       '@total-typescript/ts-reset':
         specifier: ^0.5.1
         version: 0.5.1
@@ -490,6 +490,9 @@ importers:
       tailwindcss:
         specifier: ^3.2.4
         version: 3.4.17(ts-node@10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@18.17.19)(typescript@5.8.2))
+      terser:
+        specifier: ^5.39.0
+        version: 5.39.0
       type-fest:
         specifier: ^4.23.0
         version: 4.23.0
@@ -21630,7 +21633,7 @@ snapshots:
       '@commitlint/types': 19.5.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21647,7 +21650,7 @@ snapshots:
       '@commitlint/types': 19.5.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.1.6)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@5.1.6)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21681,7 +21684,7 @@ snapshots:
       '@commitlint/types': 19.5.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21698,7 +21701,7 @@ snapshots:
       '@commitlint/types': 19.5.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.1.6)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@5.1.6)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -26642,10 +26645,10 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@testing-library/react@16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@testing-library/react@16.2.0(@testing-library/dom@8.20.1)(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.26.9
-      '@testing-library/dom': 10.4.0
+      '@testing-library/dom': 8.20.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
@@ -26665,6 +26668,10 @@ snapshots:
   '@testing-library/user-event@14.6.1(@testing-library/dom@10.4.0)':
     dependencies:
       '@testing-library/dom': 10.4.0
+
+  '@testing-library/user-event@14.6.1(@testing-library/dom@8.20.1)':
+    dependencies:
+      '@testing-library/dom': 8.20.1
 
   '@testing-library/user-event@14.6.1(@testing-library/dom@9.3.4)':
     dependencies:
@@ -30169,18 +30176,18 @@ snapshots:
       ts-node: 10.9.2(@swc/core@1.11.5(@swc/helpers@0.5.15))(@types/node@20.5.1)(typescript@5.8.2)
       typescript: 5.8.2
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@4.9.5):
     dependencies:
       '@types/node': 18.17.19
-      cosmiconfig: 9.0.0(typescript@4.9.5)
+      cosmiconfig: 9.0.0(typescript@5.8.2)
       jiti: 2.4.2
       typescript: 4.9.5
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@5.1.6):
     dependencies:
       '@types/node': 18.17.19
-      cosmiconfig: 9.0.0(typescript@5.1.6)
+      cosmiconfig: 9.0.0(typescript@5.8.2)
       jiti: 2.4.2
       typescript: 5.1.6
     optional: true
@@ -30193,18 +30200,18 @@ snapshots:
       typescript: 5.8.2
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@4.9.5):
     dependencies:
       '@types/node': 22.13.5
-      cosmiconfig: 9.0.0(typescript@4.9.5)
+      cosmiconfig: 9.0.0(typescript@5.8.2)
       jiti: 2.4.2
       typescript: 4.9.5
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.8.2))(typescript@5.1.6):
     dependencies:
       '@types/node': 22.13.5
-      cosmiconfig: 9.0.0(typescript@5.1.6)
+      cosmiconfig: 9.0.0(typescript@5.8.2)
       jiti: 2.4.2
       typescript: 5.1.6
     optional: true
