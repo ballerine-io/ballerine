@@ -48,7 +48,7 @@ export const CompletedScreen: FunctionComponent<ICompletedScreenProps> = ({ redi
           </div>
         )}
         {redirectUrl && (
-          <div className="flex justify-center mt-4 items-center">
+          <div className="mt-4 flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-gray-900" />
             <span className="ml-2 text-sm text-gray-500">Redirecting...</span>
           </div>

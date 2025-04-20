@@ -40,10 +40,10 @@ const businessesSortByOptions = [
 
 export const useCases = () => {
   const { entityId: workflowId } = useParams();
-  const [{ filterId, filter, sortBy }] = useSearchParamsByEntity();
+  const [{ filter, sortBy }] = useSearchParamsByEntity();
   const entity = useEntityType();
 
-  const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId });
 
   const states = useMemo(
     () => workflow?.workflowDefinition.definition.states,
@@ -94,7 +94,7 @@ export const useCases = () => {
                 value: 'caseStatus',
                 options: [
                   ...(statuses?.map(status => ({
-                    label: tagToBadgeData[status]?.text,
+                    label: tagToBadgeData[status as keyof typeof tagToBadgeData]?.text,
                     value: status,
                     key: status,
                   })) ?? []),

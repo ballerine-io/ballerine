@@ -37,7 +37,7 @@ export class MetricsService {
     approvedCasesByRisk: CasesByRiskLevelMetricModel[];
   }> {
     const [casesByStatus, ongoingCasesByRisk, approvedCasesByRisk] = await Promise.all([
-      this.metricsRepository.getCasesByStatus(projectIds),
+      this.metricsRepository.getActiveCasesByState(projectIds),
       this.metricsRepository.getCasesByRiskLevel(projectIds, 'active'),
       this.metricsRepository.getCasesByRiskLevel(projectIds, 'completed'),
     ]);

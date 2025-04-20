@@ -45,8 +45,8 @@ export const Home: FunctionComponent = () => {
     statusConfig,
     ongoingRiskConfig,
     approvedRiskConfig,
-    getStatusColor,
-    getRiskColor,
+    getStatusDefinition,
+    getRiskDefinition,
   } = useHomeLogic();
 
   if (isLoadingCustomer || isLoadingMetrics || isLoadingCurrentStats) {
@@ -93,8 +93,8 @@ export const Home: FunctionComponent = () => {
               statusConfig={statusConfig}
               ongoingRiskConfig={ongoingRiskConfig}
               approvedRiskConfig={approvedRiskConfig}
-              getStatusColor={getStatusColor}
-              getRiskColor={getRiskColor}
+              getStatusDefinition={getStatusDefinition}
+              getRiskDefinition={getRiskDefinition}
             />
 
             <DynamicMetricsSection

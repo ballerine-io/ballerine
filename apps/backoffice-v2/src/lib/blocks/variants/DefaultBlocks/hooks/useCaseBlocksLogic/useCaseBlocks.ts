@@ -1,12 +1,12 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { getTabsToBlocksMap } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-tabs-block-map';
+import { useTabsToBlocksMap } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/useTabsToBlocksMap';
 import { getVariantTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/get-variant-tabs';
-import { Blocks } from '@ballerine/blocks';
 import { useMemo } from 'react';
 import { z } from 'zod';
 import { CaseTabsSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { useEnsureActiveTabIsInTheme } from '@/lib/blocks/variants/DefaultBlocks/hooks/useEnsureActiveTabIsInTheme/useEnsureActiveTabIsInTheme';
+import { TAllBlocks } from '../useDefaultBlocksLogic/constants';
 
 export type TCaseBlocksLogicParams = {
   workflow: TWorkflowById;
@@ -20,7 +20,7 @@ export type TCaseBlocksLogicParams = {
     reason?: string;
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
-  blocks: Blocks;
+  blocks: TAllBlocks;
   config: TWorkflowById['workflowDefinition']['config'];
   activeTab: z.output<typeof CaseTabsSchema>;
 };
@@ -33,15 +33,11 @@ export const useCaseBlocks = ({
   config,
   activeTab,
 }: TCaseBlocksLogicParams) => {
-  const tabBlocks = useMemo(
-    () =>
-      getTabsToBlocksMap({
-        blocks,
-        blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
-        theme: config?.theme,
-      }),
-    [workflow, blocks, onReuploadNeeded, isLoadingReuploadNeeded, config?.theme],
-  );
+  const tabBlocks = useTabsToBlocksMap({
+    blocks,
+    blocksCreationParams: { workflow, onReuploadNeeded, isLoadingReuploadNeeded },
+    theme: config?.theme,
+  });
   const tabs = useMemo(() => {
     if (!config?.theme) {
       return [];

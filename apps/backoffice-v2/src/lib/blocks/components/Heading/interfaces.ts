@@ -1,7 +1,7 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 export interface IHeadingProps {
   id?: string;
-  value: string;
+  value: ReactNode;
   props?: ComponentProps<'h2'>;
 }

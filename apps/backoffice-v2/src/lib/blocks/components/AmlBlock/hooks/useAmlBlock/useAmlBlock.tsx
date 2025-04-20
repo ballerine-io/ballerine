@@ -1,6 +1,6 @@
 import { titleCase } from 'string-ts';
 import { ChevronDown } from 'lucide-react';
-import React, { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 
 import { Badge, TextWithNAFallback } from '@ballerine/ui';
@@ -206,10 +206,18 @@ export const useAmlBlock = ({
       ];
     });
   }, [data]);
-
-  if (!amlBlock.length) {
-    return [];
-  }
+  const amlEmptyStateBlock = useMemo(() => {
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'paragraph',
+        value: 'If applicable, sanctions screening results will appear here once completed',
+        props: {
+          className: 'py-4 text-slate-500',
+        },
+      })
+      .build();
+  }, []);
 
   return createBlocksTyped()
     .addBlock()
@@ -219,6 +227,6 @@ export const useAmlBlock = ({
       value: 'Sanctions Screening Results',
     })
     .build()
-    .concat(amlBlock)
+    .concat(!amlBlock.length ? amlEmptyStateBlock : amlBlock)
     .flat(1);
 };
