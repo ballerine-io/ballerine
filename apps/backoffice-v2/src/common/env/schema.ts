@@ -13,14 +13,6 @@ export const EnvSchema = z.object({
       return true;
     }
   }, z.boolean().default(true)),
-  VITE_MOCK_SERVER: z.preprocess(value => {
-    try {
-      return typeof value === 'string' ? JSON.parse(value) : value;
-    } catch (error) {
-      console.warn('Failed to parse VITE_MOCK_SERVER, defaulting to true', error);
-      return true;
-    }
-  }, z.boolean().default(true)),
   VITE_POLLING_INTERVAL: z.coerce
     .number()
     .transform(v => v * 1000)
@@ -30,7 +22,7 @@ export const EnvSchema = z.object({
     .number()
     .transform(v => v * 1000)
     .or(z.literal(false))
-    .catch(undefined),
+    .catch(false),
   VITE_IMAGE_LOGO_URL: z.string().optional(),
   VITE_FETCH_SIGNED_URL: z.preprocess(value => {
     try {

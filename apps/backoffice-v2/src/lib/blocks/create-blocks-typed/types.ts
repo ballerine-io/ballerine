@@ -101,14 +101,6 @@ export type TDirectorsCallToActionCell = {
   };
 };
 
-export type TFaceComparisonCell = {
-  type: 'faceComparison';
-  value: {
-    faceAUrl: string;
-    faceBUrl: string;
-  };
-};
-
 export type TDetailsCell = {
   type: 'details';
   id: string;
@@ -276,7 +268,6 @@ export type TCell =
   | TCallToActionLegacyCell
   | TCallToActionCell
   | TDirectorsCallToActionCell
-  | TFaceComparisonCell
   | TDetailsCell
   | TNestedDetailsCell
   | TMultiDocumentsCell

@@ -2,7 +2,6 @@ import { FunctionComponent, PropsWithChildren } from 'react';
 import { Actions } from './Case.Actions';
 import { Content } from './Case.Content';
 import { Documents } from './Case.Documents';
-import { FaceMatch } from './Case.FaceMatch';
 import { Info } from './Case.Info';
 import { ICaseChildren } from './interfaces';
 
@@ -27,6 +26,5 @@ export const Case: FunctionComponent<PropsWithChildren> & ICaseChildren = ({ chi
 
 Case.Actions = Actions;
 Case.Content = Content;
-Case.FaceMatch = FaceMatch;
 Case.Info = Info;
 Case.Documents = Documents;

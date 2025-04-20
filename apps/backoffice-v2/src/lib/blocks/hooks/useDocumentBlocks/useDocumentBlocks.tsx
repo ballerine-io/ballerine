@@ -438,13 +438,10 @@ export const useDocumentBlocks = ({
           isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
         })
         .cellAt(0, 0);
-
-      const documentEntries = Object.entries(
-        {
-          ...additionalProperties,
-          ...propertiesSchema?.properties,
-        } ?? {},
-      ).map(([title, formattedValue]) => {
+      const documentEntries = Object.entries({
+        ...additionalProperties,
+        ...propertiesSchema?.properties,
+      }).map(([title, formattedValue]) => {
         return [title, formattedValue];
       });
 
