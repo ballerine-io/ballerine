@@ -101,9 +101,10 @@ export default defineConfig(configEnv => {
               return 'vendor-ui-components';
             }
 
-            if (id.includes('node_modules/d3') || id.includes('node_modules/recharts')) {
-              return 'vendor-charts';
-            }
+            // Comment out the charts chunk to avoid circular dependency issues
+            // if (id.includes('node_modules/d3') || id.includes('node_modules/recharts')) {
+            //   return 'vendor-charts';
+            // }
 
             if (
               id.includes('node_modules/@react-pdf') ||
