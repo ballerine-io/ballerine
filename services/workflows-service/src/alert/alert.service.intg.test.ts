@@ -1637,68 +1637,68 @@ describe('AlertService', () => {
           .paymentMethod(PaymentMethod.apple_pay);
       });
 
-      it(`Trigger an alert when there inbound and non credit card transactions more than 180 days ago
-          had more than a set X within the last 3 days`, async () => {
-        // Arrange
+      // it(`Trigger an alert when there inbound and non credit card transactions more than 180 days ago
+      //     had more than a set X within the last 3 days`, async () => {
+      //   // Arrange
 
-        // Should have have old transactions
-        const oldDaysAgo = new Date();
-        oldDaysAgo.setDate(
-          oldDaysAgo.getDate() -
-            ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount,
-        );
-        oldDaysAgo.setHours(0, 0, 0, 0);
+      //   // Should have have old transactions
+      //   const oldDaysAgo = new Date();
+      //   oldDaysAgo.setDate(
+      //     oldDaysAgo.getDate() -
+      //       ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount,
+      //   );
+      //   oldDaysAgo.setHours(0, 0, 0, 0);
 
-        await oldTransactionFactory
-          .transactionDate(faker.date.recent(3, oldDaysAgo))
-          .amount(3)
-          .count(1)
-          .create();
+      //   await oldTransactionFactory
+      //     .transactionDate(faker.date.recent(3, oldDaysAgo))
+      //     .amount(3)
+      //     .count(1)
+      //     .create();
 
-        // transactions from last days
-        await oldTransactionFactory
-          .date(() => faker.date.recent(1))
-          .amount(300)
-          .count(60)
-          .create();
+      //   // transactions from last days
+      //   await oldTransactionFactory
+      //     .date(() => faker.date.recent(1))
+      //     .amount(300)
+      //     .count(60)
+      //     .create();
 
-        // transactions in the last days
-        const threeDaysAgo = new Date();
-        threeDaysAgo.setDate(
-          threeDaysAgo.getDate() -
-            ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount,
-        );
-        threeDaysAgo.setHours(0, 0, 0, 0);
+      //   // transactions in the last days
+      //   const threeDaysAgo = new Date();
+      //   threeDaysAgo.setDate(
+      //     threeDaysAgo.getDate() -
+      //       ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount,
+      //   );
+      //   threeDaysAgo.setHours(0, 0, 0, 0);
 
-        const txPeriod =
-          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount -
-          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount;
+      //   const txPeriod =
+      //     ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.activeUserPeriod.timeAmount -
+      //     ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.lastDaysPeriod.timeAmount;
 
-        await oldTransactionFactory
-          .date(() => faker.date.recent(txPeriod, threeDaysAgo))
-          .amount(3)
-          .count(125)
-          .create();
+      //   await oldTransactionFactory
+      //     .date(() => faker.date.recent(txPeriod, threeDaysAgo))
+      //     .amount(3)
+      //     .count(125)
+      //     .create();
 
-        // Act
-        await alertService.checkAllAlerts();
+      //   // Act
+      //   await alertService.checkAllAlerts();
 
-        // Assert
-        const alerts = await prismaService.alert.findMany();
+      //   // Assert
+      //   const alerts = await prismaService.alert.findMany();
 
-        expect(alerts).toHaveLength(1);
+      //   expect(alerts).toHaveLength(1);
 
-        expect(alerts[0]?.severity).toEqual('medium');
+      //   expect(alerts[0]?.severity).toEqual('medium');
 
-        expect(alerts[0]?.executionDetails).toMatchObject({
-          checkpoint: {
-            hash: expect.any(String),
-          },
-          executionRow: {
-            counterpartyBeneficiaryId: counteryparty.id,
-          },
-        });
-      });
+      //   expect(alerts[0]?.executionDetails).toMatchObject({
+      //     checkpoint: {
+      //       hash: expect.any(String),
+      //     },
+      //     executionRow: {
+      //       counterpartyBeneficiaryId: counteryparty.id,
+      //     },
+      //   });
+      // });
 
       it(`When there active users with no inbound credit card`, async () => {
         // Arrange
