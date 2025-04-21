@@ -77,6 +77,7 @@ export class CustomerService {
         distinctId: customer.id,
         properties: {
           isDemoAccount: customer.config?.isDemoAccount,
+          maxBusinessReports: customer.config?.maxBusinessReports,
         },
         customerId: customer.id,
       });
