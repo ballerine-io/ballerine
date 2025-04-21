@@ -106,8 +106,8 @@ export const useHomeLogic = () => {
   const getStatusDefinition = (status: string) => {
     return (
       STATUS_DEFINITION[status.toLowerCase() as keyof typeof STATUS_DEFINITION] ?? {
-        color: '#65afff',
-        text: 'Unknown',
+        color: '#65AFFF',
+        text: titleCase(status),
       }
     );
   };
@@ -116,7 +116,7 @@ export const useHomeLogic = () => {
     return (
       RISK_LEVEL_DEFINITION[risk.toLowerCase() as keyof typeof RISK_LEVEL_DEFINITION] ?? {
         color: '#65afff',
-        text: 'Unknown',
+        text: titleCase(risk),
       }
     );
   };
