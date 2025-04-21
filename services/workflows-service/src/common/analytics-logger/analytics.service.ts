@@ -17,7 +17,7 @@ type AnalyticsEvents = {
   [EventNamesMap.USER_SIGNUP]: { username: string; email: string };
   [EventNamesMap.USER_LOGIN]: { email: string; customerId: string };
   [EventNamesMap.USER_MAGIC_LINK_LOGIN]: { email: string; customerId: string };
-  [EventNamesMap.CUSTOMER_CREATED]: { isDemoAccount: boolean };
+  [EventNamesMap.CUSTOMER_CREATED]: { isDemoAccount: boolean; maxBusinessReports: number };
   [EventNamesMap.USER_CREATED]: { email: string; fullName: string };
   [EventNamesMap.BUSINESS_REPORT_REQUESTED]: {
     reportType: string;
