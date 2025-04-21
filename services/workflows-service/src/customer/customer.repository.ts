@@ -66,6 +66,7 @@ export class CustomerRepository {
           subscriptions: true,
           config: true,
           features: true,
+          hubspotCustomerId: true,
         },
       }),
     });
@@ -102,6 +103,7 @@ export class CustomerRepository {
         country: true,
         language: true,
         projects: true,
+        hubspotCustomerId: true,
       },
     });
   }

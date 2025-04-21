@@ -15,6 +15,7 @@ import { MerchantReportType, MerchantReportVersion } from '@ballerine/common';
 import { TCustomerWithFeatures } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
+
 @Injectable()
 export class BusinessReportService {
   constructor(
@@ -84,7 +85,7 @@ export class BusinessReportService {
       requestedByUserId,
     });
 
-    this.analyticsService.trackSafe({
+    void this.analyticsService.trackSafe({
       event: EventNamesMap.BUSINESS_REPORT_REQUESTED,
       distinctId: requestedByUserId,
       properties: {

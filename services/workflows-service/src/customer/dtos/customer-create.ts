@@ -80,4 +80,13 @@ export class CustomerCreateDto {
   @IsObject()
   @IsOptional()
   config?: Record<string, unknown>;
+
+  @ApiProperty({
+    type: String,
+    description: 'Customer ID in HubSpot CRM',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  hubspotCustomerId?: string;
 }

@@ -1,5 +1,4 @@
 import {
-  DataValueNotFoundError,
   OPERATION,
   RuleResult,
   RuleResultSet,

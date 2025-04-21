@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePostHog } from 'posthog-js/react';
+import { env } from '@/common/env/env';
 
 export const PostHogPageView = () => {
   const location = useLocation();
@@ -11,6 +12,7 @@ export const PostHogPageView = () => {
     if (posthog) {
       posthog.capture('$pageview', {
         $current_url: window.location.href,
+        environment: env.VITE_ENVIRONMENT_NAME,
       });
     }
   }, [posthog, location]);

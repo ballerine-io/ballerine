@@ -47,7 +47,7 @@ export class AuthController {
       { select: { id: true } },
     );
 
-    this.analyticsService.trackSafe({
+    void this.analyticsService.trackSafe({
       event: EventNamesMap.USER_LOGIN,
       distinctId: authenticatedEntity.id,
       properties: {
@@ -72,7 +72,7 @@ export class AuthController {
       select: { id: true },
     });
 
-    this.analyticsService.trackSafe({
+    void this.analyticsService.trackSafe({
       event: EventNamesMap.USER_MAGIC_LINK_LOGIN,
       distinctId: authenticatedEntity.id,
       properties: {

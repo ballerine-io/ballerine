@@ -38,6 +38,7 @@ import { CustomerRepository } from './customer.repository';
 import { EndUserService } from '@/end-user/end-user.service';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+
 const API_KEY = 'secret3';
 
 describe.skip('#CustomerControllerExternal', () => {

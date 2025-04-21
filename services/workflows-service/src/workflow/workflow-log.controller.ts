@@ -5,8 +5,7 @@ import type { TProjectIds } from '@/types';
 import { WorkflowLogType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 class GetWorkflowLogsQueryDto {
   @IsOptional()
