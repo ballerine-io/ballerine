@@ -40,6 +40,7 @@ import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
   let workflowDefinitionRepository: WorkflowDefinitionRepository;
