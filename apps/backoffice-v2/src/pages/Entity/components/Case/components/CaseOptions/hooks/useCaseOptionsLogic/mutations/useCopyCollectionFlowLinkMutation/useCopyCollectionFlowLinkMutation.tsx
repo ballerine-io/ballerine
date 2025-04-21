@@ -9,7 +9,7 @@ export const useCopyCollectionFlowLinkMutation = ({ workflow }: { workflow: TWor
         throw new Error('Collection flow URL or token not available');
       }
 
-      const url = `${workflow.context.metadata.collectionFlowUrl}?token=${workflow.context.metadata.token}`;
+      const url = `${workflow.context.metadata.collectionFlowUrl}/?workflowId=${workflow.id}&token=${workflow.context.metadata.token}`;
       await navigator.clipboard.writeText(url);
     },
     onSuccess: () => {

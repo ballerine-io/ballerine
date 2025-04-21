@@ -401,18 +401,18 @@ export class WorkflowControllerExternal {
   async createCollectionFlowUrl(
     @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const result = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
+    const workflow = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 
-    if (!result) {
+    if (!workflow) {
       throw new NotFoundException(
         `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
       );
     }
 
     return {
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}/?workflowId=${workflowRuntimeDataId}&token=${workflow.token}`,
     };
   }
 

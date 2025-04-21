@@ -117,8 +117,7 @@ import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { PartialDeep } from 'type-fest';
-import { WorkflowAssignee } from './workflow-runtime-list-item.model';
-import { WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
+import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
 
 type TEntityId = string;
 
@@ -2205,8 +2204,8 @@ export class WorkflowService {
             metadata: {
               token: token,
               customerName: customer.displayName,
-              collectionFlowUrl: env.COLLECTION_FLOW_URL!,
               customerNormalizedName: customer.name,
+              collectionFlowUrl: env.COLLECTION_FLOW_URL ?? '',
             },
           };
         },
@@ -2269,6 +2268,7 @@ export class WorkflowService {
 
       try {
         const logs = (service as any).getLogs?.();
+
         if (logs && Array.isArray(logs) && logs.length > 0) {
           await this.workflowLogService.processWorkflowRunnerLogs(
             workflowRuntimeData.id,
