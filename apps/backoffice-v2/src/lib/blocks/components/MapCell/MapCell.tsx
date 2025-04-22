@@ -1,5 +1,4 @@
 import { FunctionComponent } from 'react';
-import 'leaflet/dist/leaflet.css';
 import { useNominatimQuery } from './hooks/useNominatimQuery/useNominatimQuery';
 import { IMapCellProps } from './interfaces';
 import { Map } from '../../../../common/components/molecules/Map/Map';

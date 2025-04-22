@@ -20,12 +20,11 @@ export const generateFieldsForRevision = (
   pages.forEach(page => {
     const isPageInRevision = checkIfStepInRevision(page.stateName, context);
     const isPageInEdit = checkIfStepInEdit(page.stateName, context);
-    const isPageInEditOrRevision = isPageInRevision || isPageInEdit;
     const fieldDefinitions = getFieldDefinitionsFromSchema(page.elements) as Array<
       IFormElement<TBaseFields, any>
     >;
 
-    if (isPageInEditOrRevision) {
+    if (isPageInRevision || isPageInEdit) {
       const granularRevisionFields = generateGranularRevisionFields(context, fieldDefinitions);
 
       // If there specific fields to revise marking only them (Documents currently)

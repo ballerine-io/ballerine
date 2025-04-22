@@ -163,18 +163,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
   const navigate = useNavigate();
 
   const onNavigateBack = useCallback(() => {
-    const previousPath = sessionStorage.getItem(
-      'merchant-monitoring:business-report:previous-path',
-    );
-
-    if (!previousPath) {
-      navigate('../');
-
-      return;
-    }
-
-    navigate(previousPath);
-    sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
+    navigate(-1);
   }, [navigate]);
 
   const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;

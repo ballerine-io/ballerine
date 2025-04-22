@@ -3,6 +3,7 @@ import { useEffect, useMemo, type ComponentProps } from 'react';
 import { titleCase } from 'string-ts';
 import { z } from 'zod';
 
+import { StateTag } from '@ballerine/common';
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
@@ -16,21 +17,35 @@ export const HomeSearchSchema = z.object({
   mmTo: z.string().date().optional(),
   casesFrom: z.string().date().optional(),
   casesTo: z.string().date().optional(),
+  allowAllDates: z
+    .string()
+    .transform(value => value === 'true')
+    .optional(),
 });
 
-const RISK_LEVEL_COLORS = {
-  low: '#4CAF50',
-  medium: '#FFB74D',
-  high: '#FF5722',
-  critical: '#F44336',
+type PieChartDefinition = Record<string, { color: string; text: string }>;
+
+const RISK_LEVEL_DEFINITION: PieChartDefinition = {
+  low: { color: '#4CAF50', text: 'Low Risk' },
+  medium: { color: '#FFB74D', text: 'Medium Risk' },
+  high: { color: '#FF5722', text: 'High Risk' },
+  critical: { color: '#F44336', text: 'Critical Risk' },
 };
 
-const STATUS_COLORS = {
-  active: '#007aff',
-  completed: '#4CAF50',
-  failed: '#F44336',
-  // pending: '#FFB74D',
-};
+const STATUS_DEFINITION: PieChartDefinition = {
+  [StateTag.APPROVED]: { color: '#4CAF50', text: 'Approved' },
+  [StateTag.REVISION]: { color: '#FFB74D', text: 'Revisions' },
+  [StateTag.EDIT]: { color: '#FFB74D', text: 'Edit' },
+  [StateTag.REJECTED]: { color: '#F44336', text: 'Rejected' },
+  [StateTag.RESOLVED]: { color: '#4CAF50', text: 'Resolved' },
+  [StateTag.MANUAL_REVIEW]: { color: '#007AFF', text: 'Manual Review' },
+  [StateTag.COLLECTION_FLOW]: { color: '#961EEE', text: 'Collection in Progress' },
+  [StateTag.PENDING_PROCESS]: { color: '#FFB74D', text: 'Pending ID Verification' },
+  [StateTag.FAILURE]: { color: '#F44336', text: 'Failed' },
+  [StateTag.DATA_ENRICHMENT]: { color: '#961EEE', text: 'Awaiting 3rd Party Data' },
+  [StateTag.DISMISSED]: { color: '#4CAF50', text: 'Dismissed' },
+  [StateTag.FLAGGED]: { color: '#F44336', text: 'Flagged' },
+} as const;
 
 export const useHomeLogic = () => {
   const locale = useLocale();
@@ -38,54 +53,72 @@ export const useHomeLogic = () => {
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
   const { firstName, fullName, avatarUrl } = session?.user ?? {};
 
-  const [{ mmFrom, mmTo, casesFrom, casesTo }, setSearchParams] = useZodSearchParams(
+  const isMerchantMonitoringEnabled = customer?.config?.isMerchantMonitoringEnabled ?? false;
+  const isOngoingMonitoringEnabled = customer?.config?.isOngoingMonitoringEnabled ?? false;
+  const isCasesOnboardingEnabled = customer?.config?.isCasesOnboardingEnabled ?? false;
+
+  const [{ mmFrom, mmTo, casesFrom, casesTo, allowAllDates }, setSearchParams] = useZodSearchParams(
     HomeSearchSchema,
     { replace: true },
   );
 
   useEffect(() => {
+    if (allowAllDates) {
+      return;
+    }
+
     const toSet: Partial<z.infer<typeof HomeSearchSchema>> = {};
 
-    if (!mmFrom && !mmTo) {
+    if (!mmFrom && !mmTo && isMerchantMonitoringEnabled) {
       toSet.mmFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.mmTo = dayjs().format('YYYY-MM-DD');
     }
 
-    if (!casesFrom && !casesTo) {
+    if (!casesFrom && !casesTo && isCasesOnboardingEnabled) {
       toSet.casesFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.casesTo = dayjs().format('YYYY-MM-DD');
     }
 
     setSearchParams(toSet);
-  }, []);
+  }, [customer]);
 
   const { data: metrics, isLoading: isLoadingMetrics } = useBusinessReportMetricsQuery({
     from: mmFrom,
-    to: mmTo,
+    to: mmTo ? dayjs(mmTo).add(1, 'day').format('YYYY-MM-DD') : undefined,
   });
 
   const onMMDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
-    setSearchParams({ mmFrom: from, mmTo: to });
+    setSearchParams({ mmFrom: from, mmTo: to, allowAllDates: !from && !to });
   };
 
   const onCasesDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
     const from = range?.from ? dayjs(range.from).format('YYYY-MM-DD') : undefined;
     const to = range?.to ? dayjs(range?.to).format('YYYY-MM-DD') : undefined;
 
-    setSearchParams({ casesFrom: from, casesTo: to });
+    setSearchParams({ casesFrom: from, casesTo: to, allowAllDates: !from && !to });
   };
 
   const { data: currentStats, isLoading: isLoadingCurrentStats } = useCaseCurrentStats();
 
-  const getStatusColor = (status: string) => {
-    return STATUS_COLORS[status.toLowerCase() as keyof typeof STATUS_COLORS] || '#65afff';
+  const getStatusDefinition = (status: string) => {
+    return (
+      STATUS_DEFINITION[status.toLowerCase() as keyof typeof STATUS_DEFINITION] ?? {
+        color: '#65afff',
+        text: 'Unknown',
+      }
+    );
   };
 
-  const getRiskColor = (risk: string) => {
-    return RISK_LEVEL_COLORS[risk.toLowerCase() as keyof typeof RISK_LEVEL_COLORS] || '#65afff';
+  const getRiskDefinition = (risk: string) => {
+    return (
+      RISK_LEVEL_DEFINITION[risk.toLowerCase() as keyof typeof RISK_LEVEL_DEFINITION] ?? {
+        color: '#65afff',
+        text: 'Unknown',
+      }
+    );
   };
 
   type ConfigItem = { label: string; color: string };
@@ -97,7 +130,7 @@ export const useHomeLogic = () => {
         ...acc,
         [curr.status]: {
           label: titleCase(curr.status),
-          color: getStatusColor(curr.status),
+          color: getStatusDefinition(curr.status),
         },
       }),
       {},
@@ -111,7 +144,7 @@ export const useHomeLogic = () => {
         ...acc,
         [curr.riskLevel]: {
           label: titleCase(curr.riskLevel),
-          color: getRiskColor(curr.riskLevel),
+          color: getRiskDefinition(curr.riskLevel),
         },
       }),
       {},
@@ -125,7 +158,7 @@ export const useHomeLogic = () => {
         ...acc,
         [curr.riskLevel]: {
           label: titleCase(curr.riskLevel),
-          color: getRiskColor(curr.riskLevel),
+          color: getRiskDefinition(curr.riskLevel),
         },
       }),
       {},
@@ -138,9 +171,9 @@ export const useHomeLogic = () => {
     avatarUrl,
     locale,
 
-    isMerchantMonitoringEnabled: customer?.config?.isMerchantMonitoringEnabled ?? false,
-    isOngoingMonitoringEnabled: customer?.config?.isOngoingMonitoringEnabled ?? false,
-    isCasesOnboardingEnabled: customer?.config?.isCasesOnboardingEnabled ?? false,
+    isMerchantMonitoringEnabled,
+    isOngoingMonitoringEnabled,
+    isCasesOnboardingEnabled,
 
     isLoadingCustomer,
     isLoadingMetrics,
@@ -168,7 +201,7 @@ export const useHomeLogic = () => {
     statusConfig,
     ongoingRiskConfig,
     approvedRiskConfig,
-    getStatusColor,
-    getRiskColor,
+    getStatusDefinition,
+    getRiskDefinition,
   };
 };

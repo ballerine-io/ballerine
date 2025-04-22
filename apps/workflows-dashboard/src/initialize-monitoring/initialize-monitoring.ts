@@ -17,11 +17,22 @@ export const initializeMonitoring = () => {
   if (env.VITE_POSTHOG_KEY && env.VITE_POSTHOG_HOST) {
     posthog.init(env.VITE_POSTHOG_KEY, {
       api_host: env.VITE_POSTHOG_HOST,
+      persistence: 'sessionStorage',
       person_profiles: 'identified_only',
       loaded: ph => {
         ph.register_for_session({ environment: env.VITE_ENVIRONMENT_NAME });
       },
     });
+
+    const originalCapture = posthog.capture;
+    posthog.capture = (eventName, properties = {}, options) => {
+      const propertiesWithEnv = {
+        ...properties,
+        environment: env.VITE_ENVIRONMENT_NAME,
+      };
+
+      return originalCapture.call(posthog, eventName, propertiesWithEnv, options);
+    };
   }
 
   if (env.VITE_SENTRY_DSN) {
