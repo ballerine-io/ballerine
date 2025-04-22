@@ -2,7 +2,7 @@ import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
 import { ExtractCellProps } from '@ballerine/blocks';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { sortData } from '@/lib/blocks/utils/sort-data';
 
 export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
@@ -22,11 +22,15 @@ export const Details: FunctionComponent<ExtractCellProps<'details'>> = ({
     return null;
   }
 
-  const sortedData = sortData({
-    data: value.data,
-    direction: props?.config?.sort?.direction,
-    predefinedOrder: props?.config?.sort?.predefinedOrder,
-  });
+  const sortedData = useMemo(
+    () =>
+      sortData({
+        data: value.data,
+        direction: props?.config?.sort?.direction,
+        predefinedOrder: props?.config?.sort?.predefinedOrder,
+      }),
+    [value.data, props?.config?.sort?.direction, props?.config?.sort?.predefinedOrder],
+  );
 
   return (
     <div

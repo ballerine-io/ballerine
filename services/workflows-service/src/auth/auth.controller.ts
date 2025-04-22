@@ -47,13 +47,14 @@ export class AuthController {
       { select: { id: true } },
     );
 
-    this.analyticsService.track({
+    void this.analyticsService.trackSafe({
       event: EventNamesMap.USER_LOGIN,
       distinctId: authenticatedEntity.id,
       properties: {
         customerId,
         email: authenticatedEntity.email,
       },
+      customerId,
     });
 
     return { user: req.user };
@@ -71,13 +72,14 @@ export class AuthController {
       select: { id: true },
     });
 
-    this.analyticsService.track({
+    void this.analyticsService.trackSafe({
       event: EventNamesMap.USER_MAGIC_LINK_LOGIN,
       distinctId: authenticatedEntity.id,
       properties: {
         customerId,
         email: authenticatedEntity.email,
       },
+      customerId,
     });
 
     return { user: req.user };

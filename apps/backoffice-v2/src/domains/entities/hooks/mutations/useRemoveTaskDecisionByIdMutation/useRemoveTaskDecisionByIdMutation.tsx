@@ -3,12 +3,10 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
 export const useRemoveTaskDecisionByIdMutation = (workflowId: string) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+  const workflowById = workflowsQueryKeys.byId({ workflowId });
 
   return useMutation({
     mutationFn: ({

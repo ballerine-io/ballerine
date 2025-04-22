@@ -4,7 +4,7 @@ export const buildCollectionFlowUrl = (
     token,
     workflowId,
   }: {
-    token: string | undefined;
+    token?: string | undefined;
     workflowId: string | undefined;
   },
 ) =>

@@ -43,7 +43,7 @@ export const updateDocumentDecisionById = async ({
     endpoint: `../external/documents/${documentId}/decision`,
     method: Method.PATCH,
     body: data,
-    schema: z.any(),
+    schema: z.array(z.record(z.string(), z.any())),
   });
 
   return handleZodError(error, documents);
@@ -65,7 +65,7 @@ export const updateDocumentsDecisionByIds = async ({
       ids,
       decision: data.decision,
     },
-    schema: z.any(),
+    schema: z.array(z.record(z.string(), z.any())),
   });
 
   return handleZodError(error, documents);
@@ -86,7 +86,7 @@ export const updateDocumentById = async ({
     endpoint: `../external/documents/${documentId}`,
     method: Method.PATCH,
     body: data,
-    schema: z.any(),
+    schema: z.array(z.record(z.string(), z.any())),
   });
 
   return handleZodError(error, documents);
@@ -101,7 +101,7 @@ export const getDocumentsByEntityIdAndWorkflowId = async ({
   const [documents, error] = await apiClient({
     method: Method.GET,
     endpoint: `../external/documents/${entityId}/${workflowId}`,
-    schema: z.any(),
+    schema: z.array(z.record(z.string(), z.any())),
     timeout: 30000,
   });
 
@@ -118,7 +118,7 @@ export const fetchDocumentsByEntityIdsAndWorkflowId = async ({
   const [documents, error] = await apiClient({
     method: Method.GET,
     endpoint: `../external/documents/by-entity-ids/${entityIds.join(',')}/${workflowId}`,
-    schema: z.any(),
+    schema: z.array(z.record(z.string(), z.any())),
   });
 
   return handleZodError(error, documents);

@@ -37,7 +37,7 @@ export class MetricsService {
     approvedCasesByRisk: CasesByRiskLevelMetricModel[];
   }> {
     const [casesByStatus, ongoingCasesByRisk, approvedCasesByRisk] = await Promise.all([
-      this.metricsRepository.getCasesByStatus(projectIds),
+      this.metricsRepository.getActiveCasesByState(projectIds),
       this.metricsRepository.getCasesByRiskLevel(projectIds, 'active'),
       this.metricsRepository.getCasesByRiskLevel(projectIds, 'completed'),
     ]);
@@ -50,10 +50,10 @@ export class MetricsService {
   }
 
   async getDailyActiveCases(
-    params: { from: string; to: string },
+    params: { from?: string; to?: string },
     projectIds: TProjectIds,
   ): Promise<CasesActiveDailyModel[]> {
-    return await this.metricsRepository.getDailyActiveCases(params.from, params.to, projectIds);
+    return await this.metricsRepository.getDailyActiveCases(projectIds, params.from, params.to);
   }
 
   async listRuntimesStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {

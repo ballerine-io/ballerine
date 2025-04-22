@@ -1,5 +1,82 @@
 # kyb-app
 
+## 0.3.166
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/ui@0.7.136
+
+## 0.3.165
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.91
+  - @ballerine/ui@0.7.135
+  - @ballerine/workflow-browser-sdk@0.6.114
+
+## 0.3.164
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/blocks@0.2.41
+  - @ballerine/common@0.9.90
+  - @ballerine/ui@0.7.134
+  - @ballerine/workflow-browser-sdk@0.6.113
+
+## 0.3.163
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/ui@0.7.133
+  - @ballerine/workflow-browser-sdk@0.6.112
+- @ballerine/workflow-browser-sdk@0.6.111
+
+## 0.3.162
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.89
+  - @ballerine/workflow-browser-sdk@0.6.111
+  - Added defaultValue to field definitions
+  - @ballerine/ui@0.7.132
+
+## 0.3.161
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.88
+  - @ballerine/workflow-browser-sdk@0.6.110
+
+## 0.3.160
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.130
+
+## 0.3.159
+
+### Patch Changes
+
+- Bump
+
+## 0.3.158
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.129
+
 ## 0.3.157
 
 ### Patch Changes

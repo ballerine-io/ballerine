@@ -1,14 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { fetchUpdateWorkflowById, TWorkflowById } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
-  const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
+  const workflowById = workflowsQueryKeys.byId({ workflowId });
 
   return useMutation({
     mutationFn: ({
@@ -21,7 +19,8 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
         | 'ask_revision_document'
         | 'update_document_properties'
         | 'step_request'
-        | 'step_cancel';
+        | 'step_cancel'
+        | 'edit_collection_flow';
     }) =>
       fetchUpdateWorkflowById({
         workflowId,

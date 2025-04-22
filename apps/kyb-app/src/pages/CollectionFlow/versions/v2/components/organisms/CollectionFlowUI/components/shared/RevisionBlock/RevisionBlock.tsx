@@ -18,7 +18,7 @@ export const RevisionBlock = ({ page, context }: IRevisionBlockProps) => {
     );
   }, [context, page.stateName]);
 
-  if (!stepUnderRevision) {
+  if (!stepUnderRevision || !stepUnderRevision.reason) {
     return null;
   }
 

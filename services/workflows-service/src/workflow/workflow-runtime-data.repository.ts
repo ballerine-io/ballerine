@@ -1,11 +1,11 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { assertIsValidProjectIds, ProjectScopeService } from '@/project/project-scope.service';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { TEntityType } from '@/workflow/types';
+import { TEntityType, TWorkflowWithRelations } from '@/workflow/types';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   Prisma,
   PrismaClient,
@@ -92,6 +92,219 @@ export class WorkflowRuntimeDataRepository {
     return await transaction.workflowRuntimeData.findFirstOrThrow(
       this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
     );
+  }
+
+  async findByIdWithRelations(id: string, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
+
+    const workflows = (await this.prismaService.$queryRaw`
+        WITH workflows AS (
+          SELECT
+            CASE
+              WHEN wrd.parent_runtime_data_id IS NULL THEN 'parent'
+              ELSE 'child'
+            END AS "workflowType",
+            wrd.id,
+            wrd.status,
+            wrd."assigneeId",
+            wrd."createdAt",
+            wrd.context,
+            wrd.state,
+            wrd.tags,
+            wrd."businessId",
+            wrd."endUserId",
+            wrd."workflowDefinitionId",
+            wrd."projectId",
+            CASE
+              WHEN b.id IS NULL THEN NULL
+              ELSE jsonb_build_object(
+                'id',
+                b.id,
+                'companyName',
+                b."companyName",
+                'registrationNumber',
+                b."registrationNumber",
+                'legalForm',
+                b."legalForm",
+                'countryOfIncorporation',
+                b."countryOfIncorporation",
+                'dateOfIncorporation',
+                b."dateOfIncorporation",
+                'address',
+                b.address,
+                'phoneNumber',
+                b."phoneNumber",
+                'email',
+                b.email,
+                'website',
+                b.website,
+                'industry',
+                b.industry,
+                'taxIdentificationNumber',
+                b."taxIdentificationNumber",
+                'vatNumber',
+                b."vatNumber",
+                'shareholderStructure',
+                b."shareholderStructure",
+                'numberOfEmployees',
+                b."numberOfEmployees",
+                'businessPurpose',
+                b."businessPurpose",
+                'approvalState',
+                b."approvalState",
+                'createdAt',
+                b."createdAt",
+                'updatedAt',
+                b."updatedAt"
+              )
+            END AS "business",
+            CASE
+              WHEN e.id IS NULL THEN NULL
+              ELSE jsonb_build_object(
+                'id',
+                e.id,
+                'correlationId',
+                e."correlationId",
+                'endUserType',
+                e."endUserType",
+                'approvalState',
+                e."approvalState",
+                'stateReason',
+                e."stateReason",
+                'firstName',
+                e."firstName",
+                'lastName',
+                e."lastName",
+                'email',
+                e.email,
+                'phone',
+                e.phone,
+                'dateOfBirth',
+                e."dateOfBirth",
+                'avatarUrl',
+                e."avatarUrl",
+                'additionalInfo',
+                e."additionalInfo",
+                'createdAt',
+                e."createdAt",
+                'updatedAt',
+                e."updatedAt"
+              )
+            END AS "endUser",
+            CASE
+              WHEN wd.id IS NULL THEN NULL
+              ELSE jsonb_build_object(
+                'id',
+                wd.id,
+                'name',
+                wd.name,
+                'contextSchema',
+                wd."contextSchema",
+                'documentsSchema',
+                wd."documentsSchema",
+                'config',
+                wd.config,
+                'definition',
+                wd.definition,
+                'version',
+                wd.version
+              )
+            END AS "workflowDefinition",
+            CASE
+              WHEN a.id IS NULL THEN NULL
+              ELSE jsonb_build_object(
+                'id',
+                a.id,
+                'firstName',
+                a."firstName",
+                'lastName',
+                a."lastName",
+                'avatarUrl',
+                a."avatarUrl"
+              )
+            END AS "assignee"
+          FROM
+            "WorkflowRuntimeData" wrd
+            JOIN "Project" p ON wrd."projectId" = p.id
+            LEFT JOIN "WorkflowDefinition" wd ON wd.id = wrd."workflowDefinitionId"
+            LEFT JOIN "Business" b ON b.id = wrd."businessId"
+            AND wrd."businessId" IS NOT NULL
+            LEFT JOIN "EndUser" e ON e.id = wrd."endUserId"
+            AND wrd."endUserId" IS NOT NULL
+            LEFT JOIN "User" a ON a.id = wrd."assigneeId"
+            AND wrd."assigneeId" IS NOT NULL
+          WHERE
+            (
+              wrd.id = ${id}
+              OR wrd.parent_runtime_data_id = ${id}
+            )
+            AND wrd."projectId" = ${projectIds[0]}
+        ),
+        ubos AS (
+          SELECT
+            jsonb_array_elements(
+              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'ubos'
+            ) AS ubos
+          FROM
+            workflows
+        ),
+        directors AS (
+          SELECT
+            jsonb_array_elements(
+              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'directors'
+            ) AS directors
+          FROM
+            workflows
+        ),
+        individualBallerineIds AS (
+          SELECT
+            directors ->> 'ballerineEntityId' AS id
+          FROM
+            directors
+          UNION
+          ALL
+          SELECT
+            ubos ->> 'ballerineEntityId' AS id
+          FROM
+            ubos
+        ),
+        individuals AS (
+          SELECT
+            eu.id,
+            eu."amlHits"
+          FROM
+            "EndUser" eu
+            JOIN individualBallerineIds AS ibids ON ibids.id = eu.id
+          WHERE
+            eu."projectId" = ${projectIds[0]}
+        )
+        SELECT
+          workflows.*,
+          CASE
+            WHEN workflows."workflowType" = 'parent' THEN indie.endUsers
+            ELSE NULL
+          END AS "endUsers"
+        FROM
+          workflows
+          JOIN (
+            SELECT
+              jsonb_agg(individuals.*) AS endUsers
+            FROM
+              individuals
+          ) AS indie ON TRUE
+  `) as TWorkflowWithRelations[];
+
+    const parentWorkflow = workflows.find(workflow => workflow.workflowType === 'parent');
+    const childWorkflows = workflows.filter(workflow => workflow.workflowType === 'child');
+
+    if (!parentWorkflow) {
+      throw new NotFoundException(`A workflow with an id of "${id}" was not found`);
+    }
+
+    return {
+      ...parentWorkflow,
+      childWorkflowsRuntimeData: childWorkflows,
+    };
   }
 
   /**

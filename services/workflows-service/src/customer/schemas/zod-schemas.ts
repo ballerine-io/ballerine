@@ -11,6 +11,7 @@ const CustomerConfigSchema = z.object({
   hideCreateMerchantMonitoringButton: z.boolean().default(true).optional(),
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
   isOngoingMonitoringEnabled: z.boolean().default(false).optional(),
+  isCasesOnboardingEnabled: z.boolean().default(false).optional(),
   maxBusinessReports: z.number().default(10).optional(),
   withQualityControl: z.boolean().default(true).optional(),
   disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),

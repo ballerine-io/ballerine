@@ -46,6 +46,8 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { mockClsService } from '@/test/helpers/cls-service-helper';
 
+import { CollectionFlowStateService } from '../collection-flow-state.service';
+
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
   let prismaClient: PrismaService;
@@ -100,6 +102,7 @@ describe('CollectionFlowSignupController', () => {
         WorkflowLogService,
         WorkflowRuntimeDataActorService,
         mockClsService(),
+        { provide: CollectionFlowStateService, useValue: noop },
       ],
       imports: [ClsModule],
     }).compile();

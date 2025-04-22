@@ -1,5 +1,52 @@
 # @ballerine/ui
 
+## 0.7.136
+
+### Patch Changes
+
+- Bump
+
+## 0.7.135
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.91
+
+## 0.7.134
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.90
+
+## 0.7.133
+
+### Patch Changes
+
+- Bump
+
+## 0.7.132
+
+### Patch Changes
+
+- Bump
+- Added defaultValue to field definitions
+
+## 0.7.130
+
+### Patch Changes
+
+- added source link and description for pricing analysis
+
+## 0.7.129
+
+### Patch Changes
+
+- DatePicker deserialization fix
+
 ## 0.7.127
 
 ### Patch Changes

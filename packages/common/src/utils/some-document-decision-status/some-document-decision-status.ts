@@ -5,7 +5,7 @@ export const someDocumentDecisionStatus = <
     };
   },
 >(
-  documents: Array<TItem>,
+  documents: TItem[],
   status: string,
 ) => {
   return documents?.some(document => document?.decision?.status === status);

@@ -18,8 +18,7 @@ export const useDocumentsToolbarLogic = ({
   onOpenDocumentInNewTab,
 }: IUseDocumentsToolbarProps) => {
   const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
-  const { data: workflow } = useWorkflowByIdQuery({ workflowId: workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId: workflowId ?? '' });
 
   const broadcastChannel = useMemo(
     () =>

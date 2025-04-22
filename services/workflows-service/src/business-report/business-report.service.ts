@@ -14,6 +14,7 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
 import { MerchantReportType, MerchantReportVersion } from '@ballerine/common';
 import { TCustomerWithFeatures } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
+import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
 
 @Injectable()
 export class BusinessReportService {
@@ -23,6 +24,7 @@ export class BusinessReportService {
     protected readonly customerService: CustomerService,
     protected readonly logger: AppLoggerService,
     private readonly merchantMonitoringClient: MerchantMonitoringClient,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   async checkBusinessReportsLimit(customer: TCustomerWithFeatures) {
@@ -81,6 +83,17 @@ export class BusinessReportService {
       ...(countryCode && { countryCode }),
       ...(compareToReportId && { compareToReportId }),
       requestedByUserId,
+    });
+
+    void this.analyticsService.trackSafe({
+      event: EventNamesMap.BUSINESS_REPORT_REQUESTED,
+      distinctId: requestedByUserId,
+      properties: {
+        reportType,
+        businessId: business.id,
+        customerId,
+      },
+      customerId,
     });
   }
 

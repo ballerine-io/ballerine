@@ -3,4 +3,4 @@
  * @param condition
  * @param args
  */
-export const log = (condition: boolean, ...args: Array<any>) => condition && console.log(...args);
+export const log = (condition: boolean, ...args: any[]) => condition && console.log(...args);

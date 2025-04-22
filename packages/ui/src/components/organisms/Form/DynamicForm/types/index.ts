@@ -20,6 +20,7 @@ export interface IFormElement<TElements = string, TParams = object> {
   id: string;
   valueDestination: string;
   element: TElements;
+  defaultValue?: unknown;
   validate?: TValidators;
   disable?: IRule[];
   hidden?: IRule[];
@@ -73,6 +74,10 @@ export interface IDynamicFormProps<TValues extends object> {
   validationParams?: IDynamicFormValidationParams;
   priorityFields?: IPriorityField[];
   priorityFieldsParams?: IPriorityFieldParams;
+
+  // Disables all field elements
+  disabled?: boolean;
+
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
   onSubmit?: (values: TValues) => void;

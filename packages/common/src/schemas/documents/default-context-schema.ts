@@ -74,7 +74,7 @@ export const defaultContextSchema = Type.Composite([
           ubo: UboPluginSchema,
           kyc_session: KycSessionPluginSchema,
           companySanctions: CompanySanctionsPluginSchema,
-          individualSanctions: individualSanctionsPluginSchema,
+          individualSanctions: Type.Optional(individualSanctionsPluginSchema),
           merchantMonitoring: MerchantMonitoringPluginSchema,
           businessInformation: BusinessInformationPluginSchema,
           merchantScreening: MerchantScreeningPluginSchema,

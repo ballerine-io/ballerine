@@ -12,7 +12,6 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
   processes,
 }) => {
   const { uncollapsedItemValue, onValueChange, trackedProcesses } = useProcessTracker({
-    plugins,
     workflow,
     processes,
   });
@@ -42,6 +41,10 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
                     Process complete
                   </li>
                   <li className={`flex items-center gap-x-2`}>
+                    {Icon.EDIT}
+                    Process being handled by Agent
+                  </li>
+                  <li className={`flex items-center gap-x-2`}>
                     {Icon.MINUS}
                     <span className={`text-slate-400/40 line-through`}>Process cancelled</span>
                   </li>
@@ -61,14 +64,8 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
           Processes
         </AccordionCard.Title>
         <AccordionCard.Content>
-          {trackedProcesses.map(({ name, title, subitems, params }) => (
-            <AccordionCard.Item
-              key={name}
-              title={title}
-              value={name}
-              subitems={subitems}
-              {...params}
-            />
+          {trackedProcesses.map(({ name, Component }) => (
+            <Component key={name} workflow={workflow} plugins={plugins} processes={processes} />
           ))}
         </AccordionCard.Content>
       </AccordionCard>

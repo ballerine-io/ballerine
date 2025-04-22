@@ -74,21 +74,22 @@ export class MetricsRepository {
     );
   }
 
-  async getCasesByStatus(projectIds: TProjectIds) {
+  async getActiveCasesByState(projectIds: TProjectIds) {
     const results = await this.prismaService.workflowRuntimeData.groupBy({
-      by: ['status'],
+      by: ['state'],
       where: {
+        status: 'active',
         projectId: { in: projectIds ?? [] },
       },
       _count: {
-        status: true,
+        state: true,
       },
     });
 
     return results.map(result =>
       plainToClass(CasesByStatusMetricModel, {
-        status: result.status,
-        count: Number(result._count.status),
+        status: result.state,
+        count: Number(result._count.state),
       }),
     );
   }
@@ -110,12 +111,12 @@ export class MetricsRepository {
   }
 
   async getDailyActiveCases(
-    fromDate: string,
-    toDate: string,
     projectIds: TProjectIds,
+    fromDate?: string,
+    toDate?: string,
   ): Promise<CasesActiveDailyModel[]> {
     const results = await this.prismaService.$queryRaw<ICasesDailyAggregationResult[]>(
-      buildDailyLiveCasesQuery(fromDate, toDate, projectIds),
+      buildDailyLiveCasesQuery(projectIds, fromDate, toDate),
     );
 
     return results.map(result =>

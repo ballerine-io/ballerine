@@ -7,12 +7,13 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useRedirectUrls } from '@/hooks/useRedirectUrls/useRedirectUrls';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { getOrderedSteps } from '@ballerine/common';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export const useFinalSubmission = <TValues extends object = CollectionFlowContext>(
   context: TValues,
   state: string,
 ) => {
+  const [isFinalSubmitted, setIsFinalSubmitted] = useState(false);
   const language = useLanguage();
   const { data: schema } = useUISchemasQuery(language);
   const redirectUrls = useRedirectUrls();
@@ -36,6 +37,8 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
       try {
         await finalSubmissionRequest();
 
+        setIsFinalSubmitted(true);
+
         trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
 
         if (redirectUrls.success) {
@@ -51,6 +54,8 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
     } else {
       try {
         await finalSubmissionRequest();
+
+        setIsFinalSubmitted(true);
         await stateApi.sendEvent('NEXT');
         await stateApi.sendEvent('COMPLETED');
         trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
@@ -64,6 +69,7 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
 
   return {
     isFinalSubmissionAvailable,
+    isFinalSubmitted,
     handleFinalSubmission,
   };
 };

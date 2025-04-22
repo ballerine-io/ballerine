@@ -246,31 +246,8 @@ export class WorkflowService {
     });
   }
 
-  async getWorkflowByIdWithRelations(
-    id: string,
-    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-    projectIds: TProjectIds,
-  ) {
-    const allEntities = { endUser: true, business: true };
-    const childWorkflowSelectArgs = {
-      select: { ...args?.select, ...allEntities },
-      include: args?.include,
-      where: {
-        // @ts-expect-error - dynamically typed for all queries
-        deletedAt: args?.where?.deletedAt ?? null,
-      },
-    };
-    const workflow = (await this.workflowRuntimeDataRepository.findById(
-      id,
-      {
-        ...args,
-        select: {
-          ...(args?.select || {}),
-          childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
-        },
-      },
-      projectIds,
-    )) as TWorkflowWithRelations;
+  async getWorkflowByIdWithRelations(id: string, projectIds: TProjectIds) {
+    const workflow = await this.workflowRuntimeDataRepository.findByIdWithRelations(id, projectIds);
 
     return this.formatWorkflow(workflow);
   }
@@ -283,7 +260,9 @@ export class WorkflowService {
       if ('endUser' in workflow && !!workflow?.endUser) {
         return {
           id: workflow?.endUser?.id,
-          name: `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`,
+          name: [workflow?.endUser?.firstName, workflow?.endUser?.lastName]
+            .filter(Boolean)
+            .join(' '),
           avatarUrl: workflow?.endUser?.avatarUrl,
           approvalState: workflow?.endUser?.approvalState,
         };
@@ -322,6 +301,7 @@ export class WorkflowService {
 
     return {
       ...workflow,
+      endUsers: workflow.endUsers ?? [],
       context: {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
@@ -1206,6 +1186,7 @@ export class WorkflowService {
         runtimeData.workflowDefinitionId,
         {},
         projectIds,
+        transaction,
       );
 
       const correlationId: string = await this.getCorrelationIdFromWorkflow(

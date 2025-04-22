@@ -383,6 +383,7 @@ model Customer {
   websiteUrl                  String?
   subscriptions               Json?
   features                    Json? // Features enabled for the customer
+  hubspotCustomerId           String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

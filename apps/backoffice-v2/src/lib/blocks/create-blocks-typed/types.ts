@@ -41,7 +41,7 @@ export type TContainerCell = {
 
 export type THeadingCell = {
   type: 'heading';
-  value: string;
+  value: ReactNode;
   props?: ComponentProps<'h2'>;
 };
 
@@ -98,14 +98,6 @@ export type TDirectorsCallToActionCell = {
       workflow: AnyObject;
       onReset?: () => void;
     };
-  };
-};
-
-export type TFaceComparisonCell = {
-  type: 'faceComparison';
-  value: {
-    faceAUrl: string;
-    faceBUrl: string;
   };
 };
 
@@ -239,10 +231,18 @@ export type TNodeCell = {
 
 export type TReadOnlyDetailsCell = {
   type: 'readOnlyDetails';
-  props?: ComponentProps<'div'> & Pick<ComponentProps<typeof ReadOnlyDetail>, 'parse'>;
+  props?: ComponentProps<'div'> & {
+    config?: Pick<ComponentProps<typeof ReadOnlyDetail>, 'parse'> & {
+      sort?: {
+        direction?: SortDirection;
+        predefinedOrder?: string[];
+      };
+    };
+  };
   value: Array<{
     label: string;
     value: ExtendedJson;
+    props?: Omit<ComponentProps<typeof ReadOnlyDetail>, 'children'>;
   }>;
 };
 
@@ -268,7 +268,6 @@ export type TCell =
   | TCallToActionLegacyCell
   | TCallToActionCell
   | TDirectorsCallToActionCell
-  | TFaceComparisonCell
   | TDetailsCell
   | TNestedDetailsCell
   | TMultiDocumentsCell

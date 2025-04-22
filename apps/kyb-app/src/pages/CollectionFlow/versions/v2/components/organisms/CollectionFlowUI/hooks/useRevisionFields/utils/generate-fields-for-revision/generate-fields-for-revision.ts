@@ -9,6 +9,7 @@ import {
 import { checkIfStepInRevision } from '../../../../helpers/check-if-step-in-revision';
 import { generateGranularRevisionFields } from './helpers/generate-granular-revision-fields';
 import { generateRevisionFieldsForAllElements } from './helpers/generate-revision-fields-for-all-elements';
+import { checkIfStepInEdit } from '../../../../helpers/check-if-step-in-edit';
 
 export const generateFieldsForRevision = (
   pages: Array<UIPage<'v2'>>,
@@ -18,18 +19,23 @@ export const generateFieldsForRevision = (
 
   pages.forEach(page => {
     const isPageInRevision = checkIfStepInRevision(page.stateName, context);
+    const isPageInEdit = checkIfStepInEdit(page.stateName, context);
     const fieldDefinitions = getFieldDefinitionsFromSchema(page.elements) as Array<
       IFormElement<TBaseFields, any>
     >;
 
-    if (isPageInRevision) {
-      fieldsForRevision = fieldsForRevision.concat(
-        generateRevisionFieldsForAllElements(context, fieldDefinitions),
-      );
-    } else {
-      fieldsForRevision = fieldsForRevision.concat(
-        generateGranularRevisionFields(context, fieldDefinitions),
-      );
+    if (isPageInRevision || isPageInEdit) {
+      const granularRevisionFields = generateGranularRevisionFields(context, fieldDefinitions);
+
+      // If there specific fields to revise marking only them (Documents currently)
+      if (granularRevisionFields.length) {
+        fieldsForRevision = fieldsForRevision.concat(granularRevisionFields);
+      } else {
+        // If there are no specific fields to revise, mark all fields for revision
+        fieldsForRevision = fieldsForRevision.concat(
+          generateRevisionFieldsForAllElements(context, fieldDefinitions),
+        );
+      }
     }
   });
 

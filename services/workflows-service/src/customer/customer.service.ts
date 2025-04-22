@@ -72,12 +72,14 @@ export class CustomerService {
         await retry(() => new UnifiedApiClient().createCustomer(customer));
       }
 
-      this.analyticsService.track({
+      void this.analyticsService.trackSafe({
         event: EventNamesMap.CUSTOMER_CREATED,
         distinctId: customer.id,
         properties: {
           isDemoAccount: customer.config?.isDemoAccount,
+          maxBusinessReports: customer.config?.maxBusinessReports,
         },
+        customerId: customer.id,
       });
 
       return customer;

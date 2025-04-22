@@ -1,61 +1,32 @@
 import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
-import { getFieldDefinitionsFromSchema, IFormElement, TBaseFields } from '@ballerine/ui';
-import { describe, expect, it, vi } from 'vitest';
-import { checkIfStepInRevision } from '../../../../helpers/check-if-step-in-revision';
+import { describe, vi } from 'vitest';
 import { generateFieldsForRevision } from './generate-fields-for-revision';
-import { generateGranularRevisionFields } from './helpers/generate-granular-revision-fields';
-import { generateRevisionFieldsForAllElements } from './helpers/generate-revision-fields-for-all-elements';
+import { CollectionFlowStepStatesEnum } from '@ballerine/common';
 
 // Mock dependencies
-vi.mock('../../../../helpers/check-if-step-in-revision');
-vi.mock('./helpers/generate-granular-revision-fields');
-vi.mock('./helpers/generate-revision-fields-for-all-elements');
-vi.mock('@ballerine/ui', async () => {
-  const actual = await vi.importActual('@ballerine/ui');
-
-  return {
-    //@ts-ignore
-    ...actual,
-    getFieldDefinitionsFromSchema: vi.fn(),
-  };
-});
 
 describe('generateFieldsForRevision', () => {
-  // Arrange
-  const mockPages = [
-    {
-      stateName: 'page1',
-      elements: [{ id: 'element1' }],
-    },
-    {
-      stateName: 'page2',
-      elements: [{ id: 'element2' }],
-    },
-  ] as Array<UIPage<'v2'>>;
-
-  const mockContext = {
-    documents: [],
-  } as unknown as CollectionFlowContext;
-
-  const mockFieldDefinitions = [{ id: 'field1' }, { id: 'field2' }] as Array<
-    IFormElement<TBaseFields, any>
-  >;
-
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(checkIfStepInRevision).mockImplementation(stateName => stateName === 'page1');
-    vi.mocked(generateRevisionFieldsForAllElements).mockReturnValue([{ id: 'field1', reason: '' }]);
-    vi.mocked(generateGranularRevisionFields).mockReturnValue([
-      { id: 'field2', reason: 'some reason' },
-    ]);
-    vi.mocked(getFieldDefinitionsFromSchema).mockReturnValue(mockFieldDefinitions);
   });
 
   it('should return undefined when no revision fields are found', () => {
     // Arrange
-    vi.mocked(generateRevisionFieldsForAllElements).mockReturnValue([]);
-    vi.mocked(generateGranularRevisionFields).mockReturnValue([]);
+    const mockPages = [
+      {
+        stateName: 'page1',
+        elements: [{ id: 'element1', valueDestination: 'value1' }],
+      },
+    ] as Array<UIPage<'v2'>>;
+
+    const mockContext = {
+      collectionFlow: {
+        state: {
+          steps: [{ stepName: 'page1', state: CollectionFlowStepStatesEnum.completed }],
+        },
+      },
+    } as unknown as CollectionFlowContext;
 
     // Act
     const result = generateFieldsForRevision(mockPages, mockContext);
@@ -64,61 +35,204 @@ describe('generateFieldsForRevision', () => {
     expect(result).toBeUndefined();
   });
 
-  it('should generate revision fields for all pages', () => {
-    // Act
-    const result = generateFieldsForRevision(mockPages, mockContext);
-
-    // Assert
-    expect(result).toEqual([
-      { id: 'field1', reason: '' },
-      { id: 'field2', reason: 'some reason' },
-    ]);
-    expect(checkIfStepInRevision).toHaveBeenCalledTimes(2);
-    expect(checkIfStepInRevision).toHaveBeenCalledWith('page1', mockContext);
-    expect(checkIfStepInRevision).toHaveBeenCalledWith('page2', mockContext);
-  });
-
-  it('should use generateRevisionFieldsForAllElements for pages in revision', () => {
-    // Act
-    generateFieldsForRevision(mockPages, mockContext);
-
-    // Assert
-    expect(generateRevisionFieldsForAllElements).toHaveBeenCalledWith(
-      mockContext,
-      mockFieldDefinitions,
-    );
-    expect(generateRevisionFieldsForAllElements).toHaveBeenCalledTimes(1);
-  });
-
-  it('should use generateGranularRevisionFields for pages not in revision', () => {
-    // Act
-    generateFieldsForRevision(mockPages, mockContext);
-
-    // Assert
-    expect(generateGranularRevisionFields).toHaveBeenCalledWith(mockContext, mockFieldDefinitions);
-    expect(generateGranularRevisionFields).toHaveBeenCalledTimes(1);
-  });
-
-  it('should concatenate results from both generators', () => {
+  it('should return all page fields as revision fields', () => {
     // Arrange
-    vi.mocked(generateRevisionFieldsForAllElements).mockReturnValue([
-      { id: 'field1', reason: '' },
-      { id: 'field3', reason: '' },
-    ]);
-    vi.mocked(generateGranularRevisionFields).mockReturnValue([
-      { id: 'field2', reason: 'reason2' },
-      { id: 'field4', reason: 'reason4' },
-    ]);
+    const mockPages = [
+      {
+        stateName: 'page1',
+        elements: [
+          { id: 'element1', valueDestination: 'value1' },
+          { id: 'element2', valueDestination: 'value2' },
+        ],
+      },
+    ] as Array<UIPage<'v2'>>;
+
+    const mockContext = {
+      collectionFlow: {
+        state: {
+          steps: [{ stepName: 'page1', state: CollectionFlowStepStatesEnum.revision }],
+        },
+      },
+    } as unknown as CollectionFlowContext;
 
     // Act
     const result = generateFieldsForRevision(mockPages, mockContext);
 
     // Assert
     expect(result).toEqual([
-      { id: 'field1', reason: '' },
-      { id: 'field3', reason: '' },
-      { id: 'field2', reason: 'reason2' },
-      { id: 'field4', reason: 'reason4' },
+      { id: 'element1-*', reason: '' },
+      { id: 'element2-*', reason: '' },
     ]);
+  });
+
+  it('should return only documents that are in revision', () => {
+    // Arrange
+    const contextWithDocumentsInRevision = {
+      collectionFlow: {
+        state: {
+          steps: [
+            {
+              stepName: 'page1',
+              state: CollectionFlowStepStatesEnum.revision,
+            },
+            {
+              stepName: 'page2',
+              state: CollectionFlowStepStatesEnum.completed,
+            },
+          ],
+        },
+      },
+      documents: [
+        { id: 'document1', _document: { decision: 'revisions' } },
+        { id: 'document2', _document: { decision: 'revisions' } },
+      ],
+    };
+
+    const pagesWithDocumentsInRevision = [
+      {
+        stateName: 'page1',
+        elements: [
+          {
+            id: 'document1',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { id: 'document1' } },
+          },
+          {
+            id: 'document2',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { id: 'document2' } },
+          },
+        ],
+      },
+      {
+        stateName: 'page2',
+        elements: [
+          { id: 'document3', element: 'documentfield', valueDestination: 'documents' },
+          { id: 'document4', element: 'documentfield', valueDestination: 'documents' },
+        ],
+      },
+    ] as Array<UIPage<'v2'>>;
+
+    // Act
+    const result = generateFieldsForRevision(
+      pagesWithDocumentsInRevision,
+      contextWithDocumentsInRevision as unknown as CollectionFlowContext,
+    );
+
+    // Assert
+    expect(result).toEqual([
+      { id: 'document1', reason: '' },
+      { id: 'document2', reason: '' },
+    ]);
+  });
+
+  it('should return requested documents', () => {
+    // Arrange
+    const mockContext = {
+      collectionFlow: {
+        state: {
+          steps: [{ stepName: 'page1', state: CollectionFlowStepStatesEnum.revision }],
+        },
+      },
+      documents: [
+        { id: 'document1', _document: { status: 'requested' } },
+        { id: 'document2', _document: { status: 'requested' } },
+      ],
+    } as unknown as CollectionFlowContext;
+
+    const pagesWithRequestedDocuments = [
+      {
+        stateName: 'page1',
+        elements: [
+          {
+            id: 'document1',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { id: 'document1' } },
+          },
+          {
+            id: 'document2',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { id: 'document2' } },
+          },
+        ],
+      },
+      {
+        stateName: 'page2',
+        elements: [
+          {
+            id: 'document3',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { id: 'document3' } },
+          },
+          {
+            id: 'document4',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { id: 'document4' } },
+          },
+        ],
+      },
+    ] as Array<UIPage<'v2'>>;
+
+    // Act
+    const result = generateFieldsForRevision(
+      pagesWithRequestedDocuments,
+      mockContext as unknown as CollectionFlowContext,
+    );
+
+    // Assert
+    expect(result).toEqual([
+      { id: 'document1', reason: '' },
+      { id: 'document2', reason: '' },
+    ]);
+  });
+
+  it('should return documents with revision reason and comment', () => {
+    // Arrange
+    const mockContext = {
+      collectionFlow: {
+        state: {
+          steps: [{ stepName: 'page1', state: CollectionFlowStepStatesEnum.revision }],
+        },
+      },
+      documents: [
+        {
+          id: 'document1',
+          _document: { decision: 'revisions', decisionReason: 'reason1', comment: 'comment1' },
+        },
+      ],
+    } as unknown as CollectionFlowContext;
+
+    const pagesWithDocumentsInRevision = [
+      {
+        stateName: 'page1',
+        elements: [
+          {
+            id: 'document1',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: {
+              template: {
+                id: 'document1',
+              },
+            },
+          },
+        ],
+      },
+    ] as Array<UIPage<'v2'>>;
+
+    // Act
+    const result = generateFieldsForRevision(
+      pagesWithDocumentsInRevision,
+      mockContext as unknown as CollectionFlowContext,
+    );
+
+    // Assert
+    expect(result).toEqual([{ id: 'document1', reason: 'reason1 - comment1' }]);
   });
 });

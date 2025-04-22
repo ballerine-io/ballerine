@@ -4,7 +4,7 @@ import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { valueOrNA } from '@ballerine/common';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { CommunicationChannel, CommunicationChannelEvent } from '@/common/enums';
@@ -12,7 +12,6 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useDocumentLogic = () => {
   const { state } = useLocation();
-  const filterId = useFilterId();
   const navigate = useNavigate();
   const { entityId, documentId } = useParams();
   const locale = useLocale();
@@ -49,7 +48,7 @@ export const useDocumentLogic = () => {
         type: CommunicationChannelEvent.OPEN_DOCUMENT_IN_NEW_TAB_ACK,
       });
     },
-    [broadcastChannel, filterId, locale, navigate, state?.from],
+    [broadcastChannel, locale, navigate, state?.from],
   );
 
   useLayoutEffect(() => {
@@ -61,8 +60,7 @@ export const useDocumentLogic = () => {
   }, [broadcastChannel, handler]);
 
   const { data: workflow, isLoading: isLoadingWorkflow } = useWorkflowByIdQuery({
-    workflowId: entityId,
-    filterId,
+    workflowId: entityId ?? '',
   });
 
   const document = useMemo(

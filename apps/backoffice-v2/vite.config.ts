@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 import terminal from 'vite-plugin-terminal';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import topLevelAwait from 'vite-plugin-top-level-await';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
@@ -30,6 +31,13 @@ export default defineConfig(configEnv => {
       react(),
       tsconfigPaths(),
       // mkcert(),
+      // visualizer({
+      //   open: true,
+      //   filename: 'dist/stats.html',
+      //   gzipSize: true,
+      //   brotliSize: true,
+      //   template: 'treemap',
+      // }),
     ],
     css: {
       modules: {
@@ -43,6 +51,44 @@ export default defineConfig(configEnv => {
     },
     build: {
       sourcemap: true,
+      minify: 'terser',
+      target: 'es2018',
+      terserOptions: {
+        compress: {
+          drop_console: !isDevelopment,
+          drop_debugger: !isDevelopment,
+          passes: 2,
+        },
+        format: {
+          comments: false,
+        },
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react-core': ['react', 'react-dom', 'react/jsx-runtime'],
+            'vendor-react-router': ['react-router', 'react-router-dom', '@remix-run/router'],
+            'vendor-animation': ['framer-motion'],
+            'vendor-ui-components': [
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-label',
+              '@radix-ui/react-popover',
+              '@radix-ui/react-select',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-tooltip',
+              'class-variance-authority',
+              'lucide-react',
+            ],
+            'vendor-charts': ['recharts'],
+            'vendor-pdf-image': ['@react-pdf/renderer', 'jspdf'],
+          },
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+        },
+      },
+      chunkSizeWarningLimit: 1000,
     },
   };
 });

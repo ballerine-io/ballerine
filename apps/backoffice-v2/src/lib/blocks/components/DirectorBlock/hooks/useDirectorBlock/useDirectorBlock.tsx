@@ -9,9 +9,7 @@ import { composePickableCategoryType } from '@/pages/Entity/hooks/useEntityLogic
 import { Button, ctw } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import React, { useMemo } from 'react';
-import { titleCase, toTitleCase } from 'string-ts';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
-import { useAmlBlock } from '../../../AmlBlock/hooks/useAmlBlock/useAmlBlock';
+import { titleCase } from 'string-ts';
 import { DecisionStatus } from './types';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 
@@ -54,7 +52,6 @@ export const useDirectorBlock = ({
     id: string;
     firstName: string;
     lastName: string;
-    aml: Record<PropertyKey, any>;
     documents: Array<{
       id: string;
       category: string;
@@ -92,13 +89,6 @@ export const useDirectorBlock = ({
   workflow: TWorkflowById;
 }) => {
   const { noAction } = useCaseDecision();
-
-  const amlData = useMemo(() => [director?.aml], [director?.aml]);
-
-  const amlBlock = useAmlBlock({
-    data: amlData,
-    vendor: director?.aml?.vendor ?? '',
-  });
 
   const isDocumentsV2 = workflow?.workflowDefinition?.config?.isDocumentsV2;
   const blocks = useMemo(() => {
@@ -347,12 +337,10 @@ export const useDirectorBlock = ({
                       contextUpdateMethod: 'director',
                       value: {
                         id: document.id,
-                        data: Object.entries(
-                          {
-                            ...additionalProperties,
-                            ...document.propertiesSchema?.properties,
-                          } ?? {},
-                        )?.map(
+                        data: Object.entries({
+                          ...additionalProperties,
+                          ...document.propertiesSchema?.properties,
+                        })?.map(
                           ([
                             title,
                             {
@@ -412,17 +400,9 @@ export const useDirectorBlock = ({
         .buildFlat();
     });
 
-    const amlBlockWithSeparator = createBlocksTyped()
-      .addBlock()
-      .addCell({
-        type: 'node',
-        value: <Separator className={`my-2`} />,
-      })
-      .addCell({
-        type: 'container',
-        value: amlBlock,
-      })
-      .build();
+    if (!multiDocumentsBlocks?.length) {
+      return [];
+    }
 
     return createBlocksTyped()
       .addBlock()
@@ -442,7 +422,6 @@ export const useDirectorBlock = ({
           })
           .build()
           .concat(multiDocumentsBlocks ?? [])
-          .concat(amlBlockWithSeparator)
           .flat(1),
         className: ctw({
           'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
@@ -452,7 +431,6 @@ export const useDirectorBlock = ({
       })
       .build();
   }, [
-    amlBlock,
     director,
     documentSchemas,
     isApproveDisabled,

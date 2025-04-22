@@ -274,4 +274,31 @@ describe('useFinalSubmission', () => {
       value: originalLocation,
     });
   });
+
+  it('should set isFinalSubmitted to true when final submission is successful', async () => {
+    // Arrange
+    vi.mocked(useRedirectUrls).mockReturnValue(null);
+    vi.mocked(finalSubmissionRequest).mockResolvedValue(undefined);
+
+    // Act
+    const { result, rerender } = renderHook(() => useFinalSubmission(mockContext, mockState));
+    await result.current.handleFinalSubmission();
+    rerender();
+    // Assert
+    expect(result.current.isFinalSubmitted).toBe(true);
+  });
+
+  it('should not set isFinalSubmitted to true when final submission is failed', async () => {
+    // Arrange
+    vi.mocked(useRedirectUrls).mockReturnValue(null);
+    vi.mocked(finalSubmissionRequest).mockRejectedValue(new Error('Failed'));
+
+    // Act
+    const { result, rerender } = renderHook(() => useFinalSubmission(mockContext, mockState));
+    await result.current.handleFinalSubmission();
+    rerender();
+
+    // Assert
+    expect(result.current.isFinalSubmitted).toBe(false);
+  });
 });
