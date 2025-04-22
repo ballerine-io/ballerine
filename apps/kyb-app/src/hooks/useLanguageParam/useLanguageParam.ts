@@ -1,9 +1,11 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCallback, useMemo } from 'react';
 import { getAccessToken } from '@/helpers/get-access-token.helper';
+import { useWorkflowId } from '@/common/hooks/useWorkflowId';
 
 export const useLanguageParam = () => {
   const { state } = useLocation();
+  const workflowId = useWorkflowId();
   const navigate = useNavigate();
 
   const [params] = useSearchParams();
@@ -14,7 +16,13 @@ export const useLanguageParam = () => {
     (language: string) => {
       const token = getAccessToken();
 
-      navigate(`/collection-flow?token=${token}&lng=${language}`, {
+      const searchParamsString = new URLSearchParams({
+        ...(workflowId ? { workflowId } : {}),
+        ...(token ? { token } : {}),
+        lng: language,
+      }).toString();
+
+      navigate(`/collection-flow/?${searchParamsString}`, {
         replace: true,
         state: {
           from: state?.from,
@@ -23,7 +31,7 @@ export const useLanguageParam = () => {
 
       location.reload();
     },
-    [navigate, state],
+    [navigate, state, workflowId],
   );
 
   return { language: currentLanguage, setLanguage };

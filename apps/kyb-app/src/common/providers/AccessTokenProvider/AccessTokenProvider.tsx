@@ -1,18 +1,23 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
-import { getDefaultLocalAccessToken } from '@/helpers/get-default-local-access-token';
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AccessTokenIsMissingError } from '../../errors/access-token-is-missing';
 import { AccessTokenContext } from './context';
+import { useWorkflowId } from '@/common/hooks/useWorkflowId';
+import { useWorkflowIdQuery } from '@/hooks/useWorkflowIdQuery';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 interface IAccessTokenProviderProps {
   children: React.ReactNode;
 }
 
 export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => {
-  const [accessToken, setAccessToken] = useState<string | null>(
-    () => getAccessToken() ?? getDefaultLocalAccessToken(),
-  );
+  const navigate = useNavigate();
+  const { language } = useLanguageParam();
+  const workflowId = useWorkflowId();
+  const [accessToken, setAccessToken] = useState<string | null>(() => getAccessToken());
+  const { workflowId: workflowIdFromServer } = useWorkflowIdQuery();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const context = useMemo(
@@ -25,19 +30,37 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
 
   useEffect(() => {
     if (accessToken) {
+      if (!workflowId && workflowIdFromServer) {
+        const searchParamsString = new URLSearchParams({
+          workflowId: workflowIdFromServer,
+          token: accessToken,
+          lng: language,
+        }).toString();
+
+        navigate(`/collection-flow/?${searchParamsString}`);
+      }
+
       const previousToken = searchParams.get('token');
 
       if (previousToken !== accessToken) {
-        setSearchParams({ token: accessToken });
+        setSearchParams({ ...searchParams, token: accessToken });
       }
     }
-  }, [accessToken, searchParams, setSearchParams]);
+  }, [
+    language,
+    workflowId,
+    accessToken,
+    searchParams,
+    workflowIdFromServer,
+    navigate,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!accessToken && !workflowId) {
       throw new AccessTokenIsMissingError();
     }
-  }, [accessToken]);
+  }, [accessToken, workflowId]);
 
   return <AccessTokenContext.Provider value={context}>{children}</AccessTokenContext.Provider>;
 };

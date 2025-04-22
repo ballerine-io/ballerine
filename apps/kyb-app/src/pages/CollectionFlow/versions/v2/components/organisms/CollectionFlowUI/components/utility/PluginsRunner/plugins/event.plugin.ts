@@ -4,14 +4,14 @@ export interface IEventPluginParams {
   eventName: 'NEXT' | 'PREV';
 }
 
+export const EVENT_PLUGIN_NAME = 'event';
+
 export const eventPlugin: TPluginRunner<IEventPluginParams> = async (
   context,
-  app,
+  { api },
   pluginParams,
 ) => {
-  await app.api.sendEvent(pluginParams.eventName);
+  await api.sendEvent(pluginParams.eventName);
 
   return context;
 };
-
-export const EVENT_PLUGIN_NAME = 'event';

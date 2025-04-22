@@ -38,11 +38,9 @@ export const buildCollectionFlowState = (inputConfig: TCollectionFlowConfig): TC
   const config: TCollectionFlow['config'] = initializeConfig(inputConfig);
   const state: TCollectionFlow['state'] = initializeState(inputConfig);
 
-  const collectionFlow: TCollectionFlow = {
+  return {
     config,
     state,
     additionalInformation: inputConfig.additionalInformation || {},
   };
-
-  return collectionFlow;
 };

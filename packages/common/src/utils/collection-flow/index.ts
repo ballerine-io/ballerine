@@ -1,4 +1,5 @@
 export * from './build-collection-flow-state';
+export * from './build-collection-flow-url';
 export * from './enums/collection-flow-status-enum';
 export * from './enums/collection-flow-step-state-enum';
 export * from './get-collection-flow-additional-information';
