@@ -1,9 +1,9 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
-import ky, { HTTPError, Options } from 'ky';
+import ky, { HTTPError } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
-const instance = ky.create({
+export const request = ky.create({
   prefixUrl:
     (globalThis as any).env?.VITE_API_URL ??
     (import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`),
@@ -16,8 +16,18 @@ const instance = ky.create({
   timeout: 30_000,
   hooks: {
     beforeRequest: [
-      request => {
+      async request => {
         request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
+
+        const url = new URL(request.url);
+
+        const workflowId = new URLSearchParams(window.location.search).get('workflowId');
+
+        if (workflowId) {
+          url.searchParams.append('workflowId', workflowId);
+
+          return new Request(url.toString(), request);
+        }
       },
     ],
     beforeError: [
@@ -69,33 +79,3 @@ const instance = ky.create({
     ],
   },
 });
-
-const addWorkflowId = (options: Options = {}): Options => {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  const workflowId = urlParams.get('workflowId');
-
-  if (!workflowId) {
-    return options;
-  }
-
-  const searchParams = new URLSearchParams(
-    options.searchParams as string | URLSearchParams | Record<string, string> | undefined,
-  );
-
-  searchParams.append('workflowId', workflowId);
-
-  return {
-    ...options,
-    searchParams,
-  };
-};
-
-export const request = {
-  ...instance,
-  get: (url: string, options?: Options) => instance.get(url, addWorkflowId(options)),
-  post: (url: string, options?: Options) => instance.post(url, addWorkflowId(options)),
-  put: (url: string, options?: Options) => instance.put(url, addWorkflowId(options)),
-  patch: (url: string, options?: Options) => instance.patch(url, addWorkflowId(options)),
-  delete: (url: string, options?: Options) => instance.delete(url, addWorkflowId(options)),
-};

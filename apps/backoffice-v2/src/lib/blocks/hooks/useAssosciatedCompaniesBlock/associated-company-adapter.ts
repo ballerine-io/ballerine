@@ -1,4 +1,5 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 
 export const associatedCompanyAdapter = (workflow: TWorkflowById) => ({
   workflowId: workflow?.id,
@@ -16,5 +17,8 @@ export const associatedCompanyAdapter = (workflow: TWorkflowById) => ({
   contactEmail: workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.email,
   nextEvents: workflow?.nextEvents,
   tags: workflow?.tags,
-  collectionFlowUrl: `${workflow?.context?.metadata?.collectionFlowUrl}/?workflowId=${workflow.id}&token=${workflow?.context?.metadata?.token}`,
+  collectionFlowUrl: buildCollectionFlowUrl(workflow?.context?.metadata?.collectionFlowUrl, {
+    workflowId: workflow.id,
+    token: workflow?.context?.metadata?.token,
+  }),
 });

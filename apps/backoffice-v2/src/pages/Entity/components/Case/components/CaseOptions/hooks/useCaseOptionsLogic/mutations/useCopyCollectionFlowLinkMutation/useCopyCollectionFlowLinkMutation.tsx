@@ -1,6 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 
 export const useCopyCollectionFlowLinkMutation = ({ workflow }: { workflow: TWorkflowById }) => {
   return useMutation({
@@ -9,7 +10,11 @@ export const useCopyCollectionFlowLinkMutation = ({ workflow }: { workflow: TWor
         throw new Error('Collection flow URL or token not available');
       }
 
-      const url = `${workflow.context.metadata.collectionFlowUrl}/?workflowId=${workflow.id}&token=${workflow.context.metadata.token}`;
+      const url = buildCollectionFlowUrl(workflow.context.metadata.collectionFlowUrl, {
+        workflowId: workflow.id,
+        token: workflow.context.metadata.token,
+      });
+
       await navigator.clipboard.writeText(url);
     },
     onSuccess: () => {

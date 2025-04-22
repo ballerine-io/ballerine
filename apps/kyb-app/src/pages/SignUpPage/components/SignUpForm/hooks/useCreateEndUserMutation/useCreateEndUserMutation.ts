@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useWorkflowId } from '@/common/hooks/useWorkflowId';
-import { createQueryParamsString } from '@/common/utils/create-query-params-string';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 export const useCreateEndUserMutation = () => {
@@ -19,13 +18,13 @@ export const useCreateEndUserMutation = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries(collectionFlowQuerykeys.getEndUser());
 
-      navigate(
-        `/collection-flow/${createQueryParamsString({
-          workflowId,
-          token: accessToken,
-          lng: language,
-        })}`,
-      );
+      const searchParamsString = new URLSearchParams({
+        ...(workflowId ? { workflowId } : {}),
+        ...(accessToken ? { token: accessToken } : {}),
+        lng: language,
+      }).toString();
+
+      navigate(`/collection-flow/?${searchParamsString}`);
     },
     onError: () => {
       toast.error('Failed to create user. Please try again.');

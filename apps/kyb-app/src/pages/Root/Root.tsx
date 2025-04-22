@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useIsSignupRequired } from './hooks/useIsSignupRequired';
 import { useWorkflowId } from '@/common/hooks/useWorkflowId';
-import { createQueryParamsString } from '@/common/utils/create-query-params-string';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 export const Root = () => {
@@ -18,13 +17,13 @@ export const Root = () => {
       return;
     }
 
-    void navigate(
-      `/${isSignupRequired ? 'signup' : 'collection-flow'}/${createQueryParamsString({
-        workflowId,
-        token: accessToken,
-        lng: language,
-      })}`,
-    );
+    const searchParamsString = new URLSearchParams({
+      ...(workflowId ? { workflowId } : {}),
+      ...(accessToken ? { token: accessToken } : {}),
+      lng: language,
+    }).toString();
+
+    void navigate(`/${isSignupRequired ? 'signup' : 'collection-flow'}/?${searchParamsString}`);
   }, [isSignupRequired, isLoading, accessToken, workflowId, navigate, language]);
 
   return <Outlet />;

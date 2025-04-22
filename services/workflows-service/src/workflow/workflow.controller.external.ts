@@ -40,7 +40,12 @@ import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
-import { DefaultContextSchema, defaultContextSchema, isObject } from '@ballerine/common';
+import {
+  buildCollectionFlowUrl,
+  DefaultContextSchema,
+  defaultContextSchema,
+  isObject,
+} from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
@@ -412,7 +417,10 @@ export class WorkflowControllerExternal {
     }
 
     return {
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}/?workflowId=${workflowRuntimeDataId}&token=${workflow.token}`,
+      collectionFlowUrl: buildCollectionFlowUrl(env.COLLECTION_FLOW_URL, {
+        workflowId: workflowRuntimeDataId,
+        token: workflow.token,
+      }),
     };
   }
 

@@ -56,7 +56,7 @@ export const fetchCompanyInformationPlugin = async (
     if (!validatedResult.success) {
       console.error(
         `Invalid ${FETCH_COMPANY_INFORMATION_PLUGIN_NAME} plugin result`,
-        pluginData.error,
+        validatedResult.error,
       );
 
       return context;

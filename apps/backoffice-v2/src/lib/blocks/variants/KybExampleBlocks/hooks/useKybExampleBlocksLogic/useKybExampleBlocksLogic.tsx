@@ -31,6 +31,7 @@ import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/u
 import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useReviseDocumentByIdMutation/useReviseDocumentByIdMutation';
 import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -212,16 +213,19 @@ export const useKybExampleBlocksLogic = () => {
           });
         }
 
-        window.open(
-          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-          '_blank',
-        );
+        const url = buildCollectionFlowUrl(workflow?.context?.metadata?.collectionFlowUrl, {
+          workflowId: workflow?.id,
+          token: workflow?.context?.metadata?.token,
+        });
+
+        window.open(url, '_blank');
       },
     [
       mutateReviseDocumentById,
       mutateRevisionTaskById,
-      workflow?.context?.metadata?.collectionFlowUrl,
+      workflow?.id,
       workflow?.context?.metadata?.token,
+      workflow?.context?.metadata?.collectionFlowUrl,
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );

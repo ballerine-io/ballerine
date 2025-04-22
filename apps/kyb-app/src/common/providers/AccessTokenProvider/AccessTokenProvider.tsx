@@ -5,7 +5,6 @@ import { AccessTokenIsMissingError } from '../../errors/access-token-is-missing'
 import { AccessTokenContext } from './context';
 import { useWorkflowId } from '@/common/hooks/useWorkflowId';
 import { useWorkflowIdQuery } from '@/hooks/useWorkflowIdQuery';
-import { createQueryParamsString } from '@/common/utils/create-query-params-string';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 interface IAccessTokenProviderProps {
@@ -32,13 +31,13 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
   useEffect(() => {
     if (accessToken) {
       if (!workflowId && workflowIdFromServer) {
-        navigate(
-          `/collection-flow/${createQueryParamsString({
-            workflowId: workflowIdFromServer,
-            token: accessToken,
-            lng: language,
-          })}`,
-        );
+        const searchParamsString = new URLSearchParams({
+          workflowId: workflowIdFromServer,
+          token: accessToken,
+          lng: language,
+        }).toString();
+
+        navigate(`/collection-flow/?${searchParamsString}`);
       }
 
       const previousToken = searchParams.get('token');

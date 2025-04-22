@@ -158,7 +158,7 @@ export const UpdateEndUserPluginDataSchema = z.object({
   lastName: z.string().min(1),
   email: z.string().email().optional(),
   phone: z.string().optional(),
-  dateOfBirth: z.string().date().optional(),
+  dateOfBirth: z.string().optional(),
   additionalInfo: z.object({
     title: z.string().min(1),
   }),
