@@ -1,11 +1,18 @@
-import ReactJson from 'react-json-view';
-import { JsonDialogProps } from './interfaces';
+import { Suspense, lazy } from 'react';
+import { Dialog, DialogContent, DialogTrigger } from '../Dialog/Dialog';
+import { Loader2 } from 'lucide-react';
 import { ctw } from '../../../utils/ctw/ctw';
-import { Dialog } from '../../organisms/Dialog/Dialog';
-import { DialogTrigger } from '../../organisms/Dialog/Dialog.Trigger';
 import { Button } from '../../atoms/Button/Button';
-import { DialogContent } from '../../organisms/Dialog/Dialog.Content';
-import { ScrollArea } from '../ScrollArea/ScrollArea';
+
+const ReactJson = lazy(() => import('react-json-view'));
+
+export interface JsonDialogProps {
+  json: object;
+  dialogButtonText?: string;
+  buttonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+}
 
 export const JsonDialog = ({
   json,
@@ -23,10 +30,17 @@ export const JsonDialog = ({
           {rightIcon}
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-[80%] bg-white">
-        <ScrollArea orientation="both" className={`mt-4 h-[80vh]`}>
-          <ReactJson src={JSON.parse(json ?? '{}') as object} />
-        </ScrollArea>
+      <DialogContent className="max-w-4xl">
+        <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+          <ReactJson
+            name={null}
+            theme={'bright'}
+            src={json}
+            enableClipboard={false}
+            displayDataTypes={false}
+            displayObjectSize={false}
+          />
+        </Suspense>
       </DialogContent>
     </Dialog>
   );

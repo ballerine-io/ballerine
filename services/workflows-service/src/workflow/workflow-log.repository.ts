@@ -42,9 +42,11 @@ export class WorkflowLogRepository {
 
     if (fromDate || toDate) {
       where.createdAt = {};
+
       if (fromDate) {
         where.createdAt.gte = fromDate;
       }
+
       if (toDate) {
         where.createdAt.lte = toDate;
       }

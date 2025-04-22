@@ -8,7 +8,6 @@ import { Container } from '@/lib/blocks/components/Container/Container';
 import { DataTableCell } from '@/lib/blocks/components/DataTableCell/DataTableCell';
 import { Details } from '@/lib/blocks/components/Details/Details';
 import { DialogCell } from '@/lib/blocks/components/DialogCell/DialogCell';
-import { FaceComparison } from '@/lib/blocks/components/FaceComparison/FaceComparison';
 import { Heading } from '@/lib/blocks/components/Heading/Heading';
 import { ImageCell } from '@/lib/blocks/components/ImageCell/ImageCell';
 import { MapCell } from '@/lib/blocks/components/MapCell/MapCell';
@@ -43,7 +42,6 @@ export const cells: CellsMap = {
   container: Container,
   callToActionLegacy: CallToActionLegacy,
   callToAction: CallToAction,
-  faceComparison: FaceComparison,
   details: Details,
   nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
