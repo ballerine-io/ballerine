@@ -36,7 +36,7 @@ export const serverEnvSchema = {
     .default('strict'),
   SESSION_HTTP_ONLY: booleanSchema.default(true),
   SESSION_SECURE_COOKIE: booleanSchema.default(true),
-  SESSION_SECURE_PROXY: booleanSchema.default(false),
+  SESSION_SECURE_PROXY: booleanSchema.default(true),
   HASHING_KEY_SECRET: z.string().optional(),
   HASHING_KEY_SECRET_BASE64: z.string().refine(Base64.isValid).optional(),
   SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
