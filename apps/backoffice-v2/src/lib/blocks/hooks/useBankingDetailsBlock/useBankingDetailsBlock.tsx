@@ -1,29 +1,33 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { FileText } from 'lucide-react';
 
 export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
-  return useMemo(() => {
-    if (Object.keys(bankDetails ?? {}).length === 0) {
-      return createBlocksTyped()
-        .addBlock()
-        .addCell({
-          type: 'block',
-          value: createBlocksTyped()
-            .addBlock()
-            .addCell({
-              type: 'emptyPlaceholder',
-              props: {
-                title: 'Banking details',
-                description: 'Banking details are being collected or not provided.',
-                icon: <FileText size={68} />,
-                className: 'px-3',
-              },
-            })
-            .build()
-            .flat(1),
-        })
-        .build();
+  const isEmpty = useMemo(() => Object.keys(bankDetails ?? {}).length === 0, [bankDetails]);
+
+  const emptyBankDetailsBlock = useMemo(() => {
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'heading',
+            value: 'Banking details',
+          })
+          .addCell({
+            type: 'paragraph',
+            value: 'Banking details are being collected or not provided.',
+          })
+          .build()
+          .flat(1),
+      })
+      .build();
+  }, []);
+
+  const bankingDetailsBlock = useMemo(() => {
+    if (isEmpty) {
+      return [];
     }
 
     return createBlocksTyped()
@@ -60,5 +64,7 @@ export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
           .flat(1),
       })
       .build();
-  }, [bankDetails, workflow]);
+  }, [bankDetails, workflow, isEmpty]);
+
+  return isEmpty ? emptyBankDetailsBlock : bankingDetailsBlock;
 };
