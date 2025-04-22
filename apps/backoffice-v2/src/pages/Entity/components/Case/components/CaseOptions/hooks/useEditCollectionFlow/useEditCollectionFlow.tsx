@@ -54,12 +54,16 @@ export const useEditCollectionFlow = () => {
     });
 
     try {
-      const url = buildCollectionFlowUrl(
-        (workflow as TWorkflowById)?.context?.metadata?.collectionFlowUrl,
-        {
-          workflowId: workflow?.id,
-        },
-      );
+      const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
+        ?.collectionFlowUrl;
+
+      if (!collectionFlowBaseUrl) {
+        throw new Error('Collection flow URL is missing.');
+      }
+
+      const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
+        workflowId: workflow?.id,
+      });
 
       window.open(url, '_blank');
     } catch (error) {

@@ -9,5 +9,7 @@ export const buildCollectionFlowUrl = (
   },
 ) =>
   collectionFlowBaseUrl
-    ? `${collectionFlowBaseUrl}/collection-flow?workflowId=${workflowId ?? ''}&token=${token ?? ''}`
+    ? `${collectionFlowBaseUrl}/collection-flow?workflowId=${workflowId ?? ''}${
+        token ? `&token=${token}` : ''
+      }`
     : '';
