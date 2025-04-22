@@ -1,0 +1,112 @@
+name: "Check ArgoCD APP Status"
+description: "Syncs an ArgoCD application"
+inputs:
+  argocd_username:
+    description: "ArgoCD Username"
+    required: true
+  argocd_password:
+    description: "ArgoCD Password"
+    required: true
+  argocd_server:
+    description: "ArgoCD Server"
+    required: true
+  argocd_api_url:
+    description: "ArgoCD API URL"
+    required: true
+  tg_svc_key:
+    description: "Twingate Key"
+    required: true
+  app_image_tag:
+    description: "Image Tag"
+    required: true
+  resource_type:
+    description: "Type of the resource (Job or Deployment)"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup Twingate
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ inputs.tg_svc_key }}
+
+    - name: Obtain ArgoCD JWT Token
+      id: get_token
+      shell: bash
+      env:
+        ARGOCD_USERNAME: ${{ inputs.argocd_username }}
+        ARGOCD_PASSWORD: ${{ inputs.argocd_password }}
+        ARGOCD_SERVER: ${{ inputs.argocd_server }}
+      run: |
+        TOKEN=$(curl -k --insecure -s -X POST "${ARGOCD_SERVER}/api/v1/session" \
+          -d '{"username": "'"${ARGOCD_USERNAME}"'", "password": "'"${ARGOCD_PASSWORD}"'"}' \
+          -H "Content-Type: application/json" | jq -r '.token')
+        echo "ARGOCD_TOKEN=$TOKEN" >> $GITHUB_ENV
+    
+    - name: Sync ArgoCD Application
+      shell: bash
+      env:
+        ARGOCD_TOKEN: ${{ env.ARGOCD_TOKEN }}
+        ARGOCD_SERVER: ${{ inputs.argocd_server }}
+        IMAGE_TAG: ${{ inputs.app_image_tag }}
+        API_URL: ${{ inputs.argocd_api_url }}
+        RESOURCE_TYPE: ${{ inputs.resource_type }}
+      run: |
+        ARGOCD_API_URL=${API_URL}
+        TARGET_IMAGE_TAG=${IMAGE_TAG}
+        TOKEN=${ARGOCD_TOKEN}
+        RESOURCE_TYPE=${RESOURCE_TYPE}
+        while true; do
+            # Fetch job status from ArgoCD API
+            RESPONSE=$(curl -s -k -H "Authorization: Bearer $TOKEN" "$ARGOCD_API_URL")
+            # echo $RESPONSE
+
+            # Extract and parse the manifest JSON
+            MANIFEST=$(echo "$RESPONSE" | jq -r '.manifest' | jq '.')
+            # echo $MANIFEST
+
+            # Extract Start Time, Status, and Type
+            # START_TIME=$(echo "$MANIFEST" | jq -r '.status.startTime')
+            # echo $START_TIME
+            STATUS=$(echo "$MANIFEST" | jq -r '.status.conditions[] | select(.type=="Complete") | .status')
+            echo $STATUS
+            TYPE=$(echo "$MANIFEST" | jq -r '.status.conditions[] | select(.type=="Complete") | .type')
+            echo $TYPE
+
+            # Extract Image Tag
+            IMAGE=$(echo "$MANIFEST" | jq -r '.spec.template.spec.containers[0].image')
+            # echo $IMAGE
+            IMAGE_TAG=$(echo "$IMAGE" | cut -d ':' -f2)  # Extract the tag after the colon
+            echo $IMAGE_TAG
+
+            # Print extracted information
+            # echo "Start Time: $START_TIME"
+            echo "Status: $STATUS"
+            echo "Type: $TYPE"
+            # echo "Image: $IMAGE"
+            echo "Image Tag: $IMAGE_TAG"
+
+            # Nested condition to check Image Tag and Job Completion
+            if [[ "$RESOURCE_TYPE" == "Job" ]]; then
+                STATUS=$(echo "$MANIFEST" | jq -r '.status.conditions[] | select(.type=="Complete") | .status')
+                TYPE=$(echo "$MANIFEST" | jq -r '.status.conditions[] | select(.type=="Complete") | .type')
+                if [[ "$IMAGE_TAG" == "$TARGET_IMAGE_TAG" && "$TYPE" == "Complete" && "$STATUS" == "True" ]]; then
+                    echo "✅ Job completed successfully"
+                    break
+                else
+                    echo "⏳ Resource is still running... Waiting for completion."
+                fi
+            elif [[ "$RESOURCE_TYPE" == "Deployment" ]]; then
+                STATUS=$(echo "$MANIFEST" | jq -r '.status.conditions[] | select(.type=="Progressing") | .status')
+                REASON=$(echo "$MANIFEST" | jq -r '.status.conditions[] | select(.type=="Progressing") | .reason')
+                if [[ "$IMAGE_TAG" == "$TARGET_IMAGE_TAG" && "$REASON" == "NewReplicaSetAvailable" && "$STATUS" == "True" ]]; then
+                    echo "✅ Deployment rollout successful"
+                    break
+                else
+                    echo "⏳ Resource is still running... Waiting for completion."
+                fi
+            fi
+
+            # Wait before the next check
+            sleep 10
+        done
