@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Project, WorkflowRuntimeDataToken } from '@prisma/client';
+import { Customer, Project, WorkflowRuntimeDataToken } from '@prisma/client';
 import { noop } from 'lodash';
 import request from 'supertest';
 import { ClsModule } from 'nestjs-cls';
@@ -60,6 +60,7 @@ describe('CollectionFlowSignupController', () => {
 
   let project: Project;
   let workflowRuntimeDataToken: WorkflowRuntimeDataToken;
+  let customer: Customer;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -78,7 +79,7 @@ describe('CollectionFlowSignupController', () => {
         { provide: UserService, useValue: noop },
         { provide: EventEmitter2, useValue: noop },
         { provide: AppLoggerService, useValue: { log: noop } },
-        { provide: AnalyticsService, useValue: { log: noop } },
+        { provide: AnalyticsService, useValue: { trackSafe: noop } },
         { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,
@@ -126,7 +127,7 @@ describe('CollectionFlowSignupController', () => {
   beforeEach(async () => {
     await cleanupDatabase();
 
-    const customer = await customerRepository.create({
+    customer = await customerRepository.create({
       data: {
         name: 'signup-test-customer',
         displayName: 'Signup Test Customer',
@@ -155,7 +156,7 @@ describe('CollectionFlowSignupController', () => {
       },
     });
 
-    const { id: workflowRuntimeDataId } = await workflowRuntimeDataRepository.create({
+    const { id: workflowRuntimeDataId } = await workflowRuntimeDataRepository.create(customer, {
       data: {
         workflowDefinitionId: workflowDefinition.id,
         projectId: project.id,

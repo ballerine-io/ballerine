@@ -50,6 +50,7 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { CustomerService } from '@/customer/customer.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
@@ -102,6 +103,7 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    CustomerService,
   ],
   exports: [
     WorkflowService,
@@ -118,6 +120,7 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    CustomerService,
   ],
 })
 export class WorkflowModule {}

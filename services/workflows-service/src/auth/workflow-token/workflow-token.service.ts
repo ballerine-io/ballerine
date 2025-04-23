@@ -42,16 +42,16 @@ export class WorkflowTokenService {
       );
 
       let collectionFlow;
-      try {
-        const [uiDefinition, customer] = await Promise.all([
-          this.uiDefinitionService.getByWorkflowDefinitionId(
-            workflowDefinitionId,
-            UiDefinitionContext.collection_flow,
-            [projectId],
-          ),
-          this.customerService.getByProjectId(projectId),
-        ]);
+      const [uiDefinition, customer] = await Promise.all([
+        this.uiDefinitionService.getByWorkflowDefinitionId(
+          workflowDefinitionId,
+          UiDefinitionContext.collection_flow,
+          [projectId],
+        ),
+        this.customerService.getByProjectId(projectId),
+      ]);
 
+      try {
         collectionFlow = buildCollectionFlowState({
           apiUrl: env.APP_API_URL,
           steps: uiDefinition?.definition
@@ -80,6 +80,7 @@ export class WorkflowTokenService {
       }
 
       await this.workflowRuntimeDataRepository.updateStateById(
+        customer,
         workflowRuntimeDataId,
         {
           data: {
