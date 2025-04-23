@@ -69,12 +69,17 @@ export const useHomeLogic = () => {
 
     const toSet: Partial<z.infer<typeof HomeSearchSchema>> = {};
 
-    if (!mmFrom && !mmTo && isMerchantMonitoringEnabled) {
+    if (!mmFrom && !mmTo && isMerchantMonitoringEnabled && !customer?.config?.demoAccessDetails) {
       toSet.mmFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.mmTo = dayjs().format('YYYY-MM-DD');
     }
 
-    if (!casesFrom && !casesTo && isCasesOnboardingEnabled) {
+    if (
+      !casesFrom &&
+      !casesTo &&
+      isCasesOnboardingEnabled &&
+      !customer?.config?.demoAccessDetails
+    ) {
       toSet.casesFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.casesTo = dayjs().format('YYYY-MM-DD');
     }
