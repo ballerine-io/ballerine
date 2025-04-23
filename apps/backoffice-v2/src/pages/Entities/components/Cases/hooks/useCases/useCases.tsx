@@ -38,7 +38,6 @@ const businessesSortByOptions = [
   },
 ];
 
-//
 export const useCases = () => {
   const { entityId: workflowId } = useParams();
   const [{ filter, sortBy }] = useSearchParamsByEntity();
