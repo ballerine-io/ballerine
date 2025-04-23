@@ -56,24 +56,26 @@ export const useEditCollectionFlow = () => {
           action: 'edit_collection_flow',
         });
 
-    try {
-      const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
-        ?.collectionFlowUrl;
+        try {
+          const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
+            ?.collectionFlowUrl;
 
-      if (!collectionFlowBaseUrl) {
-        throw new Error('Collection flow URL is missing.');
-      }
+          if (!collectionFlowBaseUrl) {
+            throw new Error('Collection flow URL is missing.');
+          }
 
-      const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
-        workflowId: workflow?.id,
-      });
+          const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
+            workflowId: workflow?.id,
+          });
 
-      window.open(url, '_blank');
-    } catch (error) {
-      toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
-      throw new Error('Failed to open collection flow in new tab.');
-    }
-  }, [updateWorkflowById, editCaseState, workflow]);
+          window.open(url, '_blank');
+        } catch (error) {
+          toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
+          throw new Error('Failed to open collection flow in new tab.');
+        }
+      },
+    [updateWorkflowById, editCaseState, workflow],
+  );
 
   const isLoading = useMemo(
     () => [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow].some(Boolean),
