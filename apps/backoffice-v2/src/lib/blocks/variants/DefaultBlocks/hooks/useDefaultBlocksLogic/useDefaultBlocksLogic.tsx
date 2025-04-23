@@ -234,6 +234,7 @@ export const useDefaultBlocksLogic = () => {
     isEditDisabled: [
       !caseState.actionButtonsEnabled,
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
     onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
