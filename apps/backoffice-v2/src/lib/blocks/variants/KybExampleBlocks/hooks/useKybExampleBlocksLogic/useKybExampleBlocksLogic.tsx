@@ -31,6 +31,7 @@ import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutati
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 import { StateTag } from '@ballerine/common';
 
+//
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
