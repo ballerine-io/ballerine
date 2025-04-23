@@ -7,7 +7,7 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { getCollectionFlowLinkFromWorkflow } from '../useCopyCollectionFlowLink/helpers/get-collection-flow-link-from-workflow';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 
 export const useEditCollectionFlow = () => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
@@ -56,15 +56,24 @@ export const useEditCollectionFlow = () => {
           action: 'edit_collection_flow',
         });
 
-        try {
-          window.open(getCollectionFlowLinkFromWorkflow(workflow as TWorkflowById), '_blank');
-        } catch (error) {
-          toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
-          throw new Error('Failed to open collection flow in new tab.');
-        }
-      },
-    [updateWorkflowById, editCaseState, workflow],
-  );
+    try {
+      const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
+        ?.collectionFlowUrl;
+
+      if (!collectionFlowBaseUrl) {
+        throw new Error('Collection flow URL is missing.');
+      }
+
+      const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
+        workflowId: workflow?.id,
+      });
+
+      window.open(url, '_blank');
+    } catch (error) {
+      toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
+      throw new Error('Failed to open collection flow in new tab.');
+    }
+  }, [updateWorkflowById, editCaseState, workflow]);
 
   const isLoading = useMemo(
     () => [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow].some(Boolean),

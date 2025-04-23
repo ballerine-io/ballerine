@@ -30,6 +30,7 @@ import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 import { StateTag } from '@ballerine/common';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 
 //
 export const useKybExampleBlocksLogic = () => {
@@ -207,16 +208,19 @@ export const useKybExampleBlocksLogic = () => {
           });
         }
 
-        window.open(
-          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-          '_blank',
-        );
+        const url = buildCollectionFlowUrl(workflow?.context?.metadata?.collectionFlowUrl, {
+          workflowId: workflow?.id,
+          token: workflow?.context?.metadata?.token,
+        });
+
+        window.open(url, '_blank');
       },
     [
       mutateReviseDocumentById,
       mutateRevisionTaskById,
-      workflow?.context?.metadata?.collectionFlowUrl,
+      workflow?.id,
       workflow?.context?.metadata?.token,
+      workflow?.context?.metadata?.collectionFlowUrl,
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );
