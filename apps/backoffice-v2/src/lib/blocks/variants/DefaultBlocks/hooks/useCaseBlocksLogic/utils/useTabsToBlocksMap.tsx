@@ -241,8 +241,6 @@ export const useTabsToBlocksMap = ({
             endUser => endUser.id === director.ballerineEntityId,
           );
 
-          console.log('director', directorEndUser?.amlHits);
-
           return directorToIndividualAdapter({
             ...director,
             kycSession: {},
