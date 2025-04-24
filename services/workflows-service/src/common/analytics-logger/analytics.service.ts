@@ -12,7 +12,7 @@ export const EventNamesMap = {
   CUSTOMER_CREATED: 'customer.created',
   USER_CREATED: 'user.created',
   BUSINESS_REPORT_REQUESTED: 'business_report.requested',
-  CASE_CHANGED: 'case changed',
+  CASE_CHANGED: 'case.changed',
 } as const;
 
 type AnalyticsEvents = {
