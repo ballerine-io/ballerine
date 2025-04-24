@@ -67,7 +67,7 @@ export default defineConfig(configEnv => {
         output: {
           manualChunks: {
             'vendor-react-core': ['react', 'react-dom', 'react/jsx-runtime'],
-            'vendor-react-router': ['react-router', 'react-router-dom', '@remix-run/router'],
+            'vendor-react-router': ['react-router', 'react-router-dom'],
             'vendor-animation': ['framer-motion'],
             'vendor-ui-components': [
               '@radix-ui/react-dialog',
