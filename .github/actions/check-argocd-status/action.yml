@@ -78,6 +78,7 @@ runs:
             # echo $IMAGE
             IMAGE_TAG=$(echo "$IMAGE" | cut -d ':' -f2)  # Extract the tag after the colon
             echo $IMAGE_TAG
+            echo $TARGET_IMAGE_TAG
 
             # Print extracted information
             # echo "Start Time: $START_TIME"
