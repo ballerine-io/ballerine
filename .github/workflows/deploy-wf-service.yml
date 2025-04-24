@@ -275,7 +275,7 @@ jobs:
   # TODO Check Prisma Migrate Status
   check-argocd-prisma:
     needs: [build-and-push-ee-image,update-helm-chart]
-    runs-on: bash
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
       - name: Check Job status
@@ -291,7 +291,7 @@ jobs:
 
   check-argocd-app:
     needs: [check-argocd-prisma,build-and-push-ee-image]
-    runs-on: bash
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
       - name: Check Deployment status
@@ -307,7 +307,7 @@ jobs:
 
   check-argocd-db-migrate:
     needs: [check-argocd-prisma,build-and-push-ee-image]
-    runs-on: bash
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
       - name: Check Job status
@@ -323,7 +323,7 @@ jobs:
 
   check-argocd-db-sync:
     needs: [check-argocd-prisma,build-and-push-ee-image]
-    runs-on: bash
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
       - name: Check Deployment status
