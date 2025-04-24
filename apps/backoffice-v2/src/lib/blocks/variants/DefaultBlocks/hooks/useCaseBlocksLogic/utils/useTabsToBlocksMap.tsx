@@ -127,13 +127,15 @@ export const useTabsToBlocksMap = ({
       amlHits,
       id: _id,
       additionalInfo,
+      dateOfBirth,
+      gender,
       ...endUserRest
     } = endUsers?.find(
       endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
     ) ?? {};
     const {
-      gender,
-      dateOfBirth,
+      gender: genderAdditionalInfo,
+      dateOfBirth: dateOfBirthAdditionalInfo,
       role,
       isAuthorizedSignatory,
       percentageOfOwnership,
@@ -157,8 +159,8 @@ export const useTabsToBlocksMap = ({
       entityData: {
         ...endUserRest,
         additionalInfo: additionalInfoRest,
-        gender,
-        dateOfBirth,
+        gender: gender ?? genderAdditionalInfo,
+        dateOfBirth: dateOfBirth ?? dateOfBirthAdditionalInfo,
         role,
         isAuthorizedSignatory,
         percentageOfOwnership,
@@ -220,10 +222,10 @@ export const useTabsToBlocksMap = ({
   }: NonNullable<
     TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
   >[number]) => {
-    const { id: _id, additionalInfo, ...directorRest } = director ?? {};
+    const { id: _id, additionalInfo, dateOfBirth, gender, ...directorRest } = director ?? {};
     const {
-      gender,
-      dateOfBirth,
+      gender: genderAdditionalInfo,
+      dateOfBirth: dateOfBirthAdditionalInfo,
       role,
       isAuthorizedSignatory,
       percentageOfOwnership,
@@ -238,8 +240,8 @@ export const useTabsToBlocksMap = ({
       entityData: {
         ...directorRest,
         additionalInfo: additionalInfoRest,
-        gender,
-        dateOfBirth,
+        gender: gender ?? genderAdditionalInfo,
+        dateOfBirth: dateOfBirth ?? dateOfBirthAdditionalInfo,
         role,
         isAuthorizedSignatory,
         percentageOfOwnership,

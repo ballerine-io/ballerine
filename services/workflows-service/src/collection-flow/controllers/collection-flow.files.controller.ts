@@ -1,9 +1,11 @@
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
 import { DocumentService } from '@/document/document.service';
 import { DeleteDocumentsSchema } from '@/document/dtos/document.dto';
+import { FileService } from '@/providers/file/file.service';
 import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
@@ -36,14 +38,14 @@ import { CollectionFlowService } from '../collection-flow.service';
 import { CollectionFlowDocumentSchema } from '../dto/create-collection-flow-document.schema';
 import { GetDocumentsByIdsDto } from '../dto/get-documents-by-ids.dto';
 import { UpdateCollectionFlowDocumentSchema } from '../dto/update-collection-flow-document.schema';
-import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 
-@UseWorkflowAuthGuard()
+@UseTokenAuthGuard()
 @ApiExcludeController()
 @Controller('collection-flow/files')
 export class CollectionFlowFilesController {
   constructor(
     protected readonly storageService: StorageService,
+    protected readonly fileService: FileService,
     protected readonly workflowService: WorkflowService,
     protected readonly documentService: DocumentService,
     protected readonly collectionFlowService: CollectionFlowService,

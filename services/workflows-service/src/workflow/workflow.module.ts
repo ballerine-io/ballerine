@@ -46,10 +46,9 @@ import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { FileModule } from '@/providers/file/file.module';
 import { FileRepository } from '@/storage/storage.repository';
-import { WorkflowLogService } from '@/workflow/workflow-log.service';
-import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
-import { WorkflowLogController } from '@/workflow/workflow-log.controller';
-import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { WorkflowLogService } from './workflow-log.service';
+import { WorkflowLogRepository } from './workflow-log.repository';
+import { WorkflowLogController } from './workflow-log.controller';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
@@ -101,7 +100,6 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
     SentryService,
     WorkflowLogService,
     WorkflowLogRepository,
-    WorkflowRuntimeDataActorService,
   ],
   exports: [
     WorkflowService,
@@ -117,7 +115,6 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
     WorkflowTokenService,
     WorkflowLogService,
     WorkflowLogRepository,
-    WorkflowRuntimeDataActorService,
   ],
 })
 export class WorkflowModule {}

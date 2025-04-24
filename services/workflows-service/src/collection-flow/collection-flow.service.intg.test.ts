@@ -40,9 +40,6 @@ import { env } from '@/env';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
-import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
-import { ClsModule } from 'nestjs-cls';
-import { mockClsService } from '@/test/helpers/cls-service-helper';
 import { CollectionFlowStateService } from './collection-flow-state.service';
 import { DocumentService } from '@/document/document.service';
 
@@ -164,11 +161,8 @@ describe('CollectionFlowService', () => {
         EndUserRepository,
         MerchantMonitoringClient,
         WorkflowLogService,
-        WorkflowRuntimeDataActorService,
-        mockClsService(),
         CollectionFlowStateService,
       ],
-      imports: [ClsModule],
     }).compile();
 
     prismaClient = module.get<PrismaService>(PrismaService);

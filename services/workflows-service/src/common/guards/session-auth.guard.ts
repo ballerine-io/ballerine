@@ -2,16 +2,15 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { Reflector } from '@nestjs/core';
-import { DISABLE_DEFAULT_AUTH } from '@/common/disable-default-auth';
+import { DISABLE_SESSION_AUTH } from '@/common/disable-session-auth';
 import { AuthenticatedEntity } from '@/types';
-import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class SessionAuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector, private readonly cls: ClsService) {}
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const skipAuth = this.reflector.getAllAndOverride<boolean>(DISABLE_DEFAULT_AUTH, [
+    const skipAuth = this.reflector.getAllAndOverride<boolean>(DISABLE_SESSION_AUTH, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -27,12 +26,8 @@ export class SessionAuthGuard implements CanActivate {
     if (
       req.isAuthenticated() ||
       !!authenticatedEntity?.customer ||
-      authenticatedEntity?.type === 'admin'
+      authenticatedEntity?.type == 'admin'
     ) {
-      this.cls.set('entity', {
-        user: authenticatedEntity?.user,
-        type: 'user',
-      });
       return true;
     }
 
