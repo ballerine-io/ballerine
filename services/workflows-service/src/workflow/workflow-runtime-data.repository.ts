@@ -385,6 +385,7 @@ export class WorkflowRuntimeDataRepository {
       if (!customer) {
         customer = await this.customerService.getByProjectId(runtimeData.projectId);
       }
+
       this.trackChanges(customer, runtimeData);
     } catch (error) {
       console.error('Error tracking changes', error);
