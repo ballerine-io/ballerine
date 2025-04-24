@@ -14,11 +14,12 @@ export const useKYCBlocks = (individuals: Array<ComponentProps<typeof KycBlock>>
       .addBlock()
       .addCell({
         type: 'noData',
-        props: {
+        value: {
           title: 'No Individuals Data Available',
           description: `Individual's information is still being collected or not available.`,
           icon: <NoIndividualsSvg />,
         },
+        props: {},
       })
       .build();
   }, [individuals]);
