@@ -304,7 +304,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=wf-service&version=v1&kind=Deployment&group=apps"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service&version=v1&kind=Deployment&group=apps"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Deployment'
@@ -322,7 +322,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-data-migrations&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-data-migrations&version=v1&kind=Job&group=batch"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-migrate&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-migrate&version=v1&kind=Job&group=batch"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Job'
@@ -340,7 +340,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-data-sync&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-data-sync&version=v1&kind=Job&group=batch"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-sync&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-sync&version=v1&kind=Job&group=batch"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Job'
