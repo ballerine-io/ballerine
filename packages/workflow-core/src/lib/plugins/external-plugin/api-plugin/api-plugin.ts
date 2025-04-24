@@ -214,8 +214,7 @@ export class ApiPlugin {
       method: method,
       headers: headers,
       body: undefined,
-      credentials: 'include',
-    } satisfies RequestInit;
+    };
 
     if (payload) {
       payload = await this._onPreparePayload(payload);
@@ -294,9 +293,7 @@ export class ApiPlugin {
   ) {
     const returnArgKey = `isValid${validationContext}`;
 
-    if (!schemaValidator) {
-      return { [returnArgKey]: true };
-    }
+    if (!schemaValidator) return { [returnArgKey]: true };
 
     const { isValid, errorMessage } = await schemaValidator.validate(transformedRequest);
 
@@ -349,9 +346,7 @@ export class ApiPlugin {
   async replaceSecrets(content: string) {
     const placeholders = content.match(/{(.*?)}/g);
 
-    if (!placeholders) {
-      return content;
-    }
+    if (!placeholders) return content;
 
     let replacedContent = content;
 
@@ -367,9 +362,7 @@ export class ApiPlugin {
   async replaceVariablesFromContext(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
 
-    if (!placeholders) {
-      return content;
-    }
+    if (!placeholders) return content;
 
     let replacedContent = content;
 
@@ -447,9 +440,7 @@ export class ApiPlugin {
   }
 
   generateRequestPayloadFromWhitelist(payload: AnyRecord = {}) {
-    if (!this.whitelistedInputProperties) {
-      return payload;
-    }
+    if (!this.whitelistedInputProperties) return payload;
 
     const whitelistedPayload: AnyRecord = {};
 
@@ -457,9 +448,7 @@ export class ApiPlugin {
       const value = payload[key];
       whitelistedPayload[key] = value;
 
-      if (value) {
-        continue;
-      }
+      if (value) continue;
 
       if (typeof value === 'object' && !Array.isArray(value)) {
         whitelistedPayload[key] = this.generateRequestPayloadFromWhitelist(value as AnyRecord);

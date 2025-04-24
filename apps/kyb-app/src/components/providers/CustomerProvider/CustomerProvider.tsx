@@ -37,17 +37,14 @@ export const CustomerProvider = ({
     return <AppNavigate to={'/signup'} />;
   }
 
-  if (isLoading) {
-    return <>{loadingPlaceholder}</> || null;
-  }
+  if (isLoading) return <>{loadingPlaceholder}</> || null;
 
-  if (error) {
+  if (error)
     return FallbackComponent ? (
       <FallbackComponent errorMessage={error.message} statusCode={error.response.status} />
     ) : (
       <>Failed to load customer.Reason {error.message}</>
     );
-  }
 
   return <Provider value={context}>{children}</Provider>;
 };

@@ -40,12 +40,7 @@ import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
-import {
-  buildCollectionFlowUrl,
-  DefaultContextSchema,
-  defaultContextSchema,
-  isObject,
-} from '@ballerine/common';
+import { DefaultContextSchema, defaultContextSchema, isObject } from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
@@ -406,21 +401,18 @@ export class WorkflowControllerExternal {
   async createCollectionFlowUrl(
     @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const workflow = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
+    const result = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 
-    if (!workflow) {
+    if (!result) {
       throw new NotFoundException(
         `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
       );
     }
 
     return {
-      collectionFlowUrl: buildCollectionFlowUrl(env.COLLECTION_FLOW_URL, {
-        workflowId: workflowRuntimeDataId,
-        token: workflow.token,
-      }),
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
     };
   }
 

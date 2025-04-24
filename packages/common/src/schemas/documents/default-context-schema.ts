@@ -30,14 +30,12 @@ export const defaultPluginSchema = Type.Object({
   data: Type.Optional(Type.Any()),
 });
 
-const individualSanctionsPluginSchema = Type.Optional(
-  Type.Composite([
-    defaultPluginSchema,
-    Type.Object({
-      data: AmlSchema,
-    }),
-  ]),
-);
+const individualSanctionsPluginSchema = Type.Composite([
+  defaultPluginSchema,
+  Type.Object({
+    data: AmlSchema,
+  }),
+]);
 
 export const CollectionFlowStepSchema = Type.Object({
   stepName: Type.String(),

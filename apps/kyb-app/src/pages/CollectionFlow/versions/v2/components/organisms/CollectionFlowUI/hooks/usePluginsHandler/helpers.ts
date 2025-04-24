@@ -8,9 +8,7 @@ export const checkIfPluginCanRun = (
 ) => {
   const rules = runOn.find(rule => rule.type === eventName);
 
-  if (!rules?.rules?.length) {
-    return true;
-  }
+  if (!rules?.rules?.length) return true;
 
   return executeRules(context, rules.rules).every(result => result.result);
 };

@@ -1,6 +1,6 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useCallback } from 'react';
-import { buildCollectionFlowUrl, CommonWorkflowEvent } from '@ballerine/common';
+import { CommonWorkflowEvent } from '@ballerine/common';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 
@@ -22,10 +22,8 @@ export const usePendingRevisionEvents = (
     }
 
     window.open(
-      buildCollectionFlowUrl(workflow?.context?.metadata?.collectionFlowUrl, {
-        workflowId: workflow?.id,
-        token: workflow?.context?.metadata?.token,
-      }),
+      `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
+      workflow?.context?.metadata?.token,
     );
   }, [mutateRevisionCase, workflow]);
 

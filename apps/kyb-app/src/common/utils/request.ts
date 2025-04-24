@@ -4,6 +4,7 @@ import ky, { HTTPError } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
 export const request = ky.create({
+  //@ts-ignore
   prefixUrl:
     (globalThis as any).env?.VITE_API_URL ??
     (import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`),
@@ -12,22 +13,11 @@ export const request = ky.create({
     statusCodes: [500, 408, 404, 404, 403, 401],
     methods: ['get'],
   },
-  credentials: 'include',
   timeout: 30_000,
   hooks: {
     beforeRequest: [
-      async request => {
+      request => {
         request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
-
-        const url = new URL(request.url);
-
-        const workflowId = new URLSearchParams(window.location.search).get('workflowId');
-
-        if (workflowId) {
-          url.searchParams.append('workflowId', workflowId);
-
-          return new Request(url.toString(), request);
-        }
       },
     ],
     beforeError: [
@@ -45,9 +35,7 @@ export const request = ky.create({
             message: (responseJson as { message: string }).message,
           } as HTTPError);
 
-          if (isShouldIgnore) {
-            return error as HTTPError;
-          }
+          if (isShouldIgnore) return error as HTTPError;
 
           throw error;
         } catch (error) {

@@ -31,8 +31,6 @@ model User {
   lastActiveAt        DateTime?
   workflowRuntimeData WorkflowRuntimeData[]
   alerts              Alert[]
-
-  actorWorkflowRuntimeData WorkflowRuntimeData[] @relation("ActorUser")
 }
 
 model Entities {
@@ -88,7 +86,6 @@ model EndUser {
   amlHits           Json      @default("[]")
 
   workflowRuntimeData WorkflowRuntimeData[]
-  actorWorkflowRuntimeData WorkflowRuntimeData[] @relation("ActorEndUser")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -262,10 +259,6 @@ model WorkflowRuntimeData {
   businessId                String?
   assignee                  User?                     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
   assigneeId                String?
-  actorEndUser             EndUser?                  @relation("ActorEndUser", fields: [actorEndUserId], references: [id], onDelete: SetNull)
-  actorEndUserId           String?
-  actorUser                User?                     @relation("ActorUser", fields: [actorUserId], references: [id], onDelete: SetNull)
-  actorUserId              String?
   workflowDefinition        WorkflowDefinition        @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   uiDefinitionId            String?

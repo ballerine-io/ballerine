@@ -2,29 +2,27 @@ import { useAccessToken } from '@/common/providers/AccessTokenProvider';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useIsSignupRequired } from './hooks/useIsSignupRequired';
-import { useWorkflowId } from '@/common/hooks/useWorkflowId';
-import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 export const Root = () => {
   const { isLoading, isSignupRequired } = useIsSignupRequired();
   const navigate = useNavigate();
   const { accessToken } = useAccessToken();
-  const workflowId = useWorkflowId();
-  const { language } = useLanguageParam();
 
   useEffect(() => {
-    if (isLoading) {
-      return;
+    if (isLoading) return;
+
+    if (!isSignupRequired) {
+      void navigate(`/collection-flow?token=${accessToken}`);
     }
+  }, [isSignupRequired, isLoading]);
 
-    const searchParamsString = new URLSearchParams({
-      ...(workflowId ? { workflowId } : {}),
-      ...(accessToken ? { token: accessToken } : {}),
-      lng: language,
-    }).toString();
+  useEffect(() => {
+    if (isLoading) return;
 
-    void navigate(`/${isSignupRequired ? 'signup' : 'collection-flow'}/?${searchParamsString}`);
-  }, [isSignupRequired, isLoading, accessToken, workflowId, navigate, language]);
+    if (isSignupRequired) {
+      void navigate(`/signup?token=${accessToken}`);
+    }
+  }, [isSignupRequired, isLoading]);
 
   return <Outlet />;
 };

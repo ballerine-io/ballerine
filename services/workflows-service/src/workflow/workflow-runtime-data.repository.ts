@@ -13,7 +13,6 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { merge } from 'lodash';
-import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 
 /**
  * Columns that are related to the state of the workflow runtime data.
@@ -26,7 +25,6 @@ export class WorkflowRuntimeDataRepository {
   constructor(
     protected readonly prismaService: PrismaService,
     protected readonly scopeService: ProjectScopeService,
-    protected readonly actorService: WorkflowRuntimeDataActorService,
   ) {}
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
@@ -35,13 +33,13 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.create<T>({
       ...args,
-      data: this.actorService.addActorIds({
+      data: {
         ...args.data,
         context: {
           ...((args.data?.context ?? {}) as any),
           documents: assignIdToDocuments((args.data?.context as any)?.documents),
         },
-      }),
+      },
     } as any);
   }
 
@@ -367,7 +365,7 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.update({
       where: { id },
-      data: this.actorService.addActorIds(args.data),
+      ...args,
     });
   }
 
@@ -384,7 +382,7 @@ export class WorkflowRuntimeDataRepository {
   ) {
     return await transaction.workflowRuntimeData.update({
       where: { id },
-      data: this.actorService.addActorIds(data),
+      data,
       include,
     });
   }

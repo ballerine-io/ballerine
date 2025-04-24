@@ -31,7 +31,7 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user?workflowId={query.workflowId}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user`,
         method: 'POST',
         headers: { Authorization: 'Bearer {query.token}' },
         stateNames: [],
@@ -107,7 +107,7 @@ export const definition = {
       {
         name: 'fetch_company_information',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/business/business-information?workflowId={query.workflowId}`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
         stateNames: [],
         headers: { Authorization: 'Bearer {query.token}' },
