@@ -310,7 +310,7 @@ jobs:
           resource_type: 'Deployment'
 
   check-argocd-db-migrate:
-    needs: [check-argocd-prisma,build-and-push-ee-image]
+    needs: [check-argocd-app,build-and-push-ee-image]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -328,7 +328,7 @@ jobs:
           resource_type: 'Job'
 
   check-argocd-db-sync:
-    needs: [check-argocd-prisma,build-and-push-ee-image]
+    needs: [check-argocd-db-migrate,build-and-push-ee-image]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
