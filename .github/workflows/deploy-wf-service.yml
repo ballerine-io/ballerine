@@ -80,7 +80,7 @@ jobs:
 
       - name: Cache Docker layers
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
@@ -157,7 +157,7 @@ jobs:
       
       - name: Cache Docker layers
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
@@ -274,7 +274,7 @@ jobs:
 
   # TODO Check Prisma Migrate Status
   check-argocd-prisma:
-    needs: build-and-push-ee-image
+    needs: [build-and-push-ee-image,update-helm-chart]
     runs-on: bash
     environment: ${{ inputs.environment }}
     steps:
