@@ -278,6 +278,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check Job status
         uses: ./.github/actions/check-argocd-status
         with:
@@ -294,6 +296,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check Deployment status
         uses: ./.github/actions/check-argocd-status
         with:
@@ -310,6 +314,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check Job status
         uses: ./.github/actions/check-argocd-status
         with:
@@ -326,6 +332,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check Deployment status
         uses: ./.github/actions/check-argocd-status
         with:
