@@ -8,11 +8,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useEffect } from 'react';
-import { useWorkflowId } from '@/common/hooks/useWorkflowId';
 
 export const useEndUserQuery = () => {
-  const workflowId = useWorkflowId();
-
   const {
     data: endUser,
     isLoading,
@@ -20,8 +17,6 @@ export const useEndUserQuery = () => {
     refetch,
   } = useQuery({
     ...collectionFlowQuerykeys.getEndUser(),
-    // @ts-ignore
-    enabled: !!workflowId,
     // @ts-ignore
     staleTime: Infinity as const,
   });
