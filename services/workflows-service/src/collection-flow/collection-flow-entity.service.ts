@@ -44,7 +44,7 @@ export class CollectionFlowEntityService {
         data: {
           ...entityRest,
           additionalInfo: additionalInfoRest,
-          gender,
+          gender: gender?.toLowerCase(),
           dateOfBirth: dateOfBirth ?? additionalDateOfBirth,
           projectId,
         },
@@ -79,7 +79,7 @@ export class CollectionFlowEntityService {
         data: {
           ...entityRest,
           additionalInfo: additionalInfoRest,
-          gender,
+          gender: gender?.toLowerCase(),
           dateOfBirth: dateOfBirth ?? additionalDateOfBirth,
         },
       });
