@@ -4,7 +4,6 @@ import {
   fetchEndUser,
   fetchFlowContext,
   fetchUISchema,
-  fetchWorkflowId,
   getFlowSession,
 } from '@/domains/collection-flow/collection-flow.api';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
@@ -25,10 +24,6 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
   getCustomer: (endUserId: string | null) => ({
     queryKey: [{ endUserId }],
     queryFn: () => fetchCustomer(),
-  }),
-  getWorkflowId: (accessToken: string | null) => ({
-    queryKey: [{ accessToken }],
-    queryFn: () => fetchWorkflowId(accessToken),
   }),
   getContext: (endUserId: string | null) => ({
     queryKey: [{ endUserId }],

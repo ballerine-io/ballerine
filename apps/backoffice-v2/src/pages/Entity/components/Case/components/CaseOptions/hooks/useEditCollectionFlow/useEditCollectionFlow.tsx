@@ -7,7 +7,7 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { buildCollectionFlowUrl } from '@ballerine/common';
+import { getCollectionFlowLinkFromWorkflow } from '../useCopyCollectionFlowLink/helpers/get-collection-flow-link-from-workflow';
 
 export const useEditCollectionFlow = () => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
@@ -57,18 +57,7 @@ export const useEditCollectionFlow = () => {
         });
 
         try {
-          const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
-            ?.collectionFlowUrl;
-
-          if (!collectionFlowBaseUrl) {
-            throw new Error('Collection flow URL is missing.');
-          }
-
-          const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
-            workflowId: workflow?.id,
-          });
-
-          window.open(url, '_blank');
+          window.open(getCollectionFlowLinkFromWorkflow(workflow as TWorkflowById), '_blank');
         } catch (error) {
           toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
           throw new Error('Failed to open collection flow in new tab.');
