@@ -12,7 +12,8 @@ import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mut
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useKYCBlocks } from '../hooks/useKYCBlocks/useKYCBlocks';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -115,114 +116,132 @@ export const useTabsToBlocksMap = ({
       return 'pending';
     }
   };
-  const childWorkflowToIndividualAdapter = (
-    childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number],
-  ) => {
-    const status = getStatus(childWorkflow?.tags ?? []);
-    const initiateKycEvent = getInitiateKycEvent(childWorkflow?.nextEvents ?? []);
-    const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
-      childWorkflow?.nextEvents ?? [],
-    );
-    const endUser = endUsers?.find(
-      endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
-    );
+  const childWorkflowToIndividualAdapter = useCallback(
+    (childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number]) => {
+      const status = getStatus(childWorkflow?.tags ?? []);
+      const initiateKycEvent = getInitiateKycEvent(childWorkflow?.nextEvents ?? []);
+      const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
+        childWorkflow?.nextEvents ?? [],
+      );
+      const endUser = endUsers?.find(
+        endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+      );
 
-    return {
-      status,
-      documents: childWorkflow?.context?.documents,
-      kycSession: omitPropsFromObject(
-        childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
-        'invokedAt',
-      ),
-      aml: {
-        hits: endUser?.amlHits,
-      },
-      entityData: childWorkflow?.context?.entity?.data,
-      isActionsDisabled:
-        !caseState.actionButtonsEnabled || !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
-      isLoadingReuploadNeeded: isLoadingRevisionCase,
-      isLoadingApprove: isLoadingApproveCase,
-      onInitiateKyc: () => {
-        if (!initiateKycEvent) {
-          return;
-        }
+      return {
+        status,
+        documents: childWorkflow?.context?.documents,
+        kycSession: omitPropsFromObject(
+          childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
+          'invokedAt',
+        ),
+        aml: {
+          hits: endUser?.amlHits,
+        },
+        entityData: childWorkflow?.context?.entity?.data,
+        isActionsDisabled:
+          !caseState.actionButtonsEnabled || !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+        isLoadingReuploadNeeded: isLoadingRevisionCase,
+        isLoadingApprove: isLoadingApproveCase,
+        onInitiateKyc: () => {
+          if (!initiateKycEvent) {
+            return;
+          }
 
-        mutateEvent({
-          workflowId: childWorkflow?.id,
-          event: initiateKycEvent,
-        });
-      },
-      onInitiateSanctionsScreening: () => {
-        if (!initiateSanctionsScreeningEvent) {
-          return;
-        }
-
-        mutateEvent({
-          workflowId: childWorkflow?.id,
-          event: initiateSanctionsScreeningEvent,
-        });
-      },
-      onApprove:
-        ({ ids }: { ids: string[] }) =>
-        () =>
-          mutateApproveCase({ ids, workflowId: childWorkflow?.id }),
-      onReuploadNeeded:
-        ({ reason, ids }: { reason: string; ids: string[] }) =>
-        () =>
-          mutateRevisionCase({
-            revisionReason: reason,
-            ids,
+          mutateEvent({
             workflowId: childWorkflow?.id,
-          }),
-      reasons:
-        childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-          ({ enum: enum_ }) => !!enum_,
-        )?.enum as string[],
-      isReuploadNeededDisabled: isLoadingRevisionCase,
-      isApproveDisabled: isLoadingApproveCase,
-      isInitiateKycDisabled: !initiateKycEvent || !caseState.actionButtonsEnabled,
-      isInitiateSanctionsScreeningDisabled: [
-        !initiateSanctionsScreeningEvent,
-        !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
-        !caseState.actionButtonsEnabled,
-      ].some(Boolean),
-    } satisfies Parameters<typeof createKycBlocks>[0][number];
-  };
-  const directorToIndividualAdapter = ({
-    kycSession,
-    aml,
-    ...director
-  }: NonNullable<
-    TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
-  >[number]) => {
-    return {
-      status: undefined,
-      documents: director?.documents,
+            event: initiateKycEvent,
+          });
+        },
+        onInitiateSanctionsScreening: () => {
+          if (!initiateSanctionsScreeningEvent) {
+            return;
+          }
+
+          mutateEvent({
+            workflowId: childWorkflow?.id,
+            event: initiateSanctionsScreeningEvent,
+          });
+        },
+        onApprove:
+          ({ ids }: { ids: string[] }) =>
+          () =>
+            mutateApproveCase({ ids, workflowId: childWorkflow?.id }),
+        onReuploadNeeded:
+          ({ reason, ids }: { reason: string; ids: string[] }) =>
+          () =>
+            mutateRevisionCase({
+              revisionReason: reason,
+              ids,
+              workflowId: childWorkflow?.id,
+            }),
+        reasons:
+          childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+            ({ enum: enum_ }) => !!enum_,
+          )?.enum as string[],
+        isReuploadNeededDisabled: isLoadingRevisionCase,
+        isApproveDisabled: isLoadingApproveCase,
+        isInitiateKycDisabled: !initiateKycEvent || !caseState.actionButtonsEnabled,
+        isInitiateSanctionsScreeningDisabled: [
+          !initiateSanctionsScreeningEvent,
+          !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+          !caseState.actionButtonsEnabled,
+        ].some(Boolean),
+      } satisfies Parameters<typeof createKycBlocks>[0][number];
+    },
+    [
+      caseState.actionButtonsEnabled,
+      endUsers,
+      isLoadingApproveCase,
+      isLoadingRevisionCase,
+      mutateApproveCase,
+      mutateEvent,
+      mutateRevisionCase,
+      workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+    ],
+  );
+
+  const directorToIndividualAdapter = useCallback(
+    ({
       kycSession,
       aml,
-      entityData: director,
-      isActionsDisabled: true,
-      isLoadingReuploadNeeded: false,
-      isLoadingApprove: false,
-      onInitiateKyc: () => {},
-      onInitiateSanctionsScreening: () => {},
-      onApprove:
-        ({ ids }: { ids: string[] }) =>
-        () => {},
-      onReuploadNeeded:
-        ({ reason, ids }: { reason: string; ids: string[] }) =>
-        () => {},
-      reasons: [],
-      isReuploadNeededDisabled: true,
-      isApproveDisabled: true,
-      isInitiateKycDisabled: true,
-      isInitiateSanctionsScreeningDisabled: true,
-    } satisfies Parameters<typeof createKycBlocks>[0][number];
-  };
-  const childWorkflows =
-    workflow?.childWorkflows
-      ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'individual')
-      ?.map(childWorkflowToIndividualAdapter) ?? [];
+      ...director
+    }: NonNullable<
+      TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
+    >[number]) => {
+      return {
+        status: undefined,
+        documents: director?.documents,
+        kycSession,
+        aml,
+        entityData: director,
+        isActionsDisabled: true,
+        isLoadingReuploadNeeded: false,
+        isLoadingApprove: false,
+        onInitiateKyc: () => {},
+        onInitiateSanctionsScreening: () => {},
+        onApprove:
+          ({ ids }: { ids: string[] }) =>
+          () => {},
+        onReuploadNeeded:
+          ({ reason, ids }: { reason: string; ids: string[] }) =>
+          () => {},
+        reasons: [],
+        isReuploadNeededDisabled: true,
+        isApproveDisabled: true,
+        isInitiateKycDisabled: true,
+        isInitiateSanctionsScreeningDisabled: true,
+      } satisfies Parameters<typeof createKycBlocks>[0][number];
+    },
+    [],
+  );
+
+  const childWorkflows = useMemo(
+    () =>
+      workflow?.childWorkflows
+        ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'individual')
+        ?.map(childWorkflowToIndividualAdapter) ?? [],
+    [workflow?.childWorkflows, childWorkflowToIndividualAdapter],
+  );
 
   const deDupedDirectors = useMemo(
     () =>
@@ -248,10 +267,15 @@ export const useTabsToBlocksMap = ({
             },
           });
         }) ?? [],
-    [workflow?.context?.entity?.data?.additionalInfo?.directors, endUsers],
+    [endUsers, directorToIndividualAdapter, workflow],
   );
 
-  const individuals = [...childWorkflows, ...deDupedDirectors];
+  const individuals = useMemo(
+    () => [...childWorkflows, ...deDupedDirectors],
+    [childWorkflows, deDupedDirectors],
+  );
+
+  const kycBlocks = useKYCBlocks(individuals);
 
   const defaultTabsMap = {
     [Tab.SUMMARY]: [
@@ -290,7 +314,7 @@ export const useTabsToBlocksMap = ({
       ...mainRepresentativeBlock,
       ...uboDocumentBlocks,
       ...directorDocumentBlocks,
-      ...createKycBlocks(individuals),
+      ...kycBlocks,
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
       ...associatedCompaniesBlock,
@@ -313,11 +337,7 @@ export const useTabsToBlocksMap = ({
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
-      [Tab.KYC]: [
-        ...businessInformationBlocks,
-        ...amlWithContainerBlock,
-        ...createKycBlocks(individuals),
-      ],
+      [Tab.KYC]: [...businessInformationBlocks, ...amlWithContainerBlock, ...kycBlocks],
     } as const;
   }
 
