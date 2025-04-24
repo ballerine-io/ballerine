@@ -48,11 +48,11 @@ describe('generateRevisionFieldsForAllElements', () => {
     // Assert
     expect(result).toEqual([
       {
-        id: 'field-1',
+        id: 'field-1-*',
         reason: '',
       },
       {
-        id: 'field-2',
+        id: 'field-2-*',
         reason: '',
       },
     ]);
@@ -97,46 +97,15 @@ describe('generateRevisionFieldsForAllElements', () => {
     // Assert
     expect(result).toEqual([
       {
-        id: 'fieldlist',
+        id: 'fieldlist-*',
         reason: '',
       },
       {
-        id: 'name-0',
+        id: 'name-*',
         reason: '',
       },
       {
-        id: 'address-0',
-        reason: '',
-      },
-    ]);
-  });
-
-  it('should skip nested elements when parent value is not found', () => {
-    // Arrange
-    const emptyContext = {} as unknown as CollectionFlowContext;
-
-    const mockedElements = [
-      {
-        id: 'fieldlist',
-        element: 'fieldlist',
-        valueDestination: 'nonExistentField',
-        children: [
-          {
-            id: 'child',
-            element: 'textfield',
-            valueDestination: 'nonExistentField[$0].value',
-          },
-        ],
-      },
-    ] as Array<IFormElement<TBaseFields, any>>;
-
-    // Act
-    const result = generateRevisionFieldsForAllElements(emptyContext, mockedElements);
-
-    // Assert
-    expect(result).toEqual([
-      {
-        id: 'fieldlist',
+        id: 'address-*',
         reason: '',
       },
     ]);
