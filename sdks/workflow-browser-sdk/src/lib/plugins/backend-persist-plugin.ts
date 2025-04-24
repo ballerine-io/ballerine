@@ -28,7 +28,6 @@ export class BackendPersistPlugin extends StatePlugin {
         method,
         body: method !== 'GET' ? JSON.stringify({ context, state }) : undefined,
         headers,
-        credentials: 'include',
       });
 
       if (!res.ok) {

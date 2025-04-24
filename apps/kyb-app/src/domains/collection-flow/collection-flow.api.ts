@@ -1,22 +1,19 @@
-import get from 'lodash/get';
-import posthog from 'posthog-js';
-
 import { request } from '@/common/utils/request';
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
-  CreateEndUserDto,
   DocumentConfiguration,
-  EndUser,
-  FlowContextResponse,
   IDocumentRecord,
   TCustomer,
   TFlowConfiguration,
   TFlowStep,
   TUser,
   UISchema,
-  TUpdateEndUserPluginData,
-  TFetchCompanyInformationPluginData,
 } from '@/domains/collection-flow/types';
+import {
+  CollectionFlowConfig,
+  CollectionFlowContext,
+} from '@/domains/collection-flow/types/flow-context.types';
+import get from 'lodash/get';
+import posthog from 'posthog-js';
 
 export const fetchUser = async (): Promise<TUser> => {
   const user = await request.get('collection-flow/user').json<TUser>();
@@ -75,13 +72,10 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
-export const fetchWorkflowId = async (token: string | null): Promise<string> => {
-  if (!token) {
-    return '';
-  }
-
-  return await request.get(`collection-flow/workflow-id`).text();
-};
+export interface FlowContextResponse {
+  context: CollectionFlowContext;
+  config: CollectionFlowConfig;
+}
 
 export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   try {
@@ -99,9 +93,25 @@ export const fetchFlowContext = async (): Promise<FlowContextResponse> => {
   }
 };
 
+export interface EndUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export const fetchEndUser = async (): Promise<EndUser> => {
-  return await request.get('collection-flow/user').json<EndUser>();
+  const result = await request.get('collection-flow/user');
+
+  return result.json<EndUser>();
 };
+
+export interface CreateEndUserDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+  additionalInfo?: Record<string, unknown>;
+}
 
 export const createEndUserRequest = async ({
   email,
@@ -124,22 +134,6 @@ export const syncContext = async (context: CollectionFlowContext) => {
         ballerineEntityId: get(context, 'entity.ballerineEntityId'),
       },
     },
-  });
-
-  return result.json();
-};
-
-export const updateEndUser = async (data: TUpdateEndUserPluginData) => {
-  const result = await request.post('collection-flow/end-user', {
-    json: data,
-  });
-
-  return result.json();
-};
-
-export const fetchCompanyInformation = async (data: TFetchCompanyInformationPluginData) => {
-  const result = await request.get(`collection-flow/business/business-information`, {
-    searchParams: data,
   });
 
   return result.json();

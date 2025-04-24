@@ -12,14 +12,14 @@ export class AuthKeyMiddleware implements NestMiddleware {
     const authHeader = req.headers.authorization;
     const apiKey = authHeader?.split?.(' ')?.[1];
 
-    if (apiKey && apiKey !== 'null') {
+    if (apiKey) {
       const dbApiKey = await this.apiKeyService.find(apiKey);
 
       if (!dbApiKey || isEmpty(dbApiKey)) {
         return next();
       }
 
-      const { id, name, projects, authenticationConfiguration, ...restOfCustomerProperties } =
+      const { id, name, projects, authenticationConfiguration, ...customerWithoutProjects } =
         dbApiKey.customer;
 
       this.cls.set('entity', {
@@ -31,7 +31,7 @@ export class AuthKeyMiddleware implements NestMiddleware {
       });
 
       req.user = {
-        customer: restOfCustomerProperties,
+        customer: customerWithoutProjects,
         projectIds: projects?.map(project => project.id),
         type: 'customer',
       };
