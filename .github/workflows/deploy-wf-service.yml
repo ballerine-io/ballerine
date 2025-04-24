@@ -292,7 +292,7 @@ jobs:
           resource_type: 'Job'
 
   check-argocd-app:
-    needs: [check-argocd-prisma,build-and-push-ee-image]
+    needs: [send-to-slack,build-and-push-ee-image]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -346,7 +346,7 @@ jobs:
           resource_type: 'Job'
 
   check-apps-changes:
-    needs: check-argocd-db-sync
+    needs: check-argocd-app
     runs-on: ubuntu-latest
     outputs:
       BACKOFFICE_UPDATED: ${{ steps.check-backoffice.outputs.BACKOFFICE_UPDATED }}
