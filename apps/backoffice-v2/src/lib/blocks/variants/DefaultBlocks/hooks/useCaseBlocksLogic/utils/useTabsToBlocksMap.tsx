@@ -135,6 +135,7 @@ export const useTabsToBlocksMap = ({
         'invokedAt',
       ),
       aml: {
+        vendor: endUser?.amlHits?.find(aml => !!aml.vendor)?.vendor,
         hits: endUser?.amlHits,
       },
       entityData: childWorkflow?.context?.entity?.data,
@@ -244,6 +245,7 @@ export const useTabsToBlocksMap = ({
             ...director,
             kycSession: {},
             aml: {
+              vendor: directorEndUser?.amlHits?.find(aml => !!aml.vendor)?.vendor,
               hits: directorEndUser?.amlHits,
             },
           });
