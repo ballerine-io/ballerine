@@ -18,6 +18,14 @@ export class EntityCreateDto {
   @IsString()
   lastName!: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  gender?: string;
+
   @IsOptional()
   @ApiProperty({
     type: String,
