@@ -67,19 +67,7 @@ export default defineConfig(configEnv => {
         output: {
           manualChunks: {
             'vendor-react-core': ['react', 'react-dom', 'react/jsx-runtime'],
-            'vendor-react-router': ['react-router', 'react-router-dom', '@remix-run/router'],
             'vendor-animation': ['framer-motion'],
-            'vendor-ui-components': [
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-label',
-              '@radix-ui/react-popover',
-              '@radix-ui/react-select',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-tooltip',
-              'class-variance-authority',
-              'lucide-react',
-            ],
             'vendor-charts': ['recharts'],
             'vendor-pdf-image': ['@react-pdf/renderer', 'jspdf'],
           },
