@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
@@ -33,6 +33,9 @@ import {
   MerchantMonitoringStatusBadge,
   statusToData,
 } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
+import { useMerchantMonitoringStatusDialog } from './hooks/useMerchantMonitoringStatusDialog/useMerchantMonitoringStatusDialog';
+import { toast } from 'sonner';
+import { t } from 'i18next';
 
 const MerchantMonitoringCompletedStatusFormSchema = z.object({
   text: z.string().optional(),
@@ -63,17 +66,25 @@ export const MerchantMonitoringReportStatus = ({
   });
 
   const [isStatusDropdownOpen, toggleStatusDropdownOpen] = useToggle(false);
-  const [isCompleteReviewModalOpen, toggleCompleteReviewModalOpen, _, closeCompleteReviewModal] =
-    useToggle(false);
+  const { dialogState, toggleDialogOpenState, closeDialog } = useMerchantMonitoringStatusDialog();
 
   const onSubmit: SubmitHandler<
     z.infer<typeof MerchantMonitoringCompletedStatusFormSchema>
   > = async ({ text }) => {
-    mutateUpdateReportStatus({ reportId, status: MERCHANT_REPORT_STATUSES_MAP.completed, text });
+    if (!dialogState.status) {
+      console.error('No status selected');
+      toast.error(t(`toast:business_report_status_update.unexpected_error`));
+
+      return;
+    }
+
+    mutateUpdateReportStatus({ reportId, status: dialogState.status, text });
 
     const content = `
       <div class="flex flex-col">
-        <span class="text-xs leading-6 text-slate-500">Status changed to <span class="font-semibold">'Review Completed'</span>
+        <span class="text-xs leading-6 text-slate-500">Status changed to <span class="font-semibold">'${
+          statusToData[dialogState.status].title
+        }'</span>
         ${text ? ` with details:</span><div class="text-sm">${text}</div>` : '</span>'}
       </div>
     `;
@@ -87,7 +98,7 @@ export const MerchantMonitoringReportStatus = ({
       parentNoteId: null,
     });
 
-    closeCompleteReviewModal();
+    closeDialog();
     form.reset();
   };
 
@@ -98,7 +109,9 @@ export const MerchantMonitoringReportStatus = ({
         [
           MERCHANT_REPORT_STATUSES_MAP['in-progress'],
           MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-          MERCHANT_REPORT_STATUSES_MAP['completed'],
+          MERCHANT_REPORT_STATUSES_MAP['cleared'],
+          MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
+          MERCHANT_REPORT_STATUSES_MAP['terminated'],
         ].includes(status)),
     [isLoading, status],
   );
@@ -108,7 +121,7 @@ export const MerchantMonitoringReportStatus = ({
   }
 
   return (
-    <Dialog open={isCompleteReviewModalOpen} onOpenChange={toggleCompleteReviewModalOpen}>
+    <Dialog open={dialogState.isOpen} onOpenChange={() => toggleDialogOpenState()}>
       <DropdownMenu open={isStatusDropdownOpen} onOpenChange={toggleStatusDropdownOpen}>
         <DropdownMenuTrigger
           disabled={disabled}
@@ -118,14 +131,14 @@ export const MerchantMonitoringReportStatus = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className={`space-y-2 p-4`}
+          className={`mr-6 space-y-2 p-4`}
           onEscapeKeyDown={e => {
-            if (isCompleteReviewModalOpen) {
+            if (dialogState.isOpen) {
               e.stopPropagation();
               e.preventDefault();
             }
 
-            closeCompleteReviewModal();
+            closeDialog();
           }}
         >
           {UPDATEABLE_REPORT_STATUSES.map(selectableStatus => (
@@ -137,9 +150,15 @@ export const MerchantMonitoringReportStatus = ({
                 status={selectableStatus}
                 disabled={selectableStatus === status || isLoading}
                 onClick={() => {
-                  if (selectableStatus === MERCHANT_REPORT_STATUSES_MAP.completed) {
+                  if (
+                    [
+                      MERCHANT_REPORT_STATUSES_MAP.cleared,
+                      MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
+                      MERCHANT_REPORT_STATUSES_MAP.terminated,
+                    ].includes(selectableStatus)
+                  ) {
                     setTimeout(() => {
-                      toggleCompleteReviewModalOpen();
+                      toggleDialogOpenState(selectableStatus);
                     }, 0);
 
                     return;
@@ -169,13 +188,20 @@ export const MerchantMonitoringReportStatus = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {dialogState.status && (
+              <div className="flex flex-col gap-2">
+                <span className="text-sm">Resolution Status</span>
+                <div>
+                  <MerchantMonitoringStatusBadge status={dialogState.status} />
+                </div>
+              </div>
+            )}
             <FormField
               name="text"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Additional details</FormLabel>
-
                   <FormControl>
                     <TextArea
                       {...field}
@@ -188,7 +214,7 @@ export const MerchantMonitoringReportStatus = ({
             />
 
             <DialogFooter className="mt-6 flex justify-end space-x-4">
-              <Button type="button" onClick={closeCompleteReviewModal} variant="ghost">
+              <Button type="button" onClick={closeDialog} variant="ghost">
                 Cancel
               </Button>
               <Button type="submit">Complete Review</Button>
