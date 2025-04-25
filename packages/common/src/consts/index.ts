@@ -180,6 +180,7 @@ export const MERCHANT_REPORT_STATUSES = [
   'pending-review',
   'under-review',
   'failed',
+  'completed',
   'cleared',
   'conditionally-approved',
   'terminated',
