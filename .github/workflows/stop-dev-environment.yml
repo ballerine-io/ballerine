@@ -11,7 +11,7 @@ on:
 
 jobs:
   Stop-Environment:
-    runs-on: bash
+    runs-on: ubuntu-latest
     environment: dev
     steps:
       - name: Checkout Repository
@@ -25,7 +25,7 @@ jobs:
           service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
 
       - name: Execute EKS Stop Action
-        uses: ./.github/actions/AWS/stop-dev
+        uses: ./.github/actions/stop-dev
         with:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-role: ${{ secrets.AWS_ASSUME_ROLE }}

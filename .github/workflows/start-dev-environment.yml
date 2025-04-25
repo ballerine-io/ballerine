@@ -12,7 +12,7 @@ on:
 jobs:
   Start-Environment:
     environment: dev
-    runs-on: bash
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
           service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
 
       - name: Execute EKS Start Action
-        uses: ./.github/actions/AWS/start-dev
+        uses: ./.github/actions/start-dev
         with:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-role: ${{ secrets.AWS_ASSUME_ROLE }}
