@@ -207,11 +207,19 @@ export const useKycBlock = ({
       return [];
     }
 
+    if (aml) {
+      return [aml];
+    }
+
     return kycSessionKeys.map(
-      key => aml ?? kycSession[key]?.result?.vendorResult?.aml ?? kycSession[key]?.result?.aml,
+      key => kycSession[key]?.result?.vendorResult?.aml ?? kycSession[key]?.result?.aml,
     );
   }, [kycSession, kycSessionKeys]);
   const vendor = useMemo(() => {
+    if (aml) {
+      return aml.vendor;
+    }
+
     if (!kycSessionKeys?.length) {
       return;
     }
