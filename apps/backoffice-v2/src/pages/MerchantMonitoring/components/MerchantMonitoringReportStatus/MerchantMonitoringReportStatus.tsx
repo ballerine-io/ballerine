@@ -38,7 +38,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 
 const MerchantMonitoringCompletedStatusFormSchema = z.object({
-  text: z.string().optional(),
+  text: z.string().min(1, { message: 'Please provide additional details' }),
 });
 
 export const MerchantMonitoringReportStatus = ({
