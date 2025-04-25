@@ -1,4 +1,4 @@
-name: Stop Environment
+name: Testing - Stop Dev Environment
 
 permissions:
     id-token: write
