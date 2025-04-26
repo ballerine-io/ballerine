@@ -70,10 +70,10 @@ export class UserControllerInternal {
   @UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse()
   async create(
-    @common.Body() userCreatInfo: UserCreateDto,
+    @common.Body() userCreateInfo: UserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { projectIds, ...userInfo } = userCreatInfo;
+    const { projectIds, ...userInfo } = userCreateInfo;
 
     return this.userService.create(
       {
