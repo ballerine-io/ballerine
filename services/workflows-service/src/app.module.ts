@@ -51,6 +51,7 @@ import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { NoteModule } from '@/note/note.module';
 import { MerchantMonitoringModule } from './merchant-monitoring/merchant-monitoring.module';
 import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
+import { KycModule } from './kyc/kyc.module';
 
 export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -137,6 +138,7 @@ export const validate = async (config: Record<string, unknown>) => {
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
+    KycModule,
   ],
   providers: [
     {
