@@ -154,6 +154,7 @@ export const useTabsToBlocksMap = ({
         'isRequestTimedOut',
       ),
       aml: {
+        vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
         hits: amlHits,
       },
       entityData: {
@@ -288,6 +289,7 @@ export const useTabsToBlocksMap = ({
             ...directorEndUser,
             kycSession: {},
             aml: {
+              vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
               hits: amlHits,
             },
           });
