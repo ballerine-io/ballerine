@@ -8,9 +8,13 @@ import { titleCase } from 'string-ts';
 export const useEntityInfoBlock = ({
   entity,
   workflow,
+  onEdit,
+  isEditDisabled,
 }: {
   entity: TWorkflowById['context']['entity'];
   workflow: TWorkflowById;
+  onEdit: () => void;
+  isEditDisabled: boolean;
 }) => {
   const predefinedOrder = useMemo(
     () =>
@@ -37,18 +41,39 @@ export const useEntityInfoBlock = ({
           .addBlock()
           .addCell({
             type: 'container',
+            props: {
+              className: 'flex justify-between space-x-4 py-4',
+            },
             value: createBlocksTyped()
               .addBlock()
               .addCell({
-                type: 'heading',
-                value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'heading',
+                    value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
               })
               .addCell({
-                type: 'subheading',
-                value: 'User-Provided Data',
+                type: 'callToAction',
+                value: {
+                  text: 'Edit',
+                  onClick: onEdit,
+                  props: {
+                    disabled: isEditDisabled,
+                    variant: 'outline',
+                    className:
+                      'px-2 py-0 text-xs aria-disabled:pointer-events-none aria-disabled:opacity-50 min-w-[3.9169rem]',
+                  },
+                },
               })
-              .build()
-              .flat(1),
+              .buildFlat(),
           })
           .addCell({
             id: 'entity-details',
@@ -77,8 +102,7 @@ export const useEntityInfoBlock = ({
             ),
             isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
           })
-          .build()
-          .flat(1),
+          .buildFlat(),
       })
       .build();
   }, [entity, workflow]);
