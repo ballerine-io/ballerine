@@ -123,9 +123,24 @@ export const useTabsToBlocksMap = ({
     const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
       childWorkflow?.nextEvents ?? [],
     );
-    const endUser = endUsers?.find(
+    const {
+      amlHits,
+      id: _id,
+      additionalInfo,
+      dateOfBirth,
+      gender,
+      ...endUserRest
+    } = endUsers?.find(
       endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
-    );
+    ) ?? {};
+    const {
+      gender: genderAdditionalInfo,
+      dateOfBirth: dateOfBirthAdditionalInfo,
+      role,
+      isAuthorizedSignatory,
+      percentageOfOwnership,
+      ...additionalInfoRest
+    } = additionalInfo ?? {};
 
     return {
       status,
@@ -133,11 +148,24 @@ export const useTabsToBlocksMap = ({
       kycSession: omitPropsFromObject(
         childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
         'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
       ),
       aml: {
-        hits: endUser?.amlHits,
+        vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
+        hits: amlHits,
       },
-      entityData: childWorkflow?.context?.entity?.data,
+      entityData: {
+        ...endUserRest,
+        additionalInfo: additionalInfoRest,
+        gender: gender ?? genderAdditionalInfo,
+        dateOfBirth: dateOfBirth ?? dateOfBirthAdditionalInfo,
+        role,
+        isAuthorizedSignatory,
+        percentageOfOwnership,
+      },
       isActionsDisabled:
         !caseState.actionButtonsEnabled || !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       isLoadingReuploadNeeded: isLoadingRevisionCase,
@@ -195,12 +223,30 @@ export const useTabsToBlocksMap = ({
   }: NonNullable<
     TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
   >[number]) => {
+    const { id: _id, additionalInfo, dateOfBirth, gender, ...directorRest } = director ?? {};
+    const {
+      gender: genderAdditionalInfo,
+      dateOfBirth: dateOfBirthAdditionalInfo,
+      role,
+      isAuthorizedSignatory,
+      percentageOfOwnership,
+      ...additionalInfoRest
+    } = additionalInfo ?? {};
+
     return {
       status: undefined,
       documents: director?.documents,
       kycSession,
       aml,
-      entityData: director,
+      entityData: {
+        ...directorRest,
+        additionalInfo: additionalInfoRest,
+        gender: gender ?? genderAdditionalInfo,
+        dateOfBirth: dateOfBirth ?? dateOfBirthAdditionalInfo,
+        role,
+        isAuthorizedSignatory,
+        percentageOfOwnership,
+      },
       isActionsDisabled: true,
       isLoadingReuploadNeeded: false,
       isLoadingApprove: false,
@@ -236,15 +282,15 @@ export const useTabsToBlocksMap = ({
             ),
         )
         ?.map(director => {
-          const directorEndUser = endUsers?.find(
-            endUser => endUser.id === director.ballerineEntityId,
-          );
+          const { amlHits, ...directorEndUser } =
+            endUsers?.find(endUser => endUser.id === director.ballerineEntityId) ?? {};
 
           return directorToIndividualAdapter({
-            ...director,
+            ...directorEndUser,
             kycSession: {},
             aml: {
-              hits: directorEndUser?.amlHits,
+              vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
+              hits: amlHits,
             },
           });
         }) ?? [],
