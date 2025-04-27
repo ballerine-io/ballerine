@@ -269,6 +269,15 @@ export class WorkflowRuntimeDataRepository {
         individuals AS (
           SELECT
             eu.id,
+            eu."firstName",
+            eu."lastName",
+            eu.email,
+            eu.gender,
+            eu.nationality,
+            eu.address,
+            eu."dateOfBirth",
+            eu.phone,
+            eu."additionalInfo",
             eu."amlHits"
           FROM
             "EndUser" eu

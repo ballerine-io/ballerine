@@ -10,6 +10,15 @@ import { apiClient } from '@/common/api-client/api-client';
 
 export const EndUserSchema = z.object({
   id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().optional(),
+  gender: z.string().nullable(),
+  nationality: z.string().nullable(),
+  address: z.string().nullable(),
+  dateOfBirth: z.string().nullable(),
+  phone: z.string().nullable(),
+  additionalInfo: z.record(z.string(), z.any()).nullable(),
   amlHits: z.array(HitSchema.extend({ vendor: z.string().optional() })).optional(),
 });
 
