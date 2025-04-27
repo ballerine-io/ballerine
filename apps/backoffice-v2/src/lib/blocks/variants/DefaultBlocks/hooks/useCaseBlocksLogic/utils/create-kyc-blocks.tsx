@@ -23,11 +23,13 @@ export const createKycBlocks = (individuals: ComponentProps<typeof KycBlock>[]) 
       onInitiateSanctionsScreening,
       onApprove,
       onReuploadNeeded,
+      onEdit,
       reasons,
       isReuploadNeededDisabled,
       isApproveDisabled,
       isInitiateKycDisabled,
       isInitiateSanctionsScreeningDisabled,
+      isEditDisabled,
     }) => {
       blocks.addCell({
         type: 'node',
@@ -45,11 +47,13 @@ export const createKycBlocks = (individuals: ComponentProps<typeof KycBlock>[]) 
             onInitiateSanctionsScreening={onInitiateSanctionsScreening}
             onApprove={onApprove}
             onReuploadNeeded={onReuploadNeeded}
+            onEdit={onEdit}
             reasons={reasons}
             isReuploadNeededDisabled={isReuploadNeededDisabled}
             isApproveDisabled={isApproveDisabled}
             isInitiateKycDisabled={isInitiateKycDisabled}
             isInitiateSanctionsScreeningDisabled={isInitiateSanctionsScreeningDisabled}
+            isEditDisabled={isEditDisabled}
           />
         ),
       });

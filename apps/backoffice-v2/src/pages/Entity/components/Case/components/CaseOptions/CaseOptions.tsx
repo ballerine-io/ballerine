@@ -63,7 +63,7 @@ export const CaseOptions = () => {
         </DropdownMenuItem>
         <DropdownMenuItem className={`w-full px-8 py-1`} asChild>
           <Button
-            onClick={onEditCollectionFlow}
+            onClick={onEditCollectionFlow({ steps: 'all' })}
             variant={'ghost'}
             className="justify-start"
             disabled={!isCanEditCollectionFlow || isLoading}

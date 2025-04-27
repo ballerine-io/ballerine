@@ -4,8 +4,13 @@ import {
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
 } from '@ballerine/common';
-
-export const updateStateForEditing = (workflowContext: TWorkflowById['context']) => {
+export const updateStateForEditing = ({
+  workflowContext,
+  steps,
+}: {
+  workflowContext: TWorkflowById['context'];
+  steps: 'all' | string[];
+}) => {
   workflowContext = structuredClone(workflowContext);
   const collectionFlowState = getCollectionFlowState(workflowContext);
 
@@ -14,10 +19,16 @@ export const updateStateForEditing = (workflowContext: TWorkflowById['context'])
   }
 
   collectionFlowState.status = CollectionFlowStatusesEnum.edit;
-  collectionFlowState.steps = collectionFlowState.steps?.map(step => ({
-    ...step,
-    state: CollectionFlowStepStatesEnum.edit,
-  }));
+  collectionFlowState.steps = collectionFlowState?.steps?.map(step => {
+    if (steps === 'all' || steps.includes(step.stepName)) {
+      return {
+        ...step,
+        state: CollectionFlowStepStatesEnum.edit,
+      };
+    }
+
+    return step;
+  });
 
   return workflowContext;
 };
