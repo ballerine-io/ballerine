@@ -1,0 +1,65 @@
+name: "Stop EKS Environment"
+description: "Stop Deployments Replica in the EKS Environment"
+inputs:
+  aws-role:
+    required: true
+    description: "AWS role to assume"
+  aws-region:
+    required: true
+    description: "AWS region"
+  eks-cluster:
+    required: true
+    description: "EKS Cluster Name"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws-role }}
+        role-session-name: Github
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Run AWS CLI commands
+      shell: bash
+      env:
+        AWS_REGION: ${{ inputs.aws-region }}
+        EKS_CLUSTER: ${{ inputs.eks-cluster }}  
+      run: |
+        aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+
+    - name: Scale Down Application Deployments
+      shell: bash
+      run: |
+        scale_namespace_deployments() {
+          local namespace=$1
+          local exclude_deployments=$2
+
+          echo "Processing namespace: $namespace"
+          
+          kubectl get deploy -n $namespace | awk 'NR > 1 {print $1}' > list_deployments.txt
+
+          while read DEPLOYMENT_NAME; do
+            if [[ " $exclude_deployments " == *" $DEPLOYMENT_NAME "* ]]; then
+              echo "Skipping excluded deployment: $DEPLOYMENT_NAME"
+              continue
+            fi
+
+            kubectl scale deployment "$DEPLOYMENT_NAME" --replicas=0 --namespace="$namespace"
+            echo "Scaled down deployment $DEPLOYMENT_NAME to 0 replicas in namespace $namespace"
+          done < list_deployments.txt
+        }
+
+        scale_namespace_deployments "appsmith" ""
+
+        scale_namespace_deployments "default" "twingate-eks-connector-2"
+
+        scale_namespace_deployments "monitoring" "loki-v3-gateway"
+
+        for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
+          scale_namespace_deployments "$ns" ""
+        done

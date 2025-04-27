@@ -217,7 +217,7 @@ export const useKycBlock = ({
   }, [kycSession, kycSessionKeys]);
   const vendor = useMemo(() => {
     if (aml) {
-      return aml?.vendor;
+      return aml.vendor;
     }
 
     if (!kycSessionKeys?.length) {
