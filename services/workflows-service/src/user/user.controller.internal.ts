@@ -12,7 +12,6 @@ import { UserStatus } from '@prisma/client';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
-@swagger.ApiExcludeController()
 export class UserControllerInternal {
   constructor(protected readonly userService: UserService) {}
 

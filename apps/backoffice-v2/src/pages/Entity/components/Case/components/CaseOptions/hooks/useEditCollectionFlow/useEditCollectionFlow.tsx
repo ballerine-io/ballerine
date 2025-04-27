@@ -1,13 +1,13 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useUpdateWorkflowByIdMutation } from '@/domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import { useCallback, useMemo } from 'react';
-import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEditCaseStateMutation';
-import { updateStateForEditing } from './helpers/update-state-for-editing';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 import { t } from 'i18next';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { getCollectionFlowLinkFromWorkflow } from '../useCopyCollectionFlowLink/helpers/get-collection-flow-link-from-workflow';
+import { updateStateForEditing } from './helpers/update-state-for-editing';
+import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEditCaseStateMutation';
+import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
 
 export const useEditCollectionFlow = () => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
@@ -57,7 +57,18 @@ export const useEditCollectionFlow = () => {
         });
 
         try {
-          window.open(getCollectionFlowLinkFromWorkflow(workflow as TWorkflowById), '_blank');
+          const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
+            ?.collectionFlowUrl;
+
+          if (!collectionFlowBaseUrl) {
+            throw new Error('Collection flow URL is missing.');
+          }
+
+          const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
+            workflowId: workflow?.id,
+          });
+
+          window.open(url, '_blank');
         } catch (error) {
           toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
           throw new Error('Failed to open collection flow in new tab.');
