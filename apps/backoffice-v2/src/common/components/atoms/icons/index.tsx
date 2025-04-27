@@ -1,4 +1,4 @@
-import React, { ComponentProps, FunctionComponent, SVGProps } from 'react';
+import { ComponentProps, FunctionComponent, SVGProps } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
 
 /**
@@ -675,3 +675,69 @@ export const DownloadFileSvg: FunctionComponent<ComponentProps<'svg'>> = props =
     />
   </svg>
 );
+
+export const NoIndividualsSvg: FunctionComponent<ComponentProps<'svg'>> = props => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="79" viewBox="0 0 80 79" fill="none">
+      <circle cx="39" cy="40" r="39" fill="#D9D9D9" />
+      <path
+        d="M9 24H68C69.6569 24 71 25.3431 71 27V72C71 73.6569 69.6569 75 68 75H9C7.34315 75 6 73.6569 6 72V27C6 25.3431 7.34315 24 9 24Z"
+        fill="#D9D9D9"
+        stroke="black"
+        strokeWidth="2"
+      />
+      <path
+        d="M68 39V33.6667C68 31.8986 67.2475 30.2029 65.9079 28.9526C64.5684 27.7024 62.7515 27 60.8571 27H50.1429C48.2485 27 46.4316 27.7024 45.0921 28.9526C43.7525 30.2029 43 31.8986 43 33.6667V39"
+        fill="white"
+        fillOpacity="0.3"
+      />
+      <path
+        d="M68 39V33.6667C68 31.8986 67.2475 30.2029 65.9079 28.9526C64.5684 27.7024 62.7515 27 60.8571 27H50.1429C48.2485 27 46.4316 27.7024 45.0921 28.9526C43.7525 30.2029 43 31.8986 43 33.6667V39"
+        stroke="#9B9B9B"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="4 4"
+      />
+      <path
+        d="M48 30V26.6667C48 24.8986 47.2475 23.2029 45.9079 21.9526C44.5684 20.7024 42.7515 20 40.8571 20H30.1429C28.2485 20 26.4316 20.7024 25.0921 21.9526C23.7525 23.2029 23 24.8986 23 26.6667V30"
+        fill="white"
+        fillOpacity="0.6"
+      />
+      <path
+        d="M48 30V26.6667C48 24.8986 47.2475 23.2029 45.9079 21.9526C44.5684 20.7024 42.7515 20 40.8571 20H30.1429C28.2485 20 26.4316 20.7024 25.0921 21.9526C23.7525 23.2029 23 24.8986 23 26.6667V30"
+        stroke="#9B9B9B"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="4 4"
+      />
+      <path
+        d="M55.5 23C59.6421 23 63 19.6421 63 15.5C63 11.3579 59.6421 8 55.5 8C51.3579 8 48 11.3579 48 15.5C48 19.6421 51.3579 23 55.5 23Z"
+        fill="white"
+        fillOpacity="0.3"
+        stroke="#9B9B9B"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="3 4"
+      />
+      <path
+        d="M35.5 16C39.6421 16 43 12.6421 43 8.5C43 4.35786 39.6421 1 35.5 1C31.3579 1 28 4.35786 28 8.5C28 12.6421 31.3579 16 35.5 16Z"
+        fill="white"
+        fillOpacity="0.6"
+        stroke="#9B9B9B"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="3 4"
+      />
+      <path
+        d="M17.9248 29H46.6367C47.2097 29.0001 47.7687 29.1645 48.249 29.4707L48.4502 29.6104L52.4463 32.6426C53.3158 33.3025 54.3772 33.6601 55.4688 33.6602H75.1572C76.9824 33.6602 78.3704 35.2709 78.1318 37.0537L78.1035 37.2266L71.3086 72.5664C71.037 73.979 69.8007 75 68.3623 75H9.88379C8.04866 74.9998 6.6585 73.3723 6.91309 71.582L6.94336 71.4092L14.9834 31.4092C15.265 30.0083 16.496 29.0001 17.9248 29Z"
+        fill="white"
+        stroke="black"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+};
