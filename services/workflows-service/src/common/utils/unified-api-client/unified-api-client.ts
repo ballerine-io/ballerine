@@ -132,4 +132,8 @@ export class UnifiedApiClient {
       includeAnalysis: payload.includeAnalysis,
     });
   }
+
+  public async runIndividualVerification(payload: any) {
+    return await this.axiosInstance.post('/individual-verification-sessions', payload);
+  }
 }
