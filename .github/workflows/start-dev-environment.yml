@@ -1,0 +1,33 @@
+name: Testing - Start Dev Environment
+
+permissions:
+    id-token: write
+    contents: read
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 5 * * 1-4,0'  # 7:00 AM Israel time
+
+jobs:
+  Start-Environment:
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Twingate
+        uses: twingate/github-action@v1
+        with:
+          service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
+
+      - name: Execute EKS Start Action
+        uses: ./.github/actions/start-dev
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-role: ${{ secrets.AWS_ASSUME_ROLE }}
+          eks-cluster: ${{ secrets.EKS_CLUSTER_NAME }}
+          environment-name: 'dev'
