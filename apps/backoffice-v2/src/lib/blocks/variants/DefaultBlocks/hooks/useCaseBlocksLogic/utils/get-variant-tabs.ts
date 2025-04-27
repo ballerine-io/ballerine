@@ -35,7 +35,7 @@ export const getVariantTabs = (
       {
         name: Tab.INDIVIDUALS,
         displayName: 'Individuals',
-        disabled: !tabBlocks[Tab.INDIVIDUALS]?.length,
+        disabled: false,
       },
       {
         name: Tab.DOCUMENTS,
