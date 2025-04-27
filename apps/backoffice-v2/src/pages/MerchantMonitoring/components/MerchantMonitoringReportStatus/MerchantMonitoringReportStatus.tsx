@@ -2,7 +2,11 @@ import { z } from 'zod';
 import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { MERCHANT_REPORT_STATUSES_MAP, UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
+import {
+  isObject,
+  MERCHANT_REPORT_STATUSES_MAP,
+  UPDATEABLE_REPORT_STATUSES,
+} from '@ballerine/common';
 import {
   ctw,
   Dialog,
@@ -36,6 +40,9 @@ import {
 import { useMerchantMonitoringStatusDialog } from './hooks/useMerchantMonitoringStatusDialog/useMerchantMonitoringStatusDialog';
 import { toast } from 'sonner';
 import { t } from 'i18next';
+import { getNoteContentForUnsubscribe } from './helpers/get-note-content-for-unsubscribe';
+import { getBaseNoteContent } from './helpers/get-base-note-content';
+import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 
 const MerchantMonitoringCompletedStatusFormSchema = z.object({
   text: z.string().min(1, { message: 'Please provide additional details' }),
@@ -54,7 +61,28 @@ export const MerchantMonitoringReportStatus = ({
 }) => {
   const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
 
-  const { mutate: mutateUpdateReportStatus, isLoading } = useUpdateReportStatusMutation();
+  const { mutate: mutateUpdateReportStatus, isLoading: isUpdatingReportStatus } =
+    useUpdateReportStatusMutation();
+  const { mutateAsync: turnOffMonitoringMutation, isLoading: isTurningOffMonitoring } =
+    useToggleMonitoringMutation({
+      state: 'off',
+      onSuccess: () => {
+        form.reset();
+        toast.success(t(`toast:business_monitoring_off.success`));
+      },
+      onError: error => {
+        toast.error(
+          t(`toast:business_monitoring_off.error`, {
+            errorMessage: isObject(error) && 'message' in error ? error.message : error,
+          }),
+        );
+      },
+    });
+
+  const isUpdatingReport = useMemo(
+    () => isUpdatingReportStatus || isTurningOffMonitoring,
+    [isUpdatingReportStatus, isTurningOffMonitoring],
+  );
 
   const formDefaultValues = {
     text: '',
@@ -78,19 +106,20 @@ export const MerchantMonitoringReportStatus = ({
       return;
     }
 
+    const isShouldUnsubscribe = dialogState.status === MERCHANT_REPORT_STATUSES_MAP['terminated'];
+
+    const noteContent = isShouldUnsubscribe
+      ? getNoteContentForUnsubscribe(dialogState.status, text)
+      : getBaseNoteContent(dialogState.status, text);
+
+    if (isShouldUnsubscribe) {
+      await turnOffMonitoringMutation(businessId ?? '');
+    }
+
     mutateUpdateReportStatus({ reportId, status: dialogState.status, text });
 
-    const content = `
-      <div class="flex flex-col">
-        <span class="text-xs leading-6 text-slate-500">Status changed to <span class="font-semibold">'${
-          statusToData[dialogState.status].title
-        }'</span>
-        ${text ? ` with details:</span><div class="text-sm">${text}</div>` : '</span>'}
-      </div>
-    `;
-
     void mutateCreateNote({
-      content,
+      content: noteContent,
       entityId: businessId ?? '',
       entityType: 'Business',
       noteableId: reportId ?? '',
@@ -104,16 +133,17 @@ export const MerchantMonitoringReportStatus = ({
 
   const disabled = useMemo(
     () =>
-      isLoading ||
+      isUpdatingReport ||
       (status &&
         [
           MERCHANT_REPORT_STATUSES_MAP['in-progress'],
           MERCHANT_REPORT_STATUSES_MAP['quality-control'],
+          MERCHANT_REPORT_STATUSES_MAP['completed'],
           MERCHANT_REPORT_STATUSES_MAP['cleared'],
           MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
           MERCHANT_REPORT_STATUSES_MAP['terminated'],
         ].includes(status)),
-    [isLoading, status],
+    [isUpdatingReport, status],
   );
 
   if (!status || !reportId) {
@@ -148,7 +178,7 @@ export const MerchantMonitoringReportStatus = ({
             >
               <MerchantMonitoringStatusButton
                 status={selectableStatus}
-                disabled={selectableStatus === status || isLoading}
+                disabled={selectableStatus === status || isUpdatingReport}
                 onClick={() => {
                   if (
                     [

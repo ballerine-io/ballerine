@@ -196,12 +196,14 @@ export type UpdateableReportStatus =
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['cleared']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['conditionally-approved']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['terminated']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['completed']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['pending-review']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['under-review'];
 
 export const UPDATEABLE_REPORT_STATUSES = [
   MERCHANT_REPORT_STATUSES_MAP['pending-review'],
   MERCHANT_REPORT_STATUSES_MAP['under-review'],
+  MERCHANT_REPORT_STATUSES_MAP['completed'],
   MERCHANT_REPORT_STATUSES_MAP['cleared'],
   MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
   MERCHANT_REPORT_STATUSES_MAP['terminated'],
