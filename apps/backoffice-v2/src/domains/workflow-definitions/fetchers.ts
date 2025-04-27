@@ -54,6 +54,7 @@ export const WorkflowDefinitionConfigSchema = z
       .optional(),
     editableContext: z
       .object({
+        entityInfo: z.boolean().optional(),
         kyc: z
           .object({
             entity: z.boolean().optional(),
