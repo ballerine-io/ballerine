@@ -7,9 +7,16 @@ export const buildCollectionFlowUrl = (
     token?: string | undefined;
     workflowId: string | undefined;
   },
-) =>
-  collectionFlowBaseUrl
-    ? `${collectionFlowBaseUrl}/collection-flow?workflowId=${workflowId ?? ''}${
-        token ? `&token=${token}` : ''
-      }`
-    : '';
+) => {
+  if (!collectionFlowBaseUrl) {
+    return '';
+  }
+
+  const basePath = `${collectionFlowBaseUrl}/collection-flow`;
+
+  const params = `?workflowId=${encodeURIComponent(workflowId ?? '')}${
+    token ? `&token=${encodeURIComponent(token)}` : ''
+  }`;
+
+  return `${basePath}${params}`;
+};

@@ -1,14 +1,14 @@
+import jsonata from 'jsonata';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import jsonata from 'jsonata';
 
-import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
 import {
   fetchCompanyInformation,
-  FetchCompanyInformationPluginDataSchena,
+  FetchCompanyInformationPluginDataSchema,
   FetchCompanyInformationResultSchema,
 } from '@/domains/collection-flow';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 
 export const FETCH_COMPANY_INFORMATION_PLUGIN_NAME = 'fetch_company_information';
 
@@ -38,7 +38,7 @@ export const fetchCompanyInformationPlugin = async (
     const jsonataExpression = jsonata(expression);
     const expressionResult = await jsonataExpression.evaluate(context);
 
-    const pluginData = FetchCompanyInformationPluginDataSchena.safeParse(expressionResult);
+    const pluginData = FetchCompanyInformationPluginDataSchema.safeParse(expressionResult);
 
     if (!pluginData.success) {
       console.error(

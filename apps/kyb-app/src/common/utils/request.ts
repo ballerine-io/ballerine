@@ -16,7 +16,7 @@ export const instance = ky.create({
   timeout: 30_000,
   hooks: {
     beforeRequest: [
-      async request => {
+      request => {
         request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
       },
     ],

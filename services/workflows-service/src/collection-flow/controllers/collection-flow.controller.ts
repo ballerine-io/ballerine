@@ -317,9 +317,4 @@ export class CollectionFlowController {
   async getWorkflowId(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
     return tokenScope.workflowRuntimeDataId;
   }
-
-  @common.Get('/workflow-id')
-  async getWorkflowIdWithWorkflowId(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
-    return tokenScope.workflowRuntimeDataId;
-  }
 }
