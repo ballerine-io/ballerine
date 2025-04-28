@@ -55,7 +55,7 @@
     "@ballerine/workflow-node-sdk": "0.6.115",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
-    "@nestjs/common": "^9.3.12",
+    "@nestjs/common": "^10.4.16",
     "@nestjs/config": "2.3.1",
     "@nestjs/core": "^9.3.12",
     "@nestjs/event-emitter": "^1.4.1",
