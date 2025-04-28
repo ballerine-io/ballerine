@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   isObject,
   MERCHANT_REPORT_STATUSES_MAP,
-  UPDATEABLE_REPORT_STATUSES,
+  UPDATEABLE_REPORT_STATUSES as _UPDATEABLE_REPORT_STATUSES,
 } from '@ballerine/common';
 import {
   ctw,
@@ -43,6 +43,11 @@ import { t } from 'i18next';
 import { getNoteContentForUnsubscribe } from './helpers/get-note-content-for-unsubscribe';
 import { getBaseNoteContent } from './helpers/get-base-note-content';
 import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
+
+/* TODO: Remove this filtering once completed status is removed */
+const UPDATEABLE_REPORT_STATUSES = _UPDATEABLE_REPORT_STATUSES.filter(
+  status => status !== 'completed',
+);
 
 const MerchantMonitoringCompletedStatusFormSchema = z.object({
   text: z.string().min(1, { message: 'Please provide additional details' }),
@@ -108,9 +113,10 @@ export const MerchantMonitoringReportStatus = ({
 
     const isShouldUnsubscribe = dialogState.status === MERCHANT_REPORT_STATUSES_MAP['terminated'];
 
+    const statusReadableText = statusToData[dialogState.status as keyof typeof statusToData]?.title;
     const noteContent = isShouldUnsubscribe
-      ? getNoteContentForUnsubscribe(dialogState.status, text)
-      : getBaseNoteContent(dialogState.status, text);
+      ? getNoteContentForUnsubscribe(statusReadableText, text)
+      : getBaseNoteContent(statusReadableText, text);
 
     if (isShouldUnsubscribe) {
       await turnOffMonitoringMutation(businessId ?? '');
