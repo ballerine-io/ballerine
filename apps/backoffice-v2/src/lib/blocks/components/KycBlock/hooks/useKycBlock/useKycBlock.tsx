@@ -227,7 +227,6 @@ export const useKycBlock = ({
     const amlVendor = kycSessionKeys
       .map(
         key =>
-          aml?.vendor ??
           kycSession[key]?.result?.vendorResult?.aml?.vendor ??
           kycSession[key]?.result?.aml?.vendor,
       )
