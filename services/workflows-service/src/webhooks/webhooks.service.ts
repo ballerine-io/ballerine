@@ -25,6 +25,7 @@ const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) 
 @Injectable()
 export class WebhooksService {
   private queue: RetryableQueue | null = null;
+  private notified = false;
 
   constructor(
     private readonly logger: AppLoggerService,
@@ -54,6 +55,7 @@ export class WebhooksService {
     });
 
     redis.on('connect', () => {
+      this.notified = false;
       this.setupQueues(redis);
     });
 
@@ -111,7 +113,10 @@ export class WebhooksService {
   }
 
   private degradeQueueSystem(err?: Error) {
-    this.logger.log('Queue system in degraded mode due to Redis unavailability.', { err });
+    if (!this.notified) {
+      this.logger.log('Queue system in degraded mode due to Redis unavailability.', { err });
+      this.notified = true;
+    }
 
     this.queue = null;
     this.bullBoard.boardInstance.setQueues([]);
