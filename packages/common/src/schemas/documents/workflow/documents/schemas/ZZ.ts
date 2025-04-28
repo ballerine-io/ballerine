@@ -325,7 +325,7 @@ export const getUniversalDocuments = (): TDocument[] => {
     },
     {
       category: 'general_documents',
-      type: 'letter_of_authorization',
+      type: 'letter_of_authorisation',
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
