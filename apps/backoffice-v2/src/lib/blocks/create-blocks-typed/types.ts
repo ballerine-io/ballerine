@@ -258,6 +258,18 @@ export type TEditableDetailsV2Cell = {
   props: Omit<ComponentProps<typeof EditableDetailsV2>, 'fields'>;
 };
 
+export type TNoDataCell = {
+  type: 'noData';
+  value: {
+    title: string;
+    description: string;
+    icon: JSX.Element;
+  };
+  props: {
+    className?: string;
+  };
+};
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -281,4 +293,5 @@ export type TCell =
   | TPDFViewerCell
   | TReadOnlyDetailsCell
   | TImageCell
-  | TEditableDetailsV2Cell;
+  | TEditableDetailsV2Cell
+  | TNoDataCell;
