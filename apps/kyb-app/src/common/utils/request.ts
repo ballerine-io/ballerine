@@ -1,6 +1,6 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
-import ky, { HTTPError } from 'ky';
+import ky, { HTTPError, Options } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
 export const instance = ky.create({
@@ -70,7 +70,7 @@ export const instance = ky.create({
   },
 });
 
-const addWorkflowId = (options?: RequestInit) => {
+const addWorkflowId = (options?: Options) => {
   const workflowId = new URLSearchParams(window.location.search).get('workflowId');
 
   if (!workflowId) {
@@ -79,13 +79,11 @@ const addWorkflowId = (options?: RequestInit) => {
 
   let searchParams: Record<string, string> = {};
 
-  if (options && 'searchParams' in options && options.searchParams) {
+  if (options?.searchParams) {
     if (typeof options.searchParams === 'string') {
       searchParams = Object.fromEntries(new URLSearchParams(options.searchParams));
     } else if (options.searchParams instanceof URLSearchParams) {
       searchParams = Object.fromEntries(options.searchParams.entries());
-    } else if (typeof options.searchParams === 'object') {
-      searchParams = { ...options.searchParams };
     }
   }
 
@@ -98,9 +96,9 @@ const addWorkflowId = (options?: RequestInit) => {
 };
 
 export const request = {
-  get: (url: string, options?: RequestInit) => instance.get(url, addWorkflowId(options)),
-  post: (url: string, options?: RequestInit) => instance.post(url, addWorkflowId(options)),
-  put: (url: string, options?: RequestInit) => instance.put(url, addWorkflowId(options)),
-  patch: (url: string, options?: RequestInit) => instance.patch(url, addWorkflowId(options)),
-  delete: (url: string, options?: RequestInit) => instance.delete(url, addWorkflowId(options)),
+  get: (url: string, options?: Options) => instance.get(url, addWorkflowId(options)),
+  post: (url: string, options?: Options) => instance.post(url, addWorkflowId(options)),
+  put: (url: string, options?: Options) => instance.put(url, addWorkflowId(options)),
+  patch: (url: string, options?: Options) => instance.patch(url, addWorkflowId(options)),
+  delete: (url: string, options?: Options) => instance.delete(url, addWorkflowId(options)),
 };
