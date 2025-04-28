@@ -116,8 +116,8 @@ export const serverEnvSchema = {
   POSTHOG_HOST: z.string().optional(),
   POSTHOG_KEY: z.string().optional(),
   WORKFLOW_LOGGING_ENABLED: z.preprocess(val => val === 'true' || val === true, z.boolean()),
-  REDIS_HOST: z.string(),
-  REDIS_PORT: z.coerce.number(),
+  REDIS_HOST: z.string().optional(),
+  REDIS_PORT: z.coerce.number().optional(),
   REDIS_PASSWORD: z.string().optional(),
   IS_QUEUE_WORKER: z
     .string()
