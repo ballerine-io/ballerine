@@ -1,10 +1,11 @@
 import { config } from 'dotenv';
-const path = process.env.CI ? '.env.example' : '.env';
-config({ path });
-
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 import { Base64 } from 'js-base64';
+
+const path = process.env.CI ? '.env.example' : '.env';
+
+config({ path });
 
 const urlArrayTransformer = (value: string) => {
   const urlSchema = z.string().url();
@@ -106,27 +107,19 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
-  SYNC_UNIFIED_API: z
-    .preprocess(val => val === 'true' || val === true, z.boolean())
-    .optional()
-    .default(true),
+  SYNC_UNIFIED_API: optionalBooleanSchema.default(true),
   DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
   MAGIC_LINK_AUTH_JWT_SECRET: z.string(),
   MAGIC_LINK_AUTH_JWT_ALGORITHMS: z.string().default('HS256'),
   POSTHOG_HOST: z.string().optional(),
   POSTHOG_KEY: z.string().optional(),
-  WORKFLOW_LOGGING_ENABLED: z.preprocess(val => val === 'true' || val === true, z.boolean()),
+  WORKFLOW_LOGGING_ENABLED: optionalBooleanSchema.default(false),
+
   REDIS_HOST: z.string().optional(),
   REDIS_PORT: z.coerce.number().optional(),
-  REDIS_PASSWORD: z.string().optional(),
-  IS_QUEUE_WORKER: z
-    .string()
-    .optional()
-    .transform(value => value === 'true'),
-  QUEUE_SYSTEM_ENABLED: z
-    .string()
-    .optional()
-    .transform(value => value === 'true'),
+  REDIS_PASSWORD: z.string().optional().optional(),
+  IS_QUEUE_WORKER: optionalBooleanSchema.default(false),
+  QUEUE_SYSTEM_ENABLED: optionalBooleanSchema.default(false),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
