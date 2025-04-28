@@ -139,10 +139,11 @@ export const syncContext = async (context: CollectionFlowContext) => {
   return result.json();
 };
 
-export const finalSubmissionRequest = async () => {
+export const finalSubmissionRequest = async (context?: CollectionFlowContext) => {
   const result = await request.post('collection-flow/final-submission', {
     json: {
       eventName: 'COLLECTION_FLOW_FINISHED',
+      context,
     },
   });
 

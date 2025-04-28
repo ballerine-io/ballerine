@@ -235,7 +235,7 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const updatedWorkflowRuntimeData = await this.workflowService.event(
+      await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: body.eventName,
@@ -244,24 +244,16 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const collectionFlowState = getCollectionFlowState(updatedWorkflowRuntimeData.context);
-
-      if (!collectionFlowState) {
-        throw new CollectionFlowMissingException();
+      if (!body.context) {
+        return;
       }
-
-      collectionFlowState.status = CollectionFlowStatusesEnum.completed;
 
       return await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
           payload: {
-            newContext: {
-              collectionFlow: {
-                state: collectionFlowState,
-              },
-            },
+            newContext: body.context,
             arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
           },
         },
