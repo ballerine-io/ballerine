@@ -13,15 +13,15 @@ const columnHelper = createColumnHelper<{
 export const columns = [
   columnHelper.display({
     id: 'index',
+    header: 'Number',
     cell: info => {
       const index = info.cell.row.index + 1;
 
       return <TextWithNAFallback className={`ps-8`}>{index}</TextWithNAFallback>;
     },
-    header: 'Match',
   }),
   columnHelper.accessor('domain', {
-    header: 'Matched Name',
+    header: 'Domain',
     cell: info => {
       const domain = info.getValue();
       const addProtocolIfMissing = (url: string) => {
