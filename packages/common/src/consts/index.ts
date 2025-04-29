@@ -179,8 +179,11 @@ export const MERCHANT_REPORT_STATUSES = [
   'quality-control',
   'pending-review',
   'under-review',
-  'completed',
   'failed',
+  'completed',
+  'cleared',
+  'conditionally-approved',
+  'terminated',
 ] as const;
 
 export type MerchantReportStatus = (typeof MERCHANT_REPORT_STATUSES)[number];
@@ -190,6 +193,9 @@ export const MERCHANT_REPORT_STATUSES_MAP = Object.fromEntries(
 ) as { [K in MerchantReportStatus]: K };
 
 export type UpdateableReportStatus =
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['cleared']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['conditionally-approved']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['terminated']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['completed']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['pending-review']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['under-review'];
@@ -197,7 +203,10 @@ export type UpdateableReportStatus =
 export const UPDATEABLE_REPORT_STATUSES = [
   MERCHANT_REPORT_STATUSES_MAP['pending-review'],
   MERCHANT_REPORT_STATUSES_MAP['under-review'],
-  MERCHANT_REPORT_STATUSES_MAP.completed,
+  MERCHANT_REPORT_STATUSES_MAP['completed'],
+  MERCHANT_REPORT_STATUSES_MAP['cleared'],
+  MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
+  MERCHANT_REPORT_STATUSES_MAP['terminated'],
 ] as const;
 
 export const MERCHANT_REPORT_TYPES = ['MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T1'] as const;

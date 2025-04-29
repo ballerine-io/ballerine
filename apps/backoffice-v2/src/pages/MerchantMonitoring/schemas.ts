@@ -57,6 +57,9 @@ export const REPORT_STATUS_LABELS = [
   'Pending Review',
   'Under Review',
   'Completed',
+  'Terminated',
+  'Conditionally Approved',
+  'Cleared',
 ] as const;
 
 export const REPORT_STATUS_LABEL_TO_VALUE_MAP = {
@@ -64,6 +67,9 @@ export const REPORT_STATUS_LABEL_TO_VALUE_MAP = {
   'Pending Review': 'pending-review',
   'Under Review': 'under-review',
   Completed: 'completed',
+  Terminated: 'terminated',
+  'Conditionally Approved': 'conditionally-approved',
+  Cleared: 'cleared',
 } as const;
 
 export type TReportStatusLabel = (typeof REPORT_STATUS_LABELS)[number];
