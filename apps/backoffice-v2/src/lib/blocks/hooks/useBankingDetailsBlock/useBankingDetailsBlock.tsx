@@ -2,8 +2,31 @@ import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
-  return useMemo(() => {
-    if (Object.keys(bankDetails ?? {}).length === 0) {
+  const isEmpty = useMemo(() => Object.keys(bankDetails ?? {}).length === 0, [bankDetails]);
+
+  const emptyBankDetailsBlock = useMemo(() => {
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'heading',
+            value: 'Banking details',
+          })
+          .addCell({
+            type: 'paragraph',
+            value: 'Banking details are being collected or not provided.',
+          })
+          .build()
+          .flat(1),
+      })
+      .build();
+  }, []);
+
+  const bankingDetailsBlock = useMemo(() => {
+    if (isEmpty) {
       return [];
     }
 
@@ -41,5 +64,7 @@ export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
           .flat(1),
       })
       .build();
-  }, [bankDetails, workflow]);
+  }, [bankDetails, workflow, isEmpty]);
+
+  return isEmpty ? emptyBankDetailsBlock : bankingDetailsBlock;
 };

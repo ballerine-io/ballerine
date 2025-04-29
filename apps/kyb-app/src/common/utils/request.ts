@@ -1,10 +1,9 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
-import ky, { HTTPError } from 'ky';
+import ky, { HTTPError, Options } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
-export const request = ky.create({
-  //@ts-ignore
+export const instance = ky.create({
   prefixUrl:
     (globalThis as any).env?.VITE_API_URL ??
     (import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`),
@@ -13,6 +12,7 @@ export const request = ky.create({
     statusCodes: [500, 408, 404, 404, 403, 401],
     methods: ['get'],
   },
+  credentials: 'include',
   timeout: 30_000,
   hooks: {
     beforeRequest: [
@@ -35,7 +35,9 @@ export const request = ky.create({
             message: (responseJson as { message: string }).message,
           } as HTTPError);
 
-          if (isShouldIgnore) return error as HTTPError;
+          if (isShouldIgnore) {
+            return error as HTTPError;
+          }
 
           throw error;
         } catch (error) {
@@ -67,3 +69,36 @@ export const request = ky.create({
     ],
   },
 });
+
+const addWorkflowId = (options?: Options) => {
+  const workflowId = new URLSearchParams(window.location.search).get('workflowId');
+
+  if (!workflowId) {
+    return options;
+  }
+
+  let searchParams: Record<string, string> = {};
+
+  if (options?.searchParams) {
+    if (typeof options.searchParams === 'string') {
+      searchParams = Object.fromEntries(new URLSearchParams(options.searchParams));
+    } else if (options.searchParams instanceof URLSearchParams) {
+      searchParams = Object.fromEntries(options.searchParams.entries());
+    }
+  }
+
+  searchParams['workflowId'] = workflowId;
+
+  return {
+    ...options,
+    searchParams,
+  };
+};
+
+export const request = {
+  get: (url: string, options?: Options) => instance.get(url, addWorkflowId(options)),
+  post: (url: string, options?: Options) => instance.post(url, addWorkflowId(options)),
+  put: (url: string, options?: Options) => instance.put(url, addWorkflowId(options)),
+  patch: (url: string, options?: Options) => instance.patch(url, addWorkflowId(options)),
+  delete: (url: string, options?: Options) => instance.delete(url, addWorkflowId(options)),
+};
