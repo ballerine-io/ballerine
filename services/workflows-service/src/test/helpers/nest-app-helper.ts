@@ -17,6 +17,8 @@ import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
+import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { mockClsService } from '@/test/helpers/cls-service-helper';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
@@ -38,8 +40,8 @@ export const fetchServiceFromModule = async <T>(
     | Array<Type<unknown>> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
-    providers: [service, ...dependencies],
-    imports: [...modules, ...commonTestingModules],
+    providers: [service, ...dependencies, WorkflowRuntimeDataActorService, mockClsService()],
+    imports: [...modules, ...commonTestingModules, ClsModule],
   }).compile();
 
   return moduleRef.get<typeof service>(service);
@@ -53,9 +55,9 @@ export const initiateNestApp = async (
   middlewares: Array<NestMiddleware['use']> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
-    providers: providers,
+    providers: [...providers, WorkflowRuntimeDataActorService, mockClsService()],
     controllers: controllers,
-    imports: [ACLModule, ...modules, ...commonTestingModules],
+    imports: [ACLModule, ...modules, ...commonTestingModules, ClsModule],
   }).compile();
 
   app = moduleRef.createNestApplication();

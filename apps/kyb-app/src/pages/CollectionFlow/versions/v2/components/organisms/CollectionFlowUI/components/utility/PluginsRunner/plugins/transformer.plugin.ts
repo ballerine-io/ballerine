@@ -24,7 +24,5 @@ export const transformerPlugin = async (
   const jsonataExpression = jsonata(expression);
   const expressionResult = await jsonataExpression.evaluate(inputData);
 
-  const updateResult = set(context, output, expressionResult);
-
-  return updateResult;
+  return set(context, output, expressionResult);
 };

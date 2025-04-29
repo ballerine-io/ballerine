@@ -1,7 +1,7 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 
-import { disableSessionAuth } from '@/common/disable-session-auth';
+import { disableDefaultAuth } from '@/common/disable-default-auth';
 import { TokenWithoutEnduserAuthGuard } from './token-without-enduser-auth.guard';
 
 export const UseTokenWithoutEnduserAuthGuard = () =>
-  applyDecorators(UseGuards(TokenWithoutEnduserAuthGuard), disableSessionAuth());
+  applyDecorators(UseGuards(TokenWithoutEnduserAuthGuard), disableDefaultAuth());
