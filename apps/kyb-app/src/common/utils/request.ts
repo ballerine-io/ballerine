@@ -84,6 +84,8 @@ const addWorkflowId = (options?: Options) => {
       searchParams = Object.fromEntries(new URLSearchParams(options.searchParams));
     } else if (options.searchParams instanceof URLSearchParams) {
       searchParams = Object.fromEntries(options.searchParams.entries());
+    } else if (typeof options.searchParams === 'object') {
+      searchParams = options.searchParams as Record<string, string>;
     }
   }
 
