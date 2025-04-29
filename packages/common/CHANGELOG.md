@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- version bump
+- bump
 
 ## 0.9.92
 

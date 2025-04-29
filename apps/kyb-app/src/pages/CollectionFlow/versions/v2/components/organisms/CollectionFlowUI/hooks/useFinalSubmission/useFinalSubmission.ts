@@ -32,40 +32,28 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
 
   const isFinalSubmissionAvailable = useMemo(() => state === collectionFlowSteps.at(-1), [state]);
 
-  const handleFinalSubmission = useCallback(async () => {
-    if (redirectUrls) {
+  const handleFinalSubmission = useCallback(
+    async (values?: CollectionFlowContext) => {
       try {
-        await finalSubmissionRequest();
+        await finalSubmissionRequest(values);
 
         setIsFinalSubmitted(true);
-
         trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
 
-        if (redirectUrls.success) {
+        if (redirectUrls?.success) {
           location.href = redirectUrls.success;
+          return;
         }
-      } catch (error) {
-        trackEvent(CollectionFlowEvents.FLOW_FAILED);
 
-        if (redirectUrls.failure) {
-          location.href = redirectUrls.failure;
-        }
-      }
-    } else {
-      try {
-        await finalSubmissionRequest();
-
-        setIsFinalSubmitted(true);
         await stateApi.sendEvent('NEXT');
         await stateApi.sendEvent('COMPLETED');
-        trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
       } catch (error) {
-        await stateApi.sendEvent('NEXT');
-        await stateApi.sendEvent('FAILURE');
         trackEvent(CollectionFlowEvents.FLOW_FAILED);
+        throw error;
       }
-    }
-  }, [stateApi, redirectUrls, trackEvent]);
+    },
+    [stateApi, redirectUrls, trackEvent],
+  );
 
   return {
     isFinalSubmissionAvailable,

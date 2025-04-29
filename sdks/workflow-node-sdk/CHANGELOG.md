@@ -4,8 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies
-  - @ballerine/workflow-core@0.6.116
+- @ballerine/workflow-core@0.6.116
 
 ## 0.6.115
 

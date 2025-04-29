@@ -4,7 +4,6 @@
 
 ### Patch Changes
 
-- version bump
 - Updated dependencies
   - @ballerine/common@0.9.93
 
