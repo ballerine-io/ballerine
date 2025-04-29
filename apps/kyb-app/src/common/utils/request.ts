@@ -77,21 +77,21 @@ const addWorkflowId = (options?: Options) => {
     return options;
   }
 
-  let searchParams: Record<string, string> = {};
-
-  if (options?.searchParams) {
-    if (typeof options.searchParams === 'string') {
-      searchParams = Object.fromEntries(new URLSearchParams(options.searchParams));
-    } else if (options.searchParams instanceof URLSearchParams) {
-      searchParams = Object.fromEntries(options.searchParams.entries());
-    }
+  if (!options?.searchParams) {
+    return {
+      ...options,
+      searchParams: { workflowId },
+    };
   }
 
-  searchParams['workflowId'] = workflowId;
+  const searchParams =
+    typeof options.searchParams === 'string' || options.searchParams instanceof URLSearchParams
+      ? Object.fromEntries(new URLSearchParams(options.searchParams))
+      : options.searchParams;
 
   return {
     ...options,
-    searchParams,
+    searchParams: { ...searchParams, workflowId },
   };
 };
 
