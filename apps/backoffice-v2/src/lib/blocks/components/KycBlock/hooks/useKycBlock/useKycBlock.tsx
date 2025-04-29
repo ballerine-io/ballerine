@@ -104,12 +104,18 @@ export const useKycBlock = ({
               status: string;
               riskLabels: string[];
             };
+            kycDocumentDetails?: {
+              expiryDate: string;
+            };
           }
         | {
             vendorResult: {
               aml: {
                 vendor: string;
               };
+            };
+            kycDocumentDetails?: {
+              expiryDate: string;
             };
             documents: TDocument[];
           };
@@ -255,6 +261,7 @@ export const useKycBlock = ({
             value: Object.entries({
               ...kycSession[key]?.result?.entity?.data,
               ...omitPropsFromObject(kycSession[key]?.result?.documents?.[0]?.properties, 'issuer'),
+              expiryDate: valueOrNA(kycSession[key]?.result?.kycDocumentDetails?.expiryDate),
               issuer: kycSession[key]?.result?.documents?.[0]?.issuer?.country,
             })?.map(([label, value]) => ({
               label,
