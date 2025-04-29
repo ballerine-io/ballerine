@@ -258,12 +258,14 @@ export type TEditableDetailsV2Cell = {
   props: Omit<ComponentProps<typeof EditableDetailsV2>, 'fields'>;
 };
 
-export type TEmptyPlaceholderCell = {
-  type: 'emptyPlaceholder';
+export type TNoDataCell = {
+  type: 'noData';
+  value: {
+    title: string;
+    description: string;
+    icon: JSX.Element;
+  };
   props: {
-    title: string | ReactNode;
-    icon: string | ReactNode;
-    description: string | ReactNode;
     className?: string;
   };
 };
@@ -292,4 +294,4 @@ export type TCell =
   | TReadOnlyDetailsCell
   | TImageCell
   | TEditableDetailsV2Cell
-  | TEmptyPlaceholderCell;
+  | TNoDataCell;

@@ -43,7 +43,7 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user`,
+        url: `{collectionFlow.config.apiUrl}/api/v1/collection-flow/end-user?workflowId={query.workflowId}`,
         method: 'POST',
         headers: { Authorization: 'Bearer {query.token}' },
         stateNames: [],

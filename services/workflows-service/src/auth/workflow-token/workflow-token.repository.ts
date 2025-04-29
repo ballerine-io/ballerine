@@ -32,9 +32,6 @@ export class WorkflowTokenRepository {
 
   async findFirstByWorkflowRuntimeDataIdUnscoped(workflowRuntimeDataId: string) {
     return await this.prismaService.workflowRuntimeDataToken.findFirst({
-      select: {
-        token: true,
-      },
       where: {
         workflowRuntimeDataId,
         deletedAt: null,

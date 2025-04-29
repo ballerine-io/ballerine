@@ -12,7 +12,7 @@ import {
   type ITokenScopeWithEndUserId,
   TokenScope,
 } from '@/common/decorators/token-scope.decorator';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
@@ -21,7 +21,7 @@ import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 
-@UseTokenAuthGuard()
+@UseWorkflowAuthGuard()
 @ApiExcludeController()
 @common.Controller('collection-flow')
 export class CollectionFlowController {
@@ -235,7 +235,7 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const updatedWorkflowRuntimeData = await this.workflowService.event(
+      await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: body.eventName,
@@ -244,24 +244,16 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      const collectionFlowState = getCollectionFlowState(updatedWorkflowRuntimeData.context);
-
-      if (!collectionFlowState) {
-        throw new CollectionFlowMissingException();
+      if (!body.context) {
+        return;
       }
-
-      collectionFlowState.status = CollectionFlowStatusesEnum.completed;
 
       return await this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
           payload: {
-            newContext: {
-              collectionFlow: {
-                state: collectionFlowState,
-              },
-            },
+            newContext: body.context,
             arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
           },
         },
@@ -311,5 +303,10 @@ export class CollectionFlowController {
       [tokenScope.projectId],
       tokenScope.projectId,
     );
+  }
+
+  @common.Get('/workflow-id')
+  async getWorkflowId(@TokenScope() tokenScope: ITokenScopeWithEndUserId) {
+    return tokenScope.workflowRuntimeDataId;
   }
 }

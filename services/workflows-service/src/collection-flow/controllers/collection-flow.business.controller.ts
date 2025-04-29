@@ -1,10 +1,10 @@
 import { BusinessService } from '@/business/business.service';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Controller, Get, Query } from '@nestjs/common';
 import { GetBusinessInformationDto } from '../dto/get-business-information-input.dto';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 
-@UseTokenAuthGuard()
+@UseWorkflowAuthGuard()
 @ApiExcludeController()
 @Controller('collection-flow/business')
 export class CollectionFlowBusinessController {
