@@ -9,6 +9,7 @@ import { CollectionFlowStepStatesEnum } from '@/utils/collection-flow/enums/coll
 import { AmlSchema } from './schemas/aml-schema';
 import { DocumentsSchema } from './schemas/documents-schema';
 import { EntitySchema } from './schemas/entity-schema';
+import { IndividualSanctionsPluginSchema } from './schemas/individual-sanctions-plugin-schema';
 import { KycSessionPluginSchema } from './schemas/kyc-session-plugin-schema';
 import { RiskEvaluationPluginSchema } from './schemas/risk-evaluation-plugin-schema';
 import { UboPluginSchema } from './schemas/ubo-plugin-schema';
@@ -29,15 +30,6 @@ export const defaultPluginSchema = Type.Object({
   invokedAt: Type.Number(),
   data: Type.Optional(Type.Any()),
 });
-
-const individualSanctionsPluginSchema = Type.Optional(
-  Type.Composite([
-    defaultPluginSchema,
-    Type.Object({
-      data: AmlSchema,
-    }),
-  ]),
-);
 
 export const CollectionFlowStepSchema = Type.Object({
   stepName: Type.String(),
@@ -74,7 +66,7 @@ export const defaultContextSchema = Type.Composite([
           ubo: UboPluginSchema,
           kyc_session: KycSessionPluginSchema,
           companySanctions: CompanySanctionsPluginSchema,
-          individualSanctions: Type.Optional(individualSanctionsPluginSchema),
+          individualSanctions: IndividualSanctionsPluginSchema,
           merchantMonitoring: MerchantMonitoringPluginSchema,
           businessInformation: BusinessInformationPluginSchema,
           merchantScreening: MerchantScreeningPluginSchema,
