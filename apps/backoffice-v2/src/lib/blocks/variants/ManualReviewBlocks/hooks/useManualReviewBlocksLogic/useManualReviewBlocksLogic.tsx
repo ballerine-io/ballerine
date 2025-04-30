@@ -9,8 +9,10 @@ import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
-import { StateTag } from '@ballerine/common';
+import { StateTag, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
+import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
+import { titleCase } from 'string-ts';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -118,9 +120,20 @@ export const useManualReviewBlocksLogic = () => {
         ?.predefinedOrder ?? [],
   });
 
+  const entityAddressBlock = useAddressBlock({
+    address: workflow?.context?.entity?.data?.address,
+    title: `${valueOrNA(titleCase(workflow?.context?.entity?.type ?? ''))} Address`,
+    workflow,
+  });
+
   const blocks = useMemo(() => {
-    return [...businessInformation, ...entityAdditionalInfoBlock, ...documentsBlocks];
-  }, [businessInformation, documentsBlocks, entityAdditionalInfoBlock]);
+    return [
+      ...businessInformation,
+      ...entityAdditionalInfoBlock,
+      ...entityAddressBlock,
+      ...documentsBlocks,
+    ];
+  }, [businessInformation, documentsBlocks, entityAdditionalInfoBlock, entityAddressBlock]);
 
   return {
     blocks,
