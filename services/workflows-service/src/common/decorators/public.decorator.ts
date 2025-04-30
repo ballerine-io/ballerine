@@ -1,3 +1,3 @@
-import { disableSessionAuth } from '@/common/disable-session-auth';
+import { disableDefaultAuth } from '@/common/disable-default-auth';
 
-export const Public = () => disableSessionAuth();
+export const Public = () => disableDefaultAuth();

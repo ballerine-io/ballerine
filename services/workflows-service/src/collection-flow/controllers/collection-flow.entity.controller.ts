@@ -1,11 +1,11 @@
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
-import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowEntityService } from '../collection-flow-entity.service';
 import { CreateEntityInputDto, EntityCreateDto } from '../dto/create-entity-input.dto';
+import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 
-@UseTokenAuthGuard()
+@UseWorkflowAuthGuard()
 @ApiExcludeController()
 @Controller('collection-flow/entity')
 export class CollectionFlowEntityController {

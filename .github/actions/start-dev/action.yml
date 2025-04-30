@@ -1,0 +1,75 @@
+name: "Start EKS Environment"
+description: "Start Deployments Replica in the EKS Environment"
+inputs:
+  aws-role:
+    required: true
+    description: "AWS role to assume"
+  aws-region:
+    required: true
+    description: "AWS region"
+  eks-cluster:
+    required: true
+    description: "EKS Cluster Name"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws-role }}
+        role-session-name: Github
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Run AWS CLI commands
+      shell: bash
+      env:
+        AWS_REGION: ${{ inputs.aws-region }}
+        EKS_CLUSTER: ${{ inputs.eks-cluster }}  
+      run: |
+        aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+
+    - name: Scale Up Application Deployments
+      shell: bash
+      run: |
+        scale_namespace_deployments() {
+          local namespace=$1
+          local default_replicas=$2
+          local exclude_deployments=$3
+          local specific_scales=$4
+
+          echo "Processing namespace: $namespace"
+          
+          kubectl get deploy -n $namespace | awk 'NR > 1 {print $1}' > list_deployments.txt
+
+          while read DEPLOYMENT_NAME; do
+            if [[ " $exclude_deployments " == *" $DEPLOYMENT_NAME "* ]]; then
+              echo "Skipping excluded deployment: $DEPLOYMENT_NAME"
+              continue
+            fi
+
+            replicas=$default_replicas
+            for scale in $specific_scales; do
+              if [[ $scale == "$DEPLOYMENT_NAME:"* ]]; then
+                replicas=${scale#*:}
+                break
+              fi
+            done
+
+            kubectl scale deployment "$DEPLOYMENT_NAME" --replicas=$replicas --namespace="$namespace"
+            echo "Scaled deployment $DEPLOYMENT_NAME to $replicas replicas in namespace $namespace"
+          done < list_deployments.txt
+        }
+
+        scale_namespace_deployments "appsmith" "1" "" ""
+
+        scale_namespace_deployments "default" "1" "twingate-eks-connector-2" "unified-api:3 unified-worker:2 wf-service:3"
+
+        scale_namespace_deployments "monitoring" "1" "loki-v3-gateway" "loki-v3-query-frontend:2"
+
+        for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
+          scale_namespace_deployments "$ns" "1" "" ""
+        done
