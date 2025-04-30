@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 import { StateTag } from '@ballerine/common';
+import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -108,9 +109,18 @@ export const useManualReviewBlocksLogic = () => {
       },
     },
   });
+
+  const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({
+    entity: workflow?.context?.entity,
+    workflow,
+    predefinedOrder:
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder ?? [],
+  });
+
   const blocks = useMemo(() => {
-    return [...businessInformation, ...documentsBlocks];
-  }, [businessInformation, documentsBlocks]);
+    return [...businessInformation, ...entityAdditionalInfoBlock, ...documentsBlocks];
+  }, [businessInformation, documentsBlocks, entityAdditionalInfoBlock]);
 
   return {
     blocks,
