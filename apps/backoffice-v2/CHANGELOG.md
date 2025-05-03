@@ -1,5 +1,13 @@
 # @ballerine/backoffice-v2
 
+## 0.7.141
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.7.141
+  - @ballerine/react-pdf-toolkit@1.2.109
+
 ## 0.7.140
 
 ### Patch Changes
