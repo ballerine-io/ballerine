@@ -144,6 +144,12 @@ export const useSidebarItems = () => {
           key: 'nav-item-kyb-ubos',
         },
         {
+          text: 'Identity Verification',
+          icon: UserRoundSearchIcon,
+          key: 'nav-item-identity-verification',
+          href: `/${locale}/identity-verification`,
+        },
+        {
           text: 'Businesses',
           icon: BuildingIcon,
           children:
