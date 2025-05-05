@@ -104,9 +104,9 @@ const main = async () => {
     cookieSession({
       name: 'session',
       keys: [env.SESSION_SECRET],
-      httpOnly: env.SESSION_HTTP_ONLY,
-      secure: env.SESSION_SECURE_COOKIE,
-      sameSite: env.SESSION_SAME_SITE,
+      httpOnly: false,
+      secure: false,
+      sameSite: false,
       maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );
