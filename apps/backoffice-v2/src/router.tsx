@@ -32,7 +32,7 @@ import { KybAndUbo } from './pages/KybAndUbo/KybAndUbo.page';
 import { KybAndUbosLayout } from './domains/kyb-and-ubos/components/KybAndUbosLayout/KybAndUbosLayout';
 import { KybAndUboCheckPage } from './pages/KybAndUboCheckPage';
 import { IdentityVerificationLayout } from './domains/identity-verification/components/IdentityVerificationLayout/IdentityVerificationLayout';
-import { IdentityVerification } from './pages/IdentityVerification/KybAndUbo.page';
+import { IdentityVerification } from './pages/IdentityVerification/IdentityVerification.page';
 import { IdentityVerificationCheck } from './pages/IdentityVerificationCheck/IdentityVerificationCheck.page';
 
 const router = createBrowserRouter([
