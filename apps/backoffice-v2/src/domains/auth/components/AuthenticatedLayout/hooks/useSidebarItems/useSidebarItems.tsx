@@ -89,6 +89,20 @@ export const useSidebarItems = () => {
           key: 'nav-item-identity-verification',
         },
         {
+          text: 'Document Verification',
+          icon: FileCheck2Icon,
+          href: `/${locale}/document-verification`,
+          premium: {
+            caption: 'Extract data, classify, validate and verify documents.',
+            checkList: [
+              'All types of documents',
+              'Works in every language',
+              'Detect faults and fakes',
+            ],
+          },
+          key: 'nav-item-document-verification',
+        },
+        {
           text: 'Sanctions Screening',
           icon: GavelIcon,
           premium: {
@@ -100,19 +114,6 @@ export const useSidebarItems = () => {
             ],
           },
           key: 'nav-item-sanctions-screening',
-        },
-        {
-          text: 'Documents Verification',
-          icon: FileCheck2Icon,
-          premium: {
-            caption: 'Extract data, classify, validate and verify documents.',
-            checkList: [
-              'All types of documents',
-              'Works in every language',
-              'Detect faults and fakes',
-            ],
-          },
-          key: 'nav-item-documents-verifications',
         },
       ]
     : [
@@ -143,6 +144,12 @@ export const useSidebarItems = () => {
           icon: UserRoundSearchIcon,
           key: 'nav-item-identity-verification',
           href: `/${locale}/identity-verification`,
+        },
+        {
+          text: 'Document Verification',
+          icon: FileCheck2Icon,
+          key: 'nav-item-document-verification',
+          href: `/${locale}/document-verification`,
         },
         {
           text: 'Businesses',
