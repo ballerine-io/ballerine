@@ -8,10 +8,8 @@ export const kybAndUbosChecksQueryKey = createQueryKeys('kyb-and-ubos-checks', {
     queryFn: () => {
       const data = {
         ...params,
-        page: {
-          number: Number(page),
-          size: Number(page.size),
-        },
+        number: isNaN(Number(page)) ? 1 : Number(page),
+        size: isNaN(Number(page.size)) ? 10 : Number(page.size),
       };
 
       return fetchKybAndUbosChecks(data);
