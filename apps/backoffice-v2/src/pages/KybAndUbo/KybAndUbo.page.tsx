@@ -24,10 +24,10 @@ import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/D
 import { Search } from '@/common/components/molecules/Search';
 import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapper/DemoAccessWrapper';
-import { useMerchantMonitoringLogic } from '@/pages/MerchantMonitoring/hooks/useMerchantMonitoringLogic/useMerchantMonitoringLogic';
-import { CreateMerchantReportDialog } from './components/CreateMerchantReportDialog/CreateMerchantReportDialog';
 import { KybAndUboChecksTable } from './components/KybAndUboChecksTable/KybAndUboChecksTable';
 import { NoKybAndUboChecks } from './components/NoKybAndUboChecks/NoKybAndUboChecks';
+import { useKycAndUboLogic } from './hooks/useKycAndUboLogic/useKycAndUboLogic';
+import { CreateKybAndUboCheckDialog } from './components/CreateKybAndUboCheckDialog/CreateKybAndUboCheckDialog';
 
 export const KybAndUbo: FunctionComponent = () => {
   const {
@@ -74,7 +74,7 @@ export const KybAndUbo: FunctionComponent = () => {
     toggleOpen,
     isDemoAccount,
     isExportingReport,
-  } = useMerchantMonitoringLogic();
+  } = useKycAndUboLogic();
 
   return (
     <DemoAccessWrapper
@@ -95,7 +95,7 @@ export const KybAndUbo: FunctionComponent = () => {
                       className={buttonVariants({
                         variant: 'outline',
                         className:
-                          'flex items-center justify-start gap-2 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50',
+                          'pointer-events-none flex items-center justify-start gap-2 font-semibold opacity-50 disabled:pointer-events-none disabled:opacity-50',
                       })}
                       onClick={e => {
                         if (!createBusinessReportBatch?.enabled || isDemoAccount) {
@@ -127,7 +127,7 @@ export const KybAndUbo: FunctionComponent = () => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger className={`flex items-center`}>
-                  <CreateMerchantReportDialog
+                  <CreateKybAndUboCheckDialog
                     open={open}
                     toggleOpen={toggleOpen}
                     disabled={!createBusinessReport.enabled}
@@ -138,9 +138,9 @@ export const KybAndUbo: FunctionComponent = () => {
                       aria-disabled={!createBusinessReport.enabled}
                     >
                       <Plus />
-                      <span>Create a report</span>
+                      <span>Create a KYB & UBO Check</span>
                     </Button>
-                  </CreateMerchantReportDialog>
+                  </CreateKybAndUboCheckDialog>
                 </TooltipTrigger>
                 {!createBusinessReport?.enabled && (
                   <TooltipContent side={'left'} align={'start'}>
