@@ -3,19 +3,21 @@ import { AxiosInstance } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException, Injectable } from '@nestjs/common';
 import { EndUserService } from '@/end-user/end-user.service';
 import { type TProjectIds } from '@/types';
-
+import { CustomerService } from '@/customer/customer.service';
+@Injectable()
 export class KycService {
   private readonly axiosClient: AxiosInstance;
 
   constructor(
     private readonly unifiedApiClient: UnifiedApiClient,
-    private httpService: HttpService,
+    private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly endUserService: EndUserService,
+    private readonly customerService: CustomerService,
   ) {
     this.axiosClient = this.httpService.axiosRef;
   }
@@ -40,21 +42,17 @@ export class KycService {
   }
 
   async sendIndividualVerificationEmail({
-    customerName,
-    companyName,
     email,
     firstName,
     kycLink,
     language,
-    revisionReason,
+    customerName,
   }: {
-    customerName: string;
-    companyName: string;
     email: string;
     firstName: string;
     kycLink: string;
     language: string;
-    revisionReason: string | undefined;
+    customerName: string;
   }) {
     const EMAIL_API_URL = this.configService.get('EMAIL_API_URL');
     const EMAIL_API_TOKEN = this.configService.get('EMAIL_API_TOKEN');
@@ -68,19 +66,14 @@ export class KycService {
           subject: `${customerName} activation, Action needed.`,
           to: [{ email }],
           dynamic_template_data: {
-            kybCompanyName: companyName,
-            customerCompanyName: customerName,
             firstName,
             kycLink,
             language,
-            supportEmail: `support@${customerName}.com`,
-            revisionReason,
+            customerName,
           },
         },
       ],
-      template_id: revisionReason
-        ? 'd-2c6ae291d9df4f4a8770d6a4e272d803'
-        : 'd-61c568cfa5b145b5916ff89790fe2065',
+      template_id: 'd-7843c28e3653430597c9e8d0b8f14bd0',
     };
 
     if (!EMAIL_API_URL) {
@@ -106,45 +99,93 @@ export class KycService {
   }
 
   async initiateIndividualVerificationAndSendEmail({
-    endUserId,
+    endUserCorrelationId,
+    firstName,
+    lastName,
+    email,
+    dateOfBirth,
     vendor,
     withAml,
     ongoingMonitoring,
     language,
-    revisionReason,
     projectIds,
   }: {
-    endUserId: string;
+    endUserCorrelationId?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    dateOfBirth?: string;
 
     vendor: 'veriff';
     withAml?: boolean;
     ongoingMonitoring?: boolean;
     language: string;
-    revisionReason: string | undefined;
     projectIds: NonNullable<TProjectIds>;
   }) {
-    const endUser = await this.endUserService.getById(
-      endUserId,
-      {
+    let endUser;
+
+    if (!endUserCorrelationId) {
+      endUser = await this.endUserService.create({
+        data: {
+          firstName: firstName!,
+          lastName: lastName!,
+          email: email!,
+          dateOfBirth: dateOfBirth!,
+          projectId: projectIds[0]!,
+        },
         select: {
           id: true,
           firstName: true,
           lastName: true,
           email: true,
         },
-      },
-      projectIds,
-    );
+      });
+    }
+
+    if (endUserCorrelationId) {
+      endUser = await this.endUserService.getByCorrelationId(endUserCorrelationId, projectIds, {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      });
+    }
+
+    if (!endUser) {
+      endUser = await this.endUserService.create({
+        data: {
+          correlationId: endUserCorrelationId,
+          firstName: firstName!,
+          lastName: lastName!,
+          email: email!,
+          dateOfBirth: new Date(dateOfBirth!),
+          projectId: projectIds[0]!,
+        },
+      });
+    }
 
     if (!endUser.email) {
       throw new BadRequestException('End-user email is required');
     }
 
-    const { id: sessionId, url: kycLink } = await this.initiateIndividualVerification({
+    const customer = await this.customerService.getByProjectId(projectIds[0]!, {
+      select: {
+        name: true,
+        displayName: true,
+      },
+    });
+
+    const {
+      id: sessionId,
+      url: kycLink,
+      checkId,
+    } = await this.initiateIndividualVerification({
       endUserId: endUser.id,
       // TODO: Get from KYC check table
       sessionId: undefined,
-      clientId: 'anonymous',
+      clientId: customer.name,
 
       vendor,
       withAml: withAml ?? true,
@@ -160,14 +201,12 @@ export class KycService {
       firstName: endUser.firstName,
       kycLink,
       email: endUser.email,
-      customerName: 'anonymous',
-      companyName: 'anonymous',
+      customerName: customer.displayName,
       language,
-      revisionReason,
     });
 
     return {
-      checkId: '',
+      checkId,
       sessionId,
       url: kycLink,
     };
