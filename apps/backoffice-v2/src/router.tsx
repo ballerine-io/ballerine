@@ -34,6 +34,9 @@ import { KybAndUboCheckPage } from './pages/KybAndUboCheckPage';
 import { IdentityVerificationLayout } from './domains/identity-verification/components/IdentityVerificationLayout/IdentityVerificationLayout';
 import { IdentityVerification } from './pages/IdentityVerification/IdentityVerification.page';
 import { IdentityVerificationCheck } from './pages/IdentityVerificationCheck/IdentityVerificationCheck.page';
+import { DocumentVerificationLayout } from './domains/document-verification/components/DocumentVerificationLayout/DocumentVerificationLayout';
+import { DocumentVerification } from './pages/DocumentVerification/DocumentVerification.page';
+import { DocumentVerificationCheck } from './pages/DocumentVerificationCheck/DocumentVerificationCheck.page';
 
 const router = createBrowserRouter([
   {
@@ -134,6 +137,22 @@ const router = createBrowserRouter([
                   {
                     path: '/:locale/identity-verification/:checkId',
                     element: <IdentityVerificationCheck />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              {
+                element: <DocumentVerificationLayout />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/document-verification',
+                    element: <DocumentVerification />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/document-verification/:id',
+                    element: <DocumentVerificationCheck />,
                     errorElement: <RouteError />,
                   },
                 ],
