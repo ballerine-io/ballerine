@@ -1,32 +1,14 @@
 import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
-import {
-  Badge,
-  CheckCircle,
-  ContentTooltip,
-  severityToClassName,
-  TextWithNAFallback,
-  WarningFilledSvg,
-} from '@ballerine/ui';
+import { Badge, ContentTooltip, TextWithNAFallback, WarningFilledSvg } from '@ballerine/ui';
 import { createColumnHelper, RowData } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
-import { Minus } from 'lucide-react';
 import { useMemo } from 'react';
-import { titleCase } from 'string-ts';
 
-import { CopyToClipboardButton } from '@/common/components/atoms/CopyToClipboardButton/CopyToClipboardButton';
-import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
-import {
-  NO_VIOLATION_DETECTED_RISK_INDICATOR_ID,
-  POSITIVE_RISK_LEVEL_ID,
-} from '@/common/constants';
-import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { TBusinessReport } from '@/domains/business-reports/fetchers';
-import { statusToData } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
-import { uniqBy } from 'lodash-es';
-import { IdentityVerificationChecksStatus } from '../IdentityVerificationChecksStatus/IdentityVerificationChecksStatus';
+import { TIdentityVerificationCheck } from '@/domains/identity-verification/fetchers';
+import { titleCase } from 'string-ts';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -39,7 +21,7 @@ declare module '@tanstack/react-table' {
   }
 }
 
-const columnHelper = createColumnHelper<TBusinessReport>();
+const columnHelper = createColumnHelper<TIdentityVerificationCheck>();
 
 const SCAN_TYPES = {
   ONBOARDING: 'Onboarding',
@@ -54,29 +36,23 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 export const useColumns = ({ isDemoAccount = false }) => {
   return useMemo(() => {
     const columns = [
-      columnHelper.accessor('companyName', {
+      columnHelper.accessor('firstName', {
         cell: info => {
-          const companyName = info.getValue();
-          const isExample = info.row.original.isExample;
+          const firstName = info.getValue();
+          const lastName = info.row.original.lastName;
+          const fullName = `${firstName} ${lastName}`;
 
           return (
             <div className="ms-4 flex flex-col">
-              <TextWithNAFallback className="font-semibold">{companyName}</TextWithNAFallback>
-              {isExample && (
-                <Badge className="py-0.7 mt-2 w-fit rounded-[5px] bg-black/10 px-2 text-xs text-black/60">
-                  example
-                </Badge>
-              )}
+              <TextWithNAFallback className="font-semibold">{fullName}</TextWithNAFallback>
             </div>
           );
         },
-        header: 'Company Name',
+        header: 'Full Name',
       }),
-      columnHelper.accessor('website', {
+      columnHelper.accessor('data', {
         cell: ({ getValue }) => {
-          const website = getValue()
-            .replace(/(^\w+:|^)\/\//, '')
-            .replace(/\/$/, '');
+          const website = (getValue() as { website?: string })?.website || 'https://example.com';
 
           return (
             <TextWithNAFallback className="inline-block w-32 truncate">
@@ -86,62 +62,62 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Website',
       }),
-      columnHelper.accessor('riskLevel', {
+      columnHelper.accessor('issues', {
         cell: info => {
-          const riskLevel = info.getValue();
+          const issues = info.getValue() || [];
 
-          return (
-            <div className="mx-auto flex items-center justify-center gap-2">
-              {riskLevel ? (
-                <Badge className={ctw(severityToClassName[riskLevel], 'w-20 py-0.5 font-bold')}>
-                  {titleCase(riskLevel)}
-                </Badge>
-              ) : (
-                <TextWithNAFallback className={'py-0.5'} />
-              )}
-            </div>
-          );
-        },
-        header: () => <p className="text-center">Risk Level</p>,
-      }),
-      columnHelper.accessor('data.allViolations', {
-        cell: ({ row }) => {
-          let violations = (row.original.data?.allViolations ?? [])
-            .filter(
-              violation =>
-                violation.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID &&
-                violation.name &&
-                violation.riskLevel &&
-                violation.riskLevel !== POSITIVE_RISK_LEVEL_ID,
-            )
-            .sort((a, b) => {
-              return a.riskLevel === b.riskLevel
-                ? (a.name ?? '').localeCompare(b.name ?? '')
-                : (a.riskLevel ?? '').localeCompare(b.riskLevel ?? '');
-            });
-
-          violations = uniqBy(violations, 'id');
-
-          if (!violations?.length) {
-            return null;
-          }
+          // Mock issues if none exist
+          const violations =
+            issues.length > 0
+              ? issues
+              : [
+                  {
+                    id: 'issue-1',
+                    name: 'Suspicious activity detected',
+                    riskLevel: 'critical',
+                  },
+                  {
+                    id: 'issue-2',
+                    name: 'Document verification failed',
+                    riskLevel: 'critical',
+                  },
+                  {
+                    id: 'issue-3',
+                    name: 'Address mismatch',
+                    riskLevel: 'moderate',
+                  },
+                  {
+                    id: 'issue-4',
+                    name: 'Identity information incomplete',
+                    riskLevel: 'moderate',
+                  },
+                  {
+                    id: 'issue-5',
+                    name: 'Multiple verification attempts',
+                    riskLevel: 'moderate',
+                  },
+                ];
 
           return (
             <ContentTooltip
               description={
                 <>
-                  <p className="mb-4 text-base font-bold">Findings</p>
+                  <p className="mb-4 text-base font-bold">Issues</p>
 
                   {violations.slice(0, 4).map((violation, index) => (
                     <div key={index} className="space-x-1 text-sm">
                       <WarningFilledSvg
                         className={ctw('inline-block d-5', {
-                          'text-warning': violation.riskLevel === 'critical',
+                          'text-warning':
+                            typeof violation === 'object' && violation.riskLevel === 'critical',
                           'text-slate-500':
-                            violation.riskLevel === 'moderate' || !violation.riskLevel,
+                            typeof violation === 'object' &&
+                            (violation.riskLevel === 'moderate' || !violation.riskLevel),
                         })}
                       />
-                      <span className="text-slate-500">{violation.name}</span>
+                      <span className="text-slate-500">
+                        {typeof violation === 'object' ? violation.name : violation}
+                      </span>
                     </div>
                   ))}
                   {violations.length > 4 && (
@@ -165,9 +141,11 @@ export const useColumns = ({ isDemoAccount = false }) => {
                 className={ctw(
                   'flex items-center justify-center rounded-full text-xs font-bold d-5',
                   {
-                    'bg-warning/20 text-warning': violations.some(v => v.riskLevel === 'critical'),
+                    'bg-warning/20 text-warning': violations.some(
+                      v => typeof v === 'object' && v.riskLevel === 'critical',
+                    ),
                     'bg-slate-500/20 text-slate-500': !violations.some(
-                      v => v.riskLevel === 'critical',
+                      v => typeof v === 'object' && v.riskLevel === 'critical',
                     ),
                   },
                 )}
@@ -177,79 +155,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
             </ContentTooltip>
           );
         },
-        header: 'Findings',
+        header: () => <p className="text-center">Issues</p>,
       }),
-      columnHelper.accessor('reportType', {
-        cell: info => {
-          const scanType = REPORT_TYPE_TO_SCAN_TYPE[info.getValue()];
-
-          return <TextWithNAFallback>{scanType}</TextWithNAFallback>;
-        },
-        header: 'Scan Type',
-      }),
-      columnHelper.accessor('monitoringStatus', {
-        cell: ({ getValue }) => {
-          const value = getValue();
-
-          return (
-            <ContentTooltip
-              description={
-                <p>This merchant is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
-              }
-              props={{
-                tooltipTrigger: { className: 'flex w-full justify-start' },
-                tooltipContent: { align: 'center', side: 'top' },
-              }}
-            >
-              <div className="mx-auto">
-                {value ? (
-                  <CheckCircle
-                    size={18}
-                    className={`stroke-background`}
-                    containerProps={{
-                      className: 'bg-success',
-                    }}
-                  />
-                ) : (
-                  <IndicatorCircle
-                    size={18}
-                    className={`stroke-transparent`}
-                    containerProps={{
-                      className: 'bg-slate-500/20',
-                    }}
-                  />
-                )}
-              </div>
-            </ContentTooltip>
-          );
-        },
-        header: () => (
-          <ContentTooltip
-            description={<p>Indicates whether the merchant is subscribed to ongoing monitoring</p>}
-            props={{
-              tooltipTrigger: { className: 'mx-auto' },
-              tooltipContent: { align: 'center', side: 'top' },
-            }}
-          >
-            <span className={`max-w-[20ch] truncate text-sm`}>Monitored</span>
-          </ContentTooltip>
-        ),
-      }),
-      columnHelper.accessor('isAlert', {
-        cell: ({ getValue }) => {
-          return getValue() ? (
-            <WarningFilledSvg className={`mx-auto d-6`} />
-          ) : (
-            <Minus className={`mx-auto text-[#D9D9D9] d-6`} />
-          );
-        },
-        header: () => <p className="text-center">Alert</p>,
-        meta: {
-          conditional: true,
-          showColumn: !isDemoAccount,
-        },
-      }),
-      columnHelper.accessor('displayDate', {
+      columnHelper.accessor('createdAt', {
         cell: info => {
           const displayDate = info.getValue();
 
@@ -268,57 +176,50 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Created At',
       }),
-      columnHelper.accessor('id', {
+      columnHelper.accessor('checkId', {
         cell: info => {
-          // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
-          const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+          const checkId = info.getValue();
 
-          const id = info.getValue();
-
-          return (
-            <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
-              <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
-                {id}
-              </TextWithNAFallback>
-
-              <CopyToClipboardButton textToCopy={id ?? ''} />
-            </div>
-          );
+          return <TextWithNAFallback>{checkId}</TextWithNAFallback>;
         },
-        header: 'Report ID',
-      }),
-      columnHelper.accessor('business.correlationId', {
-        cell: info => {
-          // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
-          const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
-          const merchantId = info.getValue() ?? info.row.original.business?.id;
-
-          return (
-            <div className={`flex w-full max-w-[12ch] items-center space-x-2`}>
-              <TextWithNAFallback style={{ ...styles, width: '70%' }} ref={ref}>
-                {merchantId}
-              </TextWithNAFallback>
-
-              <CopyToClipboardButton textToCopy={merchantId ?? ''} />
-            </div>
-          );
-        },
-        header: 'Merchant ID',
+        header: 'Check ID',
       }),
       columnHelper.accessor('status', {
-        meta: {
-          useWrapper: true,
-        },
-        cell: info => {
-          const status = info.getValue() as keyof typeof statusToData;
+        cell: ({ getValue }) => {
+          const status = getValue();
+          const statusToLabelMap = {
+            pending: 'Pending',
+            verified: 'Verified',
+            rejected: 'Rejected',
+          };
 
           return (
-            <IdentityVerificationChecksStatus
-              status={status}
-              className="pr-1"
-              reportId={info.row.original.id}
-              businessId={info.row.original.business?.id}
-            />
+            <Badge
+              className={ctw(`h-6 space-x-1 text-sm font-medium`, {
+                'bg-[#E3E2E0]': status === 'pending',
+                'bg-[#DBEDDB]': status === 'verified',
+                'bg-[#ECA1A5]': status === 'rejected',
+              })}
+            >
+              <span
+                className={ctw(`rounded-full d-2`, {
+                  'bg-[#91918E]': status === 'pending',
+                  'bg-[#6C9B7D]': status === 'verified',
+                  'bg-[#DF2222]': status === 'rejected',
+                })}
+              >
+                &nbsp;
+              </span>
+              <span
+                style={{ width: '100%' }}
+                className={ctw('text-sm', {
+                  'text-[#32302C]': status === 'pending',
+                  'text-[#1C3829]': status === 'verified' || status === 'rejected',
+                })}
+              >
+                {statusToLabelMap[status] ?? titleCase(status ?? '')}
+              </span>
+            </Badge>
           );
         },
         header: 'Status',

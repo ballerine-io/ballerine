@@ -1,4 +1,4 @@
-import { CountrySelect, Input } from '@ballerine/ui';
+import { Input } from '@ballerine/ui';
 import { CheckIcon, Loader2 } from 'lucide-react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
@@ -21,7 +21,7 @@ import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectGroup } from '@/common/components/atoms/Select/Select.Group';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
-import { getCountryStates } from '@ballerine/common';
+import { getCountries, getCountryStates } from '@ballerine/common';
 import { ctw } from '@/common/utils/ctw/ctw';
 
 type CreateKybAndUboCheckDialogProps = {
@@ -161,27 +161,37 @@ const CreateKybAndUboCheckDialogFormContent = ({
               <FormField
                 control={form.control}
                 name="country"
-                render={({ field }) => (
-                  <FormItem className="w-1/2 space-y-1">
-                    <FormLabel>Country</FormLabel>
-                    <div className="bg-white">
-                      <CountrySelect value={field.value} onChange={field.onChange}>
+                render={({ field }) => {
+                  const countries = getCountries('en');
+                  const availableCountries = countries.map(country => ({
+                    value: country.const,
+                    label: country.title,
+                  }));
+
+                  return (
+                    <FormItem className="w-1/2 space-y-1">
+                      <FormLabel>Country</FormLabel>
+                      <div className="bg-white">
                         <FormControl>
-                          <CountrySelect.Trigger className="h-9 w-full border-input p-1 shadow-sm">
-                            <CountrySelect.Value />
-                          </CountrySelect.Trigger>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger className="h-9 w-full">
+                              <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {availableCountries.map(country => (
+                                  <SelectItem key={country.value} value={country.value}>
+                                    {country.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
                         </FormControl>
-                        <CountrySelect.Content locale={'en'}>
-                          {country => (
-                            <CountrySelect.Item value={country.const}>
-                              {country.title}
-                            </CountrySelect.Item>
-                          )}
-                        </CountrySelect.Content>
-                      </CountrySelect>
-                    </div>
-                  </FormItem>
-                )}
+                      </div>
+                    </FormItem>
+                  );
+                }}
               />
               <FormField
                 control={form.control}

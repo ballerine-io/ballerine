@@ -1,4 +1,3 @@
-import { UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import { IDataTableProps } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
 
@@ -12,11 +11,7 @@ export const useIdentityVerificationTableLogic = () => {
     cell,
     children,
   }) => {
-    return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
-      <Link to={`/${locale}/identity-verification/${cell.row.id}`}>{children}</Link>
-    ) : (
-      <div className="opacity-50">{children}</div>
-    );
+    return <Link to={`/${locale}/identity-verification/${cell.row.id}`}>{children}</Link>;
   };
 
   return { Cell };
