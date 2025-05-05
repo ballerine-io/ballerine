@@ -65,7 +65,7 @@ const useExportCSVMutation = ({
   });
 };
 
-export const useMerchantMonitoringLogic = () => {
+export const useKycAndUboLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
 
