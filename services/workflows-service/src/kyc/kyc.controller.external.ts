@@ -22,7 +22,6 @@ export class KycControllerExternal {
 
     return await this.kycService.initiateIndividualVerificationAndSendEmail({
       ...body,
-      revisionReason: body.revisionReason ?? undefined,
       projectIds,
     });
   }
