@@ -4,6 +4,12 @@ import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validat
 
 export const KybAndUboChecksSearchSchema = BaseSearchSchema.extend({
   status: z.array(z.string()).optional(),
+  isCreating: z
+    .string()
+    .transform(value => value === 'true')
+    .optional(),
+  from: z.string().date().optional(),
+  to: z.string().date().optional(),
 });
 
 export type CreateKybAndUboCheckDialogInput = z.input<typeof CreateKybAndUboCheckDialogSchema>;

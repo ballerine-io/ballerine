@@ -49,25 +49,29 @@ export const fetchIdentityVerificationChecks = async (
   //
   // return IdentityVerificationChecksSchema.parse(response);
 
-  // Mock response with 10 items
-  const mockData = Array.from({ length: 10 }, (_, index) => ({
-    id: `check-${index + 1}`,
-    checkId: `verification-${index + 1}`,
-    firstName: `John${index}`,
-    lastName: `Doe${index}`,
-    email: `john.doe${index}@example.com`,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: index % 5 === 0 ? new Date() : null,
-    data: {},
-    verificationLink: `https://verification.example.com/link-${index}`,
-    status: index % 3 === 0 ? 'pending' : index % 3 === 1 ? 'verified' : 'rejected',
-    issues: index % 2 === 0 ? [`Issue ${index}`] : [],
-  }));
+  // Mock response with 10 items and 1 second delay
+  return new Promise<TIdentityVerificationChecks>(resolve => {
+    setTimeout(() => {
+      const mockData = Array.from({ length: 10 }, (_, index) => ({
+        id: `check-${index + 1}`,
+        checkId: `verification-${index + 1}`,
+        firstName: `John${index}`,
+        lastName: `Doe${index}`,
+        email: `john.doe${index}@example.com`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: index % 5 === 0 ? new Date() : null,
+        data: {},
+        verificationLink: `https://verification.example.com/link-${index}`,
+        status: index % 3 === 0 ? 'pending' : index % 3 === 1 ? 'verified' : 'rejected',
+        issues: index % 2 === 0 ? [`Issue ${index}`] : [],
+      }));
 
-  return {
-    data: mockData,
-    totalItems: 10,
-    totalPages: 1,
-  };
+      resolve({
+        data: mockData,
+        totalItems: 10,
+        totalPages: 1,
+      });
+    }, 500);
+  });
 };
