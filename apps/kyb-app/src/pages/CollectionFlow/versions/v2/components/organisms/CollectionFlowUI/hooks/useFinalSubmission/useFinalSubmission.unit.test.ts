@@ -148,37 +148,18 @@ describe('useFinalSubmission', () => {
     });
   });
 
-  it('should handle final submission with redirectUrls when failed', async () => {
+  it('should throw error when final submission fails', async () => {
     // Arrange
-    const mockRedirectUrls = {
-      success: 'https://success.com',
-      failure: 'https://failure.com',
-    };
-    vi.mocked(useRedirectUrls).mockReturnValue(mockRedirectUrls);
-    vi.mocked(finalSubmissionRequest).mockRejectedValue(new Error('Failed'));
-
-    // Mock the location.href property
-    const originalLocation = window.location;
-    const locationRef = { ...originalLocation, href: '' };
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: locationRef,
-    });
+    const mockError = new Error('Failed');
+    vi.mocked(finalSubmissionRequest).mockRejectedValue(mockError);
 
     // Act
     const { result } = renderHook(() => useFinalSubmission(mockContext, mockState));
-    await result.current.handleFinalSubmission();
 
     // Assert
+    await expect(result.current.handleFinalSubmission()).rejects.toThrow(mockError);
     expect(finalSubmissionRequest).toHaveBeenCalledTimes(1);
     expect(mockTrackEvent).toHaveBeenCalledWith(CollectionFlowEvents.FLOW_FAILED);
-    expect(window.location.href).toBe(mockRedirectUrls.failure);
-
-    // Cleanup
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: originalLocation,
-    });
   });
 
   it('should handle final submission without redirectUrls when successful', async () => {
@@ -194,22 +175,6 @@ describe('useFinalSubmission', () => {
     expect(mockSendEvent).toHaveBeenCalledWith('NEXT');
     expect(mockSendEvent).toHaveBeenCalledWith('COMPLETED');
     expect(mockTrackEvent).toHaveBeenCalledWith(CollectionFlowEvents.FLOW_COMPLETED);
-  });
-
-  it('should handle final submission without redirectUrls when failed', async () => {
-    // Arrange
-    vi.mocked(useRedirectUrls).mockReturnValue(null);
-    vi.mocked(finalSubmissionRequest).mockRejectedValue(new Error('Failed'));
-
-    // Act
-    const { result } = renderHook(() => useFinalSubmission(mockContext, mockState));
-    await result.current.handleFinalSubmission();
-
-    // Assert
-    expect(finalSubmissionRequest).toHaveBeenCalledTimes(1);
-    expect(mockSendEvent).toHaveBeenCalledWith('NEXT');
-    expect(mockSendEvent).toHaveBeenCalledWith('FAILURE');
-    expect(mockTrackEvent).toHaveBeenCalledWith(CollectionFlowEvents.FLOW_FAILED);
   });
 
   it('should not redirect if success URL is not provided', async () => {
@@ -234,39 +199,9 @@ describe('useFinalSubmission', () => {
     // Assert
     expect(finalSubmissionRequest).toHaveBeenCalledTimes(1);
     expect(mockTrackEvent).toHaveBeenCalledWith(CollectionFlowEvents.FLOW_COMPLETED);
+    expect(mockSendEvent).toHaveBeenCalledWith('NEXT');
+    expect(mockSendEvent).toHaveBeenCalledWith('COMPLETED');
     expect(window.location.href).toBe(''); // Should remain empty since success URL is not provided
-
-    // Cleanup
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: originalLocation,
-    });
-  });
-
-  it('should not redirect if failure URL is not provided', async () => {
-    // Arrange
-    const mockRedirectUrls = {
-      success: 'https://success.com',
-    };
-    vi.mocked(useRedirectUrls).mockReturnValue(mockRedirectUrls);
-    vi.mocked(finalSubmissionRequest).mockRejectedValue(new Error('Failed'));
-
-    // Mock the location.href property
-    const originalLocation = window.location;
-    const locationRef = { ...originalLocation, href: '' };
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: locationRef,
-    });
-
-    // Act
-    const { result } = renderHook(() => useFinalSubmission(mockContext, mockState));
-    await result.current.handleFinalSubmission();
-
-    // Assert
-    expect(finalSubmissionRequest).toHaveBeenCalledTimes(1);
-    expect(mockTrackEvent).toHaveBeenCalledWith(CollectionFlowEvents.FLOW_FAILED);
-    expect(window.location.href).toBe(''); // Should remain empty since failure URL is not provided
 
     // Cleanup
     Object.defineProperty(window, 'location', {
@@ -284,19 +219,21 @@ describe('useFinalSubmission', () => {
     const { result, rerender } = renderHook(() => useFinalSubmission(mockContext, mockState));
     await result.current.handleFinalSubmission();
     rerender();
+
     // Assert
     expect(result.current.isFinalSubmitted).toBe(true);
   });
 
-  it('should not set isFinalSubmitted to true when final submission is failed', async () => {
+  it('should not set isFinalSubmitted to true when final submission fails', async () => {
     // Arrange
     vi.mocked(useRedirectUrls).mockReturnValue(null);
     vi.mocked(finalSubmissionRequest).mockRejectedValue(new Error('Failed'));
 
     // Act
-    const { result, rerender } = renderHook(() => useFinalSubmission(mockContext, mockState));
-    await result.current.handleFinalSubmission();
-    rerender();
+    const { result } = renderHook(() => useFinalSubmission(mockContext, mockState));
+
+    // We expect the promise to reject
+    await expect(result.current.handleFinalSubmission()).rejects.toThrow();
 
     // Assert
     expect(result.current.isFinalSubmitted).toBe(false);

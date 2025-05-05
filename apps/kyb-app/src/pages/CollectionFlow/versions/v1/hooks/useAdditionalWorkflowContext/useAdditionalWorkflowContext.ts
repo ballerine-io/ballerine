@@ -1,16 +1,20 @@
 import { useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+
+import { useWorkflowId } from '@/common/hooks/useWorkflowId';
+import { useAccessToken } from '@/common/providers/AccessTokenProvider';
 
 export const useAdditionalWorkflowContext = () => {
-  const [searchParams] = useSearchParams();
+  const { accessToken } = useAccessToken();
+  const workflowId = useWorkflowId();
 
-  const context = useMemo(() => {
+  return useMemo(() => {
     return {
       query: {
-        token: searchParams.get('token'),
+        token: accessToken,
+      },
+      param: {
+        workflowId,
       },
     };
-  }, [searchParams]);
-
-  return context;
+  }, [workflowId, accessToken]);
 };

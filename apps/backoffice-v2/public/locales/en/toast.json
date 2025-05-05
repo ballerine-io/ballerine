@@ -107,6 +107,7 @@
   },
   "business_report_status_update": {
     "success": "Merchant check status updated successfully.",
+    "unexpected_error": "Something went wrong while updating the status of the report.",
     "error": "Error occurred while updating merchant check status."
   },
   "note_created": {

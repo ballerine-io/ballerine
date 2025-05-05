@@ -1,5 +1,14 @@
 # @ballerine/workflows-dashboard
 
+## 0.2.41
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.94
+  - @ballerine/ui@0.7.139
+
 ## 0.2.40
 
 ### Patch Changes
