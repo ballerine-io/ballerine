@@ -29,7 +29,7 @@ import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMoni
 import type { FunctionComponent } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { KybAndUbo } from './pages/KybAndUbo/KybAndUbo.page';
-import { KybAndUbosLayout } from './domains/kybandubos/components/KybAndUbosLayout/KybAndUbosLayout';
+import { KybAndUbosLayout } from './domains/kyb-and-ubos/components/KybAndUbosLayout/KybAndUbosLayout';
 import { KybAndUboCheckPage } from './pages/KybAndUboCheckPage';
 import { IdentityVerificationLayout } from './domains/identity-verification/components/IdentityVerificationLayout/IdentityVerificationLayout';
 import { IdentityVerification } from './pages/IdentityVerification/KybAndUbo.page';

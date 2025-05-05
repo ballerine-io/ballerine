@@ -1,21 +1,11 @@
 import { isNonEmptyArray } from '@ballerine/common';
-import {
-  Badge,
-  ContentTooltip,
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  Skeleton,
-} from '@ballerine/ui';
+import { Badge, Skeleton } from '@ballerine/ui';
 import { t } from 'i18next';
-import { Layers, Loader2, Download, Plus, SlidersHorizontal } from 'lucide-react';
+import { Layers, Loader2, Plus } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
-import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
@@ -33,7 +23,6 @@ export const KybAndUbo: FunctionComponent = () => {
   const {
     businessReports,
     isLoadingBusinessReports,
-    isLoadingFindings,
     search,
     onSearch,
     totalPages,
@@ -46,34 +35,17 @@ export const KybAndUbo: FunctionComponent = () => {
     isLastPage,
     dates,
     onDatesChange,
-    onExport,
     locale,
     createBusinessReport,
     createBusinessReportBatch,
-    reportType,
-    onReportTypeChange,
     onClearAllFilters,
-    REPORT_TYPE_TO_DISPLAY_TEXT,
-    IS_ALERT_TO_DISPLAY_TEXT,
-    FINDINGS_FILTER,
-    RISK_LEVEL_FILTER,
-    STATUS_LEVEL_FILTER,
-    handleFilterChange,
-    handleFilterClear,
-    riskLevels,
-    statuses,
-    findings,
-    isAlert,
-    multiselectProps,
     isClearAllButtonVisible,
-    onIsAlertChange,
     firstName,
     fullName,
     avatarUrl,
     open,
     toggleOpen,
     isDemoAccount,
-    isExportingReport,
   } = useKycAndUboLogic();
 
   return (
@@ -154,106 +126,6 @@ export const KybAndUbo: FunctionComponent = () => {
         <div className={`flex items-center space-x-4`}>
           <Search value={search} onChange={onSearch} />
           <DateRangePicker toDate={new Date()} value={dates} onChange={onDatesChange} />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
-                <SlidersHorizontal className="d-4" />
-                <span>Type</span>
-                {reportType !== 'All' && (
-                  <>
-                    <Separator orientation="vertical" className="mx-2 h-4" />
-                    <div className="hidden space-x-1 lg:flex">
-                      <Badge
-                        key={`${reportType}-badge`}
-                        variant="secondary"
-                        className="rounded-sm px-1 text-xs font-normal"
-                      >
-                        {reportType}
-                      </Badge>
-                    </div>
-                  </>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align={`start`}>
-              {Object.entries(REPORT_TYPE_TO_DISPLAY_TEXT).map(([type, displayText]) => (
-                <DropdownMenuCheckboxItem
-                  key={displayText}
-                  checked={reportType === displayText}
-                  onCheckedChange={() =>
-                    onReportTypeChange(type as keyof typeof REPORT_TYPE_TO_DISPLAY_TEXT)
-                  }
-                >
-                  {displayText}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <MultiSelect
-            props={multiselectProps}
-            key={STATUS_LEVEL_FILTER.title}
-            selectedValues={statuses ?? []}
-            title={STATUS_LEVEL_FILTER.title}
-            options={STATUS_LEVEL_FILTER.options}
-            onSelect={handleFilterChange(STATUS_LEVEL_FILTER.accessor)}
-            onClearSelect={handleFilterClear(STATUS_LEVEL_FILTER.accessor)}
-          />
-          <MultiSelect
-            props={multiselectProps}
-            key={RISK_LEVEL_FILTER.title}
-            title={RISK_LEVEL_FILTER.title}
-            selectedValues={riskLevels ?? []}
-            options={RISK_LEVEL_FILTER.options}
-            onSelect={handleFilterChange(RISK_LEVEL_FILTER.accessor)}
-            onClearSelect={handleFilterClear(RISK_LEVEL_FILTER.accessor)}
-          />
-          <MultiSelect
-            props={{ ...multiselectProps, content: { className: 'w-[400px]' } }}
-            key={FINDINGS_FILTER.title}
-            title={FINDINGS_FILTER.title}
-            isLoading={isLoadingFindings}
-            selectedValues={findings ?? []}
-            options={FINDINGS_FILTER.options}
-            onSelect={handleFilterChange(FINDINGS_FILTER.accessor)}
-            onClearSelect={handleFilterClear(FINDINGS_FILTER.accessor)}
-          />
-          {!isDemoAccount && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className={`h-8 space-x-2.5 p-2 font-normal`}>
-                  <SlidersHorizontal className="d-4" />
-                  <span>Monitoring Alerts</span>
-                  {isAlert !== 'All' && (
-                    <>
-                      <Separator orientation="vertical" className="mx-2 h-4" />
-                      <div className="hidden space-x-1 lg:flex">
-                        <Badge
-                          key={`${isAlert}-badge`}
-                          variant="secondary"
-                          className="rounded-sm px-1 text-xs font-normal"
-                        >
-                          {isAlert}
-                        </Badge>
-                      </div>
-                    </>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align={`start`}>
-                {Object.entries(IS_ALERT_TO_DISPLAY_TEXT).map(([value, label]) => (
-                  <DropdownMenuCheckboxItem
-                    key={label}
-                    checked={isAlert === label}
-                    onCheckedChange={() =>
-                      onIsAlertChange(value as keyof typeof IS_ALERT_TO_DISPLAY_TEXT)
-                    }
-                  >
-                    {label}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
           {isClearAllButtonVisible && (
             <Button
               variant={`ghost`}
@@ -273,24 +145,6 @@ export const KybAndUbo: FunctionComponent = () => {
               {totalItems} results
             </Badge>
           )}
-          <ContentTooltip
-            description="Export reports to a CSV file (filters applied)"
-            props={{ tooltipContent: { align: 'center' }, tooltipTrigger: { className: 'pr-0' } }}
-          >
-            <Button
-              variant="outline"
-              className={`h-8 space-x-2.5 p-2 font-normal`}
-              onClick={onExport}
-              disabled={isExportingReport}
-            >
-              {isExportingReport ? (
-                <Loader2 className="animate-spin d-4" />
-              ) : (
-                <Download className="d-4" />
-              )}
-              <span>Export</span>
-            </Button>
-          </ContentTooltip>
         </div>
         <div className="space-y-6">
           {isLoadingBusinessReports && (
