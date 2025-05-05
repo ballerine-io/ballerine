@@ -1,12 +1,12 @@
 import type { FunctionComponent } from 'react';
 
 import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
-import { TBusinessReports } from '@/domains/business-reports/fetchers';
 import { useKybAndUboTableLogic } from './hooks/useKybAndUboTableLogic/useKybAndUboTableLogic';
 import { useColumns } from './columns';
+import { TKybAndUbosChecks } from '@/domains/kyb-and-ubos/fetchers';
 
 export const KybAndUboChecksTable: FunctionComponent<{
-  data: TBusinessReports['data'];
+  data: TKybAndUbosChecks['data'];
   isDemoAccount: boolean;
 }> = ({ data, isDemoAccount }) => {
   const { Cell } = useKybAndUboTableLogic();
