@@ -5,11 +5,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import {
-  CreateBusinessReportDialogInput,
-  CreateBusinessReportDialogSchema,
+  CreateKybAndUboCheckDialogInput,
+  CreateKybAndUboCheckDialogSchema,
 } from '../../../schemas';
 
-export const useCreateMerchantReportDialogLogic = ({
+export const useCreateKybAndUboCheckDialogLogic = ({
   toggleOpen: toggleOpenProps,
 }: {
   toggleOpen: (val?: boolean) => void;
@@ -19,17 +19,19 @@ export const useCreateMerchantReportDialogLogic = ({
 
   const form = useForm({
     defaultValues: {
-      websiteUrl: '',
       companyName: undefined,
-      businessCorrelationId: undefined,
+      registrationNumber: undefined,
+      country: undefined,
+      state: undefined,
+      correlationId: undefined,
     },
-    resolver: zodResolver(CreateBusinessReportDialogSchema),
+    resolver: zodResolver(CreateKybAndUboCheckDialogSchema),
   });
   const [showSuccess, setShowSuccess] = useState(false);
-  const { mutate: mutateCreateBusinessReport, isLoading: isSubmitting } =
+  const { mutate: mutateCreateKybAndUboCheck, isLoading: isSubmitting } =
     useCreateBusinessReportMutation({ disableToast: true });
-  const onSubmit: SubmitHandler<CreateBusinessReportDialogInput> = data => {
-    mutateCreateBusinessReport(data, {
+  const onSubmit: SubmitHandler<CreateKybAndUboCheckDialogInput> = data => {
+    mutateCreateKybAndUboCheck(data, {
       onSuccess: () => {
         setShowSuccess(true);
       },

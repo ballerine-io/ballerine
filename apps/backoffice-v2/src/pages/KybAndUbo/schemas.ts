@@ -1,7 +1,6 @@
 import { BooleanishRecordSchema } from '@ballerine/ui';
 import { z } from 'zod';
 
-import { URL_REGEX } from '@/common/constants';
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 
 export const REPORT_TYPE_TO_DISPLAY_TEXT = {
@@ -141,21 +140,19 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .optional(),
 });
 
-export type CreateBusinessReportDialogInput = z.input<typeof CreateBusinessReportDialogSchema>;
-export const CreateBusinessReportDialogSchema = z.object({
-  websiteUrl: z.string().regex(URL_REGEX, {
-    message: 'Invalid website URL',
-  }),
+export type CreateKybAndUboCheckDialogInput = z.input<typeof CreateKybAndUboCheckDialogSchema>;
+export const CreateKybAndUboCheckDialogSchema = z.object({
   companyName: z
     .string({
       invalid_type_error: 'Company name must be a string',
     })
-    .max(255)
-    .optional(),
-  businessCorrelationId: z
+    .max(255),
+  registrationNumber: z
     .string({
-      invalid_type_error: 'Business ID must be a string',
+      invalid_type_error: 'Registration number must be a string',
     })
-    .max(255)
-    .optional(),
+    .max(255),
+  country: z.string().max(255),
+  state: z.string().optional(),
+  correlationId: z.string().max(255),
 });
