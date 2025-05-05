@@ -3,14 +3,7 @@ import { z } from 'zod';
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 
 export const KybAndUboChecksSearchSchema = BaseSearchSchema.extend({
-  sortBy: z.enum(['createdAt', 'updatedAt', 'status']).catch('createdAt'),
-  from: z.string().date().optional(),
-  to: z.string().date().optional(),
-  search: z.string().optional(),
-  isCreating: z
-    .string()
-    .transform(value => value === 'true')
-    .optional(),
+  status: z.array(z.string()).optional(),
 });
 
 export type CreateKybAndUboCheckDialogInput = z.input<typeof CreateKybAndUboCheckDialogSchema>;

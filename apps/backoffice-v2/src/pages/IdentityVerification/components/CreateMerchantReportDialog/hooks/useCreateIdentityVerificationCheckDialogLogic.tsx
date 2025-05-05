@@ -5,11 +5,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import {
-  CreateBusinessReportDialogInput,
-  CreateBusinessReportDialogSchema,
-} from '../../../schemas';
+  CreateIdentityVerificationDialogInput,
+  CreateIdentityVerificationDialogSchema,
+} from '@/pages/IdentityVerification/schemas';
 
-export const useCreateMerchantReportDialogLogic = ({
+export const useCreateIdentityVerificationCheckDialogLogic = ({
   toggleOpen: toggleOpenProps,
 }: {
   toggleOpen: (val?: boolean) => void;
@@ -19,16 +19,18 @@ export const useCreateMerchantReportDialogLogic = ({
 
   const form = useForm({
     defaultValues: {
-      websiteUrl: '',
-      companyName: undefined,
-      businessCorrelationId: undefined,
+      firstName: '',
+      lastName: '',
+      country: '',
+      state: '',
+      dateOfBirth: '',
     },
-    resolver: zodResolver(CreateBusinessReportDialogSchema),
+    resolver: zodResolver(CreateIdentityVerificationDialogSchema),
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const { mutate: mutateCreateBusinessReport, isLoading: isSubmitting } =
     useCreateBusinessReportMutation({ disableToast: true });
-  const onSubmit: SubmitHandler<CreateBusinessReportDialogInput> = data => {
+  const onSubmit: SubmitHandler<CreateIdentityVerificationDialogInput> = data => {
     mutateCreateBusinessReport(data, {
       onSuccess: () => {
         setShowSuccess(true);
