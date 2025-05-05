@@ -133,7 +133,7 @@ export const useSidebarItems = () => {
             ]
           : []),
         {
-          text: 'KYB & UBOs',
+          text: 'KYB & Stakeholders',
           icon: BuildingIcon,
           href: `/${locale}/kyb-ubo`,
           key: 'nav-item-kyb-ubos',
