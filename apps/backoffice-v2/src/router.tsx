@@ -31,6 +31,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { KybAndUbo } from './pages/KybAndUbo/KybAndUbo.page';
 import { KybAndUbosLayout } from './domains/kybandubos/components/KybAndUbosLayout/KybAndUbosLayout';
 import { KybAndUboCheckPage } from './pages/KybAndUboCheckPage';
+import { IdentityVerificationLayout } from './domains/identity-verification/components/IdentityVerificationLayout/IdentityVerificationLayout';
+import { IdentityVerification } from './pages/IdentityVerification/KybAndUbo.page';
+import { IdentityVerificationCheck } from './pages/IdentityVerificationCheck/IdentityVerificationCheck.page';
 
 const router = createBrowserRouter([
   {
@@ -116,6 +119,22 @@ const router = createBrowserRouter([
                   {
                     path: '/:locale/kyb-ubo/:checkId',
                     element: <KybAndUboCheckPage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              {
+                element: <IdentityVerificationLayout />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/identity-verification',
+                    element: <IdentityVerification />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/identity-verification/:checkId',
+                    element: <IdentityVerificationCheck />,
                     errorElement: <RouteError />,
                   },
                 ],
