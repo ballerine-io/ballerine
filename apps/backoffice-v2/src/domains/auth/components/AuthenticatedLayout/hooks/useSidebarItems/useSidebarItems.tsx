@@ -133,6 +133,20 @@ export const useSidebarItems = () => {
             ]
           : []),
         {
+          text: 'KYB & UBOs',
+          icon: BuildingIcon,
+          // premium: {
+          //   caption: 'Verify businesses, activity, and ownership to stay compliant.',
+          //   checkList: [
+          //     'Retrieve company registry data',
+          //     'Validate existence and status',
+          //     'Identify key stakeholders',
+          //   ],
+          // },
+          href: `/${locale}/kyb-ubo`,
+          key: 'nav-item-kyb-ubos',
+        },
+        {
           text: 'Businesses',
           icon: BuildingIcon,
           children:

@@ -28,6 +28,9 @@ import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import type { FunctionComponent } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { KybAndUbo } from './pages/KybAndUbo/KybAndUbo.page';
+import { KybAndUbosLayout } from './domains/kybandubos/components/KybAndUbosLayout/KybAndUbosLayout';
+import { KybAndUboCheckPage } from './pages/KybAndUboCheckPage';
 
 const router = createBrowserRouter([
   {
@@ -96,6 +99,22 @@ const router = createBrowserRouter([
                   {
                     path: '/:locale/merchant-monitoring/upload-multiple-merchants',
                     element: <MerchantMonitoringUploadMultiplePage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              {
+                element: <KybAndUbosLayout />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/kyb-ubo',
+                    element: <KybAndUbo />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/kyb-ubo/:checkId',
+                    element: <KybAndUboCheckPage />,
                     errorElement: <RouteError />,
                   },
                 ],
