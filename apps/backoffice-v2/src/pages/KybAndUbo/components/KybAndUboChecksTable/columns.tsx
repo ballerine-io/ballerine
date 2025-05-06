@@ -84,11 +84,11 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Country/State',
       }),
-      columnHelper.accessor('merchantId', {
+      columnHelper.accessor('registryInformation', {
         cell: info => {
-          const merchantId = info.getValue();
+          const businessId = info.getValue()?.businessId;
 
-          return <TextWithNAFallback className="font-semibold">{merchantId}</TextWithNAFallback>;
+          return <TextWithNAFallback className="font-semibold">{businessId}</TextWithNAFallback>;
         },
         header: 'Merchant ID',
       }),
