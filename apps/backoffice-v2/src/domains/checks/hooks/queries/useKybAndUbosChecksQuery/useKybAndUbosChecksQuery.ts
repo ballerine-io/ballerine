@@ -10,7 +10,6 @@ export const useKybAndUbosChecksQuery = ({ ...params }: IKybAndUbosChecksParams)
   return useQuery({
     ...kybAndUbosChecksQueryKey.list(params),
     enabled: isAuthenticated,
-    staleTime: 100_000,
-    refetchInterval: 1_000_000,
+    refetchInterval: 10000,
   });
 };
