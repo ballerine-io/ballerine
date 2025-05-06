@@ -38,6 +38,10 @@ export const statusToData = {
     variant: 'success',
     title: 'Completed',
   },
+  [MERCHANT_REPORT_STATUSES_MAP['failed']]: {
+    variant: 'destructive',
+    title: 'Failed',
+  },
 } as const;
 
 export const KybAndUboCheckStatusBadge = ({
@@ -72,7 +76,9 @@ export const KybAndUboCheckStatusBadge = ({
           status === MERCHANT_REPORT_STATUSES_MAP['completed'],
         'bg-[#F4D8B9] text-[#183347]':
           status === MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
-        'bg-[#ECA1A5] text-[#32302C]': status === MERCHANT_REPORT_STATUSES_MAP['terminated'],
+        'bg-[#ECA1A5] text-[#32302C]':
+          status === MERCHANT_REPORT_STATUSES_MAP['terminated'] ||
+          status === MERCHANT_REPORT_STATUSES_MAP['failed'],
       })}
     >
       <span
@@ -84,7 +90,9 @@ export const KybAndUboCheckStatusBadge = ({
             status === MERCHANT_REPORT_STATUSES_MAP['cleared'] ||
             status === MERCHANT_REPORT_STATUSES_MAP['completed'],
           'bg-[#F4AA52]': status === MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
-          'bg-[#DF2222]': status === MERCHANT_REPORT_STATUSES_MAP['terminated'],
+          'bg-[#DF2222]':
+            status === MERCHANT_REPORT_STATUSES_MAP['terminated'] ||
+            status === MERCHANT_REPORT_STATUSES_MAP['failed'],
         })}
       >
         &nbsp;
