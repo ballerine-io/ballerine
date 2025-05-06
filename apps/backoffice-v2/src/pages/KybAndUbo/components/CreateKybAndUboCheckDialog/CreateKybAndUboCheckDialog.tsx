@@ -192,50 +192,52 @@ const CreateKybAndUboCheckDialogFormContent = ({
                   );
                 }}
               />
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => {
-                  const selectedCountry = form.watch('country');
-                  const states = selectedCountry ? getCountryStates(selectedCountry) : [];
-                  const availableStates = states.map(state => ({
-                    value: state.isoCode,
-                    label: state.name,
-                  }));
-                  const hasStates = availableStates.length > 0;
+              {form.watch('country') === 'US' && (
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => {
+                    const selectedCountry = form.watch('country');
+                    const states = selectedCountry ? getCountryStates(selectedCountry) : [];
+                    const availableStates = states.map(state => ({
+                      value: state.isoCode,
+                      label: state.name,
+                    }));
+                    const hasStates = availableStates.length > 0;
 
-                  return (
-                    <FormItem className="w-1/2 space-y-1">
-                      <FormLabel>State/Province</FormLabel>
-                      <div className={ctw('bg-white', !hasStates && 'opacity-50')}>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            disabled={!hasStates || selectedCountry !== 'US'}
-                          >
-                            <SelectTrigger className="h-9 w-full">
-                              <SelectValue
-                                placeholder={hasStates ? 'Select a state' : 'No states available'}
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {availableStates.map(state => (
-                                  <SelectItem key={state.value} value={state.value}>
-                                    {state.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+                    return (
+                      <FormItem className="w-1/2 space-y-1">
+                        <FormLabel>State/Province</FormLabel>
+                        <div className={ctw('bg-white', !hasStates && 'opacity-50')}>
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={!hasStates || selectedCountry !== 'US'}
+                            >
+                              <SelectTrigger className="h-9 w-full">
+                                <SelectValue
+                                  placeholder={hasStates ? 'Select a state' : 'No states available'}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {availableStates.map(state => (
+                                    <SelectItem key={state.value} value={state.value}>
+                                      {state.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="correlationId"
