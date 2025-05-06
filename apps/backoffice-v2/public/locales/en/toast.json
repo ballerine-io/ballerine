@@ -151,5 +151,9 @@
   },
   "edit_collection_flow_state_transition": {
     "error": "Error occurred while transitioning to edit collection flow."
+  },
+  "kyb_and_ubos_check_creation": {
+    "success": "KYB and UBO check created successfully.",
+    "error": "Error occurred while creating KYB and UBO check."
   }
 }
