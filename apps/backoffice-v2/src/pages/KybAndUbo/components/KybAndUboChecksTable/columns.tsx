@@ -210,6 +210,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
       columnHelper.accessor('status', {
         cell: ({ getValue }) => {
           const status = getValue();
+          console.log('status', status);
 
           return <KybAndUboCheckStatusBadge status={status} />;
         },
