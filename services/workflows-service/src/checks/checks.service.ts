@@ -62,8 +62,7 @@ export class ChecksService {
       const data = {
         registrationNumber: payload.registrationNumber,
         companyName: payload.companyName,
-        country: payload.country,
-        state: payload.state,
+        country: [payload.country, payload.state].filter(Boolean).join('-'),
         //@TODO: remove this once we have the businessId
         businessId: '1234567890',
         projectId,
