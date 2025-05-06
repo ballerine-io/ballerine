@@ -19,8 +19,6 @@ export const KybAndUbosCheckSchema = z
     status: z.enum(MERCHANT_REPORT_STATUSES).catch('failed'),
     type: z.literal('kyb_and_ownership'),
     createdAt: z.string(),
-    // findings: z.array(z.string()).optional(),
-    // riskLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
     input: z
       .object({
         companyName: z.string().nullable().optional(),
@@ -30,30 +28,45 @@ export const KybAndUbosCheckSchema = z
       })
       .optional()
       .nullable(),
-    // sanctions: z
-    //   .object({
-    //     companyName: z.string().nullable().optional(),
-    //     businessId: z.string().nullable().optional(),
-    //   })
-    //   .nullable()
-    //   .optional(),
-    // registryInformation: z
-    //   .object({
-    //     registrationNumber: z.string().nullable().optional(),
-    //     companyName: z.string().nullable().optional(),
-    //     country: z.string().nullable().optional(),
-    //     state: z.string().nullable().optional(),
-    //     businessId: z.string().nullable().optional(),
-    //   })
-    //   .nullable()
-    //   .optional(),
-    // companyStructure: z
-    //   .object({
-    //     companyName: z.string().nullable().optional(),
-    //     businessId: z.string().nullable().optional(),
-    //   })
-    //   .nullable()
-    //   .optional(),
+    // findings: z.array(z.string()).optional(),
+    // riskLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+    sanctions: z
+      .object({
+        createdAt: z.string().optional(),
+        updatedAt: z.string().optional(),
+        output: z
+          .object({
+            data: z.any().optional(),
+          })
+          .passthrough()
+          .nullable(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    registryInformation: z
+      .object({
+        createdAt: z.string().optional(),
+        updatedAt: z.string().optional(),
+        output: z
+          .object({
+            data: z.any().optional(),
+          })
+          .passthrough()
+          .nullable(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    companyStructure: z
+      .object({
+        createdAt: z.string().optional(),
+        updatedAt: z.string().optional(),
+        output: z.any().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
   })
   .passthrough();
 
