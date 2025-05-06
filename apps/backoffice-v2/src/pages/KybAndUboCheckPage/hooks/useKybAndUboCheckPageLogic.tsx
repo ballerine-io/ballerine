@@ -66,7 +66,7 @@ export const useKybAndUboCheckPageLogic = () => {
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
   const registryInfoBlock = useKybRegistryInfoBlock({
-    pluginsOutput: { businessInformation: { data: [check?.registryInformation] } },
+    pluginsOutput: { businessInformation: { data: [check?.registryInformation?.output?.data] } },
     workflow: {},
   });
 
@@ -100,7 +100,7 @@ export const useKybAndUboCheckPageLogic = () => {
         Icon: UsersRoundIcon,
         Component: (
           <>
-            {!!check?.registryInformation ? (
+            {!!check?.registryInformation?.output?.data ? (
               <BlocksComponent blocks={[...registryInfoBlock]} cells={cells}>
                 {(Cell, cell) => <Cell {...cell} />}
               </BlocksComponent>
@@ -118,7 +118,7 @@ export const useKybAndUboCheckPageLogic = () => {
         Icon: ListChecksIcon,
         Component: (
           <>
-            {!!check?.companyStructure ? (
+            {!!check?.companyStructure?.output ? (
               <BlocksComponent blocks={[...companyStructureBlock]} cells={cells}>
                 {(Cell, cell) => <Cell {...cell} />}
               </BlocksComponent>
