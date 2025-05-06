@@ -1,5 +1,5 @@
 import { TKybAndUbosCheck } from '@/domains/kyb-and-ubos/fetchers';
-import { MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+import { getFullCountryNameByCode, MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
 import {
   Badge,
   ctw,
@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { useMemo } from 'react';
-import { titleCase } from 'string-ts';
+import { KybAndUboCheckStatusBadge } from './components/KybAndUboCheckStatusBadge';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -41,9 +41,10 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 export const useColumns = ({ isDemoAccount = false }) => {
   return useMemo(() => {
     const columns = [
-      columnHelper.accessor('companyName', {
+      columnHelper.accessor('registryInformation', {
         cell: info => {
-          const companyName = info.getValue();
+          const companyName =
+            info.getValue()?.companyName || info.row.original.sanctions?.companyName;
           const isExample = info.row.original.isExample;
 
           return (
@@ -59,9 +60,9 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Company Name',
       }),
-      columnHelper.accessor('registrationNumber', {
+      columnHelper.accessor('registryInformation', {
         cell: info => {
-          const registrationNumber = info.getValue();
+          const registrationNumber = info.getValue()?.registrationNumber;
 
           return (
             <TextWithNAFallback className="font-semibold">{registrationNumber}</TextWithNAFallback>
@@ -69,10 +70,10 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Registration Number',
       }),
-      columnHelper.accessor('country', {
+      columnHelper.accessor('registryInformation', {
         cell: info => {
-          const country = info.getValue();
-          const state = info.row.original.state;
+          const country = getFullCountryNameByCode(info.getValue()?.country);
+          const state = info.getValue()?.state;
 
           return (
             <div className="flex flex-col">
@@ -94,6 +95,10 @@ export const useColumns = ({ isDemoAccount = false }) => {
       columnHelper.accessor('riskLevel', {
         cell: info => {
           const riskLevel = info.getValue();
+
+          if (!riskLevel) {
+            return <TextWithNAFallback className="font-semibold">N/A</TextWithNAFallback>;
+          }
 
           return (
             <Badge className={`rounded-[5px] px-2 text-xs ${severityToClassName[riskLevel]}`}>
@@ -220,43 +225,8 @@ export const useColumns = ({ isDemoAccount = false }) => {
       columnHelper.accessor('status', {
         cell: ({ getValue }) => {
           const status = getValue();
-          const statusToLabelMap = {
-            pending: 'Pending',
-            approved: 'Verified',
-            rejected: 'Rejected',
-            'in-progress': 'Case In Progress',
-          };
 
-          return (
-            <Badge
-              className={ctw(`h-6 w-[80%] space-x-1 text-sm font-medium`, {
-                'bg-[#E3E2E0]': status === 'pending' || status === 'in-progress',
-                'bg-[#DBEDDB]': status === 'approved',
-                'bg-[#ECA1A5]': status === 'rejected',
-              })}
-            >
-              <span
-                className={ctw(`rounded-full d-2`, {
-                  'bg-[#91918E]': status === 'pending' || status === 'in-progress',
-                  'bg-[#6C9B7D]': status === 'approved',
-                  'bg-[#DF2222]': status === 'rejected',
-                  'opacity-50': status === 'in-progress',
-                })}
-              >
-                &nbsp;
-              </span>
-              <span
-                style={{ width: '100%' }}
-                className={ctw('text-sm', {
-                  'text-[#32302C]': status === 'pending' || status === 'in-progress',
-                  'text-[#1C3829]': status === 'approved' || status === 'rejected',
-                  'opacity-50': status === 'in-progress',
-                })}
-              >
-                {statusToLabelMap[status] ?? titleCase(status ?? '')}
-              </span>
-            </Badge>
-          );
+          return <KybAndUboCheckStatusBadge status={status} />;
         },
         header: 'Status',
       }),
