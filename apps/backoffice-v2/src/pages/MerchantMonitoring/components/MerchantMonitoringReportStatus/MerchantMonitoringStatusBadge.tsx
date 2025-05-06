@@ -40,6 +40,12 @@ export const statusToData = {
     title: 'Terminated',
     text: 'Merchant reviewed and confirmed non-compliant or high risk',
   },
+  // TODO: remove
+  completed: {
+    variant: 'success',
+    title: 'Completed',
+    text: 'Merchant review has been completed',
+  },
 } as const;
 
 export const MerchantMonitoringStatusBadge = ({
