@@ -40,7 +40,6 @@ export const CreateKybAndUboCheckDialog = ({
   const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft, toggleOpen } =
     useCreateKybAndUboCheckDialogLogic({ toggleOpen: toggleOpenProps });
   const { data: customer } = useCustomerQuery();
-  const isDemoAccount = customer?.config?.isDemoAccount;
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>

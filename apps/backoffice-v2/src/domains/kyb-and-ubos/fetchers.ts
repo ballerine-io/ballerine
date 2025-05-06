@@ -3,6 +3,7 @@ import { z } from 'zod';
 import qs from 'qs';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 
 export const KybAndUbosCheckStatusSchema = z.enum([
   'pending',
@@ -93,4 +94,33 @@ export const fetchKybAndUbosChecks = async (params: IKybAndUbosChecksParams) => 
   //     });
   //   }, 500);
   // });
+};
+
+interface ICreateKybAndUbosCheckPayload {
+  companyName: string;
+  registrationNumber: string;
+  country: string;
+  state: string;
+  correlationId: string;
+}
+
+const CreateKybAndUbosCheckSchema = z.object({
+  companyName: z.string(),
+  registrationNumber: z.string(),
+  country: z.string(),
+  state: z.string(),
+  correlationId: z.string(),
+});
+
+export type TCreateKybAndUbosCheckPayload = z.infer<typeof CreateKybAndUbosCheckSchema>;
+
+export const createKybAndUbosCheck = async (payload: TCreateKybAndUbosCheckPayload) => {
+  const [result, error] = await apiClient({
+    endpoint: `checks/kyb_and_ownership`,
+    method: Method.POST,
+    body: payload,
+    schema: CreateKybAndUbosCheckSchema,
+  });
+
+  return handleZodError(error, result);
 };
