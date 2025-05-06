@@ -39,7 +39,6 @@ export const CreateKybAndUboCheckDialog = ({
 }: CreateKybAndUboCheckDialogProps) => {
   const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft, toggleOpen } =
     useCreateKybAndUboCheckDialogLogic({ toggleOpen: toggleOpenProps });
-  const { data: customer } = useCustomerQuery();
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
@@ -188,6 +187,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
                           </Select>
                         </FormControl>
                       </div>
+                      <FormMessage />
                     </FormItem>
                   );
                 }}
@@ -212,7 +212,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            disabled={!hasStates}
+                            disabled={!hasStates || selectedCountry !== 'US'}
                           >
                             <SelectTrigger className="h-9 w-full">
                               <SelectValue
@@ -231,6 +231,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
                           </Select>
                         </FormControl>
                       </div>
+                      <FormMessage />
                     </FormItem>
                   );
                 }}
