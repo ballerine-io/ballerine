@@ -56,7 +56,7 @@ export const KybAndUboCheckPage = () => {
 
       <div className="flex h-full flex-col px-6 pt-4">
         <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
-          {check.companyName}
+          {check.input?.companyName}
         </TextWithNAFallback>
 
         <div className={`flex items-center space-x-8 pb-4`}>
@@ -65,7 +65,7 @@ export const KybAndUboCheckPage = () => {
             <MerchantMonitoringReportStatus
               reportId={checkId}
               status={check.status}
-              businessId={check.businessId}
+              businessId={check.input?.businessId}
             />
           </div>
 
@@ -74,17 +74,6 @@ export const KybAndUboCheckPage = () => {
             {check.createdAt && dayjs(new Date(check.createdAt)).format('MMM Do, YYYY HH:mm')}
           </div>
 
-          {/* <div className={`flex items-center space-x-2 text-sm`}> */}
-          {/*   <span className={`text-slate-400`}>Monitoring Status</span> */}
-          {/*   <span */}
-          {/*     className={ctw('select-none rounded-full d-3', { */}
-          {/*       'bg-success': check.monitoringStatus, */}
-          {/*       'bg-slate-400': !check.monitoringStatus, */}
-          {/*     })} */}
-          {/*   > */}
-          {/*     &nbsp; */}
-          {/*   </span> */}
-          {/* </div> */}
           <NotesSheet
             open={isNotesOpen}
             onOpenChange={setIsNotesOpen}
