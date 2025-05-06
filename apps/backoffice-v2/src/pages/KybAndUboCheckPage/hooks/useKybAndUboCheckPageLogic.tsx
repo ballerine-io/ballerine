@@ -70,8 +70,12 @@ export const useKybAndUboCheckPageLogic = () => {
     workflow: {},
   });
 
+  // TODO: temp fix, remove when the output is actually either null or an object of correct shape:
+  // { nodes: [], edges: [] }
   const companyStructureBlock = useUbosRegistryProvidedBlock(
-    check?.companyStructure?.output ?? { nodes: [], edges: [] },
+    check?.companyStructure?.output?.nodes && check?.companyStructure?.output.edges
+      ? check?.companyStructure?.output
+      : { nodes: [], edges: [] },
   );
 
   const sections = useMemo(() => {
