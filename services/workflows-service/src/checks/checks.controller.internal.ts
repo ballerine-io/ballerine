@@ -6,6 +6,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import type { TProjectId } from '@/types';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetKybAndOwnershipChecksDto } from './dto/get-kyb-and-ownership-checks.dto';
+import { CreateCheckDto } from './dto/create-check.dto';
 
 @common.Controller('internal/checks')
 @ApiBearerAuth()
@@ -33,5 +34,16 @@ export class ChecksControllerInternal {
     @CurrentProject() projectId: TProjectId,
   ) {
     return this.checksService.getKybAndOwnershipChecks(query, projectId);
+  }
+
+  @common.Post('')
+  @swagger.ApiOperation({ summary: 'Create KYB and ownership check' })
+  @swagger.ApiResponse({ status: 201, description: 'Successfully created KYB and ownership check' })
+  @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
+  createKybAndOwnershipCheck(
+    @common.Body() body: CreateCheckDto,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return this.checksService.createCheck(body, projectId);
   }
 }
