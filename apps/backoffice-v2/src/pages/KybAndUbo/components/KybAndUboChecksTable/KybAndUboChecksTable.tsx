@@ -3,7 +3,7 @@ import type { FunctionComponent } from 'react';
 import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
 import { useKybAndUboTableLogic } from './hooks/useKybAndUboTableLogic/useKybAndUboTableLogic';
 import { useColumns } from './columns';
-import { TKybAndUbosChecks } from '@/domains/kyb-and-ubos/fetchers';
+import { TKybAndUbosChecks } from '@/domains/checks/fetchers';
 
 export const KybAndUboChecksTable: FunctionComponent<{
   data: TKybAndUbosChecks['data'];
