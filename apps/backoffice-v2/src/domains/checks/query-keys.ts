@@ -1,6 +1,11 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-import { fetchKybAndUbosChecks, IKybAndUbosChecksParams } from './fetchers';
+import {
+  fetchIdentityVerificationChecks,
+  fetchKybAndUbosChecks,
+  IIdentityVerificationChecksParams,
+  IKybAndUbosChecksParams,
+} from './fetchers';
 
 export const kybAndUbosChecksQueryKey = createQueryKeys('kyb-and-ubos-checks', {
   list: ({ page, ...params }: IKybAndUbosChecksParams) => ({
@@ -13,6 +18,23 @@ export const kybAndUbosChecksQueryKey = createQueryKeys('kyb-and-ubos-checks', {
       };
 
       return fetchKybAndUbosChecks(data);
+    },
+  }),
+});
+
+export const identityVerificationChecksQueryKey = createQueryKeys('identity-verification-checks', {
+  list: ({ page, ...params }: IIdentityVerificationChecksParams) => ({
+    queryKey: [{ page, ...params }],
+    queryFn: () => {
+      const data = {
+        ...params,
+        page: {
+          number: Number(page),
+          size: Number(page.size),
+        },
+      };
+
+      return fetchIdentityVerificationChecks(data);
     },
   }),
 });
