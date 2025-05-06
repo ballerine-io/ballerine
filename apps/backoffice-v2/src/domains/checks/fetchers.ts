@@ -29,7 +29,7 @@ export const KybAndUbosCheckSchema = z.object({
     .optional(),
   registryInformation: z
     .object({
-      registrationNumber: z.string(),
+      registrationNumber: z.string().nullable().optional(),
       companyName: z.string().nullable().optional(),
       country: z.string().nullable().optional(),
       state: z.string().nullable().optional(),
