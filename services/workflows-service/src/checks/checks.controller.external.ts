@@ -8,10 +8,10 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetKybAndOwnershipChecksDto } from './dto/get-kyb-and-ownership-checks.dto';
 import { CreateCheckDto } from './dto/create-check.dto';
 
-@common.Controller('internal/checks')
+@common.Controller('external/checks')
 @ApiBearerAuth()
 @swagger.ApiTags('Checks')
-export class ChecksControllerInternal {
+export class ChecksControllerExternal {
   constructor(private readonly checksService: ChecksService) {}
 
   @common.Get()
