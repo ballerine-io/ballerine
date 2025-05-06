@@ -12,6 +12,8 @@ import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctions
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
 import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
 import { useKybAndUbosChecksQuery } from '@/domains/checks/hooks/queries/useKybAndUbosChecksQuery/useKybAndUbosChecksQuery';
+import { Card } from '@/common/components/atoms/Card/Card';
+import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 
 type CheckPageSection = {
   id: string;
@@ -22,6 +24,7 @@ type CheckPageSection = {
   Icon?: LucideIcon;
   label?: string;
   hasViolations?: boolean;
+  condition?: () => boolean;
 };
 
 export const useKybAndUboCheckPageLogic = () => {
@@ -47,7 +50,7 @@ export const useKybAndUboCheckPageLogic = () => {
   //   noteableType: 'Report',
   // });
 
-  const companySanctions = check?.sanctions?.map(sanction => ({
+  const companySanctions = check?.sanctions?.output?.data?.map(sanction => ({
     sources: sanction?.entity?.sources,
     officialLists: sanction?.entity?.officialLists,
     fullReport: sanction,
@@ -67,10 +70,9 @@ export const useKybAndUboCheckPageLogic = () => {
     workflow: {},
   });
 
-  console.log('check', check);
-  // const companyStructureBlock = useUbosRegistryProvidedBlock(
-  //   check?.companyStructure ?? { nodes: [], edges: [] },
-  // );
+  const companyStructureBlock = useUbosRegistryProvidedBlock(
+    check?.companyStructure?.output ?? { nodes: [], edges: [] },
+  );
 
   const sections = useMemo(() => {
     return [
@@ -79,9 +81,17 @@ export const useKybAndUboCheckPageLogic = () => {
         title: 'Company Sanctions',
         Icon: AlertTriangleIcon,
         Component: (
-          <BlocksComponent blocks={[...companySanctionsBlock]} cells={cells}>
-            {(Cell, cell) => <Cell {...cell} />}
-          </BlocksComponent>
+          <>
+            {!!check?.sanctions ? (
+              <BlocksComponent blocks={[...companySanctionsBlock]} cells={cells}>
+                {(Cell, cell) => <Cell {...cell} />}
+              </BlocksComponent>
+            ) : (
+              <Card>
+                <CardContent className="p-6">Data not Available</CardContent>
+              </Card>
+            )}
+          </>
         ),
       },
       {
@@ -89,21 +99,37 @@ export const useKybAndUboCheckPageLogic = () => {
         title: 'Company Registry Information',
         Icon: UsersRoundIcon,
         Component: (
-          <BlocksComponent blocks={[...registryInfoBlock]} cells={cells}>
-            {(Cell, cell) => <Cell {...cell} />}
-          </BlocksComponent>
+          <>
+            {!!check?.registryInformation ? (
+              <BlocksComponent blocks={[...registryInfoBlock]} cells={cells}>
+                {(Cell, cell) => <Cell {...cell} />}
+              </BlocksComponent>
+            ) : (
+              <Card>
+                <CardContent className="p-6">Data not Available</CardContent>
+              </Card>
+            )}
+          </>
         ),
       },
-      // {
-      //   id: 'company-structure',
-      //   title: 'Company Structure',
-      //   Icon: ListChecksIcon,
-      //   Component: (
-      //     <BlocksComponent blocks={[...companyStructureBlock]} cells={cells}>
-      //       {(Cell, cell) => <Cell {...cell} />}
-      //     </BlocksComponent>
-      //   ),
-      // },
+      {
+        id: 'company-structure',
+        title: 'Company Structure',
+        Icon: ListChecksIcon,
+        Component: (
+          <>
+            {!!check?.companyStructure ? (
+              <BlocksComponent blocks={[...companyStructureBlock]} cells={cells}>
+                {(Cell, cell) => <Cell {...cell} />}
+              </BlocksComponent>
+            ) : (
+              <Card>
+                <CardContent className="p-6">Data not Available</CardContent>
+              </Card>
+            )}
+          </>
+        ),
+      },
     ] satisfies CheckPageSection[];
   }, [check]);
 
