@@ -4,11 +4,7 @@ import { isObject } from '@ballerine/common';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
-import {
-  createKybAndUbosCheck,
-  TCreateKybAndUbosCheckPayload,
-} from '@/domains/kyb-and-ubos/fetchers';
-
+import { createKybAndUbosCheck, TCreateKybAndUbosCheckPayload } from '@/domains/checks/fetchers';
 export const useCreateKybAndUbosCheckMutation = ({
   onSuccess,
 }: {

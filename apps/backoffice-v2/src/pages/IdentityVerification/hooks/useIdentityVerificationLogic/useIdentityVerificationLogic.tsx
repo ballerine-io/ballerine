@@ -12,7 +12,7 @@ import { IS_ALERT_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
 import { IdentityVerificationSearchSchema } from '../../schemas';
-import { useIdentityVerificationChecksQuery } from '@/domains/identity-verification/hooks/queries/useIdentityVerificationChecksQuery/useIdentityVerificationChecksQuery';
+import { useIdentityVerificationChecksQuery } from '@/domains/checks/hooks/queries/useIdentityVerificationChecksQuery/useIdentityVerificationChecksQuery';
 
 export const useIdentityVerificationLogic = () => {
   const locale = useLocale();
