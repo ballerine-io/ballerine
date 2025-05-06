@@ -2,12 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import {
-  CreateKybAndUboCheckDialogInput,
-  CreateKybAndUboCheckDialogSchema,
-} from '../../../schemas';
+import { CreateKybAndUboCheckDialogSchema } from '../../../schemas';
+import { useCreateKybAndUbosCheckMutation } from '@/domains/kyb-and-ubos/hooks/mutations/useCreateKybAndUbosCheckMutation/useCreateKybAndUbosCheckMutation';
+import { TCreateKybAndUbosCheckPayload } from '@/domains/kyb-and-ubos/fetchers';
 
 export const useCreateKybAndUboCheckDialogLogic = ({
   toggleOpen: toggleOpenProps,
@@ -29,13 +27,13 @@ export const useCreateKybAndUboCheckDialogLogic = ({
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const { mutate: mutateCreateKybAndUboCheck, isLoading: isSubmitting } =
-    useCreateBusinessReportMutation({ disableToast: true });
-  const onSubmit: SubmitHandler<CreateKybAndUboCheckDialogInput> = data => {
-    mutateCreateKybAndUboCheck(data, {
+    useCreateKybAndUbosCheckMutation({
       onSuccess: () => {
         setShowSuccess(true);
       },
     });
+  const onSubmit: SubmitHandler<TCreateKybAndUbosCheckPayload> = data => {
+    mutateCreateKybAndUboCheck(data);
   };
 
   const toggleOpen = useCallback(
