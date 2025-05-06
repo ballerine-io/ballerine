@@ -5,6 +5,7 @@ import { ChecksService } from './checks.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import type { TProjectId } from '@/types';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { GetKybAndOwnershipChecksDto } from './dto/get-kyb-and-ownership-checks.dto';
 
 @common.Controller('internal/checks')
 @ApiBearerAuth()
@@ -13,13 +14,22 @@ export class ChecksControllerInternal {
   constructor(private readonly checksService: ChecksService) {}
 
   @common.Get()
+  @swagger.ApiOperation({ summary: 'Get checks' })
+  @swagger.ApiResponse({ status: 200, description: 'Successfully retrieved checks' })
+  @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   getChecks(@common.Query() query: GetChecksDto) {
     return this.checksService.getChecks(query);
   }
 
   @common.Get('/kyb_and_ownership')
+  @swagger.ApiOperation({ summary: 'Get KYB and ownership checks' })
+  @swagger.ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved KYB and ownership checks',
+  })
+  @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   getKybAndOwnershipChecks(
-    @common.Query() query: GetChecksDto,
+    @common.Query() query: GetKybAndOwnershipChecksDto,
     @CurrentProject() projectId: TProjectId,
   ) {
     return this.checksService.getKybAndOwnershipChecks(query, projectId);
