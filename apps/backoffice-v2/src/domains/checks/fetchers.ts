@@ -1,9 +1,10 @@
 import { PaginationParams } from '@/common/utils/fetch-all-pages';
 import { z } from 'zod';
-import qs from 'qs';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import qs from 'qs';
+import { MERCHANT_REPORT_STATUSES } from '@ballerine/common';
 
 export const KybAndUbosCheckStatusSchema = z.enum([
   'pending',
@@ -14,18 +15,34 @@ export const KybAndUbosCheckStatusSchema = z.enum([
 
 export const KybAndUbosCheckSchema = z.object({
   id: z.string(),
-  companyName: z.string(),
-  registrationNumber: z.string(),
-  country: z.string(),
-  state: z.string().optional(),
-  merchantId: z.string(),
-  riskLevel: z.enum(['low', 'medium', 'high', 'critical']),
-  findings: z.array(z.string()),
-  status: KybAndUbosCheckStatusSchema,
+  status: z.enum(MERCHANT_REPORT_STATUSES).catch('failed'),
+  type: z.literal('kyb_and_ownership'),
   createdAt: z.string(),
-  updatedAt: z.string(),
-  isExample: z.boolean().optional(),
+  findings: z.array(z.string()).optional(),
+  riskLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  sanctions: z
+    .object({
+      companyName: z.string(),
+      businessId: z.string().nullable(),
+    })
+    .nullable(),
+  registryInformation: z
+    .object({
+      registrationNumber: z.string(),
+      companyName: z.string(),
+      country: z.string(),
+      businessId: z.string().nullable(),
+    })
+    .nullable(),
+  companyStructure: z
+    .object({
+      companyName: z.string(),
+      businessId: z.string(),
+    })
+    .nullable(),
 });
+
+export type TKybAndUbosCheck = z.infer<typeof KybAndUbosCheckSchema>;
 
 export const KybAndUbosChecksSchema = z.object({
   data: z.array(KybAndUbosCheckSchema),
@@ -39,21 +56,23 @@ export interface IKybAndUbosChecksParams extends PaginationParams {
   to?: string;
 }
 
-export type TKybAndUbosCheck = z.infer<typeof KybAndUbosCheckSchema>;
-
 export type TKybAndUbosChecks = z.infer<typeof KybAndUbosChecksSchema>;
 
 export const fetchKybAndUbosChecks = async (params: IKybAndUbosChecksParams) => {
   const queryParams = qs.stringify(params, { encode: false });
 
-  const response = await apiClient({
+  const [result, error] = await apiClient({
     endpoint: `checks/kyb_and_ownership?${queryParams}`,
     method: Method.GET,
     schema: KybAndUbosChecksSchema,
     timeout: 30_000,
   });
 
-  return KybAndUbosChecksSchema.parse(response);
+  if (error) {
+    return handleZodError(error, result);
+  }
+
+  return KybAndUbosChecksSchema.parse(result);
 
   // Mock response with 10 items and 500ms delay
   // return new Promise<TKybAndUbosChecks>(resolve => {
@@ -116,9 +135,12 @@ export type TCreateKybAndUbosCheckPayload = z.infer<typeof CreateKybAndUbosCheck
 
 export const createKybAndUbosCheck = async (payload: TCreateKybAndUbosCheckPayload) => {
   const [result, error] = await apiClient({
-    endpoint: `checks/kyb_and_ownership`,
+    endpoint: `checks`,
     method: Method.POST,
-    body: payload,
+    body: {
+      type: 'kyb_and_ownership',
+      ...payload,
+    },
     schema: CreateKybAndUbosCheckSchema,
   });
 
