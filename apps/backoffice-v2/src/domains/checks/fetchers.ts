@@ -62,7 +62,7 @@ export const fetchKybAndUbosChecks = async (params: IKybAndUbosChecksParams) => 
   const queryParams = qs.stringify(params, { encode: false });
 
   const [result, error] = await apiClient({
-    endpoint: `checks/kyb_and_ownership?${queryParams}`,
+    endpoint: `../external/checks/kyb_and_ownership?${queryParams}`,
     method: Method.GET,
     schema: KybAndUbosChecksSchema,
     timeout: 30_000,
@@ -135,7 +135,7 @@ export type TCreateKybAndUbosCheckPayload = z.infer<typeof CreateKybAndUbosCheck
 
 export const createKybAndUbosCheck = async (payload: TCreateKybAndUbosCheckPayload) => {
   const [result, error] = await apiClient({
-    endpoint: `checks`,
+    endpoint: `../external/checks`,
     method: Method.POST,
     body: {
       type: 'kyb_and_ownership',
