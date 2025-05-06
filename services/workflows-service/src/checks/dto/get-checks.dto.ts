@@ -8,12 +8,12 @@ export class GetChecksDto {
     description: 'Page number for pagination',
     type: Number,
     required: false,
-    default: 0,
+    default: 1,
   })
   @Transform(({ value }) => (isNaN(Number(value)) ? undefined : Number(value)))
   @IsNumber()
   @IsOptional()
-  page: number = 0;
+  page: number = 1;
 
   @ApiProperty({
     description: 'Number of items per page',

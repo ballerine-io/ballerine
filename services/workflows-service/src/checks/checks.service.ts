@@ -24,21 +24,56 @@ export class ChecksService {
       const url = `${env.UNIFIED_API_URL}/checks/kyb_and_ownership`;
       const token = `Bearer ${env.UNIFIED_API_TOKEN as string}`;
 
-      const request$ = await this.httpService.post(
-        url,
-        {
-          data: {
-            page: query.page,
-            limit: query.limit,
-            customerId: customer.id,
-          },
+      const queryParams = {
+        page: query.page,
+        limit: query.limit,
+        customerId: customer.id,
+        projectId,
+      };
+
+      const request$ = await this.httpService.get(url, {
+        params: queryParams,
+        headers: {
+          Authorization: token,
         },
-        {
-          headers: {
-            Authorization: token,
-          },
+      });
+
+      const result = await lastValueFrom(request$);
+
+      return result.data;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async createCheck(
+    payload: {
+      type: 'kyb_and_ownership';
+      registrationNumber: string;
+      companyName: string;
+      country: string;
+      state?: string;
+    },
+    projectId: TProjectId,
+  ) {
+    try {
+      const url = `${env.UNIFIED_API_URL}/checks/${payload.type}`;
+      const token = `Bearer ${env.UNIFIED_API_TOKEN as string}`;
+      const data = {
+        registrationNumber: payload.registrationNumber,
+        companyName: payload.companyName,
+        country: payload.country,
+        state: payload.state,
+        //@TODO: remove this once we have the businessId
+        businessId: '1234567890',
+        projectId,
+      };
+
+      const request$ = await this.httpService.post(url, data, {
+        headers: {
+          Authorization: token,
         },
-      );
+      });
 
       const result = await lastValueFrom(request$);
 
