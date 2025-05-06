@@ -1,7 +1,7 @@
 import { isNonEmptyArray } from '@ballerine/common';
 import { Badge, Skeleton } from '@ballerine/ui';
 import { Layers, Loader2, Plus } from 'lucide-react';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
@@ -18,6 +18,7 @@ import { NoDocumentVerificationChecks } from './components/NoDocumentVerificatio
 import { CreateDocumentVerificationCheckDialog } from './components/CreateDocumentVerificationCheckDialog/CreateDocumentVerificationCheckDialog';
 import { useDocumentVerificationLogic } from './hooks/useDocumentVerificationLogic/useDocumentVerificationLogic';
 import { DateRange } from 'react-day-picker';
+import { TDocumentVerificationCheck } from '@/domains/document-verification/fetchers';
 
 export const DocumentVerification: FunctionComponent = () => {
   const {
@@ -67,6 +68,17 @@ export const DocumentVerification: FunctionComponent = () => {
       to: range?.to,
     });
   };
+
+  // Ensure all documents have a valid status - this fixes the type issue
+  const normalizedDocuments = useMemo(() => {
+    if (!documentVerificationChecks) return [];
+
+    return documentVerificationChecks.map(doc => ({
+      ...doc,
+      // Default to 'pending' if status is undefined
+      status: doc.status || 'pending',
+    })) as TDocumentVerificationCheck[];
+  }, [documentVerificationChecks]);
 
   return (
     <DemoAccessWrapper
@@ -173,18 +185,15 @@ export const DocumentVerification: FunctionComponent = () => {
         <div className="space-y-6">
           {isLoadingDocumentVerificationChecks && (
             <div className={`flex h-full w-full items-center justify-center`}>
-              <Loader2 className={`animate-spin d-[60px]`} />
+              <Loader2 className={`h-[60px] w-[60px] animate-spin`} />
             </div>
           )}
-          {!isLoadingDocumentVerificationChecks && isNonEmptyArray(documentVerificationChecks) && (
-            <DocumentVerificationTable
-              data={documentVerificationChecks}
-              isDemoAccount={isDemoAccount}
-            />
+          {!isLoadingDocumentVerificationChecks && isNonEmptyArray(normalizedDocuments) && (
+            <DocumentVerificationTable data={normalizedDocuments} isDemoAccount={isDemoAccount} />
           )}
           {!isLoadingDocumentVerificationChecks &&
-            Array.isArray(documentVerificationChecks) &&
-            !documentVerificationChecks.length && <NoDocumentVerificationChecks />}
+            Array.isArray(normalizedDocuments) &&
+            !normalizedDocuments.length && <NoDocumentVerificationChecks />}
           <div className={`flex items-center gap-x-2`}>
             <div className={`flex h-full w-[12ch] items-center text-sm`}>
               {!isLoadingDocumentVerificationChecks && `Page ${page} of ${totalPages || 1}`}
