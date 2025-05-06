@@ -58,7 +58,7 @@ export const KybAndUboCheckStatusBadge = ({
   return (
     <Badge
       {...props}
-      variant={statusToData[status].variant}
+      variant={statusToData[status]?.variant}
       className={ctw(`h-6 space-x-1 text-sm font-medium`, {
         '!cursor-not-allowed': disabled,
         ' bg-[#E3E2E0] text-[#32302C]/40 ': isReportInProgress,
@@ -90,7 +90,7 @@ export const KybAndUboCheckStatusBadge = ({
         &nbsp;
       </span>
       <span ref={ref} style={{ ...styles, width: '100%' }}>
-        {statusToData[status].title ?? titleCase(status ?? '')}
+        {statusToData[status]?.title ?? titleCase(status ?? '')}
       </span>
     </Badge>
   );

@@ -56,7 +56,6 @@ export const useKycAndUboLogic = () => {
   };
 
   const { data, isLoading: isLoadingBusinessReports } = useKybAndUbosChecksQuery(reportQuery);
-  console.log(data);
 
   const isClearAllButtonVisible = useMemo(
     () => !!(search !== '' || from || to),
