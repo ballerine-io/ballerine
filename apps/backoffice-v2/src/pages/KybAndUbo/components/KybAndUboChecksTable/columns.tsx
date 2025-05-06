@@ -1,5 +1,4 @@
-import { TKybAndUbosCheck } from '@/domains/kyb-and-ubos/fetchers';
-import { getFullCountryNameByCode, MERCHANT_REPORT_TYPES_MAP } from '@ballerine/common';
+import { getFullCountryNameByCode } from '@ballerine/common';
 import { Badge, severityToClassName, TextWithNAFallback } from '@ballerine/ui';
 import { createColumnHelper, RowData } from '@tanstack/react-table';
 import dayjs from 'dayjs';
@@ -7,6 +6,7 @@ import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { useMemo } from 'react';
 import { KybAndUboCheckStatusBadge } from './components/KybAndUboCheckStatusBadge';
+import { TKybAndUbosCheck } from '@/domains/checks/fetchers';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -21,23 +21,14 @@ declare module '@tanstack/react-table' {
 
 const columnHelper = createColumnHelper<TKybAndUbosCheck>();
 
-const SCAN_TYPES = {
-  ONBOARDING: 'Onboarding',
-  MONITORING: 'Monitoring',
-} as const;
-
-const REPORT_TYPE_TO_SCAN_TYPE = {
-  [MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1]: SCAN_TYPES.ONBOARDING,
-  [MERCHANT_REPORT_TYPES_MAP.ONGOING_MERCHANT_REPORT_T1]: SCAN_TYPES.MONITORING,
-} as const;
-
 export const useColumns = ({ isDemoAccount = false }) => {
   return useMemo(() => {
     const columns = [
       columnHelper.accessor('input', {
         cell: info => {
           const companyName = info.getValue()?.companyName;
-          const isExample = info.row.original.isExample;
+          const isExample =
+            ('isExample' in info.row.original && info.row.original.isExample) ?? false;
 
           return (
             <div className="ms-4 flex flex-col">
@@ -67,7 +58,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
           const jurisdictionCode = info.getValue()?.country;
           const countryCode = jurisdictionCode?.split('/')?.[0];
           const state = jurisdictionCode?.split('/')?.[1];
-          const country = getFullCountryNameByCode(countryCode);
+          const country = getFullCountryNameByCode(countryCode ?? '');
 
           return (
             <div className="flex flex-col">
