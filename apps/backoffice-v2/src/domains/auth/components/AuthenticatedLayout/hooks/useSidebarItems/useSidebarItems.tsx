@@ -137,18 +137,26 @@ export const useSidebarItems = () => {
               },
             ]
           : []),
-        {
-          text: 'KYB & Stakeholders',
-          icon: BuildingIcon,
-          href: `/${locale}/kyb-ubo`,
-          key: 'nav-item-kyb-ubos',
-        },
-        {
-          text: 'Identity Verification',
-          icon: UserRoundSearchIcon,
-          key: 'nav-item-identity-verification',
-          href: `/${locale}/identity-verification`,
-        },
+        ...(customer?.config?.createKybAndUbosCheck
+          ? [
+              {
+                text: 'KYB & Stakeholders',
+                icon: BuildingIcon,
+                href: `/${locale}/kyb-ubo`,
+                key: 'nav-item-kyb-ubos',
+              },
+            ]
+          : []),
+        ...(customer?.config?.createIdentityVerification
+          ? [
+              {
+                text: 'Identity Verification',
+                icon: UserRoundSearchIcon,
+                key: 'nav-item-identity-verification',
+                href: `/${locale}/identity-verification`,
+              },
+            ]
+          : []),
         {
           text: 'Businesses',
           icon: BuildingIcon,
