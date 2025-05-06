@@ -4,8 +4,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { CreateKybAndUboCheckDialogSchema } from '../../../schemas';
-import { useCreateKybAndUbosCheckMutation } from '@/domains/kyb-and-ubos/hooks/mutations/useCreateKybAndUbosCheckMutation/useCreateKybAndUbosCheckMutation';
-import { TCreateKybAndUbosCheckPayload } from '@/domains/kyb-and-ubos/fetchers';
+import { TCreateKybAndUbosCheckPayload } from '@/domains/checks/fetchers';
+import { useCreateKybAndUbosCheckMutation } from '@/domains/checks/hooks/mutations/useCreateKybAndUbosCheckMutation/useCreateKybAndUbosCheckMutation';
 
 export const useCreateKybAndUboCheckDialogLogic = ({
   toggleOpen: toggleOpenProps,
