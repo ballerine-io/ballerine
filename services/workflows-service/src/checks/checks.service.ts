@@ -5,6 +5,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { TProjectId } from '@/types';
 import { env } from '@/env';
 import { lastValueFrom } from 'rxjs';
+import { GetKybAndOwnershipChecksDto } from './dto/get-kyb-and-ownership-checks.dto';
 
 @Injectable()
 export class ChecksService {
@@ -17,7 +18,7 @@ export class ChecksService {
     throw new InternalServerErrorException('Not implemented');
   }
 
-  async getKybAndOwnershipChecks(query: GetChecksDto, projectId: TProjectId) {
+  async getKybAndOwnershipChecks(query: GetKybAndOwnershipChecksDto, projectId: TProjectId) {
     try {
       const customer = await this.customerService.getByProjectId(projectId);
       const url = `${env.UNIFIED_API_URL}/checks/kyb_and_ownership`;
