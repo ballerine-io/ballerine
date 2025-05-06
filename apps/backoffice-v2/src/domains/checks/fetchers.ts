@@ -22,24 +22,28 @@ export const KybAndUbosCheckSchema = z.object({
   riskLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
   sanctions: z
     .object({
-      companyName: z.string(),
-      businessId: z.string().nullable(),
+      companyName: z.string().nullable().optional(),
+      businessId: z.string().nullable().optional(),
     })
-    .nullable(),
+    .nullable()
+    .optional(),
   registryInformation: z
     .object({
       registrationNumber: z.string(),
-      companyName: z.string(),
-      country: z.string(),
-      businessId: z.string().nullable(),
+      companyName: z.string().nullable().optional(),
+      country: z.string().nullable().optional(),
+      state: z.string().nullable().optional(),
+      businessId: z.string().nullable().optional(),
     })
-    .nullable(),
+    .nullable()
+    .optional(),
   companyStructure: z
     .object({
-      companyName: z.string(),
-      businessId: z.string(),
+      companyName: z.string().nullable().optional(),
+      businessId: z.string().nullable().optional(),
     })
-    .nullable(),
+    .nullable()
+    .optional(),
 });
 
 export type TKybAndUbosCheck = z.infer<typeof KybAndUbosCheckSchema>;
