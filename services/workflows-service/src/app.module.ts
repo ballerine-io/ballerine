@@ -138,7 +138,7 @@ export const validate = async (config: Record<string, unknown>) => {
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
-    ChecksModule
+    ChecksModule,
   ],
   providers: [
     {
