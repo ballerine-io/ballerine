@@ -34,10 +34,9 @@ const REPORT_TYPE_TO_SCAN_TYPE = {
 export const useColumns = ({ isDemoAccount = false }) => {
   return useMemo(() => {
     const columns = [
-      columnHelper.accessor('registryInformation', {
+      columnHelper.accessor('input', {
         cell: info => {
-          const companyName =
-            info.getValue()?.companyName || info.row.original.sanctions?.companyName;
+          const companyName = info.getValue()?.companyName;
           const isExample = info.row.original.isExample;
 
           return (
@@ -53,7 +52,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Company Name',
       }),
-      columnHelper.accessor('registryInformation', {
+      columnHelper.accessor('input', {
         cell: info => {
           const registrationNumber = info.getValue()?.registrationNumber;
 
@@ -63,10 +62,12 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Registration Number',
       }),
-      columnHelper.accessor('registryInformation', {
+      columnHelper.accessor('input', {
         cell: info => {
-          const country = getFullCountryNameByCode(info.getValue()?.country);
-          const state = info.getValue()?.state;
+          const jurisdictionCode = info.getValue()?.country;
+          const countryCode = jurisdictionCode?.split('/')?.[0];
+          const state = jurisdictionCode?.split('/')?.[1];
+          const country = getFullCountryNameByCode(countryCode);
 
           return (
             <div className="flex flex-col">
@@ -77,7 +78,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Country/State',
       }),
-      columnHelper.accessor('registryInformation', {
+      columnHelper.accessor('input', {
         cell: info => {
           const businessId = info.getValue()?.businessId;
 
