@@ -3,6 +3,12 @@ import { z } from 'zod';
 
 export const DocumentVerificationStatuses = ['pending', 'verified', 'rejected'] as const;
 
+export const CustomerSchema = z.object({
+  name: z.string().optional(),
+  displayName: z.string().optional(),
+  faviconImageUri: z.string().optional(),
+});
+
 export const DocumentVerificationCheckSchema = z.object({
   id: z.string(),
   checkId: z.string(),
@@ -18,6 +24,7 @@ export const DocumentVerificationCheckSchema = z.object({
   verificationLink: z.string(),
   status: z.enum(DocumentVerificationStatuses),
   issues: z.array(z.string()).optional(),
+  customer: CustomerSchema.optional(),
 });
 
 export const DocumentVerificationChecksSchema = z.object({
@@ -50,9 +57,9 @@ export const fetchDocumentVerificationChecks = async (
     return {
       id: `doc-check-${index + 1}`,
       checkId: `doc-verification-${index + 1}`,
-      firstName: `John${index}`,
-      lastName: `Doe${index}`,
-      email: `john.doe${index}@example.com`,
+      firstName: `Company ${index + 1}`,
+      lastName: `Merchant ${index + 1}`,
+      email: `company${index + 1}@example.com`,
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: index % 5 === 0 ? new Date() : null,
@@ -62,6 +69,11 @@ export const fetchDocumentVerificationChecks = async (
       verificationLink: `https://verification.example.com/doc-link-${index}`,
       status,
       issues: index % 2 === 0 ? [`Issue ${index}`] : [],
+      customer: {
+        name: `Company ${index + 1}`,
+        displayName: `Company ${index + 1}`,
+        faviconImageUri: `https://example.com/favicons/company-${index}.png`,
+      },
     };
   });
 
@@ -74,12 +86,12 @@ export const fetchDocumentVerificationChecks = async (
 
 export const createDocumentVerificationCheck = async (data: {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   country: string;
   state?: string;
   dateOfBirth: string;
   documentType: string;
-  documentFile?: File;
+  documentFiles: File[];
 }) => {
   // In a real implementation, we would upload the file and send the data to the server
   console.log('Creating document verification check:', data);
@@ -89,8 +101,8 @@ export const createDocumentVerificationCheck = async (data: {
     id: `doc-check-${Math.floor(Math.random() * 1000)}`,
     checkId: `doc-verification-${Math.floor(Math.random() * 1000)}`,
     firstName: data.firstName,
-    lastName: data.lastName,
-    email: `${data.firstName.toLowerCase()}.${data.lastName.toLowerCase()}@example.com`,
+    lastName: data.lastName || '',
+    email: `${data.firstName.toLowerCase()}@example.com`,
     createdAt: new Date(),
     updatedAt: new Date(),
     documentType: data.documentType,
@@ -98,5 +110,10 @@ export const createDocumentVerificationCheck = async (data: {
       Math.random() * 1000,
     )}`,
     status: 'pending' as const,
+    customer: {
+      name: data.firstName,
+      displayName: data.firstName,
+      faviconImageUri: 'https://example.com/favicons/default.png',
+    },
   };
 };

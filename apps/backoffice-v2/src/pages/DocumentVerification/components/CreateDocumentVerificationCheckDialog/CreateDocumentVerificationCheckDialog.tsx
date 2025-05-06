@@ -1,5 +1,5 @@
 import { Input } from '@ballerine/ui';
-import { CheckIcon, Loader2, Upload } from 'lucide-react';
+import { CheckIcon, Loader2, Upload, X } from 'lucide-react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
@@ -108,6 +108,8 @@ const CreateDocumentVerificationCheckDialogFormContent = ({
   const { data: customer } = useCustomerQuery();
   const isDemoAccount = customer?.config?.isDemoAccount;
 
+  const files = form.watch('documentFiles') || [];
+
   return (
     <div>
       {isDemoAccount && (
@@ -127,13 +129,13 @@ const CreateDocumentVerificationCheckDialogFormContent = ({
             <fieldset className="mx-6 space-y-4">
               <FormField
                 control={form.control}
-                name="firstName"
+                name="companyName"
                 render={({ field }) => (
                   <FormItem className="w-1/2 space-y-1">
-                    <FormLabel>First Name</FormLabel>
+                    <FormLabel>Company Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="John"
+                        placeholder="Company Name"
                         autoFocus
                         {...field}
                         disabled={shouldDisableForm || isSubmitting}
@@ -143,15 +145,16 @@ const CreateDocumentVerificationCheckDialogFormContent = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="lastName"
+                name="merchantId"
                 render={({ field }) => (
                   <FormItem className="w-1/2 space-y-1">
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel>Merchant ID (Optional)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Doe"
+                        placeholder="Merchant ID"
                         {...field}
                         disabled={shouldDisableForm || isSubmitting}
                       />
@@ -160,167 +163,63 @@ const CreateDocumentVerificationCheckDialogFormContent = ({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="dateOfBirth"
-                render={({ field }) => (
-                  <FormItem className="w-1/2 space-y-1">
-                    <FormLabel>Date of Birth</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        placeholder="1990-01-01"
-                        {...field}
-                        disabled={shouldDisableForm || isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => {
-                  const countries = getCountries('en');
-                  const availableCountries = countries.map(country => ({
-                    value: country.const,
-                    label: country.title,
-                  }));
 
-                  return (
-                    <FormItem className="w-1/2 space-y-1">
-                      <FormLabel>Country</FormLabel>
-                      <div className="bg-white">
-                        <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger className="h-9 w-full">
-                              <SelectValue placeholder="Select a country" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {availableCountries.map(country => (
-                                  <SelectItem key={country.value} value={country.value}>
-                                    {country.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  );
-                }}
-              />
               <FormField
                 control={form.control}
-                name="state"
-                render={({ field }) => {
-                  const selectedCountry = form.watch('country');
-                  const states = selectedCountry ? getCountryStates(selectedCountry) : [];
-                  const availableStates = states.map(state => ({
-                    value: state.isoCode,
-                    label: state.name,
-                  }));
-                  const hasStates = availableStates.length > 0;
-
-                  return (
-                    <FormItem className="w-1/2 space-y-1">
-                      <FormLabel>State/Province</FormLabel>
-                      <div className={ctw('bg-white', !hasStates && 'opacity-50')}>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            disabled={!hasStates}
-                          >
-                            <SelectTrigger className="h-9 w-full">
-                              <SelectValue
-                                placeholder={hasStates ? 'Select a state' : 'No states available'}
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {availableStates.map(state => (
-                                  <SelectItem key={state.value} value={state.value}>
-                                    {state.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="documentType"
-                render={({ field }) => {
-                  const documentTypes = [
-                    { value: 'passport', label: 'Passport' },
-                    { value: 'driver_license', label: 'Driver License' },
-                    { value: 'id_card', label: 'ID Card' },
-                    { value: 'residence_permit', label: 'Residence Permit' },
-                  ];
-
-                  return (
-                    <FormItem className="w-1/2 space-y-1">
-                      <FormLabel>Document Type</FormLabel>
-                      <div className="bg-white">
-                        <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger className="h-9 w-full">
-                              <SelectValue placeholder="Select document type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {documentTypes.map(type => (
-                                  <SelectItem key={type.value} value={type.value}>
-                                    {type.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="documentFile"
+                name="documentFiles"
                 render={({ field: { value, onChange, ...field } }) => (
                   <FormItem className="w-full space-y-1">
-                    <FormLabel>Upload Document</FormLabel>
+                    <FormLabel>Upload Documents</FormLabel>
                     <FormControl>
-                      <div className="flex items-center gap-2">
+                      <div className="space-y-2">
                         <label
                           htmlFor="document-upload"
-                          className="flex h-9 w-full cursor-pointer items-center rounded-md border border-gray-200 bg-white px-3 text-sm hover:bg-gray-50"
+                          className="flex h-16 w-1/2 cursor-pointer items-center rounded-md border border-gray-200 bg-white px-3 text-sm hover:bg-gray-50"
                         >
-                          <Upload className="mr-2 h-4 w-4" />
-                          {value ? value.name : 'Choose file'}
+                          <Upload className="mr-2 h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">Select documents to upload</span>
                           <input
                             id="document-upload"
                             type="file"
                             className="hidden"
                             accept="image/jpeg,image/png,application/pdf"
+                            multiple
                             onChange={e => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                onChange(file);
-                              }
+                              const newFiles = Array.from(e.target.files || []);
+                              onChange([...(value || []), ...newFiles]);
                             }}
                             disabled={shouldDisableForm || isSubmitting}
                             {...field}
                           />
                         </label>
+
+                        {files.length > 0 && (
+                          <div className="mt-2 space-y-2">
+                            <p className="text-sm font-medium">Selected files ({files.length}):</p>
+                            <div className="max-h-32 overflow-y-auto rounded border border-gray-200 bg-white p-2">
+                              {files.map((file, index) => (
+                                <div
+                                  key={`${file.name}-${index}`}
+                                  className="flex items-center justify-between py-1"
+                                >
+                                  <span className="truncate text-sm">{file.name}</span>
+                                  <button
+                                    type="button"
+                                    className="ml-2 text-gray-500 hover:text-gray-700"
+                                    onClick={() => {
+                                      const newFiles = [...files];
+                                      newFiles.splice(index, 1);
+                                      onChange(newFiles);
+                                    }}
+                                    disabled={shouldDisableForm || isSubmitting}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -330,17 +229,17 @@ const CreateDocumentVerificationCheckDialogFormContent = ({
             </fieldset>
           </div>
 
-          <Button
-            type="submit"
-            size="wide"
-            className={
-              'mx-6 ml-auto flex items-center gap-1.5 px-6 font-bold aria-disabled:pointer-events-none aria-disabled:opacity-50'
-            }
-            disabled={shouldDisableForm || isSubmitting}
-          >
-            {isSubmitting && <Loader2 className="animate-spin d-6" />}
-            Verify Document
-          </Button>
+          <div className="my-4 flex justify-end px-6">
+            <Button
+              type="submit"
+              size="default"
+              className="flex items-center gap-1.5 px-4 font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-50"
+              disabled={shouldDisableForm || isSubmitting || files.length === 0}
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              Verify Documents
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
