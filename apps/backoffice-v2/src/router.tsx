@@ -1,6 +1,8 @@
 import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
 import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
 import { env } from '@/common/env/env';
+import { queryClient } from '@/lib/react-query/query-client';
+import { customerQueryKeys } from '@/domains/customer/query-keys';
 import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
 import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
 import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
@@ -28,12 +30,10 @@ import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import type { FunctionComponent } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { KybAndUbo } from './pages/KybAndUbo/KybAndUbo.page';
-import { KybAndUbosLayout } from './domains/kyb-and-ubos/components/KybAndUbosLayout/KybAndUbosLayout';
-import { KybAndUboCheckPage } from './pages/KybAndUboCheckPage';
-import { IdentityVerificationLayout } from './domains/identity-verification/components/IdentityVerificationLayout/IdentityVerificationLayout';
-import { IdentityVerification } from './pages/IdentityVerification/IdentityVerification.page';
-import { IdentityVerificationCheck } from './pages/IdentityVerificationCheck/IdentityVerificationCheck.page';
+import { KybAndUbo } from '@/pages/KybAndUbo/KybAndUbo.page';
+import { KybAndUboCheckPage } from '@/pages/KybAndUboCheckPage';
+import { IdentityVerification } from '@/pages/IdentityVerification/IdentityVerification.page';
+import { IdentityVerificationCheckPage } from '@/pages/IdentityVerificationCheck/IdentityVerificationCheck.page';
 
 const router = createBrowserRouter([
   {
@@ -108,7 +108,10 @@ const router = createBrowserRouter([
                 ],
               },
               {
-                element: <KybAndUbosLayout />,
+                loader: async () => {
+                  await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+                  return true;
+                },
                 errorElement: <RouteError />,
                 children: [
                   {
@@ -124,7 +127,10 @@ const router = createBrowserRouter([
                 ],
               },
               {
-                element: <IdentityVerificationLayout />,
+                loader: async () => {
+                  await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+                  return true;
+                },
                 errorElement: <RouteError />,
                 children: [
                   {
@@ -134,7 +140,7 @@ const router = createBrowserRouter([
                   },
                   {
                     path: '/:locale/identity-verification/:checkId',
-                    element: <IdentityVerificationCheck />,
+                    element: <IdentityVerificationCheckPage />,
                     errorElement: <RouteError />,
                   },
                 ],

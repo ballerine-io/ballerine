@@ -11,7 +11,7 @@ import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQu
 import { IS_ALERT_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
-import { useKybAndUbosChecksQuery } from '@/domains/kyb-and-ubos/hooks/queries/useKybAndUbosChecksQuery/useKybAndUbosChecksQuery';
+import { useKybAndUbosChecksQuery } from '@/domains/checks/hooks/queries/useKybAndUbosChecksQuery/useKybAndUbosChecksQuery';
 import { KybAndUboChecksSearchSchema } from '../../schemas';
 
 export const useKycAndUboLogic = () => {
