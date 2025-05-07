@@ -229,7 +229,7 @@ export class CollectionFlowStateService {
       },
     ];
 
-    workflow.childWorkflowsRuntimeData.forEach(childWorkflow => {
+    workflow.childWorkflowsRuntimeData?.forEach(childWorkflow => {
       if (!childWorkflow.endUserId) {
         throw new Error('End user ID not found on child workflow.');
       }
@@ -240,7 +240,7 @@ export class CollectionFlowStateService {
       });
     });
 
-    workflow.context.entity.data.additionalInfo.directors?.forEach(
+    workflow.context?.entity?.data?.additionalInfo?.directors?.forEach(
       (director: { ballerineEntityId: string }) => {
         entityIds.push({
           entityId: director.ballerineEntityId,

@@ -9,7 +9,7 @@ export const PieChartCard = ({
 }: CasePieChartProps & { title: string }) => {
   return (
     <Card className={'flex h-full flex-col px-3'}>
-      <CardHeader className={'pb-1 font-bold'}>{title}</CardHeader>
+      <CardHeader className={'pb-1 text-center font-bold'}>{title}</CardHeader>
       <CardContent>
         <div className={'flex flex-col items-center space-y-4 pt-3'}>
           <CasePieChart {...pieChartProps} />
