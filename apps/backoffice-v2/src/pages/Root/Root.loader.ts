@@ -27,7 +27,7 @@ export const rootLoader: LoaderFunction = async ({ request }) => {
   }
 
   if (!newUrl.pathname.startsWith('/en')) {
-    url.pathname = `/en${url.pathname === '/' ? '' : url.pathname}`;
+    newUrl.pathname = `/en${url.pathname === '/' ? '' : url.pathname}`;
   }
 
   return redirect(newUrl.toString());
