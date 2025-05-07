@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge } from '@ballerine/ui';
 import { titleCase } from 'string-ts';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
@@ -25,10 +24,20 @@ export const statusToData = {
     title: 'Under Review',
     text: 'The merchant is currently being assessed',
   },
-  [MERCHANT_REPORT_STATUSES_MAP.completed]: {
+  [MERCHANT_REPORT_STATUSES_MAP['conditionally-approved']]: {
+    variant: 'warning',
+    title: 'Conditionally Approved',
+    text: 'Merchant reviewed with minor or borderline issues',
+  },
+  [MERCHANT_REPORT_STATUSES_MAP['cleared']]: {
     variant: 'success',
-    title: 'Review Completed',
-    text: 'The assessment of this merchant is finalized',
+    title: 'Cleared',
+    text: 'Merchant reviewed and found compliant or low risk',
+  },
+  [MERCHANT_REPORT_STATUSES_MAP['terminated']]: {
+    variant: 'destructive',
+    title: 'Terminated',
+    text: 'Merchant reviewed and confirmed non-compliant or high risk',
   },
 } as const;
 
@@ -59,7 +68,10 @@ export const MerchantMonitoringStatusBadge = ({
         'text-[#32302C]/40': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'] && disabled,
         'bg-[#D3E5EF] text-[#183347]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
         'text-[#183347]/40': status === MERCHANT_REPORT_STATUSES_MAP['under-review'] && disabled,
-        'bg-[#DBEDDB] text-[#1C3829]': status === MERCHANT_REPORT_STATUSES_MAP['completed'],
+        'bg-[#DBEDDB] text-[#1C3829]': status === MERCHANT_REPORT_STATUSES_MAP['cleared'],
+        'bg-[#F4D8B9] text-[#183347]':
+          status === MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
+        'bg-[#ECA1A5] text-[#32302C]': status === MERCHANT_REPORT_STATUSES_MAP['terminated'],
       })}
     >
       <span
@@ -67,12 +79,14 @@ export const MerchantMonitoringStatusBadge = ({
           'bg-[#91918E]':
             isReportInProgress || status === MERCHANT_REPORT_STATUSES_MAP['pending-review'],
           'bg-[#5B97BD]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
-          'bg-[#6C9B7D]': status === MERCHANT_REPORT_STATUSES_MAP['completed'],
+          'bg-[#6C9B7D]': status === MERCHANT_REPORT_STATUSES_MAP['cleared'],
+          'bg-[#F4AA52]': status === MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
+          'bg-[#DF2222]': status === MERCHANT_REPORT_STATUSES_MAP['terminated'],
         })}
       >
         &nbsp;
       </span>
-      <span ref={ref} style={{ ...styles, width: '90%' }}>
+      <span ref={ref} style={{ ...styles, width: '100%' }}>
         {statusToData[status].title ?? titleCase(status ?? '')}
       </span>
     </Badge>

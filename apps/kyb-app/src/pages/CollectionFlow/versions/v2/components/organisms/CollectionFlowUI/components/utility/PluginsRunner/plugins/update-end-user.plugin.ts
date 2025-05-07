@@ -35,10 +35,12 @@ export const updateEndUserPlugin = async (
     if (!result.success) {
       console.error(`Invalid ${UPDATE_END_USER_PLUGIN_NAME} plugin data`, result.error);
 
-      return;
+      return context;
     }
 
-    return await updateEndUser(result.data);
+    await updateEndUser(result.data);
+
+    return context;
   } catch (error) {
     console.error('Failed to update end user.', error);
   }
