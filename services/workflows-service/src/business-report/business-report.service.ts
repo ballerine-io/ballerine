@@ -60,6 +60,7 @@ export class BusinessReportService {
     withQualityControl,
     customerId,
     requestedByUserId,
+    projectId,
   }: {
     reportType: MerchantReportType;
     business: Pick<Business, 'id' | 'correlationId'>;
@@ -71,6 +72,7 @@ export class BusinessReportService {
     withQualityControl: boolean;
     customerId: string;
     requestedByUserId: string | undefined;
+    projectId: TProjectId;
   }) {
     await this.merchantMonitoringClient.create({
       reportType,
@@ -83,6 +85,7 @@ export class BusinessReportService {
       ...(countryCode && { countryCode }),
       ...(compareToReportId && { compareToReportId }),
       requestedByUserId,
+      projectId,
     });
 
     void this.analyticsService.trackSafe({
@@ -92,6 +95,7 @@ export class BusinessReportService {
         reportType,
         businessId: business.id,
         customerId,
+        projectId,
       },
       customerId,
     });
