@@ -49,6 +49,12 @@ export const MerchantMonitoringStatusBadge = ({
   status: keyof typeof statusToData;
   disabled?: boolean;
 }) => {
+  // FIXME: Happens when `completed` status is passed.
+  // Can be removed when we get rid of records that have this status
+  if (!statusToData[status]) {
+    status = MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'];
+  }
+
   const isReportInProgress = [
     MERCHANT_REPORT_STATUSES_MAP['in-progress'],
     MERCHANT_REPORT_STATUSES_MAP['quality-control'],
