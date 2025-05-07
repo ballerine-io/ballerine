@@ -29,7 +29,7 @@ export class CustomerControllerInternal {
   @common.Get()
   @UseGuards(AdminAuthGuard)
   async list() {
-    return await this.service.list();
+    return await this.service.list({ include: { projects: true } });
   }
 
   @common.Get()
