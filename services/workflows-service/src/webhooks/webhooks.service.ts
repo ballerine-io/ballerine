@@ -21,7 +21,6 @@ const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) 
     { extra: errorPayload },
   );
 };
-
 @Injectable()
 export class WebhooksService {
   private queue: RetryableQueue | null = null;
@@ -56,6 +55,7 @@ export class WebhooksService {
 
     redis.on('connect', () => {
       this.notified = false;
+      this.logger.log('Redis connected.');
       this.setupQueues(redis);
     });
 
@@ -65,51 +65,56 @@ export class WebhooksService {
   }
 
   private setupQueues(redis: IORedis) {
-    this.queue = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
-      connection: redis,
-      defaultJobOptions: { attempts: 5, backoff: { type: 'exponential', delay: 5_000 } },
-      handlers: {
-        handleJob: async job => {
-          try {
-            const res = await this.httpService.axiosRef.request(job.data);
+    this.queue = new RetryableQueue<OutgoingWebhookJobData>(
+      'outgoing-webhooks',
+      {
+        connection: redis,
+        defaultJobOptions: { attempts: 5, backoff: { type: 'exponential', delay: 5_000 } },
+        handlers: {
+          handleJob: async job => {
+            try {
+              const res = await this.httpService.axiosRef.request(job.data);
 
-            return res.data;
-          } catch (error) {
-            // Rethrow useful error data
-            if (isAxiosError(error)) {
-              throw error.response?.data ?? error;
+              return res.data;
+            } catch (error) {
+              // Rethrow useful error data
+              if (isAxiosError(error)) {
+                throw error.response?.data ?? error;
+              }
             }
-          }
-        },
-        handleDLQJob: async job => {
-          this.logger.error('Failed to send webhook through queue system.', {
-            id: job.id,
-            jobData: job.data,
-            error: job.data.error,
-          });
+          },
+          handleDLQJob: async job => {
+            this.logger.error('Failed to send webhook through queue system.', {
+              id: job.id,
+              error: job.data.error,
+            });
 
-          captureWebhookFailureWithSentry({
-            ...job.data.error,
-            url: job.data.url,
-            method: job.data.method,
-          });
+            captureWebhookFailureWithSentry({
+              ...job.data.error,
+              url: job.data.url,
+              method: job.data.method,
+            });
 
-          // Process unsent data
-          // ...
-        },
-        onRetry: (job, err, attemptsLeft) => {
-          this.logger.warn(`Failed to send webhook. Retrying... ${attemptsLeft} attempts left.`, {
-            id: job.id,
-            jobData: job.data,
-            error: err,
-          });
+            // Process unsent data
+            // ...
+          },
+          onRetry: (job, err, attemptsLeft) => {
+            this.logger.warn(`Failed to send webhook. Retrying... ${attemptsLeft} attempts left.`, {
+              id: job.id,
+              jobData: job.data,
+              error: err,
+            });
+          },
         },
       },
-    });
+      this.logger,
+    );
 
     this.bullBoard.boardInstance.setQueues(
       [this.queue.queue, this.queue.dlq].map(queue => new BullMQAdapter(queue)),
     );
+
+    this.logger.log('Queue system setup complete. (BullMQ)');
   }
 
   private degradeQueueSystem(err?: Error) {
