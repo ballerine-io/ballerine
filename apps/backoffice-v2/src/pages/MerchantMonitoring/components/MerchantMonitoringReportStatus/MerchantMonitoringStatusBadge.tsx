@@ -4,6 +4,7 @@ import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { captureSentryError } from '@/sentry/capture-exception';
 
 const reportInProgressData = {
   variant: 'gray',
@@ -49,10 +50,17 @@ export const MerchantMonitoringStatusBadge = ({
   status: keyof typeof statusToData;
   disabled?: boolean;
 }) => {
-  // FIXME: Happens when `completed` status is passed.
-  // Can be removed when we get rid of records that have this status
-  if (!statusToData[status]) {
+  // TODO: Can be removed when we get rid of records that have this status
+  if ((status as string) === MERCHANT_REPORT_STATUSES_MAP['completed']) {
     status = MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'];
+  }
+
+  if (!statusToData[status]) {
+    captureSentryError(
+      new Error(`MerchantMonitoringStatusBadge: status "${status}" not found in statusToData.`),
+      { componentName: 'MerchantMonitoringStatusBadge' },
+    );
+    return null;
   }
 
   const isReportInProgress = [
