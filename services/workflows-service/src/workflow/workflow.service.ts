@@ -2185,8 +2185,8 @@ export class WorkflowService {
             metadata: {
               token: token,
               customerName: customer.displayName,
-              collectionFlowUrl: env.COLLECTION_FLOW_URL!,
               customerNormalizedName: customer.name,
+              collectionFlowUrl: env.COLLECTION_FLOW_URL ?? '',
             },
           };
         },

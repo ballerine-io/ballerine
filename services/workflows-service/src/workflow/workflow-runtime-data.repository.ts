@@ -13,6 +13,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { merge } from 'lodash';
+import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 
 /**
  * Columns that are related to the state of the workflow runtime data.
@@ -25,6 +26,7 @@ export class WorkflowRuntimeDataRepository {
   constructor(
     protected readonly prismaService: PrismaService,
     protected readonly scopeService: ProjectScopeService,
+    protected readonly actorService: WorkflowRuntimeDataActorService,
   ) {}
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
@@ -33,13 +35,13 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.create<T>({
       ...args,
-      data: {
+      data: this.actorService.addActorIds({
         ...args.data,
         context: {
           ...((args.data?.context ?? {}) as any),
           documents: assignIdToDocuments((args.data?.context as any)?.documents),
         },
-      },
+      }),
     } as any);
   }
 
@@ -269,6 +271,15 @@ export class WorkflowRuntimeDataRepository {
         individuals AS (
           SELECT
             eu.id,
+            eu."firstName",
+            eu."lastName",
+            eu.email,
+            eu.gender,
+            eu.nationality,
+            eu.address,
+            eu."dateOfBirth",
+            eu.phone,
+            eu."additionalInfo",
             eu."amlHits"
           FROM
             "EndUser" eu
@@ -365,7 +376,7 @@ export class WorkflowRuntimeDataRepository {
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.update({
       where: { id },
-      ...args,
+      data: this.actorService.addActorIds(args.data),
     });
   }
 
@@ -382,7 +393,7 @@ export class WorkflowRuntimeDataRepository {
   ) {
     return await transaction.workflowRuntimeData.update({
       where: { id },
-      data,
+      data: this.actorService.addActorIds(data),
       include,
     });
   }

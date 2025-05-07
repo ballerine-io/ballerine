@@ -35,10 +35,6 @@ export const router = sentryCreateBrowserRouter([
         Component: Root,
         children: [
           {
-            path: '',
-            Component: withCustomer(CollectionFlow),
-          },
-          {
             path: 'collection-flow',
             Component: withCustomer(CollectionFlow),
           },

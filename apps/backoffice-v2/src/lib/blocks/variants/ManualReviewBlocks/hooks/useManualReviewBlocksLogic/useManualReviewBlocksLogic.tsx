@@ -1,4 +1,3 @@
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
@@ -9,6 +8,11 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
+import { StateTag, valueOrNA } from '@ballerine/common';
+import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
+import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
+import { titleCase } from 'string-ts';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -56,10 +60,17 @@ export const useManualReviewBlocksLogic = () => {
     [mutateRevisionTaskById],
   );
 
+  const { onEditCollectionFlow } = useEditCollectionFlow();
+
   const businessInformation = useEntityInfoBlock({
-    entity: workflow?.context?.entity ?? {},
+    entity: workflow?.context?.entity,
     workflow,
-    entityDataAdditionalInfo,
+    isEditDisabled: [
+      !caseState.actionButtonsEnabled,
+      !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
+    ].some(Boolean),
+    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
@@ -100,9 +111,29 @@ export const useManualReviewBlocksLogic = () => {
       },
     },
   });
+
+  const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({
+    entity: workflow?.context?.entity,
+    workflow,
+    predefinedOrder:
+      workflow?.workflowDefinition?.config?.uiOptions?.backoffice?.blocks?.businessInformation
+        ?.predefinedOrder ?? [],
+  });
+
+  const entityAddressBlock = useAddressBlock({
+    address: workflow?.context?.entity?.data?.address,
+    title: `${valueOrNA(titleCase(workflow?.context?.entity?.type ?? ''))} Address`,
+    workflow,
+  });
+
   const blocks = useMemo(() => {
-    return [...businessInformation, ...documentsBlocks];
-  }, [businessInformation, documentsBlocks]);
+    return [
+      ...businessInformation,
+      ...entityAdditionalInfoBlock,
+      ...entityAddressBlock,
+      ...documentsBlocks,
+    ];
+  }, [businessInformation, documentsBlocks, entityAdditionalInfoBlock, entityAddressBlock]);
 
   return {
     blocks,
