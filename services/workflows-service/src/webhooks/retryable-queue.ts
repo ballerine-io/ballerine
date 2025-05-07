@@ -1,3 +1,4 @@
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
 import { ConnectionOptions, DefaultJobOptions, Job, Processor, Queue, Worker } from 'bullmq';
 
@@ -18,7 +19,9 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
         onRetry?: (job: Job<T, void, string>, err: Error, attemptsLeft: number) => void;
       };
     },
+    private readonly logger: AppLoggerService,
   ) {
+    this.logger.log('Creating queue', { queueName });
     const {
       connection,
       handlers,
@@ -29,6 +32,7 @@ export class RetryableQueue<T extends Record<string, unknown> = any> {
     this.dlq = new Queue(`${queueName}-dlq`, { connection });
 
     if (env.IS_QUEUE_WORKER) {
+      this.logger.log('Creating worker for queue', { queueName });
       this.worker = new Worker(queueName, handlers.handleJob, { connection });
       this.dlqWorker = new Worker(`${queueName}-dlq`, handlers.handleDLQJob, { connection });
 
