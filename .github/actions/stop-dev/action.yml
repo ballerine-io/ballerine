@@ -54,11 +54,37 @@ runs:
           done < list_deployments.txt
         }
 
+        scale_namespace_statefulsets() {
+          local namespace=$1
+          local exclude_statefulsets=$2
+          echo "Processing statefulsets in namespace: $namespace"          
+          kubectl get statefulset -n $namespace | awk 'NR > 1 {print $1}' > list_statefulsets.txt
+          while read STATEFULSET_NAME; do
+            if [[ " $exclude_statefulsets " == *" $STATEFULSET_NAME "* ]]; then
+              echo "Skipping excluded statefulset: $STATEFULSET_NAME"
+              continue
+            fi
+            kubectl scale statefulset "$STATEFULSET_NAME" --replicas=0 --namespace="$namespace"
+            echo "Scaled down statefulset $STATEFULSET_NAME to 0 replicas in namespace $namespace"
+          done < list_statefulsets.txt
+        }
+
+        scale_down_ingress_controllers() {          
+          kubectl scale deployment aws-load-balancer-controller --replicas=0 -n kube-system
+          kubectl scale deployment ext-ngnix-controller-controller --replicas=0 -n kube-system
+          kubectl scale deployment int-ngnix-controller-controller --replicas=0 -n kube-system
+          kubectl scale deployment nginx-ingress-preview-controller --replicas=0 -n kube-system
+        }
+
         scale_namespace_deployments "appsmith" ""
 
         scale_namespace_deployments "default" "twingate-eks-connector-2"
 
-        scale_namespace_deployments "monitoring" "loki-v3-gateway"
+        scale_namespace_deployments "monitoring" ""
+
+        scale_namespace_statefulsets "monitoring" ""
+
+        scale_down_ingress_controllers
 
         for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
           scale_namespace_deployments "$ns" ""
