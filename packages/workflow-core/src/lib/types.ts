@@ -1,5 +1,5 @@
 import { RiskRulePlugin } from '@/lib/plugins/common-plugin/risk-rules-plugin';
-import type { AnyRecord } from '@ballerine/common';
+import { AnyRecord, TWorkflowHelpers } from '@ballerine/common';
 import type { MachineConfig, MachineOptions } from 'xstate';
 import type {
   ChildWorkflowPluginParams,
@@ -86,6 +86,7 @@ export interface WorkflowOptions {
   invokeChildWorkflowAction?: ChildCallbackable['invokeChildWorkflowAction'];
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
+  helpers: TWorkflowHelpers;
 }
 
 export interface WorkflowRunnerArgs {
@@ -100,6 +101,7 @@ export interface WorkflowRunnerArgs {
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
   enableLogging?: boolean;
+  helpers: TWorkflowHelpers;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;

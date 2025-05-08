@@ -241,6 +241,58 @@ export const amlContext = {
   },
 };
 
+export const amlV2ContextNoHits = {
+  entity: {
+    data: {
+      additionalInfo: {
+        mainRepresentative: {
+          ballerineEntityId: 'NO_HITS',
+        },
+      },
+    },
+  },
+};
+
+export const amlV2ContextWithMainRepresentative = {
+  entity: {
+    data: {
+      additionalInfo: {
+        mainRepresentative: {
+          ballerineEntityId: '123',
+        },
+      },
+    },
+  },
+};
+
+export const amlV2ContextWithUbos = {
+  entity: {
+    data: {
+      additionalInfo: {
+        ubos: [
+          {
+            ballerineEntityId: '123',
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const amlV2ContextWithDirectors = {
+  entity: {
+    data: {
+      additionalInfo: {
+        directors: [
+          {
+            ballerineEntityId: '123',
+          },
+        ],
+      },
+    },
+  },
+};
+
 export const ubosMismatchContext = Object.freeze({
   state: 'personal_details',
   entity: {

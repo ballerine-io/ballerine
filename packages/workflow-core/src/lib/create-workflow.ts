@@ -4,6 +4,7 @@ import { WorkflowRunner } from './workflow-runner';
 export const createWorkflow: TCreateWorkflow = ({
   definition,
   config,
+  helpers,
   workflowActions,
   workflowContext,
   extensions,
@@ -15,6 +16,7 @@ export const createWorkflow: TCreateWorkflow = ({
 }) =>
   new WorkflowRunner({
     config,
+    helpers,
     definition,
     workflowActions,
     workflowContext,

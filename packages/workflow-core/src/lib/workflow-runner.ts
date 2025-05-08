@@ -1,5 +1,11 @@
 /* eslint-disable */
-import { AnyRecord, isObject, ProcessStatus, uniqueArray } from '@ballerine/common';
+import {
+  AnyRecord,
+  isObject,
+  ProcessStatus,
+  TWorkflowHelpers,
+  uniqueArray,
+} from '@ballerine/common';
 import { search } from 'jmespath';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
@@ -76,6 +82,7 @@ export class WorkflowRunner {
   #__currentState: string | undefined | symbol | number | any;
   private context: any;
   #__config: any;
+  #__helpers: TWorkflowHelpers;
   __extensions: WorkflowExtensions;
   #__debugMode: boolean;
   #__runtimeId: string;
@@ -97,6 +104,7 @@ export class WorkflowRunner {
       runtimeId,
       definition,
       config,
+      helpers,
       workflowActions,
       workflowContext,
       extensions,
@@ -110,6 +118,7 @@ export class WorkflowRunner {
   ) {
     // global and state specific extensions
     this.#__subscriptions = {};
+    this.#__helpers = helpers ?? {};
     this.__extensions = extensions ?? {};
     this.__extensions.statePlugins ??= [];
     this.#__debugMode = debugMode;
@@ -219,6 +228,7 @@ export class WorkflowRunner {
       stateNames: riskLevelPlugin.stateNames,
       rulesSource: riskLevelPlugin.rulesSource,
       action: callbackAction!,
+      helpers: this.#__helpers,
     });
   }
 
