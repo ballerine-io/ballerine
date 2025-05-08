@@ -9,17 +9,13 @@ import {
 } from '@ballerine/common';
 import z from 'zod';
 import { createRuleEngine, runRuleSet } from '../rule-engine';
-import { amlContext, context, ubosMismatchContext } from './data-helper';
+import { amlContext, context, helpers, ubosMismatchContext } from './data-helper';
 
 const mockData = {
   country: 'US',
   name: 'John',
   age: 35,
   createdAt: new Date().toISOString(),
-};
-
-const helpers = {
-  getEndUserById: async (id: string) => {},
 };
 
 const options = {

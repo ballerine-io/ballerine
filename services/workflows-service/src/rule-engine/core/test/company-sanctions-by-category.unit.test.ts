@@ -6,10 +6,7 @@ import {
   ValidationFailedError,
 } from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
-
-const helpers = {
-  getEndUserById: async (id: string) => {},
-};
+import { helpers } from './data-helper';
 
 describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
   it('should pass when sanctions categories meet the default threshold (1)', async () => {

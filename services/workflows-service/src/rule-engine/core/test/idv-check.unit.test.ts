@@ -7,10 +7,7 @@ import {
   ValidationFailedError,
 } from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
-
-const helpers = {
-  getEndUserById: async (id: string) => {},
-};
+import { helpers } from './data-helper';
 
 describe('IDV_CHECK operator', () => {
   it('should pass when decision status is declined', async () => {

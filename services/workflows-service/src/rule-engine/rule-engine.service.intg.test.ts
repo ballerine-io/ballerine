@@ -1,5 +1,6 @@
 import { RuleSet } from '@ballerine/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { helpers } from './core/test/data-helper';
 import { RuleEngineService } from './rule-engine.service';
 
 describe('RuleEngineService', () => {
@@ -12,10 +13,6 @@ describe('RuleEngineService', () => {
 
     service = module.get<RuleEngineService>(RuleEngineService);
   });
-
-  const helpers = {
-    getEndUserById: async (id: string) => {},
-  };
 
   it('should run the IN_CASE_INSENSITIVE rule successfully', async () => {
     const rules: RuleSet = {
