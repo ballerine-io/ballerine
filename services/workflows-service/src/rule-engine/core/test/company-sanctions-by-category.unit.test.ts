@@ -7,6 +7,10 @@ import {
 } from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
 
+const helpers = {
+  getEndUserById: async (id: string) => {},
+};
+
 describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
   it('should pass when sanctions categories meet the default threshold (1)', async () => {
     const mockData = {
@@ -39,7 +43,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -84,7 +88,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -122,7 +126,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -160,7 +164,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -207,7 +211,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -233,7 +237,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -262,7 +266,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -301,7 +305,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -343,7 +347,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -386,7 +390,7 @@ describe('COMPANY_SANCTIONS_CATEGORIES operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
