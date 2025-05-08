@@ -25,21 +25,23 @@ class AmlCheckV2 extends BaseOperator<any, AmlCheckV2Params> {
 
     const context = result.data;
 
-    const ubosIds = context?.entity?.data?.additionalInfo?.ubos.map(
-      (ubo: { ballerineEntityId: string }) => ubo.ballerineEntityId,
-    );
+    const ubosIds =
+      context?.entity?.data?.additionalInfo?.ubos?.map(
+        (ubo: { ballerineEntityId: string }) => ubo.ballerineEntityId,
+      ) ?? [];
 
-    const directorsIds = context?.entity?.data?.additionalInfo?.directors.map(
-      (director: { ballerineEntityId: string }) => director.ballerineEntityId,
-    );
+    const directorsIds =
+      context?.entity?.data?.additionalInfo?.directors?.map(
+        (director: { ballerineEntityId: string }) => director.ballerineEntityId,
+      ) ?? [];
 
     const mainRepresentativeEndUserId =
       context?.entity?.data?.additionalInfo?.mainRepresentative?.ballerineEntityId;
 
     const endUsers = await Promise.all(
-      [...ubosIds, ...directorsIds, mainRepresentativeEndUserId].map(endUserId =>
-        helpers.getEndUserById(endUserId),
-      ),
+      [...ubosIds, ...directorsIds, mainRepresentativeEndUserId]
+        .filter(Boolean)
+        .map(endUserId => helpers.getEndUserById(endUserId)),
     );
 
     if (isEmpty(endUsers)) {
