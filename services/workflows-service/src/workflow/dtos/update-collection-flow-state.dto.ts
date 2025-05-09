@@ -1,6 +1,7 @@
+import { CollectionFlowStatusesEnum, CollectionFlowStepStatesEnum } from '@ballerine/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class CollectionFlowStep {
   @ApiProperty({
@@ -17,6 +18,7 @@ class CollectionFlowStep {
     description: 'Current state of the step',
   })
   @IsString()
+  @IsEnum(CollectionFlowStepStatesEnum)
   state!: string;
 
   @ApiProperty({
@@ -44,6 +46,7 @@ export class UpdateCollectionFlowStateDto {
     description: 'The status of the collection flow',
   })
   @IsString()
+  @IsEnum(CollectionFlowStatusesEnum)
   status!: string;
 
   @ApiProperty({

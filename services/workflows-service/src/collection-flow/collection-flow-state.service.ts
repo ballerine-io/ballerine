@@ -6,7 +6,6 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
-  CollectionFlowStateSchema,
   CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
@@ -34,8 +33,6 @@ import { Type } from '@sinclair/typebox';
 
 @Injectable()
 export class CollectionFlowStateService {
-  private readonly CollectionFlowStateValidator = TypeCompiler.Compile(CollectionFlowStateSchema);
-
   constructor(
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly uiDefinitionService: UiDefinitionService,
@@ -299,9 +296,6 @@ export class CollectionFlowStateService {
       throw new NotFoundException('Collection flow state not found.');
     }
 
-    // Validating structure of new state
-    this.validateInputCollectionFlowState(newState);
-
     // Ensuring steps are valid and following structure of uiDefinition
     this.validateCollectionFlowSteps(newState, uiDefinition);
 
@@ -322,19 +316,6 @@ export class CollectionFlowStateService {
       projectIds?.[0]!,
     );
     return this.getCollectionFlowState(workflowId, projectIds);
-  }
-
-  private validateInputCollectionFlowState(newState: UpdateCollectionFlowStateDto) {
-    const isValid = this.CollectionFlowStateValidator.Check(newState);
-    const errors = Array.from(this.CollectionFlowStateValidator.Errors(newState));
-
-    if (!isValid) {
-      this.appLogger.error('Invalid collection flow state.', {
-        newState,
-        errors,
-      });
-      throw new BadRequestException('Invalid collection flow state.');
-    }
   }
 
   private validateCollectionFlowSteps(
