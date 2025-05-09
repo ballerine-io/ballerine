@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.7.141
+
+### Patch Changes
+
+- Bump
+
 ## 0.7.139
 
 ### Patch Changes
