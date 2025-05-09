@@ -18,10 +18,6 @@ export const fetchCollectionFlowState = async (workflowId: string) => {
   return handleZodError(error, result);
 };
 
-const UpdateCollectionFlowStateResponseSchema = z.object({
-  state: CollectionFlowStateSchema,
-});
-
 export const updateCollectionFlowState = async (
   workflowId: string,
   state: TCollectionFlowState,
@@ -29,7 +25,7 @@ export const updateCollectionFlowState = async (
   const [result, error] = await apiClient({
     endpoint: `../external/workflows/collection-flow/${workflowId}/state`,
     method: Method.PUT,
-    schema: UpdateCollectionFlowStateResponseSchema,
+    schema: CollectionFlowStateSchema,
     body: state,
   });
 

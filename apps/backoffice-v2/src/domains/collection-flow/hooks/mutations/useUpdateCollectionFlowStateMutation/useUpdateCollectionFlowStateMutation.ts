@@ -4,6 +4,7 @@ import { queryClient } from '@/lib/react-query/query-client';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { t } from 'i18next';
+import { collectionFlowQueryKeys } from '@/domains/collection-flow/query-keys';
 
 export const useUpdateCollectionFlowStateMutation = () => {
   return useMutation({
@@ -19,8 +20,6 @@ export const useUpdateCollectionFlowStateMutation = () => {
     },
     onSuccess: (_, { action }) => {
       toast.success(t(`toast:${action}.success`));
-
-      queryClient.invalidateQueries();
     },
     onError: (error, { action }) => {
       const translatedError = t(`toast:${action}.error`, {
@@ -30,7 +29,7 @@ export const useUpdateCollectionFlowStateMutation = () => {
       toast.error(translatedError);
     },
     onSettled: () => {
-      void queryClient.invalidateQueries();
+      void queryClient.invalidateQueries(collectionFlowQueryKeys._def);
     },
   });
 };

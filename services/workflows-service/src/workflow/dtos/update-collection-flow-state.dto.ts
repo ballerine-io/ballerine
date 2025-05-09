@@ -14,7 +14,8 @@ class CollectionFlowStep {
 
   @ApiProperty({
     required: true,
-    type: String,
+    enum: CollectionFlowStepStatesEnum,
+    enumName: 'CollectionFlowStepStatesEnum',
     description: 'Current state of the step',
   })
   @IsString()
@@ -42,7 +43,8 @@ export class UpdateCollectionFlowStateDto {
 
   @ApiProperty({
     required: true,
-    type: String,
+    enum: CollectionFlowStatusesEnum,
+    enumName: 'CollectionFlowStatusesEnum',
     description: 'The status of the collection flow',
   })
   @IsString()

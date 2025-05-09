@@ -71,12 +71,6 @@ export class WorkflowCollectionFlowController {
     @common.Param('workflowId') workflowId: string,
     @common.Body() body: UpdateCollectionFlowStateDto,
   ) {
-    try {
-      return await this.collectionFlowStateService.updateCollectionFlowState(workflowId, body, [
-        projectId,
-      ]);
-    } catch (error) {
-      throw error;
-    }
+    return this.collectionFlowStateService.updateCollectionFlowState(workflowId, body, [projectId]);
   }
 }
