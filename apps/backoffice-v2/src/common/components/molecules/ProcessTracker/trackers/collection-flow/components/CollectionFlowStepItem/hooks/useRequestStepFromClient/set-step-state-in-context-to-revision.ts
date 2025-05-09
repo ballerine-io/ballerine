@@ -1,4 +1,4 @@
-import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { TCollectionFlowState } from '@/domains/collection-flow/schemas';
 import {
   CollectionFlowStepStatesEnum,
   TCollectionFlowStep,
@@ -6,17 +6,25 @@ import {
 } from '@ballerine/common';
 
 export const updateStepStateAndReasonInContext = (
-  context: TWorkflowById['context'],
+  collectionFlowState: TCollectionFlowState,
   step: TCollectionFlowStep,
   state: keyof typeof CollectionFlowStepStatesEnum,
   reason: string | undefined,
 ) => {
-  const contextClone = structuredClone(context);
+  const stateCloneClone = structuredClone(collectionFlowState);
 
-  updateCollectionFlowStep(contextClone, step.stepName, {
-    state,
-    reason,
-  });
+  updateCollectionFlowStep(
+    {
+      collectionFlow: {
+        state: stateCloneClone,
+      },
+    },
+    step.stepName,
+    {
+      state,
+      reason,
+    },
+  );
 
-  return contextClone;
+  return stateCloneClone;
 };

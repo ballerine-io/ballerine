@@ -1,8 +1,10 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useUpdateWorkflowByIdMutation } from '@/domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { CollectionFlowStepStatesEnum, TCollectionFlowStep } from '@ballerine/common';
 import { useCallback } from 'react';
 import { updateStepStateAndReasonInContext } from './set-step-state-in-context-to-revision';
+import { useUpdateCollectionFlowStateMutation } from '@/domains/collection-flow/hooks/mutations/useUpdateCollectionFlowStateMutation/useUpdateCollectionFlowStateMutation';
+import { useCollectionFlowStateQuery } from '@/domains/collection-flow/hooks/queries/useCollectionFlowStateQuery/useCollectionFlowStateQuery';
+import { toast } from 'sonner';
 
 export const useRequestStepFromClient = ({
   workflowId,
@@ -13,40 +15,55 @@ export const useRequestStepFromClient = ({
   context: TWorkflowById['context'];
   step: TCollectionFlowStep;
 }) => {
-  const { isLoading, mutate: updateWorkflowById } = useUpdateWorkflowByIdMutation({
-    workflowId,
-  });
+  const { data: collectionFlowState } = useCollectionFlowStateQuery(workflowId);
+  const { isLoading, mutate: updateCollectionFlowState } = useUpdateCollectionFlowStateMutation();
 
   const onRequestStepFromClient = useCallback(
     (reason: string) => {
+      if (!collectionFlowState?.state) {
+        console.log('Collection flow state is missing during step request.');
+        toast.error('Something went wrong. Please try again later.');
+
+        return;
+      }
+
       const updatedContext = updateStepStateAndReasonInContext(
-        context,
+        collectionFlowState.state,
         step,
         CollectionFlowStepStatesEnum.revision,
         reason,
       );
 
-      updateWorkflowById({
-        context: updatedContext,
+      updateCollectionFlowState({
+        workflowId,
+        state: updatedContext,
         action: 'step_request',
       });
     },
-    [updateWorkflowById, context, step],
+    [updateCollectionFlowState, context, step, workflowId],
   );
 
   const onCancelStepRequest = useCallback(() => {
+    if (!collectionFlowState?.state) {
+      console.log('Collection flow state is missing during step request cancellation.');
+      toast.error('Something went wrong. Please try again later.');
+
+      return;
+    }
+
     const updatedContext = updateStepStateAndReasonInContext(
-      context,
+      collectionFlowState.state,
       step,
       CollectionFlowStepStatesEnum.completed,
       undefined,
     );
 
-    updateWorkflowById({
-      context: updatedContext,
+    updateCollectionFlowState({
+      workflowId,
+      state: updatedContext,
       action: 'step_cancel',
     });
-  }, [context, step, updateWorkflowById]);
+  }, [updateCollectionFlowState, step, workflowId]);
 
   return { onRequestStepFromClient, onCancelStepRequest, isLoading };
 };
