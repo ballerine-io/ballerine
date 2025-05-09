@@ -51,9 +51,15 @@ import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
 
 @Module({
-  controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
+  controllers: [
+    WorkflowControllerExternal,
+    WorkflowControllerInternal,
+    WorkflowLogController,
+    WorkflowCollectionFlowController,
+  ],
   imports: [
     ACLModule,
     forwardRef(() => AuthModule),

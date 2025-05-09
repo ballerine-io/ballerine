@@ -6,6 +6,7 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import {
+  CollectionFlowStateSchema,
   CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
@@ -13,7 +14,7 @@ import {
   TCollectionFlowStep,
   updateCollectionFlowStep,
 } from '@ballerine/common';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   Document,
   DocumentDecision,
@@ -25,14 +26,22 @@ import { findEntityFieldsDefinition } from './helpers/find-entity-fields-definit
 import { findDocumentDefinitionByTypeAndCategory } from './helpers/find-document-definition-by-type-and-category';
 import { findBusinessDocumentDefinitionByTypeAndCategory } from './helpers/find-business-document-definition';
 import { EntityType, TEntityType } from './enums';
+import { CollectionFlowMissingException } from './exceptions/collection-flow-missing.exception';
+import { UpdateCollectionFlowStateDto } from '@/workflow/dtos/update-collection-flow-state.dto';
+import { TypeCompiler } from '@sinclair/typebox/compiler';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { Type } from '@sinclair/typebox';
 
 @Injectable()
 export class CollectionFlowStateService {
+  private readonly CollectionFlowStateValidator = TypeCompiler.Compile(CollectionFlowStateSchema);
+
   constructor(
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly documentService: DocumentService,
     protected readonly workflowService: WorkflowService,
+    protected readonly appLogger: AppLoggerService,
   ) {}
 
   async getCollectionFlowState(workflowId: string, projectIds: TProjectIds) {
@@ -67,7 +76,7 @@ export class CollectionFlowStateService {
     const collectionFlowState = getCollectionFlowState(workflowRuntimeData.context);
 
     if (!collectionFlowState) {
-      throw new NotFoundException('Collection flow state not found');
+      throw new CollectionFlowMissingException();
     }
 
     return this.computeCollectionFlowState(
@@ -184,9 +193,15 @@ export class CollectionFlowStateService {
       }
     }
 
-    return collectionFlowState.steps.find(
+    const firstNotCompletedStep = collectionFlowState.steps.find(
       (step: TCollectionFlowStep) => step.state !== CollectionFlowStepStatesEnum.completed,
-    )?.stepName;
+    );
+
+    if (firstNotCompletedStep) {
+      return firstNotCompletedStep.stepName;
+    }
+
+    return collectionFlowState.steps?.at(-1)?.stepName;
   }
 
   private computeCurrentStatus(collectionFlowState: TCollectionFlowState) {
@@ -250,5 +265,122 @@ export class CollectionFlowStateService {
     );
 
     return entityIds;
+  }
+
+  async updateCollectionFlowState(
+    workflowId: string,
+    newState: UpdateCollectionFlowStateDto,
+    projectIds: TProjectIds,
+  ) {
+    const workflow = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowId,
+      {
+        select: {
+          context: true,
+          workflowDefinitionId: true,
+        },
+      },
+      projectIds,
+    );
+
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflow.workflowDefinitionId,
+      'collection_flow',
+      projectIds,
+    );
+
+    if (!uiDefinition) {
+      throw new NotFoundException('Collection flow UI definition not found.');
+    }
+
+    const collectionFlowState = getCollectionFlowState(workflow.context);
+
+    if (!collectionFlowState) {
+      throw new NotFoundException('Collection flow state not found.');
+    }
+
+    // Validating structure of new state
+    this.validateInputCollectionFlowState(newState);
+
+    // Ensuring steps are valid and following structure of uiDefinition
+    this.validateCollectionFlowSteps(newState, uiDefinition);
+
+    // Ensuring current step is valid and exists in uiDefinition
+    this.validateCollectionFlowCurrentStep(newState, uiDefinition);
+
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowId,
+      {
+        context: {
+          ...workflow.context,
+          collectionFlow: {
+            ...workflow.context.collectionFlow,
+            state: newState,
+          },
+        },
+      },
+      projectIds?.[0]!,
+    );
+    return this.getCollectionFlowState(workflowId, projectIds);
+  }
+
+  private validateInputCollectionFlowState(newState: UpdateCollectionFlowStateDto) {
+    const isValid = this.CollectionFlowStateValidator.Check(newState);
+    const errors = Array.from(this.CollectionFlowStateValidator.Errors(newState));
+
+    if (!isValid) {
+      this.appLogger.error('Invalid collection flow state.', {
+        newState,
+        errors,
+      });
+      throw new BadRequestException('Invalid collection flow state.');
+    }
+  }
+
+  private validateCollectionFlowSteps(
+    newState: UpdateCollectionFlowStateDto,
+    uiDefinition: UiDefinition,
+  ) {
+    const collectionFlowSteps = (
+      uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }
+    ).elements;
+
+    const uiDefinitionStepsSchema = Type.Tuple(
+      collectionFlowSteps.map(step =>
+        Type.Object({
+          stepName: Type.Literal(step.stateName),
+        }),
+      ),
+    );
+
+    const StepsValidator = TypeCompiler.Compile(uiDefinitionStepsSchema);
+
+    const isValid = StepsValidator.Check(newState.steps);
+
+    if (!isValid) {
+      const errors = Array.from(StepsValidator.Errors(newState.steps));
+      this.appLogger.error('Invalid collection flow steps.', {
+        newState,
+        errors,
+      });
+      throw new BadRequestException('Invalid collection flow steps.');
+    }
+  }
+
+  private validateCollectionFlowCurrentStep(
+    newState: UpdateCollectionFlowStateDto,
+    uiDefinition: UiDefinition,
+  ) {
+    const collectionFlowSteps = (
+      uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }
+    ).elements;
+
+    const currentStep = collectionFlowSteps.find(s => s.stateName === newState.currentStep);
+
+    if (!currentStep) {
+      throw new BadRequestException(
+        `Current step ${newState.currentStep} not exists in the collection flow.`,
+      );
+    }
   }
 }
