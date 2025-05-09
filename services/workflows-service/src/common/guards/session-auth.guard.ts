@@ -33,7 +33,8 @@ export class SessionAuthGuard implements CanActivate {
         user: authenticatedEntity?.user,
         type: 'user',
       });
-      return true;
+      
+return true;
     }
 
     throw new UnauthorizedException('Unauthorized');

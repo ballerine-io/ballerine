@@ -5,6 +5,7 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 // eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
+// eslint-disable-next-line import/no-cycle
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -23,7 +24,9 @@ import { ProjectModule } from '@/project/project.module';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { StorageService } from '@/storage/storage.service';
+// eslint-disable-next-line import/no-cycle
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+// eslint-disable-next-line import/no-cycle
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UserRepository } from '@/user/user.repository';
 import { UserService } from '@/user/user.service';
@@ -50,6 +53,7 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+// eslint-disable-next-line import/no-cycle
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
 

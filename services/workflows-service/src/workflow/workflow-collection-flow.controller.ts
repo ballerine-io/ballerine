@@ -53,6 +53,7 @@ export class WorkflowCollectionFlowController {
           state: null,
         };
       }
+
       throw error;
     }
   }

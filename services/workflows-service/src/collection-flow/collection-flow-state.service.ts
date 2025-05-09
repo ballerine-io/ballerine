@@ -313,8 +313,9 @@ export class CollectionFlowStateService {
           },
         },
       },
-      projectIds?.[0]!,
+      projectIds![0]!,
     );
+
     return this.getCollectionFlowState(workflowId, projectIds);
   }
 
