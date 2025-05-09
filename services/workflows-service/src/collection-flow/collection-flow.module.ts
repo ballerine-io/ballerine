@@ -39,7 +39,7 @@ import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.s
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CollectionFlowEntityService } from './collection-flow-entity.service';
 import { CollectionFlowEntityController } from './controllers/collection-flow.entity.controller';
 import { DocumentModule } from '@/document/document.module';
@@ -53,11 +53,11 @@ import { CollectionFlowStateService } from './collection-flow-state.service';
     CustomerModule,
     TokenAuthModule,
     UiDefinitionModule,
-    BusinessReportModule,
+    forwardRef(() => BusinessReportModule),
     AlertModule,
     DataAnalyticsModule,
     RuleEngineModule,
-    WorkflowModule,
+    forwardRef(() => WorkflowModule),
     DocumentModule,
   ],
   controllers: [
@@ -99,5 +99,6 @@ import { CollectionFlowStateService } from './collection-flow-state.service';
     CollectionFlowEntityService,
     CollectionFlowStateService,
   ],
+  exports: [CollectionFlowStateService],
 })
 export class CollectionFlowModule {}

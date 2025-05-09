@@ -50,6 +50,7 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
@@ -68,6 +69,7 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    forwardRef(() => CollectionFlowModule),
   ],
   providers: [
     WorkflowDefinitionRepository,
