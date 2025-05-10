@@ -86,7 +86,7 @@ export interface WorkflowOptions {
   invokeChildWorkflowAction?: ChildCallbackable['invokeChildWorkflowAction'];
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
-  helpers: TWorkflowHelpers;
+  helpers?: TWorkflowHelpers;
 }
 
 export interface WorkflowRunnerArgs {
@@ -101,7 +101,7 @@ export interface WorkflowRunnerArgs {
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
   enableLogging?: boolean;
-  helpers: TWorkflowHelpers;
+  helpers?: TWorkflowHelpers;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
