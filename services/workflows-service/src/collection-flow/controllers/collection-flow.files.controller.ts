@@ -192,7 +192,7 @@ export class CollectionFlowFilesController {
         status: DocumentStatus.provided,
         properties: isObject(document.properties) ? document.properties : {},
         metadata,
-        comment: document.comment ?? undefined,
+        comment: undefined,
         file,
         projectId: tokenScope.projectId,
         workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
