@@ -62,9 +62,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { FileModule } from '@/providers/file/file.module';
 import { FileRepository } from '@/storage/storage.repository';
-import { WorkflowLogService } from './workflow-log.service';
-import { WorkflowLogRepository } from './workflow-log.repository';
-import { WorkflowLogController } from './workflow-log.controller';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   controllers: [
@@ -92,6 +90,7 @@ import { WorkflowLogController } from './workflow-log.controller';
     forwardRef(() => CollectionFlowModule),
     forwardRef(() => KycModule),
     AssessmentsModule,
+    WebhooksModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
