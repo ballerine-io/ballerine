@@ -53,6 +53,7 @@ import { MerchantMonitoringModule } from './merchant-monitoring/merchant-monitor
 import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
 import { AssessmentsModule } from './assessments/assessments.module';
 import { KycModule } from './kyc/kyc.module';
+import { QueueModule } from '@/common/queue/queue.module';
 
 @Module({
   controllers: [SwaggerController],
@@ -118,6 +119,7 @@ import { KycModule } from './kyc/kyc.module';
     SecretsManagerModule,
     KycModule,
     AssessmentsModule,
+    QueueModule,
   ],
   providers: [
     {

@@ -16,7 +16,7 @@ import { MetricsService } from '@/metrics/service/metrics.service';
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import type { TProjectId, TProjectIds } from '@/types';
 import * as common from '@nestjs/common';
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
@@ -177,5 +177,10 @@ export class MetricsController {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Static<typeof HomeMetricsSchema>> {
     return await this.metricsService.getHomeMetrics(currentProjectId);
+  }
+
+  @Get('/prometheus')
+  async getPrometheusMetrics() {
+    return { status: 'Metrics are being collected by OpenTelemetry' };
   }
 }
