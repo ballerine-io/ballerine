@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/kyb-app",
   "private": true,
-  "version": "0.3.172",
+  "version": "0.3.173",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,10 +16,10 @@
     "test:dev": "vitest"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.2.42",
-    "@ballerine/common": "^0.9.95",
-    "@ballerine/workflow-browser-sdk": "0.6.118",
-    "@ballerine/ui": "0.7.141",
+    "@ballerine/blocks": "0.2.43",
+    "@ballerine/common": "^0.9.96",
+    "@ballerine/workflow-browser-sdk": "0.6.119",
+    "@ballerine/ui": "0.7.142",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-icons": "^1.3.0",
     "@rjsf/core": "^5.9.0",
@@ -65,8 +65,8 @@
     "zod": "^3.23.4"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.39",
-    "@ballerine/eslint-config-react": "^2.0.39",
+    "@ballerine/config": "^1.1.40",
+    "@ballerine/eslint-config-react": "^2.0.40",
     "@jest/globals": "^29.7.0",
     "@sentry/vite-plugin": "^2.9.0",
     "@testing-library/jest-dom": "^6.1.4",
