@@ -3,7 +3,10 @@ import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 import { Base64 } from 'js-base64';
 
-const path = process.env.CI ? '.env.example' : '.env';
+function getEnvFilePath() {
+  return process.env.ENV_FILE_NAME || (process.env.CI ? '.env.example' : '.env');
+}
+const path = getEnvFilePath();
 
 config({ path });
 

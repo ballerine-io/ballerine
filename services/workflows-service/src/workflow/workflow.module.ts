@@ -50,9 +50,7 @@ import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { FileModule } from '@/providers/file/file.module';
 import { FileRepository } from '@/storage/storage.repository';
-import { WorkflowLogService } from './workflow-log.service';
-import { WorkflowLogRepository } from './workflow-log.repository';
-import { WorkflowLogController } from './workflow-log.controller';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
@@ -71,6 +69,7 @@ import { WorkflowLogController } from './workflow-log.controller';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    WebhooksModule,
   ],
   providers: [
     WorkflowDefinitionRepository,

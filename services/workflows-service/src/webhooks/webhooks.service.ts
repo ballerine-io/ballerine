@@ -21,10 +21,9 @@ const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) 
     { extra: errorPayload },
   );
 };
-
 @Injectable()
 export class WebhooksService {
-  private queue: RetryableQueue | null = null;
+  private queue: RetryableQueue<OutgoingWebhookJobData, string> | null = null;
   private notified = false;
 
   constructor(
@@ -56,6 +55,7 @@ export class WebhooksService {
 
     redis.on('connect', () => {
       this.notified = false;
+      this.logger.log('Redis connected.');
       this.setupQueues(redis);
     });
 
@@ -65,57 +65,80 @@ export class WebhooksService {
   }
 
   private setupQueues(redis: IORedis) {
-    this.queue = new RetryableQueue<OutgoingWebhookJobData>('outgoing-webhooks', {
-      connection: redis,
-      defaultJobOptions: { attempts: 5, backoff: { type: 'exponential', delay: 5_000 } },
-      handlers: {
-        handleJob: async job => {
-          try {
-            const res = await this.httpService.axiosRef.request(job.data);
+    if (this.queue) {
+      return;
+    }
 
-            return res.data;
-          } catch (error) {
-            // Rethrow useful error data
-            if (isAxiosError(error)) {
-              throw error.response?.data ?? error;
+    this.queue = new RetryableQueue<OutgoingWebhookJobData, string>(
+      'outgoing-webhooks',
+      {
+        connection: redis,
+        defaultJobOptions: { attempts: 5, backoff: { type: 'exponential', delay: 5_000 } },
+        handlers: {
+          handleJob: async job => {
+            try {
+              const res = await this.httpService.axiosRef.request(job.data);
+
+              return res.data;
+            } catch (error) {
+              // Rethrow useful error data
+              if (isAxiosError(error)) {
+                throw error.response?.data ?? error;
+              }
+              throw error; // Ensure non-Axios errors are also rethrown
             }
-          }
-        },
-        handleDLQJob: async job => {
-          this.logger.error('Failed to send webhook through queue system.', {
-            id: job.id,
-            jobData: job.data,
-            error: job.data.error,
-          });
+          },
+          handleDLQJob: async job => {
+            this.logger.error('Failed to send webhook through queue system (now in DLQ).', {
+              dlqJobId: job.id,
+              originalJobId: job.data.originalJobContext.id,
+              originalJobName: job.data.originalJobContext.name,
+              originalQueueName: job.data.originalJobContext.queueName,
+              errorDetails: job.data.error,
+            });
 
-          captureWebhookFailureWithSentry({
-            ...job.data.error,
-            url: job.data.url,
-            method: job.data.method,
-          });
+            captureWebhookFailureWithSentry({
+              dlqJobId: job.id,
+              originalJobId: job.data.originalJobContext.id,
+              originalJobName: job.data.originalJobContext.name,
+              url: job.data.originalData.url,
+              method: job.data.originalData.method,
+              ...job.data.error,
+            });
 
-          // Process unsent data
-          // ...
-        },
-        onRetry: (job, err, attemptsLeft) => {
-          this.logger.warn(`Failed to send webhook. Retrying... ${attemptsLeft} attempts left.`, {
-            id: job.id,
-            jobData: job.data,
-            error: err,
-          });
+            this.logger.log('Further processing for DLQ job (e.g., custom notifications, saving state):', {
+              originalData: job.data.originalData,
+            });
+          },
+          onRetry: (job, err, attemptsLeft) => {
+            this.logger.warn(`Failed to send webhook. Retrying... ${attemptsLeft} attempts left.`, {
+              id: job.id,
+              jobData: job.data,
+              error: err,
+            });
+          },
         },
       },
-    });
+      this.logger,
+    );
 
     this.bullBoard.boardInstance.setQueues(
       [this.queue.queue, this.queue.dlq].map(queue => new BullMQAdapter(queue)),
     );
+
+    this.logger.log('Queue system setup complete. (BullMQ)');
   }
 
-  private degradeQueueSystem(err?: Error) {
+  private async degradeQueueSystem(err?: Error) {
     if (!this.notified) {
       this.logger.log('Queue system in degraded mode due to Redis unavailability.', { err });
       this.notified = true;
+    }
+
+    try {
+      await this.queue?.shutdown();
+    } catch (shutdownErr) {
+      this.logger.warn('Failed shutting down queue cleanly during degradation.', { shutdownErr });
     }
 
     this.queue = null;
@@ -157,8 +180,30 @@ export class WebhooksService {
       try {
         return await this.queue.queue.add(name, requestData);
       } catch (error) {
-        this.logger.error('Failed to add webhook job to the queue:: ', { error });
-        this.logger.log('Attempting to send the request directly...');
+        // Enhanced logging and Sentry reporting for enqueue failure
+        const enqueueErrorPayload = {
+          message: 'Failed to add webhook job to the queue',
+          jobName: name,
+          url: requestData.url,
+          method: requestData.method,
+          originalError: {
+            message: (error as Error).message,
+            stack: (error as Error).stack,
+            name: (error as Error).name,
+          },
+          jobData: requestData, // Log the data that was supposed to be queued
+        };
+
+        this.logger.error(
+          'CRITICAL: Failed to add webhook job to the queue. Attempting direct send as fallback.',
+          enqueueErrorPayload,
+        );
+        Sentry.captureException(new Error(enqueueErrorPayload.message, { cause: error }), {
+          extra: enqueueErrorPayload,
+          tags: { failureType: 'enqueue_failure' },
+        });
+
+        this.logger.log('Attempting to send the request directly after enqueue failure...');
       }
     }
 
