@@ -100,7 +100,7 @@ export class DocumentRepository {
     id: string,
     projectIds: TProjectId[],
     data: Prisma.DocumentUpdateInput,
-    args?: Prisma.DocumentUpdateManyArgs,
+    args?: Omit<Prisma.DocumentUpdateManyArgs, 'data'>,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
     return await transaction.document.updateMany(

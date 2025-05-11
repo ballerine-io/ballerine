@@ -53,6 +53,9 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
+import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
+import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class DocumentService {
@@ -64,6 +67,7 @@ export class DocumentService {
     protected readonly storageService: StorageService,
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly workflowDefinitionService: WorkflowDefinitionService,
+    protected readonly prismaService: PrismaService,
   ) {}
 
   async create(
@@ -398,76 +402,88 @@ export class DocumentService {
     args?: Prisma.DocumentUpdateManyArgs,
     transaction?: PrismaTransactionClient,
   ) {
-    const document = await this.repository.findById(id, projectIds);
-
-    if (!document) {
-      throw new BadRequestException(`Document with an id of "${id}" was not found`);
-    }
-
-    if (!document.workflowRuntimeDataId) {
-      throw new BadRequestException(`Attempted to update decision for a document with no workflow`);
-    }
-
-    const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
-      document.workflowRuntimeDataId,
-      projectIds,
-    );
-
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
-      );
-    }
-
-    const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
-      // @ts-expect-error -- the function expects properties not used by the function.
-      {
-        ...document,
-        issuer: {
-          country: document.issuingCountry,
-        },
-      },
-      workflowDefinition.documentsSchema,
-    );
-    const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
-    const shouldValidateDocument =
-      data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
-
-    if (shouldValidateDocument) {
-      const validatePropertiesSchema = ajv.compile(propertiesSchema);
-      const isValidPropertiesSchema = validatePropertiesSchema(
-        documentWithPropertiesSchema?.properties,
-      );
-
-      if (!isValidPropertiesSchema) {
-        throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
-      }
-    }
-
-    const Status = {
-      approve: 'approved',
-      reject: 'rejected',
-      revision: 'revisions',
-    } as const satisfies Record<Exclude<typeof data.decision, null>, DocumentDecision>;
-
-    const decision = data.decision ? Status[data.decision] : null;
-
-    await this.repository.updateById(
-      id,
-      projectIds,
-      {
-        ...data,
-        decision,
-      },
-      args,
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
-    );
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+    });
 
-    const documents = await this.repository.findManyWithFiles(projectIds);
+    return beginTransactionIfNotExist(async transaction => {
+      const document = await this.repository.findById(id, projectIds);
 
-    return this.formatDocuments({
-      documents,
-      documentSchema: workflowDefinition.documentsSchema,
+      if (!document) {
+        throw new BadRequestException(`Document with an id of "${id}" was not found`);
+      }
+
+      if (!document.workflowRuntimeDataId) {
+        throw new BadRequestException(
+          `Attempted to update decision for a document with no workflow`,
+        );
+      }
+
+      const workflowDefinition = await this.workflowDefinitionService.getByWorkflowRuntimeDataId(
+        document.workflowRuntimeDataId,
+        projectIds,
+      );
+
+      if (!workflowDefinition) {
+        throw new BadRequestException(
+          `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
+        );
+      }
+
+      const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
+        // @ts-expect-error -- the function expects properties not used by the function.
+        {
+          ...document,
+          issuer: {
+            country: document.issuingCountry,
+          },
+        },
+        workflowDefinition.documentsSchema,
+      );
+      const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
+      const shouldValidateDocument =
+        data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
+
+      if (shouldValidateDocument) {
+        const validatePropertiesSchema = ajv.compile(propertiesSchema);
+        const isValidPropertiesSchema = validatePropertiesSchema(
+          documentWithPropertiesSchema?.properties,
+        );
+
+        if (!isValidPropertiesSchema) {
+          throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
+        }
+      }
+
+      const Status = {
+        approve: 'approved',
+        reject: 'rejected',
+        revision: 'revisions',
+      } as const satisfies Record<Exclude<typeof data.decision, null>, DocumentDecision>;
+
+      const decision = data.decision ? Status[data.decision] : null;
+
+      await this.peristDocumentsDesicions(
+        [
+          {
+            id,
+            decision,
+            decisionReason: data.decisionReason as string,
+            comment: data.comment as string,
+          },
+        ],
+        projectIds,
+        transaction,
+      );
+
+      const documents = await this.repository.findManyWithFiles(projectIds);
+
+      return this.formatDocuments({
+        documents,
+        documentSchema: workflowDefinition.documentsSchema,
+      });
     });
   }
 
@@ -476,172 +492,231 @@ export class DocumentService {
     projectIds: TProjectId[],
     data: {
       decision: 'approve' | 'reject' | 'revision' | null;
-    },
+    } & Pick<Prisma.DocumentUpdateInput, 'decisionReason' | 'comment'>,
+    transaction?: PrismaTransactionClient,
   ) {
     if (!Array.isArray(ids) || !ids.length) {
       throw new BadRequestException('Document ids are required');
     }
 
-    let documents = await this.repository.findMany(projectIds, {
-      where: {
-        id: { in: ids },
-      },
-      include: {
-        workflowRuntimeData: {
-          include: {
-            workflowDefinition: true,
-          },
-        },
-      },
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
     });
 
-    const documentsWithPropertiesSchema = documents?.map(document =>
-      addPropertiesSchemaToDocument(
-        // @ts-expect-error -- the function expects properties not used by the function.
-        document,
-        (
-          document as typeof document & {
-            workflowRuntimeData: { workflowDefinition: WorkflowDefinition };
+    return await beginTransactionIfNotExist(async transaction => {
+      let documents = await this.repository.findMany(projectIds, {
+        where: {
+          id: { in: ids },
+        },
+        include: {
+          workflowRuntimeData: {
+            include: {
+              workflowDefinition: true,
+            },
+          },
+        },
+      });
+
+      const documentsWithPropertiesSchema = documents?.map(document =>
+        addPropertiesSchemaToDocument(
+          // @ts-expect-error -- the function expects properties not used by the function.
+          document,
+          (
+            document as typeof document & {
+              workflowRuntimeData: { workflowDefinition: WorkflowDefinition };
+            }
+          ).workflowRuntimeData.workflowDefinition.documentsSchema,
+        ),
+      );
+
+      documentsWithPropertiesSchema.forEach(document => {
+        const propertiesSchema = document.propertiesSchema ?? {};
+        const shouldValidateDocument =
+          data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
+
+        if (shouldValidateDocument) {
+          const validatePropertiesSchema = ajv.compile(propertiesSchema);
+          const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
+
+          if (!isValidPropertiesSchema) {
+            throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
           }
-        ).workflowRuntimeData.workflowDefinition.documentsSchema,
-      ),
-    );
-
-    documentsWithPropertiesSchema.forEach(document => {
-      const propertiesSchema = document.propertiesSchema ?? {};
-      const shouldValidateDocument =
-        data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
-
-      if (shouldValidateDocument) {
-        const validatePropertiesSchema = ajv.compile(propertiesSchema);
-        const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
-
-        if (!isValidPropertiesSchema) {
-          throw ValidationError.fromAjvError(validatePropertiesSchema.errors ?? []);
-        }
-      }
-    });
-
-    const Status = {
-      approve: 'approved',
-      reject: 'rejected',
-      revision: 'revisions',
-    } as const satisfies Record<Exclude<typeof data.decision, null>, DocumentDecision>;
-
-    const decision = data.decision ? Status[data.decision] : null;
-
-    await this.repository.updateMany(projectIds, {
-      where: {
-        id: { in: ids },
-      },
-      data: {
-        decision,
-      },
-    });
-
-    documents = await this.repository.findMany(projectIds, {
-      where: {
-        id: { in: ids },
-      },
-      include: {
-        workflowRuntimeData: {
-          include: {
-            workflowDefinition: true,
-          },
-        },
-      },
-    });
-
-    const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
-
-    for (const document of documentsWithFiles) {
-      await this.persistDocumentDecisionInToContext(document, projectIds[0]!);
-    }
-
-    return this.formatDocuments({
-      documents: documentsWithFiles,
-      documentSchema: null,
-    });
-  }
-
-  private async persistDocumentDecisionInToContext(document: Document, projectId: TProjectId) {
-    if (!document.workflowRuntimeDataId) {
-      throw new BadRequestException(
-        `Document with id ${document.id} has no workflow runtime data id`,
-      );
-    }
-
-    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
-      document.workflowRuntimeDataId,
-      {
-        select: {
-          context: true,
-          parentRuntimeDataId: true,
-        },
-      },
-      [projectId],
-    );
-
-    if (!workflowRuntime) {
-      throw new BadRequestException(
-        `Workflow runtime data not found for document with id ${document.id}`,
-      );
-    }
-
-    const isBusinessDocument = !!document.businessId;
-
-    if (isBusinessDocument) {
-      const businessDocuments = findBusinessDocumentsInContext(workflowRuntime.context);
-      const matchingDocumentIndex = businessDocuments.findIndex(
-        businessDocument =>
-          businessDocument.type === document.type &&
-          businessDocument.category === document.category,
-      );
-      const matchingDocument = businessDocuments[matchingDocumentIndex];
-
-      if (!matchingDocument) {
-        throw new BadRequestException(`Document with id ${document.id} is not a business document`);
-      }
-
-      set(matchingDocument, '_document', document);
-
-      // TODO: This is templorary until document structure is reworked
-      // TODO: Remove this
-      set(matchingDocument, 'pages[0].ballerineFileId', document.id);
-
-      await this.workflowService.updateWorkflowRuntimeData(
-        workflowRuntime.id,
-        { context: workflowRuntime.context },
-        projectId,
-      );
-    } else {
-      const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-        workflowRuntime.workflowDefinitionId,
-        'collection_flow',
-        [projectId],
-      );
-
-      const uboDocuments = findUboDocumentsInUIDefinition(workflowRuntime.context, uiDefinition);
-
-      uboDocuments.forEach(uboDocument => {
-        if (
-          uboDocument.ballerineEntityId === document.endUserId &&
-          uboDocument.type === document.type &&
-          uboDocument.category === document.category
-        ) {
-          set(uboDocument, '_document', document);
-          set(uboDocument, 'pages[0].ballerineFileId', document.id);
-
-          delete uboDocument.ballerineEntityId;
         }
       });
 
-      await this.workflowService.updateWorkflowRuntimeData(
-        workflowRuntime.id,
-        { context: workflowRuntime.context },
-        projectId,
+      const Status = {
+        approve: 'approved',
+        reject: 'rejected',
+        revision: 'revisions',
+      } as const satisfies Record<Exclude<typeof data.decision, null>, DocumentDecision>;
+
+      const decision = data.decision ? Status[data.decision] : null;
+      const documentsWithDecisions = ids.map(id => ({
+        id,
+        decision,
+        decisionReason: data.decisionReason as string,
+        comment: data.comment as string,
+      }));
+
+      await this.peristDocumentsDesicions(documentsWithDecisions, projectIds, transaction);
+
+      documents = await this.repository.findMany(projectIds, {
+        where: {
+          id: { in: ids },
+        },
+        include: {
+          workflowRuntimeData: {
+            include: {
+              workflowDefinition: true,
+            },
+          },
+        },
+      });
+
+      const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
+
+      for (const document of documentsWithFiles) {
+        await this.persistDocumentDecisionInContext(document, projectIds[0]!, transaction);
+      }
+
+      return this.formatDocuments({
+        documents: documentsWithFiles,
+        documentSchema: null,
+      });
+    });
+  }
+
+  private async persistDocumentDecisionInContext(
+    document: Document,
+    projectId: TProjectId,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+    });
+
+    return await beginTransactionIfNotExist(async transaction => {
+      if (!document.workflowRuntimeDataId) {
+        throw new BadRequestException(
+          `Document with id ${document.id} has no workflow runtime data id`,
+        );
+      }
+
+      const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+        document.workflowRuntimeDataId,
+        {
+          select: {
+            context: true,
+            parentRuntimeDataId: true,
+          },
+        },
+        [projectId],
       );
-    }
+
+      if (!workflowRuntime) {
+        throw new BadRequestException(
+          `Workflow runtime data not found for document with id ${document.id}`,
+        );
+      }
+
+      const isBusinessDocument = !!document.businessId;
+
+      if (isBusinessDocument) {
+        const businessDocuments = findBusinessDocumentsInContext(workflowRuntime.context);
+        const matchingDocumentIndex = businessDocuments.findIndex(
+          businessDocument =>
+            businessDocument.type === document.type &&
+            businessDocument.category === document.category,
+        );
+        const matchingDocument = businessDocuments[matchingDocumentIndex];
+
+        if (!matchingDocument) {
+          throw new BadRequestException(
+            `Document with id ${document.id} is not a business document`,
+          );
+        }
+
+        set(matchingDocument, '_document', document);
+
+        // TODO: This is templorary until document structure is reworked
+        // TODO: Remove this
+        set(matchingDocument, 'pages[0].ballerineFileId', document.id);
+
+        await this.workflowService.updateWorkflowRuntimeData(
+          workflowRuntime.id,
+          { context: workflowRuntime.context },
+          projectId,
+          transaction,
+        );
+      } else {
+        const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+          workflowRuntime.workflowDefinitionId,
+          'collection_flow',
+          [projectId],
+        );
+
+        const uboDocuments = findUboDocumentsInUIDefinition(workflowRuntime.context, uiDefinition);
+
+        uboDocuments.forEach(uboDocument => {
+          if (
+            uboDocument.ballerineEntityId === document.endUserId &&
+            uboDocument.type === document.type &&
+            uboDocument.category === document.category
+          ) {
+            set(uboDocument, '_document', document);
+            set(uboDocument, 'pages[0].ballerineFileId', document.id);
+
+            delete uboDocument.ballerineEntityId;
+          }
+        });
+
+        await this.workflowService.updateWorkflowRuntimeData(
+          workflowRuntime.id,
+          { context: workflowRuntime.context },
+          projectId,
+          transaction,
+        );
+      }
+    });
+  }
+
+  private async peristDocumentsDesicions(
+    documents: {
+      id: string;
+      decision: DocumentDecision | null;
+      decisionReason: string | null;
+      comment: string | null;
+    }[],
+    projectIds: TProjectId[] = [],
+    transaction?: PrismaTransactionClient,
+  ) {
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+    });
+
+    return await beginTransactionIfNotExist(async transaction => {
+      await Promise.all(
+        documents.map(document =>
+          this.repository.updateById(
+            document.id,
+            projectIds,
+            {
+              decision: document.decision,
+              decisionReason: document.decisionReason,
+              comment: document.comment,
+            },
+            {},
+            transaction,
+          ),
+        ),
+      );
+    });
   }
 
   async deleteByIds(
