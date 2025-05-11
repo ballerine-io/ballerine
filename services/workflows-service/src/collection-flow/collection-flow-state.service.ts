@@ -30,6 +30,7 @@ import { UpdateCollectionFlowStateDto } from '@/workflow/dtos/update-collection-
 import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Type } from '@sinclair/typebox';
+import isEqual from 'lodash/isEqual';
 
 @Injectable()
 export class CollectionFlowStateService {
@@ -76,12 +77,30 @@ export class CollectionFlowStateService {
       throw new CollectionFlowMissingException();
     }
 
-    return this.computeCollectionFlowState(
+    const computedCollectionFlowState = this.computeCollectionFlowState(
       uiDefinition,
       workflowRuntimeData.context,
       documents,
       entities,
     );
+
+    const isCollectionFlowStateEqual = isEqual(collectionFlowState, computedCollectionFlowState);
+
+    if (!isCollectionFlowStateEqual) {
+      // Syncing the computed collection flow state with the workflow runtime data
+      await this.workflowService.updateWorkflowRuntimeData(
+        workflowId,
+        {
+          context: {
+            ...workflowRuntimeData.context,
+            collectionFlow: computedCollectionFlowState,
+          },
+        },
+        projectIds![0]!,
+      );
+    }
+
+    return computedCollectionFlowState;
   }
 
   private async computeCollectionFlowState(
