@@ -578,7 +578,7 @@ export class DocumentService {
       const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
 
       for (const document of documentsWithFiles) {
-        await this.persistDocumentDecisionInToContext(document, projectIds[0]!, transaction);
+        await this.persistDocumentDecisionInContext(document, projectIds[0]!, transaction);
       }
 
       return this.formatDocuments({
@@ -588,7 +588,7 @@ export class DocumentService {
     });
   }
 
-  private async persistDocumentDecisionInToContext(
+  private async persistDocumentDecisionInContext(
     document: Document,
     projectId: TProjectId,
     transaction?: PrismaTransactionClient,
