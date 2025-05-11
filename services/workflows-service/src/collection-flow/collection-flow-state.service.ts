@@ -381,7 +381,10 @@ export class CollectionFlowStateService {
         newState,
         errors,
       });
-      throw new BadRequestException('Invalid collection flow steps.');
+      throw new BadRequestException({
+        message: 'Invalid collection flow steps.',
+        errors,
+      });
     }
   }
 
