@@ -5,7 +5,7 @@ export const useAppMetadata = () => {
   return useMemo(
     () => ({
       apiUrl: import.meta.env.VITE_API_URL,
-      accessToken: getAccessToken(),
+      accessToken: getAccessToken() || null,
     }),
     [],
   );
