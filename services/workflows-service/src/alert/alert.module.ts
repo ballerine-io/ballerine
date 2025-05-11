@@ -3,7 +3,7 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { UserService } from '@/user/user.service';
-import { forwardRef, HttpStatus, Module } from '@nestjs/common';
+import { forwardRef, HttpStatus, Module, OnModuleInit } from '@nestjs/common';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AlertControllerInternal } from '@/alert/alert.controller.internal';
 import { AlertRepository } from '@/alert/alert.repository';
@@ -20,6 +20,8 @@ import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { SentryModule } from '@/sentry/sentry.module';
 import { WebhooksModule } from '@/webhooks/webhooks.module';
+import { AlertQueueService } from './alert-queue.service';
+import { QueueModule } from '@/common/queue/queue.module';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { WebhooksModule } from '@/webhooks/webhooks.module';
     SentryModule,
     ProjectModule,
     WebhooksModule,
+    QueueModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 10,
@@ -48,21 +51,21 @@ import { WebhooksModule } from '@/webhooks/webhooks.module';
     AlertService,
     AlertRepository,
     AlertDefinitionRepository,
-    // TODO: Export to user module
+    AlertQueueService,
+    // TODO: Export to user modue
     UserService,
     UserRepository,
     PasswordService,
   ],
   exports: [ACLModule, AlertRepository, AlertService],
 })
-export class AlertModule {
+export class AlertModule implements OnModuleInit {
   constructor(
     private readonly httpService: HttpService,
     private readonly logger: AppLoggerService,
   ) {}
 
-  // Defining others configuration for our Axios instance
-  onModuleInit() {
+  async onModuleInit() {
     const _axios = this.httpService.axiosRef;
 
     interceptAxiosRequests(this.logger, _axios, AlertModule.name);

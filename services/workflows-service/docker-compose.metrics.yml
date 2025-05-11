@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - '3006:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+      - tempo
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - monitoring-network
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  tempo:
+    image: grafana/tempo
+    container_name: tempo
+    ports:
+      - '3200:3200' # tempo
+      - '4317:4317' # otlp grpc
+      - '4318:4318' # otlp http
+    command: ['-config.file=/etc/tempo.yaml']
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp/tempo
+    networks:
+      - monitoring-network
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+networks:
+  monitoring-network:
+    driver: bridge
+
+volumes:
+  grafana-storage:
+  tempo-data:
