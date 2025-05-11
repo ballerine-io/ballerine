@@ -22,7 +22,8 @@ const booleanSchema = z
   .transform(val => val === 'true' || val === true);
 
 const optionalBooleanSchema = z
-  .preprocess(val => val === 'true' || val === true, z.boolean())
+  .union([z.literal('true'), z.literal('false')])
+  .transform(val => val === 'true')
   .optional();
 
 export const serverEnvSchema = {
@@ -110,19 +111,24 @@ export const serverEnvSchema = {
   IN_MEMORIES_SECRET_ACQUIRER_ID: z.string().optional(),
   IN_MEMORIES_SECRET_PRIVATE_KEY: z.string().optional(),
   IN_MEMORIES_SECRET_CONSUMER_KEY: z.string().optional(),
-  SYNC_UNIFIED_API: optionalBooleanSchema.default(true),
+  SYNC_UNIFIED_API: optionalBooleanSchema.default('true'),
   DEFAULT_DEMO_DURATION_DAYS: z.number().optional().default(14),
   MAGIC_LINK_AUTH_JWT_SECRET: z.string(),
   MAGIC_LINK_AUTH_JWT_ALGORITHMS: z.string().default('HS256'),
   POSTHOG_HOST: z.string().optional(),
   POSTHOG_KEY: z.string().optional(),
-  WORKFLOW_LOGGING_ENABLED: optionalBooleanSchema.default(false),
+  WORKFLOW_LOGGING_ENABLED: optionalBooleanSchema.default('false'),
 
   REDIS_HOST: z.string().optional(),
   REDIS_PORT: z.coerce.number().optional(),
   REDIS_PASSWORD: z.string().optional().optional(),
-  IS_QUEUE_WORKER: optionalBooleanSchema.default(false),
-  QUEUE_SYSTEM_ENABLED: optionalBooleanSchema.default(false),
+  IS_QUEUE_WORKER: optionalBooleanSchema.default('false'),
+  QUEUE_SYSTEM_ENABLED: optionalBooleanSchema.default('false'),
+
+  OTEL_ENABLED: z
+    .union([z.literal('true'), z.literal('false')])
+    .transform(val => val === 'true')
+    .default('false'),
 };
 
 if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {

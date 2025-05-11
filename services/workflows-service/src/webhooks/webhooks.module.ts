@@ -4,12 +4,14 @@ import { HttpModule } from '@nestjs/axios';
 import { Inject, MiddlewareConsumer, Module } from '@nestjs/common';
 
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
+import { QueueModule } from '@/common/queue/queue.module';
+import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
+import type { BullBoardInjectedInstance } from '@/common/queue/types';
 import { BullBoardAuthMiddleware } from './bull-board.auth.middleware';
-import { BULLBOARD_INSTANCE_INJECTION_TOKEN, type BullBoardInjectedInstance } from './types/bull';
 import { WebhooksService } from './webhooks.service';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule],
+  imports: [AppLoggerModule, HttpModule, QueueModule],
   providers: [
     WebhooksService,
     {
@@ -24,7 +26,7 @@ import { WebhooksService } from './webhooks.service';
       },
     },
   ],
-  exports: [WebhooksService],
+  exports: [WebhooksService, BULLBOARD_INSTANCE_INJECTION_TOKEN],
 })
 export class WebhooksModule {
   constructor(

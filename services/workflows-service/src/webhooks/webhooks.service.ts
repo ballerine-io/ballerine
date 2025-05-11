@@ -1,16 +1,16 @@
 import { sign } from '@ballerine/common';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { isAxiosError, RawAxiosRequestHeaders } from 'axios';
-import { ConnectionOptions } from 'bullmq';
-import IORedis from 'ioredis';
+import { Job } from 'bullmq';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { QueueService } from '@/common/queue/queue.service';
+import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
+import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
+import type { BullBoardInjectedInstance } from '@/common/queue/types';
 import { env } from '@/env';
-import { RetryableQueue } from './retryable-queue';
-import { BULLBOARD_INSTANCE_INJECTION_TOKEN, type BullBoardInjectedInstance } from './types/bull';
 import { type OutgoingWebhookJobData, type OutgoingWebhookPayloads } from './types/webhook';
 
 const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) => {
@@ -21,128 +21,126 @@ const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) 
     { extra: errorPayload },
   );
 };
+
 @Injectable()
-export class WebhooksService {
-  private queue: RetryableQueue<OutgoingWebhookJobData, string> | null = null;
-  private notified = false;
+export class WebhooksService implements OnModuleInit {
+  private readonly QUEUE_NAME = 'outgoing-webhooks';
+  private queueInitialized = false;
 
   constructor(
     private readonly logger: AppLoggerService,
     private readonly httpService: HttpService,
+    private readonly queueService: QueueService,
+    private readonly queueBullboardService: QueueBullboardService,
     @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
     private bullBoard: BullBoardInjectedInstance,
-  ) {
-    this.init();
-  }
+  ) {}
 
-  private init() {
-    const connection: ConnectionOptions = {
-      host: env.REDIS_HOST,
-      port: env.REDIS_PORT,
-      password: env.REDIS_PASSWORD,
-    };
-
+  async onModuleInit() {
     if (!env.QUEUE_SYSTEM_ENABLED) {
+      this.logger.log('Queue system is disabled. Webhooks will be sent directly.');
       return;
     }
 
-    const redis = new IORedis({
-      ...connection,
-      retryStrategy: () => 10_000,
-      connectTimeout: 5_000,
-      maxRetriesPerRequest: null,
-    });
-
-    redis.on('connect', () => {
-      this.notified = false;
-      this.logger.log('Redis connected.');
-      this.setupQueues(redis);
-    });
-
-    redis.on('error', err => {
-      this.degradeQueueSystem(err);
-    });
+    await this.setupQueueSystem();
   }
 
-  private setupQueues(redis: IORedis) {
-    if (this.queue) {
-      return;
-    }
-
-    this.queue = new RetryableQueue<OutgoingWebhookJobData, string>(
-      'outgoing-webhooks',
-      {
-        connection: redis,
-        defaultJobOptions: { attempts: 5, backoff: { type: 'exponential', delay: 5_000 } },
-        handlers: {
-          handleJob: async job => {
-            try {
-              const res = await this.httpService.axiosRef.request(job.data);
-
-              return res.data;
-            } catch (error) {
-              // Rethrow useful error data
-              if (isAxiosError(error)) {
-                throw error.response?.data ?? error;
-              }
-              throw error; // Ensure non-Axios errors are also rethrown
-            }
-          },
-          handleDLQJob: async job => {
-            this.logger.error('Failed to send webhook through queue system (now in DLQ).', {
-              dlqJobId: job.id,
-              originalJobId: job.data.originalJobContext.id,
-              originalJobName: job.data.originalJobContext.name,
-              originalQueueName: job.data.originalJobContext.queueName,
-              errorDetails: job.data.error,
-            });
-
-            captureWebhookFailureWithSentry({
-              dlqJobId: job.id,
-              originalJobId: job.data.originalJobContext.id,
-              originalJobName: job.data.originalJobContext.name,
-              url: job.data.originalData.url,
-              method: job.data.originalData.method,
-              ...job.data.error,
-            });
-
-            this.logger.log('Further processing for DLQ job (e.g., custom notifications, saving state):', {
-              originalData: job.data.originalData,
-            });
-          },
-          onRetry: (job, err, attemptsLeft) => {
-            this.logger.warn(`Failed to send webhook. Retrying... ${attemptsLeft} attempts left.`, {
-              id: job.id,
-              jobData: job.data,
-              error: err,
-            });
-          },
-        },
-      },
-      this.logger,
-    );
-
-    this.bullBoard.boardInstance.setQueues(
-      [this.queue.queue, this.queue.dlq].map(queue => new BullMQAdapter(queue)),
-    );
-
-    this.logger.log('Queue system setup complete. (BullMQ)');
-  }
-
-  private async degradeQueueSystem(err?: Error) {
-    if (!this.notified) {
-      this.logger.log('Queue system in degraded mode due to Redis unavailability.', { err });
-      this.notified = true;
-    }
-
+  private async setupQueueSystem() {
     try {
-      await this.queue?.shutdown();
-    } catch (shutdownErr) {
-      this.logger.warn('Failed shutting down queue cleanly during degradation.', { shutdownErr });
-    }
+      const queue = this.queueService.getQueue<OutgoingWebhookJobData>({
+        name: this.QUEUE_NAME,
+        jobOptions: {
+          attempts: 5,
+          backoff: {
+            type: 'exponential',
+            delay: 5_000,
+          },
+          removeOnComplete: { count: 1000, age: 3600 * 24 * 7 },
+          removeOnFail: false,
+        },
+      });
 
-    this.queue = null;
-    this.bullBoard.boardInstance.setQueues([]);
+      if (this.queueService.isWorkerEnabled()) {
+        this.queueBullboardService.registerQueue(this.bullBoard, queue);
+      }
+
+      this.registerWorker();
+
+      this.queueInitialized = true;
+      this.logger.log('Webhook queue system setup complete');
+    } catch (error) {
+      this.logger.error('Failed to initialize webhook queue system', { error });
+      this.queueInitialized = false;
+    }
+  }
+
+  private registerWorker() {
+    this.queueService.registerWorker<OutgoingWebhookJobData>(
+      this.QUEUE_NAME,
+      async (job: Job<OutgoingWebhookJobData>) => {
+        try {
+          const res = await this.httpService.axiosRef.request(job.data);
+          return res.data;
+        } catch (error) {
+          this.handleWebhookJobError(job, error);
+
+          if (isAxiosError(error)) {
+            throw error.response?.data ?? error;
+          }
+          throw error;
+        }
+      },
+      {
+        concurrency: 10,
+      },
+    );
+  }
+
+  private handleWebhookJobError(job: Job<OutgoingWebhookJobData>, error: any) {
+    const isLastAttempt = job.attemptsMade >= (job.opts.attempts || 1);
+
+    if (isLastAttempt) {
+      this.logger.error('Final webhook delivery attempt failed, giving up', {
+        jobId: job.id,
+        jobName: job.name,
+        url: job.data.url,
+        method: job.data.method,
+        attempts: job.attemptsMade,
+        error: isAxiosError(error)
+          ? {
+              response: error.response?.data,
+              status: error.response?.status,
+              message: error.message,
+            }
+          : error,
+      });
+
+      captureWebhookFailureWithSentry({
+        jobId: job.id,
+        jobName: job.name,
+        url: job.data.url,
+        method: job.data.method,
+        error: isAxiosError(error)
+          ? {
+              response: error.response?.data,
+              status: error.response?.status,
+              message: error.message,
+            }
+          : error,
+      });
+    } else {
+      this.logger.warn(
+        `Failed to send webhook. Will retry, ${
+          (job.opts.attempts || 1) - job.attemptsMade
+        } attempts left`,
+        {
+          jobId: job.id,
+          url: job.data.url,
+          method: job.data.method,
+          error: isAxiosError(error) ? error.message : error,
+        },
+      );
+    }
   }
 
   async invokeWebhook<T extends keyof OutgoingWebhookPayloads>(
@@ -176,11 +174,11 @@ export class WebhooksService {
       timeout: timeout ?? 15_000,
     };
 
-    if (this.queue && !forceDirect) {
+    if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {
       try {
-        return await this.queue.queue.add(name, requestData);
+        const queue = this.queueService.getQueue<OutgoingWebhookJobData>({ name: this.QUEUE_NAME });
+        return await queue.add(name, requestData);
       } catch (error) {
-        // Enhanced logging and Sentry reporting for enqueue failure
         const enqueueErrorPayload = {
           message: 'Failed to add webhook job to the queue',
           jobName: name,
@@ -191,7 +189,7 @@ export class WebhooksService {
             stack: (error as Error).stack,
             name: (error as Error).name,
           },
-          jobData: requestData, // Log the data that was supposed to be queued
+          jobData: requestData,
         };
 
         this.logger.error(
@@ -214,8 +212,8 @@ export class WebhooksService {
 
       const errorPayload = { ...(isAxiosError(error) ? error.response?.data : error), url, method };
 
-      this.logger.error('Failed to send webhook', {
-        id: runtimeData.id ?? id,
+      this.logger.error('Failed to send webhook directly', {
+        id: runtimeData?.id ?? id,
         error: errorPayload,
         state,
         entityId,
@@ -224,9 +222,5 @@ export class WebhooksService {
 
       captureWebhookFailureWithSentry(errorPayload);
     }
-  }
-
-  async onModuleDestroy() {
-    await this.queue?.shutdown();
   }
 }

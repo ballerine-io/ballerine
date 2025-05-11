@@ -1,0 +1,64 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# BullMQ Metrics Implementation Guide
+
+## Architecture Overview
+- BullMQ metrics are collected using two primary methods:
+  1. Native Prometheus metrics via `exportPrometheusMetrics()` 
+  2. OpenTelemetry tracing via `bullmq-otel` package
+- Metrics are centralized in the `MonitoringModule`
+- Prometheus metrics are exposed via HTTP endpoint at `/metrics`
+
+## Prometheus Integration
+- Native BullMQ Prometheus metrics are implemented in `BullMQPrometheusService`
+- All queues should be registered with this service during creation
+- Metrics endpoint is implemented in `PrometheusController`
+- Standard metrics include job counts by state (waiting, active, completed, failed, etc.)
+
+## OpenTelemetry Integration
+- OpenTelemetry is used for distributed tracing
+- BullMQ OpenTelemetry integration uses the `bullmq-otel` package
+- Initialization happens in `QueueOtelService`
+- OpenTelemetry configuration should be provided via environment variables
+
+## Queue Service Integration
+- `QueueService` should register all queues with the metrics services
+- Both Prometheus and OpenTelemetry telemetry should be added to queue and worker options
+- Example:
+  ```typescript
+  const queueOptions = {
+    // other options...
+    telemetry: bullMQOtel, // if available
+  };
+  ```
+
+## Environment Variables
+- `OTEL_ENABLED`: Controls whether OpenTelemetry is enabled
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: OpenTelemetry collector endpoint
+
+## Metrics Visualization
+- Prometheus metrics can be visualized in Grafana
+- Use the provided `bullmq-dashboard.json` for BullMQ metrics
+- Set up proper scraping in Prometheus configuration
+
+## Testing Metrics
+- Use the test scripts in `src/scripts/` to test metrics collection
+- For Prometheus, use `test-bullmq-prometheus.ts`
+- For OpenTelemetry, use `test-otel-metrics.ts`
+- Test both queue creation and job processing
+
+## Common Issues
+- Ensure Redis is running and accessible
+- Check that metrics endpoints are properly exposed
+- Verify Prometheus configuration is correctly set up
+- For OpenTelemetry, ensure the collector is running
+
+## Best Practices
+- Always register queues with the metrics service
+- Include appropriate labels (environment, service name, etc.)
+- Use consistent queue naming across the application
+- Monitor both successful and failed jobs
+- Set appropriate retention policies for metrics data

@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'BullMQ Dashboards'
+    orgId: 1
+    folder: 'BullMQ'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
