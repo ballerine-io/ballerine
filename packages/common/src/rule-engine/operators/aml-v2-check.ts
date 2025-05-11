@@ -38,16 +38,21 @@ class AmlCheckV2 extends BaseOperator<any, AmlCheckV2Params> {
     const mainRepresentativeEndUserId =
       context?.entity?.data?.additionalInfo?.mainRepresentative?.ballerineEntityId;
 
-    const endUsers = await Promise.all(
-      [...ubosIds, ...directorsIds, mainRepresentativeEndUserId]
-        .filter(Boolean)
-        .map(endUserId => helpers.getEndUserById(endUserId)),
-    );
+    const endUserIds = [...ubosIds, ...directorsIds, mainRepresentativeEndUserId];
 
-    if (isEmpty(endUsers)) {
+    if (isEmpty(endUserIds)) {
       return false;
     }
 
+    const endUsers = await Promise.all(
+      endUserIds.filter(Boolean).map(endUserId => helpers.getEndUserById(endUserId)),
+    );
+
+    if (isEmpty(endUsers)) {
+      throw new ValidationFailedError('extract', `End Users not found: ${endUserIds.join(', ')}`);
+    }
+
+    // TODO: In the future, AML data will not be in the endUser object
     const hits: Array<z.infer<typeof EndUserAmlHitsSchema>> = endUsers
       .map(endUser => endUser.amlHits)
       .flat(1)
@@ -75,7 +80,7 @@ class AmlCheckV2 extends BaseOperator<any, AmlCheckV2Params> {
       const conditionResult = amlOperator.conditionValueSchema?.safeParse(conditionValue.value);
 
       if ((conditionResult && !conditionResult.success) || !conditionResult?.data) {
-        return false; // TODO: throw explicit error
+        return false;
       }
 
       return await amlOperator.execute(data, conditionResult.data);
