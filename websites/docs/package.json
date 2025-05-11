@@ -23,8 +23,8 @@
     "shiki": "^0.14.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.39",
-    "@ballerine/eslint-config": "^1.1.39",
+    "@ballerine/config": "^1.1.40",
+    "@ballerine/eslint-config": "^1.1.40",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^37.0.0",

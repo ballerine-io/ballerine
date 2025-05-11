@@ -115,8 +115,8 @@
     "zod": "^3.23.4"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.39",
-    "@ballerine/eslint-config": "^1.1.39",
+    "@ballerine/config": "^1.1.40",
+    "@ballerine/eslint-config": "^1.1.40",
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "7.4.0",

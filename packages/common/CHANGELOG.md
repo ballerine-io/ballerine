@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - fed1494bf4a7dde81915d4593765e7d89104c164: Bump
+- version bump
 
 ## 0.9.95
 
