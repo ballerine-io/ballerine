@@ -1,7 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { CollectionFlowStepStatesEnum, TCollectionFlowStep } from '@ballerine/common';
 import { useCallback } from 'react';
-import { updateStepStateAndReasonInContext } from './set-step-state-in-context-to-revision';
+import { updateStepStateAndReasonInContext } from './update-step-state-and-reason-in-state';
 import { useUpdateCollectionFlowStateMutation } from '@/domains/collection-flow/hooks/mutations/useUpdateCollectionFlowStateMutation/useUpdateCollectionFlowStateMutation';
 import { useCollectionFlowStateQuery } from '@/domains/collection-flow/hooks/queries/useCollectionFlowStateQuery/useCollectionFlowStateQuery';
 import { toast } from 'sonner';

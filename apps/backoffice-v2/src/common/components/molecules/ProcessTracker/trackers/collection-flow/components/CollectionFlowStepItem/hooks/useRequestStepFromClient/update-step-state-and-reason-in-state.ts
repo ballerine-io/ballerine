@@ -11,12 +11,12 @@ export const updateStepStateAndReasonInContext = (
   state: keyof typeof CollectionFlowStepStatesEnum,
   reason: string | undefined,
 ) => {
-  const stateCloneClone = structuredClone(collectionFlowState);
+  const stateClone = structuredClone(collectionFlowState);
 
   updateCollectionFlowStep(
     {
       collectionFlow: {
-        state: stateCloneClone,
+        state: stateClone,
       },
     },
     step.stepName,
@@ -26,5 +26,5 @@ export const updateStepStateAndReasonInContext = (
     },
   );
 
-  return stateCloneClone;
+  return stateClone;
 };
