@@ -1,7 +1,13 @@
 import { TContext, Transformers } from '../../utils';
 import { SerializableValidatableTransformer } from '../external-plugin';
 import { ChildPluginCallbackOutput, WorkflowTokenCallbackInput } from '../../types';
-import { AnyRecord, RuleResultSet, RuleSet, TFindAllRulesOptions } from '@ballerine/common';
+import {
+  AnyRecord,
+  RuleResultSet,
+  RuleSet,
+  TFindAllRulesOptions,
+  TWorkflowHelpers,
+} from '@ballerine/common';
 
 export interface ISerializableCommonPluginParams
   extends Omit<IterativePluginParams, 'action' | 'iterateOn'> {
@@ -76,6 +82,7 @@ export interface RiskRulesPluginParams {
   action: (
     context: TContext,
     ruleOptions: TFindAllRulesOptions,
+    helpers: TWorkflowHelpers,
   ) => Promise<
     Array<{
       id: string;
@@ -88,6 +95,7 @@ export interface RiskRulesPluginParams {
       ruleset: RuleSet;
     }>
   >;
+  helpers: TWorkflowHelpers;
 
   invoke?(context: TContext): Promise<any>;
 }

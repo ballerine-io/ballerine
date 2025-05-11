@@ -61,6 +61,7 @@ import {
   isObject,
   ProcessStatus,
   setCollectionFlowStatus,
+  TWorkflowHelpers,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -2046,9 +2047,15 @@ export class WorkflowService {
           state: workflowRuntimeData.state,
         },
         extensions: workflowDefinition.extensions,
+        helpers: {
+          getEndUserById: async (endUserId: string) => {
+            return await this.endUserService.getById(endUserId, {}, projectIds);
+          },
+        },
         invokeRiskRulesAction: async (
           context: object,
           ruleStoreServiceOptions: TFindAllRulesOptions,
+          helpers: TWorkflowHelpers,
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
@@ -2056,7 +2063,7 @@ export class WorkflowService {
             rules.map(async rule => {
               try {
                 return {
-                  result: await this.ruleEngineService.run(rule.ruleSet, context),
+                  result: await this.ruleEngineService.run(rule.ruleSet, context, helpers),
                   ...rule,
                 } as const;
               } catch (ex) {

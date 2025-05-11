@@ -22,3 +22,7 @@ export type DeepPartial<TValue> = {
     ? Array<DeepPartial<U>>
     : TValue[TKey];
 };
+
+export type TWorkflowHelpers = {
+  getEndUserById: (endUserId: string) => Promise<any>;
+};
