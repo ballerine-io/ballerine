@@ -13,7 +13,7 @@ import {
   TCollectionFlowStep,
   updateCollectionFlowStep,
 } from '@ballerine/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
   Document,
   DocumentDecision,
@@ -38,6 +38,7 @@ export class CollectionFlowStateService {
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly documentService: DocumentService,
+    @Inject(forwardRef(() => WorkflowService))
     protected readonly workflowService: WorkflowService,
     protected readonly appLogger: AppLoggerService,
   ) {}
@@ -77,7 +78,7 @@ export class CollectionFlowStateService {
       throw new CollectionFlowMissingException();
     }
 
-    const computedCollectionFlowState = this.computeCollectionFlowState(
+    const computedCollectionFlowState = await this.computeCollectionFlowState(
       uiDefinition,
       workflowRuntimeData.context,
       documents,
@@ -93,7 +94,10 @@ export class CollectionFlowStateService {
         {
           context: {
             ...workflowRuntimeData.context,
-            collectionFlow: computedCollectionFlowState,
+            collectionFlow: {
+              ...workflowRuntimeData.context.collectionFlow,
+              state: computedCollectionFlowState,
+            },
           },
         },
         projectIds![0]!,
@@ -221,14 +225,26 @@ export class CollectionFlowStateService {
   }
 
   private computeCurrentStatus(collectionFlowState: TCollectionFlowState) {
-    if (collectionFlowState.status === CollectionFlowStatusesEnum.failed) {
-      return CollectionFlowStatusesEnum.failed;
+    // Statuses that should not be dynamically computed from steps state
+    if (
+      [
+        CollectionFlowStatusesEnum.failed,
+        CollectionFlowStatusesEnum.rejected,
+        CollectionFlowStatusesEnum.approved,
+      ].includes(collectionFlowState.status)
+    ) {
+      return collectionFlowState.status;
     }
 
-    if (collectionFlowState.status === CollectionFlowStatusesEnum.edit) {
+    if (
+      collectionFlowState.steps?.some(
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.edit,
+      )
+    ) {
       return CollectionFlowStatusesEnum.edit;
     }
 
+    // Computing revision status
     if (
       collectionFlowState.steps?.some(
         (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.revision,
@@ -237,6 +253,7 @@ export class CollectionFlowStateService {
       return CollectionFlowStatusesEnum.revision;
     }
 
+    // Computing completed status
     if (
       collectionFlowState.steps?.every(
         (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.completed,
