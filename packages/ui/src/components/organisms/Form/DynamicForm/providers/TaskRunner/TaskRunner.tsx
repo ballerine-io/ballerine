@@ -33,17 +33,25 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
         return context;
       }
 
-      setIsRunning(true);
+      try {
+        setIsRunning(true);
 
-      const tasksCompose = asyncCompose(...tasks.map(task => task.run));
+        const tasksCompose = asyncCompose(...tasks.map(task => task.run));
 
-      await tasksCompose(context);
+        await tasksCompose(context);
 
-      setIsRunning(false);
+        setIsRunning(false);
 
-      setTasks([]);
+        setTasks([]);
 
-      return context;
+        return context;
+      } catch (error) {
+        console.log('Task execution failed', error);
+
+        throw error;
+      } finally {
+        setIsRunning(false);
+      }
     },
     [tasks, isRunning],
   );
