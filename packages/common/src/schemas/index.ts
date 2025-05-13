@@ -2,6 +2,7 @@ export { type TDefaultSchemaDocumentPage } from './documents/default-context-pag
 export {
   defaultContextSchema,
   defaultInputContextSchema,
+  CollectionFlowStateSchema,
   type DefaultContextSchema,
 } from './documents/default-context-schema';
 export { DocumentInsertSchema, DocumentsSchema } from './documents/schemas/documents-schema';

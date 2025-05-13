@@ -35,7 +35,8 @@ export const CollectionFlowStepSchema = Type.Object({
   stepName: Type.String(),
   state: Type.Optional(Type.Enum(CollectionFlowStepStatesEnum)),
   reason: Type.Optional(Type.String()),
-  isCompleted: Type.Boolean(),
+  // Deprecated and should be removed in the future
+  isCompleted: Type.Optional(Type.Boolean()),
 });
 
 export const CollectionFlowConfigSchema = Type.Object({
