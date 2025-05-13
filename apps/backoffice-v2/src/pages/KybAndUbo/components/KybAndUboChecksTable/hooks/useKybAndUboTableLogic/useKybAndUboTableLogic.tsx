@@ -1,3 +1,4 @@
+import { UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import { IDataTableProps } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +12,11 @@ export const useKybAndUboTableLogic = () => {
     cell,
     children,
   }) => {
-    return <Link to={`/${locale}/kyb-ubo/${cell.row.id}`}>{children}</Link>;
+    return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
+      <Link to={`/${locale}/merchant-monitoring/${cell.row.id}`}>{children}</Link>
+    ) : (
+      <div className="opacity-50">{children}</div>
+    );
   };
 
   return { Cell };

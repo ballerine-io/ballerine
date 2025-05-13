@@ -47,23 +47,23 @@ export const useColumns = ({ isDemoAccount = false }) => {
         cell: info => {
           const registrationNumber = info.getValue()?.registrationNumber;
 
-          return (
-            <TextWithNAFallback className="font-semibold">{registrationNumber}</TextWithNAFallback>
-          );
+          return <TextWithNAFallback>{registrationNumber}</TextWithNAFallback>;
         },
         header: 'Registration Number',
       }),
       columnHelper.accessor('input', {
         cell: info => {
           const jurisdictionCode = info.getValue()?.country;
-          const countryCode = jurisdictionCode?.split('/')?.[0];
-          const state = jurisdictionCode?.split('/')?.[1];
-          const country = getFullCountryNameByCode(countryCode ?? '');
+          const country = jurisdictionCode?.replaceAll('/', ' ');
+          // TODO: remove if not needed
+          // const countryCode = jurisdictionCode?.split('/')?.[0];
+          // const state = jurisdictionCode?.split('/')?.[1];
+          // const country = getFullCountryNameByCode(countryCode ?? '');
 
           return (
             <div className="flex flex-col">
-              <TextWithNAFallback className="font-semibold">{country}</TextWithNAFallback>
-              {state && <span className="text-xs text-[#999999]">{state}</span>}
+              <TextWithNAFallback>{country}</TextWithNAFallback>
+              {/* {state && <span className="text-xs text-[#999999]">{state}</span>} */}
             </div>
           );
         },
@@ -73,7 +73,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
         cell: info => {
           const businessId = info.getValue()?.businessId;
 
-          return <TextWithNAFallback className="font-semibold">{businessId}</TextWithNAFallback>;
+          return <TextWithNAFallback>{businessId}</TextWithNAFallback>;
         },
         header: 'Merchant ID',
       }),
