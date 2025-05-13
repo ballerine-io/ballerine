@@ -41,6 +41,7 @@ export {
 } from './utils';
 
 export * from './utils/collection-flow';
+
 export type {
   TCollectionFlow,
   TCollectionFlowState,
@@ -55,6 +56,7 @@ export type {
   TDefaultSchemaDocumentPage,
   TDocument,
 } from './schemas';
+
 export type {
   AnyRecord,
   GenericFunction,
@@ -62,6 +64,7 @@ export type {
   ObjectValues,
   Serializable,
   SortDirection,
+  TWorkflowHelpers,
 } from './types';
 
 export * from './schemas';

@@ -337,6 +337,7 @@ export class BusinessReportControllerExternal {
       withQualityControl: customer.config?.withQualityControl ?? false,
       customerId: customer.id,
       requestedByUserId: user.user?.id,
+      projectId: currentProjectId,
     });
   }
 

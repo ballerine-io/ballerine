@@ -3,28 +3,30 @@ import { OPERATION } from './enums';
 export { BaseOperator } from './helpers';
 
 export {
+  AML_CHECK,
+  BETWEEN,
   EQUALS,
-  NOT_EQUALS,
+  EXISTS,
+  FUZZY_MATCH_SCORE_LT,
+  GT,
+  GTE,
   IN,
   IN_CASE_INSENSITIVE,
-  NOT_IN,
-  GT,
-  LT,
-  GTE,
-  LTE,
-  BETWEEN,
   LAST_YEAR,
-  EXISTS,
-  AML_CHECK,
-  FUZZY_MATCH_SCORE_LT,
+  LT,
+  LTE,
+  NOT_EQUALS,
+  NOT_IN,
   UBO_MISMATCH,
 } from './helpers';
 
-export { IDV_CHECK } from './idv-check';
+export { AML_CHECK_V2 } from './aml-v2-check';
 export { COMPANY_SANCTIONS_CATEGORIES } from './company-sanctions-by-category';
+export { IDV_CHECK } from './idv-check';
 
 export const OPERATORS_WITHOUT_PATH_COMPARISON = [
   OPERATION.AML_CHECK,
+  OPERATION.AML_CHECK_V2,
   OPERATION.BETWEEN,
   OPERATION.LAST_YEAR,
   OPERATION.IDV_CHECK,

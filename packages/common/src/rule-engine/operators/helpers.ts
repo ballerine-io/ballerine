@@ -2,23 +2,24 @@ import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 
 import {
+  AmlCheckParams,
   BetweenParams,
-  LastYearsParams,
   ExistsParams,
+  LastYearsParams,
   Primitive,
   TOperation,
-  AmlCheckParams,
   UboMismatchParams,
 } from './types';
 
 import { z, ZodSchema } from 'zod';
 import { BetweenSchema, LastYearsSchema, PrimitiveArraySchema, PrimitiveSchema } from './schemas';
 
-import { ValidationFailedError, DataValueNotFoundError } from '../errors';
-import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 import { Rule } from '@/rule-engine';
 import { EndUserAmlHitsSchema } from '@/schemas';
+import { TWorkflowHelpers } from '@/types';
 import { TUnifiedApiClient } from '.';
+import { DataValueNotFoundError, ValidationFailedError } from '../errors';
+import { OperationHelpers, OPERATORS_WITHOUT_PATH_COMPARISON } from './constants';
 
 export abstract class BaseOperator<
   TDataValue = Primitive,
@@ -49,7 +50,8 @@ export abstract class BaseOperator<
       threshold?: number;
     },
   ): TEvaluate;
-  extractValue(data: unknown, rule: Rule) {
+
+  extractValue(data: unknown, rule: Rule, options?: { helpers: TWorkflowHelpers }) {
     const value = get(data, rule.key || '');
 
     const isPathComparison =
@@ -384,10 +386,6 @@ class AmlCheck extends BaseOperator<any, AmlCheckParams> {
       throw new DataValueNotFoundError(rule.key as string);
     }
 
-    if (!Array.isArray(hits) || hits.length === 0) {
-      return false;
-    }
-
     return hits.map(hit => get(hit, rule.key as string)).filter(Boolean);
   }
 
@@ -540,18 +538,18 @@ export const FUZZY_MATCH_SCORE_LT = new FuzzyMatchScoreLt();
 export const UBO_MISMATCH = new UboMismatch();
 
 export {
-  Equals,
-  NotEquals,
-  In,
-  InCaseInsensitive,
-  NotIn,
+  AmlCheck,
   Between,
-  LastYear,
+  Equals,
   Exists,
+  FuzzyMatchScoreLt,
   GreaterThan,
   GreaterThanOrEqual,
+  In,
+  InCaseInsensitive,
+  LastYear,
   LessThan,
   LessThanOrEqual,
-  AmlCheck,
-  FuzzyMatchScoreLt,
+  NotEquals,
+  NotIn,
 };

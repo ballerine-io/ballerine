@@ -132,11 +132,13 @@
   },
   "step_request": {
     "success": "Step request sent successfully.",
-    "error": "Error occurred while sending step request.\n\n{{errorMessage}}"
+    "error": "Error occurred while sending step request.\n\n{{errorMessage}}",
+    "error_unknown": "Something went wrong. Please try again later."
   },
   "step_cancel": {
     "success": "Step request cancelled successfully.",
-    "error": "Error occurred while cancelling step request.\n\n{{errorMessage}}"
+    "error": "Error occurred while cancelling step request.\n\n{{errorMessage}}",
+    "error_unknown": "Something went wrong. Please try again later."
   },
   "edit_collection_flow": {
     "success": "Collection flow's edit mode enabled successfully.",
