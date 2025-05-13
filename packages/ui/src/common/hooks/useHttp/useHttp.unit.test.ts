@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useHttp } from './useHttp';
 import { request } from './utils/request';
+import { useHttp } from './useHttp';
 
 vi.mock('./utils/request', () => ({
   request: vi.fn(),

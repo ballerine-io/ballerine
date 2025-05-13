@@ -1,8 +1,6 @@
 import { AnyObject } from '@/common';
-import { useHttp } from '@/common/hooks/useHttp';
 import set from 'lodash/set';
 import { useCallback } from 'react';
-import { useDynamicForm } from '../../../../context';
 import { useElement, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
@@ -10,6 +8,7 @@ import { IFormElement } from '../../../../types';
 import { DEFAULT_CREATION_PARAMS } from '../../../DocumentField/defaults';
 import { useStack } from '../../../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../../FileField';
+import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
 
 export const useFileUpload = (
   element: IFormElement<string, IFileFieldParams>,
@@ -19,11 +18,9 @@ export const useFileUpload = (
   const { stack } = useStack();
   const { id } = useElement(element, stack);
   const { addTask, removeTask } = useTaskRunner();
-  const { metadata } = useDynamicForm();
 
-  const { run, isLoading } = useHttp(
+  const { run, isLoading } = useFormHttp(
     element.params?.httpParams?.createDocument || DEFAULT_CREATION_PARAMS,
-    metadata,
   );
 
   const { onChange } = useField(element);

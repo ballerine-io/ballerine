@@ -25,6 +25,7 @@ export const DynamicFormV2 = forwardRef(
       fieldExtends,
       metadata,
       disabled,
+      httpParams,
       onChange,
       onFieldChange,
       onSubmit,
@@ -69,6 +70,7 @@ export const DynamicFormV2 = forwardRef(
         priorityFields,
         priorityFieldsParams,
         disabled,
+        httpParams,
       }),
       [
         touchedApi.touched,
@@ -82,6 +84,7 @@ export const DynamicFormV2 = forwardRef(
         priorityFields,
         priorityFieldsParams,
         disabled,
+        httpParams,
       ],
     );
 
