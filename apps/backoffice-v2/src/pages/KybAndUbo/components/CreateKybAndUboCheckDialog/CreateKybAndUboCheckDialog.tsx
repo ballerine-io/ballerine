@@ -47,7 +47,7 @@ export const CreateKybAndUboCheckDialog = ({
       </DialogTrigger>
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">
-          <h2 className={`text-2xl font-bold`}>Create a KYB & UBO Check</h2>
+          <h2 className={`text-2xl font-bold`}>Create a KYB & Ownership Case</h2>
         </DialogHeader>
 
         {showSuccess ? (
@@ -82,7 +82,7 @@ const CreateKybAndUboCheckDialogSuccessContent = () => {
 
       <div className="mb-16 rounded-md border border-gray-200 bg-gray-50 px-1 py-2">
         {isDemoAccount && <p className="font-semibold">Ready in up to 24 hours</p>}
-        <span>You will receive an email alert once the KYB & UBO check is ready.</span>
+        <span>Your case is being generated.</span>
       </div>
     </div>
   );
@@ -267,7 +267,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
             disabled={shouldDisableForm || isSubmitting}
           >
             {isSubmitting && <Loader2 className="animate-spin d-6" />}
-            Create a KYB & UBO Check
+            Create Case
           </Button>
         </form>
       </Form>
