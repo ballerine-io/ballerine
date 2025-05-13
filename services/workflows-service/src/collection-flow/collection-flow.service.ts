@@ -14,7 +14,11 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { DefaultContextSchema, TCollectionFlowConfig } from '@ballerine/common';
+import {
+  DefaultContextSchema,
+  TCollectionFlowConfig,
+  TCollectionFlowState,
+} from '@ballerine/common';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import { EndUser, Prisma, WorkflowRuntimeData } from '@prisma/client';
@@ -206,6 +210,12 @@ export class CollectionFlowService {
         data: payload.data.business,
       });
     }
+
+    await this.collectionFlowStateService.updateCollectionFlowState(
+      tokenScope.workflowRuntimeDataId,
+      (payload.data.context.collectionFlow as TCollectionFlowState).state,
+      [tokenScope.projectId],
+    );
 
     return await this.workflowService.event(
       {
