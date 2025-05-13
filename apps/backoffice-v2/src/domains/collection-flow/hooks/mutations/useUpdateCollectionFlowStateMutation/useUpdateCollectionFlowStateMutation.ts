@@ -25,7 +25,7 @@ export const useUpdateCollectionFlowStateMutation = () => {
     onError: (error, { action }) => {
       if (isErrorWithMessage(error)) {
         const translatedError = t(`toast:${action}.error`, {
-          errorMessage: (error as Error).message,
+          errorMessage: error.message,
         });
 
         toast.error(translatedError);
