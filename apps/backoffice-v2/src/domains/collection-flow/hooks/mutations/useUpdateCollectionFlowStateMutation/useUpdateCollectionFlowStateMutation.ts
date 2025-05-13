@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { t } from 'i18next';
 import { collectionFlowQueryKeys } from '@/domains/collection-flow/query-keys';
+import { isErrorWithMessage } from '@ballerine/common';
 
 export const useUpdateCollectionFlowStateMutation = () => {
   return useMutation({
@@ -22,11 +23,16 @@ export const useUpdateCollectionFlowStateMutation = () => {
       toast.success(t(`toast:${action}.success`));
     },
     onError: (error, { action }) => {
-      const translatedError = t(`toast:${action}.error`, {
-        errorMessage: (error as Error).message,
-      });
+      if (isErrorWithMessage(error)) {
+        const translatedError = t(`toast:${action}.error`, {
+          errorMessage: (error as Error).message,
+        });
 
-      toast.error(translatedError);
+        toast.error(translatedError);
+      } else {
+        console.error(`Wrong exception type: ${error}`);
+        toast.error(t(`toast:${action}.error_unknown`));
+      }
     },
     onSettled: () => {
       void queryClient.invalidateQueries(collectionFlowQueryKeys._def);
