@@ -1,15 +1,17 @@
 import { CollectionFlowStatusesEnum, CollectionFlowStepStatesEnum } from '@ballerine/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 
 class CollectionFlowStep {
   @ApiProperty({
     required: true,
     type: String,
     description: 'Name of the step',
+    minLength: 1,
   })
   @IsString()
+  @MinLength(1)
   stepName!: string;
 
   @ApiProperty({
