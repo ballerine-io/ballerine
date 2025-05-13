@@ -57,7 +57,7 @@ export const KybAndUbo: FunctionComponent = () => {
     >
       <div className="space-y-4 px-6 pb-6">
         <div className={`flex justify-between pb-2`}>
-          <h1 className="text-2xl font-bold">KYB & Stakeholders</h1>
+          <h1 className="text-2xl font-bold">KYB & Ownership</h1>
           <div className={`flex space-x-3`}>
             <TooltipProvider delayDuration={0}>
               <Tooltip>
@@ -110,7 +110,7 @@ export const KybAndUbo: FunctionComponent = () => {
                       aria-disabled={!createBusinessReport.enabled}
                     >
                       <Plus />
-                      <span>Create a KYB & UBO Check</span>
+                      <span>Create a Case</span>
                     </Button>
                   </CreateKybAndUboCheckDialog>
                 </TooltipTrigger>
