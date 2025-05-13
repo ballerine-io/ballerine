@@ -214,8 +214,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     ],
   );
 
-  console.log(commonHttpParams);
-
   return (
     <div className="flex flex-col gap-4">
       <RevisionBlock page={page} context={context} />
