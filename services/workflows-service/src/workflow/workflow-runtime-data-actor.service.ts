@@ -12,6 +12,7 @@ export class WorkflowRuntimeDataActorService {
       | Prisma.WorkflowRuntimeDataUncheckedUpdateInput,
   >(data: T): T {
     const entity = this.cls.get('entity');
+
     return {
       ...data,
       actorEndUserId: entity?.endUser?.endUserId || null,

@@ -49,6 +49,8 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
+import { noop } from 'lodash';
 
 describe('/api/v1/external/workflows #api #integration', () => {
   let app: INestApplication;
@@ -106,6 +108,10 @@ describe('/api/v1/external/workflows #api #integration', () => {
       WorkflowRuntimeDataRepository,
       SalesforceIntegrationRepository,
       WorkflowLogService,
+      {
+        provide: CollectionFlowStateService,
+        useValue: noop,
+      },
     ];
 
     const userAuthOverrideMiddleware = (req: Request, res: any, next: any) => {

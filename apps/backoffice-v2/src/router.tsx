@@ -33,6 +33,7 @@ const router = createBrowserRouter([
   {
     path: '/*',
     element: <NotFoundRedirectWithProviders />,
+    loader: rootLoader,
     errorElement: <RouteErrorWithProviders />,
   },
   {
