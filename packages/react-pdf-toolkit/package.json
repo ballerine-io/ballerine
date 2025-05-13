@@ -59,7 +59,7 @@
     "storybook": "^7.0.26",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.2.2",
-    "vite": "^4.5.3",
+    "vite": "^4.5.14",
     "vite-plugin-dts": "^4.0.1"
   },
   "peerDependencies": {
