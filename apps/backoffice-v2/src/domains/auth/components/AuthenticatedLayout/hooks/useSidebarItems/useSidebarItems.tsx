@@ -135,7 +135,7 @@ export const useSidebarItems = () => {
         ...(customer?.config?.createKybAndUbosCheck
           ? [
               {
-                text: 'KYB & Stakeholders',
+                text: 'KYB & Ownership',
                 icon: BuildingIcon,
                 href: `/${locale}/kyb-ubo`,
                 key: 'nav-item-kyb-ubos',

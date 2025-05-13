@@ -5,15 +5,17 @@ import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 
-const reportInProgressData = {
-  variant: 'gray',
-  title: 'Scan in progress',
-  text: '',
-};
-
 export const statusToData = {
-  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: reportInProgressData,
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: reportInProgressData,
+  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: {
+    variant: 'gray',
+    title: 'Case in progress',
+    text: '',
+  },
+  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
+    variant: 'gray',
+    title: 'Case in progress',
+    text: '',
+  },
   [MERCHANT_REPORT_STATUSES_MAP['pending-review']]: {
     variant: 'gray',
     title: 'Pending Review',
@@ -28,11 +30,11 @@ export const statusToData = {
   },
   [MERCHANT_REPORT_STATUSES_MAP['cleared']]: {
     variant: 'success',
-    title: 'Cleared',
+    title: 'Approved',
   },
   [MERCHANT_REPORT_STATUSES_MAP['terminated']]: {
     variant: 'destructive',
-    title: 'Terminated',
+    title: 'Rejected',
   },
   [MERCHANT_REPORT_STATUSES_MAP['completed']]: {
     variant: 'success',

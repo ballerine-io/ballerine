@@ -77,22 +77,6 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: 'Merchant ID',
       }),
-      columnHelper.accessor('riskLevel', {
-        cell: info => {
-          const riskLevel = info.getValue();
-
-          if (!riskLevel) {
-            return <TextWithNAFallback className="font-semibold">N/A</TextWithNAFallback>;
-          }
-
-          return (
-            <Badge className={`rounded-[5px] px-2 text-xs ${severityToClassName[riskLevel]}`}>
-              {riskLevel}
-            </Badge>
-          );
-        },
-        header: 'Risk Level',
-      }),
       // columnHelper.accessor('findings', {
       //   cell: info => {
       //     const findings = info.getValue() || [];
@@ -210,7 +194,6 @@ export const useColumns = ({ isDemoAccount = false }) => {
       columnHelper.accessor('status', {
         cell: ({ getValue }) => {
           const status = getValue();
-          console.log('status', status);
 
           return <KybAndUboCheckStatusBadge status={status} />;
         },
