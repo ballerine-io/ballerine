@@ -132,4 +132,20 @@ export class UnifiedApiClient {
       includeAnalysis: payload.includeAnalysis,
     });
   }
+
+  public async getLatestCheckByEndUserAndWorkflowRuntimeDataId({
+    endUserId,
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    endUserId: string;
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    const response = await this.axiosInstance.get(
+      `/checks/latest-by-end-user-and-workflow-runtime-data-id/${endUserId}/${workflowRuntimeDataId}?projectId=${projectId}`,
+    );
+
+    return response.data;
+  }
 }
