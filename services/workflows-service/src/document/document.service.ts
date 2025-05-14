@@ -1069,6 +1069,7 @@ export class DocumentService {
         select: {
           workflowDefinition: true,
           context: true,
+          workflowDefinitionId: true,
         },
       },
       [projectId],
