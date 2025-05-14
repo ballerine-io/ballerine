@@ -129,6 +129,7 @@ export const useTabsToBlocksMap = ({
         additionalInfo,
         dateOfBirth,
         gender,
+        individualVerification,
         ...endUserRest
       } = endUsers?.find(
         endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
@@ -141,18 +142,19 @@ export const useTabsToBlocksMap = ({
         percentageOfOwnership,
         ...additionalInfoRest
       } = additionalInfo ?? {};
+      const kycSession = omitPropsFromObject(
+        childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
+        'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
+      );
 
       return {
         status,
         documents: childWorkflow?.context?.documents,
-        kycSession: omitPropsFromObject(
-          childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
-          'invokedAt',
-          'error',
-          'name',
-          'status',
-          'isRequestTimedOut',
-        ),
+        kycSession: individualVerification ?? kycSession,
         aml: {
           vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
           hits: amlHits,
@@ -302,12 +304,12 @@ export const useTabsToBlocksMap = ({
             ),
         )
         ?.map(director => {
-          const { amlHits, ...directorEndUser } =
+          const { amlHits, individualVerification, ...directorEndUser } =
             endUsers?.find(endUser => endUser.id === director.ballerineEntityId) ?? {};
 
           return directorToIndividualAdapter({
             ...directorEndUser,
-            kycSession: {},
+            kycSession: individualVerification ?? {},
             aml: {
               vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
               hits: amlHits,

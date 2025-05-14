@@ -3,13 +3,13 @@ import { CustomerService } from '@/customer/customer.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 @Injectable()
-export class ChecksService {
+export class AssessmentsService {
   constructor(
     protected readonly unifiedApiClient: UnifiedApiClient,
     protected readonly customerService: CustomerService,
   ) {}
 
-  async getLatestCheckByEndUserAndWorkflowRuntimeDataId({
+  async getLatestAssessmentByEndUserAndWorkflowRuntimeDataId({
     endUserId,
     workflowRuntimeDataId,
     projectId,
