@@ -240,3 +240,29 @@ export type RiskIndicatorRiskLevel = (typeof RISK_INDICATOR_RISK_LEVELS)[number]
 export const RISK_INDICATOR_RISK_LEVELS_MAP = Object.fromEntries(
   RISK_INDICATOR_RISK_LEVELS.map(level => [level, level]),
 ) as { [K in RiskIndicatorRiskLevel]: K };
+
+export const SUPPORTED_FILE_EXT_REGEX = /\.(jpg|jpeg|svg|png|pdf|gif|txt|csv|xlsx|xls)$/;
+
+// Extract file extensions from regex
+export const SUPPORTED_FILE_EXT_ENUM = {
+  JPG: 'jpg',
+  JPEG: 'jpeg',
+  SVG: 'svg',
+  PNG: 'png',
+  PDF: 'pdf',
+  GIF: 'gif',
+  TXT: 'txt',
+  CSV: 'csv',
+  XLSX: 'xlsx',
+  XLS: 'xls',
+} as const;
+
+// validate file exts in enum against regex
+Object.entries(SUPPORTED_FILE_EXT_ENUM).forEach(([key, value]) => {
+  if (!SUPPORTED_FILE_EXT_REGEX.test(`.${value}`)) {
+    throw new Error(`Invalid file extension: .${value}`);
+  }
+});
+
+export type SupportedFileExt =
+  (typeof SUPPORTED_FILE_EXT_ENUM)[keyof typeof SUPPORTED_FILE_EXT_ENUM];

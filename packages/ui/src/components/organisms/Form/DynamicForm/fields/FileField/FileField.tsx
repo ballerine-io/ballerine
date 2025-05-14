@@ -1,4 +1,4 @@
-import { ctw } from '@/common';
+import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, ctw } from '@/common';
 import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
@@ -31,7 +31,8 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   useUnmountEvent(element);
 
   const { metadata } = useDynamicForm();
-  const { placeholder = 'Choose file', acceptFileFormats = undefined } = element.params || {};
+  const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
+    element.params || {};
   const { handleChange, isUploading: disabledWhileUploading } = useFileUpload(
     element,
     element.params!,
