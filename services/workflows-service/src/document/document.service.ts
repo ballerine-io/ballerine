@@ -612,6 +612,7 @@ export class DocumentService {
           select: {
             context: true,
             parentRuntimeDataId: true,
+            workflowDefinitionId: true,
           },
         },
         [projectId],
