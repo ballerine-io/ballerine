@@ -612,6 +612,7 @@ export class DocumentService {
           select: {
             context: true,
             parentRuntimeDataId: true,
+            workflowDefinitionId: true,
           },
         },
         [projectId],
@@ -1069,6 +1070,7 @@ export class DocumentService {
         select: {
           workflowDefinition: true,
           context: true,
+          workflowDefinitionId: true,
         },
       },
       [projectId],
