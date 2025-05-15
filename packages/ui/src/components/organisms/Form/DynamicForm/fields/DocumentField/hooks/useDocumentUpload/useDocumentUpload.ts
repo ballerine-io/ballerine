@@ -72,6 +72,8 @@ export const useDocumentUpload = (
           onChange(updatedDocuments);
         } catch (error) {
           console.error('Failed to upload file.', error);
+
+          throw error;
         }
       }
 
@@ -113,7 +115,7 @@ export const useDocumentUpload = (
           } catch (error) {
             console.error('Failed to upload file.', error, element);
 
-            return context;
+            throw error;
           }
         };
 

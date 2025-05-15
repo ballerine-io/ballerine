@@ -10,6 +10,7 @@ import { useElement } from '../../hooks/external/useElement';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { TDynamicFormElement } from '../../types';
+import { toast } from 'sonner';
 
 export interface ISubmitButtonParams {
   disableWhenFormIsInvalid?: boolean;
@@ -52,14 +53,20 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
       return;
     }
 
-    console.log('Starting tasks');
-    const updatedContext = await runTasks({ ...values });
-    console.log('Tasks finished');
+    try {
+      console.log('Starting tasks');
+      const updatedContext = await runTasks({ ...values });
+      console.log('Tasks finished');
 
-    fieldHelpers.setValues(updatedContext);
+      fieldHelpers.setValues(updatedContext);
 
-    submit(updatedContext);
-    sendEvent('onSubmit');
+      submit(updatedContext);
+      sendEvent('onSubmit');
+    } catch (error) {
+      console.error('Submission failed', error);
+
+      toast.error('Form submission failed. Please try again or contact support.');
+    }
   }, [submit, touchAllFields, runTasks, sendEvent, onClick, values, fieldHelpers, validate]);
 
   const isShouldRenderLoader = useMemo(() => {
