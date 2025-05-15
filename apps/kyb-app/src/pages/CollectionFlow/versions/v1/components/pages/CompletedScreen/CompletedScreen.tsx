@@ -6,6 +6,7 @@ import { useAppExit } from '@/hooks/useAppExit/useAppExit';
 import { Button, Card } from '@ballerine/ui';
 import { FunctionComponent, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from '@/common/providers/ThemeProvider';
 
 interface ICompletedScreenProps {
   redirectUrl?: string;
@@ -14,7 +15,8 @@ interface ICompletedScreenProps {
 export const CompletedScreen: FunctionComponent<ICompletedScreenProps> = ({ redirectUrl }) => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
-
+  const { themeDefinition } = useTheme();
+  const { disableDuringRedirect = false } = themeDefinition?.completedPage || {};
   const { exit, isExitAvailable } = useAppExit();
 
   useEffect(() => {
@@ -22,6 +24,10 @@ export const CompletedScreen: FunctionComponent<ICompletedScreenProps> = ({ redi
       window.location.href = redirectUrl;
     }
   }, [redirectUrl]);
+
+  if (redirectUrl && disableDuringRedirect) {
+    return null;
+  }
 
   return (
     <div className="flex h-full items-center justify-center">
