@@ -1,4 +1,8 @@
-import { MERCHANT_REPORT_RISK_LEVELS_MAP, MerchantReportRiskLevel } from '@ballerine/common';
+import {
+  MERCHANT_REPORT_RISK_LEVELS_MAP,
+  MerchantReportRiskLevel,
+  SUPPORTED_FILE_EXT_ENUM,
+} from '@ballerine/common';
 
 type SeverityToClassName = Record<MerchantReportRiskLevel, string>;
 
@@ -15,3 +19,7 @@ export const severityToClassName = {
   [MERCHANT_REPORT_RISK_LEVELS_MAP.low]: `bg-success/20 ${severityToTextClassName.low}`,
   [MERCHANT_REPORT_RISK_LEVELS_MAP.critical]: `bg-destructive ${severityToTextClassName.critical}`,
 } as const satisfies SeverityToClassName;
+
+export const ALLOWED_DOCUMENT_FILE_EXTENSIONS = Object.values(SUPPORTED_FILE_EXT_ENUM)
+  .map(ext => `.${ext}`)
+  .join(',');
