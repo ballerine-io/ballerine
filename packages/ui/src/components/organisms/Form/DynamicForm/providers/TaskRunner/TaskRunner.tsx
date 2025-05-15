@@ -46,7 +46,7 @@ export const TaskRunner = ({ children }: ITaskRunnerProps) => {
 
         return context;
       } catch (error) {
-        console.log('Task execution failed', error);
+        console.error('Task execution failed', error);
 
         throw error;
       } finally {
