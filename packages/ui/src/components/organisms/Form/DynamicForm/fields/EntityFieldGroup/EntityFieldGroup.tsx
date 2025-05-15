@@ -228,7 +228,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
       <FieldDescription element={element} />
       <FieldPriorityReason element={element} />
       <FieldErrors element={element} />
-      <Toaster />
+      <Toaster richColors />
     </div>
   );
 };
