@@ -243,11 +243,13 @@ export class HookCallbackHandlerService {
       currentProjectId,
       customer.name,
     );
+    const kycDocumentDetails = this.formatKycDocumentDetais(kycDocument);
 
     const result = {
       entity: entity,
       decision: decision,
       aml: data.aml,
+      kycDocumentDetails: kycDocumentDetails,
     };
 
     // @ts-expect-error - we don't validate `context` is an object
@@ -260,6 +262,12 @@ export class HookCallbackHandlerService {
     ];
 
     return context;
+  }
+
+  private formatKycDocumentDetais(kycDocument: AnyRecord) {
+    return {
+      expiryDate: (kycDocument['validUntil'] as any)?.value,
+    };
   }
 
   private formatDocuments(
