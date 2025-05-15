@@ -1,5 +1,5 @@
 import { AnyObject } from '@/common';
-import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useRef } from 'react';
@@ -18,6 +18,7 @@ import {
 } from './helpers/check-if-document-requested';
 import { createOrUpdateDocumentInList } from './helpers/create-or-update-document-in-list';
 import { getDocumentObjectFromDocumentsList } from './helpers/get-document-object-from-documents-list';
+import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
 
 export const useDocumentUpload = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
@@ -28,13 +29,11 @@ export const useDocumentUpload = (
   const id = useElementId(element, stack);
   const { addTask, removeTask } = useTaskRunner();
   const { metadata, values } = useDynamicForm();
-  const { run: uploadDocument, isLoading: isUploading } = useHttp(
+  const { run: uploadDocument, isLoading: isUploading } = useFormHttp(
     (element.params?.httpParams?.createDocument || DEFAULT_CREATION_PARAMS) as IHttpParams,
-    metadata,
   );
-  const { run: updateDocument, isLoading: isUpdating } = useHttp(
+  const { run: updateDocument, isLoading: isUpdating } = useFormHttp(
     (element.params?.httpParams?.updateDocument || DEFAULT_UPDATE_PARAMS) as IHttpParams,
-    metadata,
   );
 
   const { onChange } = useField(element, stack);
@@ -72,6 +71,8 @@ export const useDocumentUpload = (
           onChange(updatedDocuments);
         } catch (error) {
           console.error('Failed to upload file.', error);
+
+          throw error;
         }
       }
 
@@ -113,7 +114,7 @@ export const useDocumentUpload = (
           } catch (error) {
             console.error('Failed to upload file.', error, element);
 
-            return context;
+            throw error;
           }
         };
 

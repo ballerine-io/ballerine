@@ -8,6 +8,7 @@ import {
   TValidators,
 } from '../../Validator';
 import { IEventsProviderProps } from '../providers/EventsProvider';
+import { IHttpParams } from '@/common/hooks/useHttp';
 
 export interface ICommonFieldParams {
   label?: string;
@@ -66,6 +67,8 @@ export interface IPriorityFieldParams {
   behavior: 'disableOthers' | 'hideOthers' | 'doNothing';
 }
 
+export type TCommonHttpParams = Partial<Pick<IHttpParams, 'params' | 'headers'>>;
+
 export interface IDynamicFormProps<TValues extends object> {
   values: TValues;
   elements: Array<IFormElement<string, any>>;
@@ -84,6 +87,7 @@ export interface IDynamicFormProps<TValues extends object> {
   onEvent?: IEventsProviderProps['onEvent'];
 
   ref?: React.RefObject<IFormRef<TValues>>;
+  httpParams?: TCommonHttpParams;
   metadata?: AnyObject;
 }
 

@@ -1,11 +1,10 @@
-import { AnyObject, ctw } from '@/common';
-import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
+import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, AnyObject, ctw } from '@/common';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
-import { useDynamicForm } from '../../context';
 import { useElementId, useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
@@ -24,6 +23,7 @@ import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { getDocumentObjectFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-document-object-from-documents-list';
 import { getFileOrFileIdFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { removeDocumentFromListByTemplateId } from './hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
+import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
@@ -58,14 +58,11 @@ export interface IDocumentFieldParams extends Omit<IFileFieldParams, 'httpParams
 export const DOCUMENT_FIELD_TYPE = 'documentfield';
 
 export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element }) => {
-  const { metadata } = useDynamicForm();
-
   useMountEvent(element);
   useUnmountEvent(element);
 
-  const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
+  const { run: deleteDocument, isLoading: isDeletingDocument } = useFormHttp(
     (element.params?.httpParams?.deleteDocument || DEFAULT_DELETION_PARAMS) as IHttpParams,
-    metadata,
   );
 
   const { handleChange, isUploading: disabledWhileUploading } = useDocumentUpload(
@@ -74,7 +71,8 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   );
 
   const { params } = element;
-  const { placeholder = 'Choose file', acceptFileFormats = undefined } = params || {};
+  const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
+    params || {};
   const { removeTask, getTaskById, isRunning } = useTaskRunner();
   const { documentState, updateState } = useDocumentState(
     element as IFormElement<'documentfield', IDocumentFieldParams>,
