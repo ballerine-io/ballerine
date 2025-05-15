@@ -16,6 +16,8 @@ const CustomerConfigSchema = z.object({
   withQualityControl: z.boolean().default(true).optional(),
   disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
   isDemoAccount: z.boolean().default(false).optional(),
+  createKybAndUbosCheck: z.boolean().default(false).optional(),
+  createIdentityVerification: z.boolean().default(false).optional(),
 });
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
