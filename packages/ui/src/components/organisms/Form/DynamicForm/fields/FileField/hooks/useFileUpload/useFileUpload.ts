@@ -65,7 +65,7 @@ export const useFileUpload = (
           } catch (error) {
             console.error('Failed to upload file.', error);
 
-            return context;
+            throw error;
           }
         };
 

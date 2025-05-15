@@ -233,7 +233,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
             } catch (error) {
               console.error('Failed to upload file.', error, element);
 
-              return context;
+              throw error;
             }
           };
 
