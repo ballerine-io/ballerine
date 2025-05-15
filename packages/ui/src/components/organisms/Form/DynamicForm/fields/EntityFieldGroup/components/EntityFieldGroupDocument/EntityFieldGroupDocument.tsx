@@ -1,4 +1,4 @@
-import { AnyObject, ctw } from '@/common';
+import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, AnyObject, ctw } from '@/common';
 import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
@@ -91,7 +91,8 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   useUnmountEvent(element);
 
   const { params } = element;
-  const { placeholder = 'Choose file', acceptFileFormats = undefined } = params || {};
+  const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
+    params || {};
 
   const {
     value: documentsList,
