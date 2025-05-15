@@ -1,5 +1,5 @@
 import { AnyObject } from '@/common';
-import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import get from 'lodash/get';
 import set from 'lodash/set';
@@ -28,6 +28,7 @@ import { getEntityGroupValueDestination } from './helpers/get-entity-group-value
 import { useEntityFieldGroupList } from './hooks/useEntityFieldGroupList';
 import { EntityFieldProvider } from './providers/EntityFieldProvider';
 import { IEntity } from './types';
+import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
 
 export type TEntityFieldGroupType = 'director' | 'ubo';
 
@@ -69,7 +70,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   useMountEvent(element);
   useUnmountEvent(element);
 
-  const { elementsMap, metadata } = useDynamicForm();
+  const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
   const { id: fieldId, hidden } = useElement(element, stack);
   const { disabled, value, onChange } = useField<IEntity[]>(element, stack);
@@ -79,19 +80,16 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     itemIndexLabel = 'Item {INDEX}',
   } = element.params || {};
   const { items, isRemovingEntity, addItem, removeItem } = useEntityFieldGroupList({ element });
-  const { run: createEntity, isLoading: isCreatingEntity } = useHttp(
+  const { run: createEntity, isLoading: isCreatingEntity } = useFormHttp(
     element.params!.httpParams?.createEntity.httpParams,
-    metadata,
   );
-  const { run: updateEntity, isLoading: isUpdatingEntity } = useHttp(
+  const { run: updateEntity, isLoading: isUpdatingEntity } = useFormHttp(
     element.params!.httpParams?.updateEntity.httpParams,
-    metadata,
   );
 
-  const { run: uploadDocument } = useHttp(
+  const { run: uploadDocument } = useFormHttp(
     element.params!.httpParams?.uploadDocument ||
       DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS,
-    metadata,
   );
   const { addTask, removeTask } = useTaskRunner();
   const elementsOverride = useMemo(

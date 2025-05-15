@@ -26,6 +26,7 @@ export const request = async (
       data,
       timeout,
       withCredentials: true,
+      params: request.params,
     };
 
     const response = await axios(config);
