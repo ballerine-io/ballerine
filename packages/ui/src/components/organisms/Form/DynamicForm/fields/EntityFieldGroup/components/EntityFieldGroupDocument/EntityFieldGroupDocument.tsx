@@ -1,5 +1,5 @@
 import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, AnyObject, ctw } from '@/common';
-import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { formatValueDestination } from '@/components/organisms/Form/Validator';
@@ -38,6 +38,7 @@ import {
   DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS,
   DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_UPDATE_PARAMS,
 } from './defaults';
+import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
 
 export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
   type: TEntityFieldGroupType;
@@ -48,7 +49,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   IEntityFieldGroupDocumentParams
 > = ({ element: _element }) => {
   const { uploadOn = 'change' } = _element.params || {};
-  const { metadata, values } = useDynamicForm();
+  const { values } = useDynamicForm();
   const { stack } = useStack();
   const element = useMemo(
     () => ({
@@ -71,22 +72,19 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     element as IFormElement<'documentfield', IDocumentFieldParams>,
   );
 
-  const { run: createDocument, isLoading: isCreatingDocument } = useHttp(
+  const { run: createDocument, isLoading: isCreatingDocument } = useFormHttp(
     (element.params?.httpParams?.createDocument as IHttpParams) ||
       DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS,
-    metadata,
   );
 
-  const { run: updateDocument, isLoading: isUpdatingDocument } = useHttp(
+  const { run: updateDocument, isLoading: isUpdatingDocument } = useFormHttp(
     (element.params?.httpParams?.updateDocument as IHttpParams) ||
       DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_UPDATE_PARAMS,
-    metadata,
   );
 
-  const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
+  const { run: deleteDocument, isLoading: isDeletingDocument } = useFormHttp(
     (element.params?.httpParams?.deleteDocument as IHttpParams) ||
       DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS,
-    metadata,
   );
 
   useMountEvent(element);
@@ -236,7 +234,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
             } catch (error) {
               console.error('Failed to upload file.', error, element);
 
-              return context;
+              throw error;
             }
           };
 

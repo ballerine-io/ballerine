@@ -1,4 +1,3 @@
-import { useHttp } from '@/common/hooks/useHttp';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -6,17 +5,22 @@ import { useField } from '../../../../hooks/external';
 import { useStack } from '../../../FieldList';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { useEntityFieldGroupList } from './useEntityFieldGroupList';
+import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
 
 vi.mock('../../../../hooks/external', () => ({
   useField: vi.fn(),
 }));
 
-vi.mock('../../../FieldList', () => ({
-  useStack: vi.fn(),
+vi.mock('../../../../hooks/internal/useFormHttp/useFormHttp', () => ({
+  useFormHttp: vi.fn(),
 }));
 
-vi.mock('@/common/hooks/useHttp', () => ({
-  useHttp: vi.fn(),
+vi.mock('../../../../hooks/internal/useFormHttp/useFormHttp', () => ({
+  useFormHttp: vi.fn(),
+}));
+
+vi.mock('../../../FieldList', () => ({
+  useStack: vi.fn(),
 }));
 
 describe('useEntityFieldGroupList', () => {
@@ -42,10 +46,10 @@ describe('useEntityFieldGroupList', () => {
       onChange: vi.fn(),
       value: [],
     } as unknown as ReturnType<typeof useField>);
-    vi.mocked(useHttp).mockReturnValue({
+    vi.mocked(useFormHttp).mockReturnValue({
       run: vi.fn(),
       isLoading: false,
-    } as unknown as ReturnType<typeof useHttp>);
+    } as unknown as ReturnType<typeof useFormHttp>);
 
     Object.defineProperty(window, 'crypto', {
       value: {
@@ -117,10 +121,10 @@ describe('useEntityFieldGroupList', () => {
     it('should remove item by id', async () => {
       const deleteEntitySpy = vi.fn();
 
-      vi.mocked(useHttp).mockReturnValue({
+      vi.mocked(useFormHttp).mockReturnValue({
         run: deleteEntitySpy,
         isLoading: false,
-      } as unknown as ReturnType<typeof useHttp>);
+      } as unknown as ReturnType<typeof useFormHttp>);
 
       const mockOnChange = vi.fn();
       const mockEntities = [

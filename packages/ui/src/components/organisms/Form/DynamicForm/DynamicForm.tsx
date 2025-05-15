@@ -13,6 +13,7 @@ import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
 import { extendFieldsRepository, getFieldsRepository } from './repositories';
 import { IDynamicFormProps, IFormRef } from './types';
+import { Toaster } from 'sonner';
 
 export const DynamicFormV2 = forwardRef(
   <TValues extends object>(
@@ -25,6 +26,7 @@ export const DynamicFormV2 = forwardRef(
       fieldExtends,
       metadata,
       disabled,
+      httpParams,
       onChange,
       onFieldChange,
       onSubmit,
@@ -69,6 +71,7 @@ export const DynamicFormV2 = forwardRef(
         priorityFields,
         priorityFieldsParams,
         disabled,
+        httpParams,
       }),
       [
         touchedApi.touched,
@@ -82,6 +85,7 @@ export const DynamicFormV2 = forwardRef(
         priorityFields,
         priorityFieldsParams,
         disabled,
+        httpParams,
       ],
     );
 
@@ -108,6 +112,7 @@ export const DynamicFormV2 = forwardRef(
             </ValidatorProvider>
           </DynamicFormContext.Provider>
         </EventsProvider>
+        <Toaster richColors />
       </TaskRunner>
     );
   },
