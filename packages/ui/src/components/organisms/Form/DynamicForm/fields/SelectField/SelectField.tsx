@@ -1,7 +1,6 @@
-import { DropdownInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
 import { useCallback } from 'react';
-import { useElement, useField } from '../../hooks/external';
+import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
@@ -10,6 +9,7 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { SearchableDropdown } from '@/components/atoms/SearchableDropdown';
 
 export interface ISelectOption {
   value: string;
@@ -19,6 +19,7 @@ export interface ISelectOption {
 export interface ISelectFieldParams {
   placeholder?: string;
   options: ISelectOption[];
+  optionNotFoundText?: string;
 }
 
 export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) => {
@@ -26,13 +27,16 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
   useUnmountEvent(element);
 
   const { stack } = useStack();
-  const { id } = useElement(element, stack);
   const { value, disabled, onChange, onBlur, onFocus } = useField<string | undefined>(
     element,
     stack,
   );
 
-  const { placeholder, options = [] } = element.params || {};
+  const {
+    placeholder,
+    options = [],
+    optionNotFoundText = 'No options found',
+  } = element.params || {};
 
   const handleChange = useCallback(
     (value: string) => {
@@ -43,17 +47,12 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
 
   return (
     <FieldLayout element={element}>
-      <DropdownInput
-        name={id}
+      <SearchableDropdown
         options={options}
         value={value}
         testId={createTestId(element, stack)}
-        placeholdersParams={{
-          placeholder: placeholder || '',
-          searchPlaceholder: '',
-        }}
-        searchable
-        disabled={disabled}
+        placeholder={placeholder}
+        optionNotFoundText={optionNotFoundText}
         onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}
