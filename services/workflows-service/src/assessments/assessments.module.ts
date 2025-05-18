@@ -9,5 +9,6 @@ import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-
   imports: [CustomerModule, HttpModule],
   controllers: [AssessmentsControllerExternal],
   providers: [AssessmentsService, UnifiedApiClient],
+  exports: [AssessmentsService, UnifiedApiClient],
 })
 export class AssessmentsModule {}

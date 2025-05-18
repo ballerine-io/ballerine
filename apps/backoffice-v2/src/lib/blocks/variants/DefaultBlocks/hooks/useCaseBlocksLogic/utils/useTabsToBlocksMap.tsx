@@ -129,7 +129,7 @@ export const useTabsToBlocksMap = ({
         additionalInfo,
         dateOfBirth,
         gender,
-        individualVerification,
+        individualVerificationsChecks,
         ...endUserRest
       } = endUsers?.find(
         endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
@@ -154,7 +154,7 @@ export const useTabsToBlocksMap = ({
       return {
         status,
         documents: childWorkflow?.context?.documents,
-        kycSession: individualVerification ?? kycSession,
+        kycSession: individualVerificationsChecks ?? kycSession,
         aml: {
           vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
           hits: amlHits,
@@ -304,12 +304,12 @@ export const useTabsToBlocksMap = ({
             ),
         )
         ?.map(director => {
-          const { amlHits, individualVerification, ...directorEndUser } =
+          const { amlHits, individualVerificationsChecks, ...directorEndUser } =
             endUsers?.find(endUser => endUser.id === director.ballerineEntityId) ?? {};
 
           return directorToIndividualAdapter({
             ...directorEndUser,
-            kycSession: individualVerification ?? {},
+            kycSession: individualVerificationsChecks ?? {},
             aml: {
               vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
               hits: amlHits,

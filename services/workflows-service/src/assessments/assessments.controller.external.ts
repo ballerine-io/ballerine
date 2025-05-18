@@ -9,27 +9,22 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class AssessmentsControllerExternal {
   constructor(private readonly assessmentsService: AssessmentsService) {}
 
-  @common.Get('/latest-by-end-user-and-workflow-runtime-data-id/:endUserId/:workflowRuntimeDataId')
-  @swagger.ApiOperation({
-    summary: 'Get latest assessment by end user and workflow runtime data id',
-  })
+  @common.Get('/latest-by-workflow-runtime-data-id/:workflowRuntimeDataId')
+  @swagger.ApiOperation({ summary: 'Get latest assessment by workflow runtime data id' })
   @swagger.ApiResponse({
     status: 200,
-    description: 'Successfully returned latest assessment by end user and workflow runtime data id',
+    description: 'Successfully returned latest assessment by workflow runtime data id',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
-  async getLatestAssessmentByEndUserAndWorkflowRuntimeDataId(
-    @common.Param('endUserId') endUserId: string,
+  async getLatestAssessmentsByWorkflowRuntimeDataId(
     @common.Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
     @common.Query('projectId') projectId: string,
   ) {
-    const assessment =
-      await this.assessmentsService.getLatestAssessmentByEndUserAndWorkflowRuntimeDataId({
-        endUserId,
-        workflowRuntimeDataId,
-        projectId,
-      });
+    const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
+      workflowRuntimeDataId,
+      projectId,
+    });
 
-    return assessment;
+    return assessments;
   }
 }

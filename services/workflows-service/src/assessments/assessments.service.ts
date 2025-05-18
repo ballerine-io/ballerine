@@ -9,17 +9,14 @@ export class AssessmentsService {
     protected readonly customerService: CustomerService,
   ) {}
 
-  async getLatestAssessmentByEndUserAndWorkflowRuntimeDataId({
-    endUserId,
+  async getLatestAssessmentsByWorkflowRuntimeDataId({
     workflowRuntimeDataId,
     projectId,
   }: {
-    endUserId: string;
     workflowRuntimeDataId: string;
     projectId: string;
   }) {
-    return await this.unifiedApiClient.getLatestCheckByEndUserAndWorkflowRuntimeDataId({
-      endUserId,
+    return await this.unifiedApiClient.getLatestAssessmentsByWorkflowRuntimeDataId({
       workflowRuntimeDataId,
       projectId,
     });

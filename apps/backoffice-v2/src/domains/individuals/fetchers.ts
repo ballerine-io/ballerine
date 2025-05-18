@@ -20,7 +20,7 @@ export const EndUserSchema = z.object({
   phone: z.string().nullable(),
   additionalInfo: z.record(z.string(), z.any()).nullable(),
   amlHits: z.array(HitSchema.extend({ vendor: z.string().optional() })).optional(),
-  individualVerification: z
+  individualVerificationsChecks: z
     .object({
       kyc_session_1: z.object({
         vendor: z.string(),

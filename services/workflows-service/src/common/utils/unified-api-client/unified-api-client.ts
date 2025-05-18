@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { env } from '@/env';
-import { Logger } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { Business, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
@@ -25,6 +25,7 @@ export type TOcrImages = Array<
     }
 >;
 
+@Injectable()
 export class UnifiedApiClient {
   private readonly axiosInstance: AxiosInstance;
   private readonly logger = new Logger(UnifiedApiClient.name);
@@ -133,17 +134,15 @@ export class UnifiedApiClient {
     });
   }
 
-  public async getLatestCheckByEndUserAndWorkflowRuntimeDataId({
-    endUserId,
+  public async getLatestAssessmentsByWorkflowRuntimeDataId({
     workflowRuntimeDataId,
     projectId,
   }: {
-    endUserId: string;
     workflowRuntimeDataId: string;
     projectId: string;
   }) {
-    const response = await this.axiosInstance.get(
-      `/checks/latest-by-end-user-and-workflow-runtime-data-id/${endUserId}/${workflowRuntimeDataId}?projectId=${projectId}`,
+    const response = await this.axiosInstance.get<Array<Record<string, any>>>(
+      `/assessments/latest-by-workflow-runtime-data-id/${workflowRuntimeDataId}?projectId=${projectId}`,
     );
 
     return response.data;

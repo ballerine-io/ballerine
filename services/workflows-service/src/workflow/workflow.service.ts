@@ -120,6 +120,7 @@ import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repositor
 import { PartialDeep } from 'type-fest';
 import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
 import { formatIndividualVerification } from '@/common/utils/idv';
+import { AssessmentsService } from '@/assessments/assessments.service';
 
 type TEntityId = string;
 
@@ -164,6 +165,7 @@ export class WorkflowService {
     private readonly secretsManagerFactory: SecretsManagerFactory,
     private readonly storageService: StorageService,
     private readonly workflowLogService: WorkflowLogService,
+    private readonly assessmentsService: AssessmentsService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -251,13 +253,13 @@ export class WorkflowService {
   async getWorkflowByIdWithRelations(id: string, projectIds: TProjectIds) {
     const workflow = await this.workflowRuntimeDataRepository.findByIdWithRelations(id, projectIds);
 
-    return this.formatWorkflow(workflow);
+    return await this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(
+  private async formatWorkflow(
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
-  ): TWorkflowWithRelations {
+  ): Promise<TWorkflowWithRelations> {
     const getEntity = (workflow: TWorkflowWithRelations) => {
       if ('endUser' in workflow && !!workflow?.endUser) {
         return {
@@ -300,230 +302,43 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
-    const individualVerification = {
-      input: {
-        vendor: 'veriff',
-      },
-      output: {
-        id: '1c33b17f-ef95-4398-adc8-041a38747e20',
-        aml: {
-          hits: [
-            {
-              pep: [],
-              other: [],
-              warnings: [],
-              countries: ['Country1', 'Country2', 'Country3'],
-              sanctions: [],
-              matchTypes: ['name_exact', 'year_of_birth'],
-              matchedName: 'John Smith',
-              adverseMedia: [
-                {
-                  date: null,
-                  type: null,
-                  sourceUrl: null,
-                  sourceName: 'ComplyAdvantage Adverse Media',
-                },
-                {
-                  date: '2015-10-19T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article1',
-                  sourceName: 'Example News Article 1',
-                },
-                {
-                  date: '2015-10-25T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article2',
-                  sourceName: 'Example News Article 2',
-                },
-                {
-                  date: null,
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article3',
-                  sourceName: 'Example News Article 3',
-                },
-                {
-                  date: '2020-09-25T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article4',
-                  sourceName: 'Example News Article 4',
-                },
-                {
-                  date: '2015-10-19T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article5',
-                  sourceName: 'Example News Article 5',
-                },
-                {
-                  date: null,
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article6',
-                  sourceName: 'Example News Article 6',
-                },
-                {
-                  date: '2015-11-04T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article7',
-                  sourceName: 'Example News Article 7',
-                },
-                {
-                  date: '2018-04-24T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article8',
-                  sourceName: 'Example News Article 8',
-                },
-                {
-                  date: '2015-10-22T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article9',
-                  sourceName: 'Example News Article 9',
-                },
-                {
-                  date: '2015-10-25T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article10',
-                  sourceName: 'Example News Article 10',
-                },
-                {
-                  date: '2020-09-14T00:00:00Z',
-                  type: null,
-                  sourceUrl: 'https://www.example.com/news/article11',
-                  sourceName: 'Example News Article 11',
-                },
-              ],
-              fitnessProbity: [],
-            },
-          ],
-          clientId: '7a5a10eb-e01d-4896-a717-9017ab3f84d1',
-          checkType: 'initial_result',
-          createdAt: '2025-05-11T14:54:58.966Z',
-          endUserId: 'cm9vhp2nn000wphf4xaocp9v1',
-          matchStatus: 'possible_match',
-        },
-        images: [
-          { context: 'face' },
-          { context: 'face-pre' },
-          { context: 'document-front' },
-          { context: 'document-front' },
-          { context: 'document-front-pre' },
-          { context: 'document-front-pre' },
-          { context: 'document-back' },
-          { context: 'document-back-pre' },
-        ],
-        person: {
-          gender: {
-            value: null,
-            sources: [],
-            confidenceCategory: null,
-          },
-          address: {
-            value: null,
-            sources: [],
-            components: {},
-            confidenceCategory: null,
-          },
-          idNumber: {
-            value: '123456789',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          lastName: {
-            value: 'SMITH',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          firstName: {
-            value: 'JOHN',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          extraNames: null,
-          dateOfBirth: {
-            value: '1990-01-01',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          nationality: {
-            value: null,
-            sources: [],
-            confidenceCategory: null,
-          },
-          placeOfBirth: null,
-          foreignerStatus: null,
-        },
-        vendor: 'veriff',
-        decision: 'approved',
-        document: {
-          type: {
-            value: 'DRIVERS_LICENSE',
-          },
-          number: {
-            value: '1234567',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          country: {
-            value: 'US',
-          },
-          validFrom: {
-            value: '2025-01-01',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          firstIssue: null,
-          validUntil: {
-            value: '2030-01-01',
-            sources: ['VIZ'],
-            confidenceCategory: 'high',
-          },
-          placeOfIssue: null,
-          licenseNumber: null,
-          processNumber: null,
-          residencePermitType: null,
-        },
-        insights: {
-          fraud: {
-            allowedIpLocation: 'yes',
-            expectedTrafficBehaviour: 'yes',
-          },
-          document: {
-            documentAccepted: 'yes',
-            documentNotExpired: 'yes',
-            documentRecognised: 'yes',
-            physicalDocumentPresent: 'yes',
-            validDocumentAppearance: 'yes',
-            documentBackFullyVisible: 'yes',
-            documentFrontFullyVisible: 'yes',
-            documentBackImageAvailable: 'yes',
-            documentFrontImageAvailable: 'yes',
-            documentImageQualitySufficient: 'yes',
-          },
-          biometric: {
-            faceLiveness: 'yes',
-            faceImageAvailable: 'yes',
-            faceNotInBlocklist: 'yes',
-            faceSimilarToPortrait: 'yes',
-            faceImageQualitySufficient: 'yes',
-          },
-        },
-        metadata: {},
-        endUserId: 'cm9vhp2nn000wphf4xaocp9v1',
-        decisionScore: 0.99,
-        reason: 'Suspected document tampering',
-      },
-    };
+    let assessments:
+      | Awaited<
+          ReturnType<typeof this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId>
+        >
+      | undefined;
+
+    if (workflow.workflowType === 'parent') {
+      assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
+        workflowRuntimeDataId: workflow.id,
+        projectId: workflow.projectId,
+      });
+    }
+
+    const individualVerificationsChecks = assessments?.flatMap(
+      assessment => assessment.individualVerificationsChecks,
+    );
 
     return {
       ...workflow,
       endUsers:
         workflow.endUsers?.map(endUser => {
+          const endUserIndividualVerificationsChecks = individualVerificationsChecks?.find(
+            individualVerificationsCheck => individualVerificationsCheck.endUserId === endUser.id,
+          );
+
           return {
             ...endUser,
-            individualVerification: {
-              kyc_session_1: {
-                vendor: individualVerification.input.vendor,
-                result: formatIndividualVerification(individualVerification.output),
-              },
-            },
+            individualVerificationsChecks: endUserIndividualVerificationsChecks
+              ? {
+                  kyc_session_1: {
+                    vendor: endUserIndividualVerificationsChecks.input.vendor,
+                    result: formatIndividualVerification(
+                      endUserIndividualVerificationsChecks.output,
+                    ),
+                  },
+                }
+              : undefined,
           };
         }) ?? [],
       context: {
@@ -567,8 +382,10 @@ export class WorkflowService {
       // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
-      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow),
+      childWorkflows: await Promise.all(
+        workflow.childWorkflowsRuntimeData?.map(
+          async childWorkflow => await this.formatWorkflow(childWorkflow),
+        ) ?? [],
       ),
     };
   }
