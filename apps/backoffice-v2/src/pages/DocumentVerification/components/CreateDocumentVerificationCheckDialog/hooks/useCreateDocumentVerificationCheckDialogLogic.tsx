@@ -59,16 +59,10 @@ export const useCreateDocumentVerificationCheckDialogLogic = ({
         formData.append(`documentFile${index}`, file);
       });
 
-      // Create current date string for date of birth (default value)
-      const currentDate = new Date().toISOString().split('T')[0] as string;
-
       // Define parameters with exact types
       const apiParams: CreateDocumentVerificationParams = {
-        firstName: data.companyName,
-        lastName: data.merchantId || '',
-        country: 'US',
-        dateOfBirth: currentDate,
-        documentType: 'company_documents',
+        companyName: data.companyName,
+        merchantId: data.merchantId,
         documentFiles: data.documentFiles,
       };
 

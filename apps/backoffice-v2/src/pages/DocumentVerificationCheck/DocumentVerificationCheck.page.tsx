@@ -16,23 +16,25 @@ export const DocumentVerificationCheck: FunctionComponent = () => {
   const [searchParams] = useSearchParams();
   const locale = searchParams.get('locale') || 'en';
 
-  const { data: documentsResponse, isLoading } = useDocumentVerificationChecksQuery({
-    page: 1,
-    limit: 100, // Load more documents to make sure we find the right one
+  const { data: checksResponse, isLoading } = useDocumentVerificationChecksQuery({
+    page: {
+      number: 1,
+      size: 100,
+    },
   });
 
-  const document = useMemo(() => {
-    if (!documentsResponse?.data || !id) {
+  const check = useMemo(() => {
+    if (!checksResponse?.data || !id) {
       return null;
     }
-    return documentsResponse.data.find(doc => doc.id === id);
-  }, [documentsResponse, id]);
+    return checksResponse.data.find(doc => doc.checkId === id);
+  }, [checksResponse, id]);
 
   if (isLoading) {
     return <FullScreenLoader />;
   }
 
-  if (!document) {
+  if (!check) {
     return (
       <div className="flex h-full flex-col items-center justify-center space-y-4">
         <File className="h-16 w-16 text-gray-400" />
@@ -48,7 +50,7 @@ export const DocumentVerificationCheck: FunctionComponent = () => {
   }
 
   // Default to 'pending' if status is undefined
-  const status = document.status || 'pending';
+  const status = check.status || 'pending';
 
   const getStatusBadgeVariant = (
     status: (typeof DocumentVerificationStatuses)[number],
@@ -82,9 +84,9 @@ export const DocumentVerificationCheck: FunctionComponent = () => {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Document Verification - {document.checkId}</h1>
+          <h1 className="text-2xl font-bold">Document Verification - {check.checkId}</h1>
           <p className="text-gray-500">
-            Created on {format(new Date(document.createdAt), 'MMMM d, yyyy')}
+            Created on {format(new Date(check.createdAt), 'MMMM d, yyyy')}
           </p>
         </div>
         <Badge variant={getStatusBadgeVariant(status)}>{getStatusLabel(status)}</Badge>
@@ -92,42 +94,34 @@ export const DocumentVerificationCheck: FunctionComponent = () => {
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-6 rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold">Personal Information</h2>
+          <h2 className="text-xl font-semibold">Company Information</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500">First Name</p>
-              <p>{document.firstName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Last Name</p>
-              <p>{document.lastName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p>{document.email}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Document Type</p>
-              <p className="capitalize">{document.documentType.replace('_', ' ')}</p>
+              <p className="text-sm text-gray-500">Company Name</p>
+              <p>{check.companyName}</p>
             </div>
           </div>
         </div>
 
         <div className="space-y-6 rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold">Document</h2>
-          {document.documentUrl ? (
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="flex h-40 w-full items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
-                <File className="h-16 w-16 text-gray-400" />
-              </div>
-              <a
-                href={document.documentUrl}
-                download
-                className="flex items-center text-blue-600 hover:text-blue-800"
-              >
-                <Download className="mr-1 h-4 w-4" />
-                Download Document
-              </a>
+          <h2 className="text-xl font-semibold">Documents</h2>
+          {check.documentNames.length > 0 ? (
+            <div className="space-y-4">
+              {check.documentNames.map((documentName, index) => (
+                <div key={index} className="flex flex-col items-center justify-center space-y-4">
+                  <div className="flex h-40 w-full items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
+                    <File className="h-16 w-16 text-gray-400" />
+                  </div>
+                  <a
+                    href="#"
+                    download
+                    className="flex items-center text-blue-600 hover:text-blue-800"
+                  >
+                    <Download className="mr-1 h-4 w-4" />
+                    Download Document {documentName}
+                  </a>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="flex h-40 items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
@@ -136,19 +130,6 @@ export const DocumentVerificationCheck: FunctionComponent = () => {
           )}
         </div>
       </div>
-
-      {document.issues && document.issues.length > 0 && (
-        <div className="space-y-4 rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold">Issues</h2>
-          <ul className="list-inside list-disc space-y-2">
-            {document.issues.map((issue, index) => (
-              <li key={index} className="text-red-600">
-                {issue}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };
