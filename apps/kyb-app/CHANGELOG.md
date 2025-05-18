@@ -1,5 +1,11 @@
 # kyb-app
 
+## 0.3.179
+
+### Patch Changes
+
+- ad8c9ffcb190daae53ecce9a5971882b10d6dabd: Bump
+
 ## 0.3.178
 
 ### Patch Changes
