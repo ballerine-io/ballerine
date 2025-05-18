@@ -66,7 +66,7 @@ export const NavIntroduction = () => {
               >
                 <Skeleton className="absolute inset-0 size-full" />
                 <iframe
-                  src="https://www.loom.com/embed/7cd69b5e2db24e81ace760cc38b3d7dc?sid=69a0ffbf-bd57-4e88-b9db-cbf819da21d3&hideEmbedTopBar=true"
+                  src="https://www.loom.com/embed/c80a7403d3b4483ab64f1a38b616fb63?sid=cfae9630-2144-4b37-9169-21bbcc360a5f&hideEmbedTopBar=true"
                   frameBorder="0"
                   allowFullScreen
                   style={{
