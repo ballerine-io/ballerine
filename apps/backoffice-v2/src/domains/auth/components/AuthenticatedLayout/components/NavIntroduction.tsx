@@ -45,7 +45,7 @@ export const NavIntroduction = () => {
                 id="video-thumbnail"
               >
                 <img
-                  src="https://cdn.loom.com/sessions/thumbnails/7cd69b5e2db24e81ace760cc38b3d7dc-8dd5afc805842339-full-play.gif"
+                  src="https://cdn.loom.com/sessions/thumbnails/c80a7403d3b4483ab64f1a38b616fb63-62bfbec54aa2e74b-full-play.gif"
                   alt="Introduction video thumbnail"
                   className="w-full rounded-md"
                 />
