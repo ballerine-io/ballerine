@@ -3,7 +3,11 @@ export const replaceNullsWithUndefined = (obj: unknown) => {
     return undefined;
   }
 
-  if (typeof obj !== 'object' || Array.isArray(obj)) {
+  if (Array.isArray(obj)) {
+    return obj.map(item => replaceNullsWithUndefined(item));
+  }
+
+  if (typeof obj !== 'object') {
     return obj;
   }
 
