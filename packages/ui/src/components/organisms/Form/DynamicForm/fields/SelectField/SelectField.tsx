@@ -53,6 +53,7 @@ export const SelectField: TDynamicFormField<ISelectFieldParams> = ({ element }) 
         testId={createTestId(element, stack)}
         placeholder={placeholder}
         optionNotFoundText={optionNotFoundText}
+        disabled={disabled}
         onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}

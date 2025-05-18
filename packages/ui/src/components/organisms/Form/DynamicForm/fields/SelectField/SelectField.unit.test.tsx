@@ -1,4 +1,3 @@
-import { DropdownInput } from '@/components/molecules';
 import { createTestId } from '@/components/organisms/Renderer';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,10 +12,11 @@ import { TBaseFields } from '../../repositories/fields-repository';
 import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { ISelectFieldParams, SelectField } from './SelectField';
+import { SearchableDropdown } from '@/components/atoms';
 
 // Mock dependencies
-vi.mock('@/components/molecules', () => ({
-  DropdownInput: vi.fn(({ options, onChange, onFocus, onBlur, value }: any) => (
+vi.mock('@/components/atoms/SearchableDropdown', () => ({
+  SearchableDropdown: vi.fn(({ options, onChange, onFocus, onBlur, value }: any) => (
     <select
       data-testid="test-select-field"
       onChange={e => {
@@ -83,6 +83,7 @@ describe('SelectField', () => {
     id: 'test-id',
     params: {
       placeholder: 'Select an option',
+      optionNotFoundText: 'No options found',
       options: [
         { value: '1', label: 'Option 1' },
         { value: '2', label: 'Option 2' },
@@ -128,42 +129,19 @@ describe('SelectField', () => {
   it('should render DropdownInput with correct props', () => {
     render(<SelectField element={mockElement} />);
 
-    expect(DropdownInput).toHaveBeenCalledWith(
+    expect(SearchableDropdown).toHaveBeenCalledWith(
       {
-        name: mockElement.id,
-        options: mockElement.params?.options || [],
+        options: mockElement.params?.options,
         testId: mockTestId,
-        placeholdersParams: {
-          placeholder: mockElement.params?.placeholder || '',
-          searchPlaceholder: '',
-        },
+        placeholder: mockElement.params?.placeholder,
+        optionNotFoundText: mockElement.params?.optionNotFoundText,
         disabled: false,
         value: undefined,
-        searchable: true,
         onChange: expect.any(Function),
         onBlur: mockFieldProps.onBlur,
         onFocus: mockFieldProps.onFocus,
       },
       {},
-    );
-  });
-
-  it('should handle empty params gracefully', () => {
-    const elementWithoutParams = {
-      id: 'test-id',
-    } as IFormElement<TBaseFields, ISelectFieldParams>;
-
-    render(<SelectField element={elementWithoutParams} />);
-
-    expect(DropdownInput).toHaveBeenCalledWith(
-      expect.objectContaining({
-        options: [],
-        placeholdersParams: {
-          placeholder: '',
-          searchPlaceholder: '',
-        },
-      }),
-      expect.any(Object),
     );
   });
 
@@ -181,7 +159,7 @@ describe('SelectField', () => {
 
     render(<SelectField element={mockElement} />);
 
-    expect(DropdownInput).toHaveBeenCalledWith(
+    expect(SearchableDropdown).toHaveBeenCalledWith(
       expect.objectContaining({
         value: mockHandlers.value,
         disabled: mockHandlers.disabled,

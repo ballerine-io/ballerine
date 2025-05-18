@@ -110,7 +110,7 @@ export const SearchableDropdown = ({
               {options.map(option => (
                 <CommandItem
                   key={option.value}
-                  value={option.label}
+                  value={option.value}
                   data-testid={testId ? `${testId}-option-${option.value}` : undefined}
                   onSelect={() => handleSelect(option.value)}
                   onFocus={handleFocus}
