@@ -15,14 +15,6 @@ import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useCreateDocumentVerificationCheckDialogLogic } from './hooks/useCreateDocumentVerificationCheckDialogLogic';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { getCountries, getCountryStates } from '@ballerine/common';
-import { Select } from '@/common/components/atoms/Select/Select';
-import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
-import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
-import { SelectGroup } from '@/common/components/atoms/Select/Select.Group';
-import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 
 type CreateDocumentVerificationCheckDialogProps = {
   open: boolean;
@@ -77,7 +69,7 @@ const CreateDocumentVerificationSuccessContent = () => {
     <div className="mx-6 text-center">
       <div className="my-12 space-y-2">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500">
-          <CheckIcon className="text-white d-12" />
+          <CheckIcon className="h-12 w-12 text-white" />
         </div>
 
         <p className="mt-2">Your document verification case is being processed.</p>
@@ -203,18 +195,26 @@ const CreateDocumentVerificationCheckDialogFormContent = ({
                                   className="flex items-center justify-between py-1"
                                 >
                                   <span className="truncate text-sm">{file.name}</span>
-                                  <button
-                                    type="button"
-                                    className="ml-2 text-gray-500 hover:text-gray-700"
+                                  <div
+                                    role="button"
+                                    tabIndex={0}
+                                    className="ml-2 cursor-pointer text-gray-500 hover:text-gray-700"
                                     onClick={() => {
                                       const newFiles = [...files];
                                       newFiles.splice(index, 1);
                                       onChange(newFiles);
                                     }}
-                                    disabled={shouldDisableForm || isSubmitting}
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        const newFiles = [...files];
+                                        newFiles.splice(index, 1);
+                                        onChange(newFiles);
+                                      }
+                                    }}
+                                    aria-label={`Remove ${file.name}`}
                                   >
                                     <X className="h-4 w-4" />
-                                  </button>
+                                  </div>
                                 </div>
                               ))}
                             </div>

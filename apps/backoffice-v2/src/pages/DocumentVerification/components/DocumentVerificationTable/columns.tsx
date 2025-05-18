@@ -14,7 +14,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
   return useMemo(() => {
     const columns = [
       // Company Name column
-      columnHelper.accessor('firstName', {
+      columnHelper.accessor('companyName', {
         cell: info => {
           const companyName = info.getValue() || 'Unknown Company';
 
@@ -28,16 +28,14 @@ export const useColumns = ({ isDemoAccount = false }) => {
       }),
 
       // Document Count column
-      columnHelper.accessor(row => row, {
-        id: 'documentCount',
+      columnHelper.accessor('documentNames', {
         cell: info => {
-          // Generate a random document count between 1-5 for demo purposes
-          const count = Math.floor(Math.random() * 5) + 1;
+          const names = info.getValue() || ['hello', 'world']; //info.getValue().documentNames.length;
 
           return (
             <div className="flex items-center">
               <Files className="mr-2 h-4 w-4 text-gray-500" />
-              <span>{count}</span>
+              <span>{names.length}</span>
             </div>
           );
         },

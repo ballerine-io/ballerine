@@ -1,5 +1,7 @@
+import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useDocumentVerificationChecksQuery } from '@/domains/document-verification/hooks/queries/useDocumentVerificationChecksQuery/useDocumentVerificationChecksQuery';
 import { DocumentVerificationStatuses } from '@/domains/document-verification/fetchers';
@@ -11,6 +13,7 @@ interface Props {
 export const useDocumentVerificationLogic = (props?: Props) => {
   const { filters } = props || {};
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const [search, setSearch] = useState<string>('');
   const page = useMemo(() => {
@@ -44,14 +47,45 @@ export const useDocumentVerificationLogic = (props?: Props) => {
 
   const {
     data: documentVerificationChecksResponse,
-    isLoading: isLoadingDocumentVerificationChecks,
+    isLoading: isQueryLoading,
+    isFetching: isQueryFetching,
+    isError: isQueryError,
   } = useDocumentVerificationChecksQuery({
-    page,
-    limit: 10,
+    page: {
+      number: page,
+      size: 10,
+    },
     status,
-    from: dates.from ? dates.from.toISOString() : undefined,
-    to: dates.to ? dates.to.toISOString() : undefined,
+    from: dates.from || dayjs().subtract(30, 'day').toDate(),
+    to: dates.to || dayjs().toDate(),
   });
+
+  // Set loading state based on query status
+  const isLoadingDocumentVerificationChecks =
+    isQueryLoading || (isInitialLoading && isQueryFetching);
+
+  // Reset initial loading state when data is fetched or after a timeout
+  useEffect(() => {
+    if (documentVerificationChecksResponse && isInitialLoading) {
+      setIsInitialLoading(false);
+    }
+
+    // Add a fallback timeout to ensure loading state isn't stuck
+    const timeoutId = setTimeout(() => {
+      if (isInitialLoading) {
+        setIsInitialLoading(false);
+      }
+    }, 2000); // Force exit loading state after 2 seconds
+
+    return () => clearTimeout(timeoutId);
+  }, [documentVerificationChecksResponse, isInitialLoading, isQueryError]);
+
+  // Always make sure we exit loading state on error
+  useEffect(() => {
+    if (isQueryError && isInitialLoading) {
+      setIsInitialLoading(false);
+    }
+  }, [isQueryError, isInitialLoading]);
 
   const documentVerificationChecks = useMemo(() => {
     return documentVerificationChecksResponse?.data || [];

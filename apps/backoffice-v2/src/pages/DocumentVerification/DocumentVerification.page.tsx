@@ -184,8 +184,26 @@ export const DocumentVerification: FunctionComponent = () => {
         </div>
         <div className="space-y-6">
           {isLoadingDocumentVerificationChecks && (
-            <div className={`flex h-full w-full items-center justify-center`}>
-              <Loader2 className={`h-[60px] w-[60px] animate-spin`} />
+            <div className="flex h-64 w-full flex-col">
+              {/* Document Verification Table Skeleton */}
+              <div className="mb-6 rounded-md border border-gray-200">
+                <div className="p-4">
+                  <div className="flex items-center justify-between border-b border-gray-200 py-2">
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="flex items-center justify-between py-4">
+                      <Skeleton className="h-6 w-40" />
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-6 w-24 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
           {!isLoadingDocumentVerificationChecks && isNonEmptyArray(normalizedDocuments) && (

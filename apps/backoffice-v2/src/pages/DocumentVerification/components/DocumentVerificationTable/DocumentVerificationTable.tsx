@@ -4,6 +4,7 @@ import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlData
 import { TDocumentVerificationCheck } from '@/domains/document-verification/fetchers';
 import { useDocumentVerificationTableLogic } from './hooks/useDocumentVerificationTableLogic/useDocumentVerificationTableLogic';
 import { useColumns } from './columns';
+import { ColumnDef } from '@tanstack/react-table';
 
 export const DocumentVerificationTable: FunctionComponent<{
   data: TDocumentVerificationCheck[];
