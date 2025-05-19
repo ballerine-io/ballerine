@@ -49,6 +49,19 @@
               "active-border-color": "#FF8A0055"
             }
           },
+          "edit": {
+            "inner": {
+              "border-color": "#6C7EE1",
+              "bg-color": "#6C7EE1"
+            },
+            "outer": {
+              "border-color": "transparent",
+              "active-border-color": "#6C7EE133"
+            },
+            "wrapper": {
+              "active-border-color": "#5A6BC8"
+            }
+          },
           "completed": {
             "inner": {
               "border-color": "#00BD59"
