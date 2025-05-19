@@ -309,10 +309,20 @@ export class WorkflowService {
       | undefined;
 
     if (workflow.workflowType === 'parent') {
-      assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
-        workflowRuntimeDataId: workflow.id,
-        projectId: workflow.projectId,
-      });
+      try {
+        assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
+          workflowRuntimeDataId: workflow.id,
+          projectId: workflow.projectId,
+        });
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          assessments = [];
+        }
+
+        if (!(error instanceof NotFoundException)) {
+          throw error;
+        }
+      }
     }
 
     const individualVerificationsChecks = assessments?.flatMap(
