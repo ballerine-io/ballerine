@@ -18,6 +18,7 @@ export const buildTree = ({
     target: string;
     data: {
       sharePercentage?: number;
+      role?: string;
     };
   }>;
 }) => {
@@ -46,15 +47,21 @@ export const buildTree = ({
       ? Number(edge?.data?.sharePercentage).toFixed(2)
       : undefined;
 
+    const role = edge?.data?.role;
+
+    let label = '';
+    if (percentage) {
+      label = percentage.toString().endsWith('%') ? percentage : `${percentage}%`;
+    }
+    if (role) {
+      label = label ? `${label} (${role})` : role;
+    }
+
     return {
       id: edge.id,
       source: edge.source,
       target: edge.target,
-      ...(percentage
-        ? {
-            label: percentage.toString().endsWith('%') ? percentage : `${percentage}%`,
-          }
-        : {}),
+      ...(label ? { label } : {}),
       animated: true,
     };
   });
