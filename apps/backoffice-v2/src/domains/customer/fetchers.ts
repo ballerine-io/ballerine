@@ -40,6 +40,7 @@ const CustomerSchema = z.object({
       isCasesOnboardingEnabled: z.boolean().default(false),
       isExample: z.boolean().default(false),
       isDemoAccount: z.boolean().default(false),
+      isDemoKybEnabled: z.boolean().default(false),
       demoAccessDetails: z
         .object({
           totalReports: z.number(),
