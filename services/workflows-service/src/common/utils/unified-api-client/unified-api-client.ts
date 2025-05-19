@@ -224,4 +224,43 @@ export class UnifiedApiClient {
       throw error;
     }
   }
+
+  public async runIndividualVerification({
+    clientId,
+    endUserId,
+    sessionId,
+    vendor,
+    withAml,
+    ongoingMonitoring,
+    callbackUrl,
+    firstName,
+    lastName,
+    dateOfBirth,
+  }: {
+    clientId: string;
+    endUserId: string;
+    sessionId: string | undefined;
+    vendor: 'veriff';
+    withAml: boolean;
+    ongoingMonitoring: boolean;
+    callbackUrl: string;
+
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string;
+  }) {
+    return await this.axiosInstance.post('/individual-verification-sessions', {
+      clientId,
+      endUserId: `${endUserId}__${sessionId ?? ''}`,
+
+      vendor,
+      withAml,
+      ongoingMonitoring,
+      callbackUrl,
+
+      firstName,
+      lastName,
+      dateOfBirth,
+    });
+  }
 }
