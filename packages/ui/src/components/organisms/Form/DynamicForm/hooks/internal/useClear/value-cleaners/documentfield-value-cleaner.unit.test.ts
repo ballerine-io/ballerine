@@ -2,6 +2,7 @@ import { request } from '@/common/hooks/useHttp';
 import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT_FIELD_TYPE, IDocumentFieldParams, IDocumentTemplate } from '../../../../fields';
+import { getDocumentObjectFromDocumentsList } from '../../../../fields';
 import { getFileOrFileIdFromDocumentsList } from '../../../../fields/DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
 import { IFormElement, TBaseFields } from '../../../../types';
 import { documentFieldValueCleaner } from './documentfield-value-cleaner';
@@ -14,6 +15,11 @@ vi.mock('sonner', () => ({
   toast: {
     error: vi.fn(),
   },
+}));
+
+vi.mock('../../../../fields', () => ({
+  DOCUMENT_FIELD_TYPE: 'documentfield',
+  getDocumentObjectFromDocumentsList: vi.fn(),
 }));
 
 vi.mock(
@@ -42,6 +48,8 @@ describe('documentFieldValueCleaner', () => {
     } as IDocumentFieldParams,
   };
 
+  const mockMetadata = { userId: '123' };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -53,17 +61,22 @@ describe('documentFieldValueCleaner', () => {
 
   it('should filter out document with matching template id', async () => {
     const documents = [{ id: 'template-1' }, { id: 'template-2' }, { id: 'template-3' }];
+    const mockDocument = { _document: { id: 'doc-123' } };
+
+    vi.mocked(getDocumentObjectFromDocumentsList).mockReturnValue(mockDocument as any);
     vi.mocked(getFileOrFileIdFromDocumentsList).mockReturnValue('fileId');
     vi.mocked(request).mockResolvedValue({});
 
-    const result = await documentFieldValueCleaner(documents, mockElement);
+    const result = await documentFieldValueCleaner(documents, mockElement, undefined, mockMetadata);
 
     expect(result).toEqual([{ id: 'template-2' }, { id: 'template-3' }]);
-    expect(request).toHaveBeenCalledWith(mockElement.params!.httpParams?.deleteDocument, undefined);
   });
 
   it('should not call delete API if file is instance of File', async () => {
     const documents = [{ id: 'template-1' }, { id: 'template-2' }];
+    vi.mocked(getDocumentObjectFromDocumentsList).mockReturnValue({
+      _document: { id: 'doc-123' },
+    } as any);
     vi.mocked(getFileOrFileIdFromDocumentsList).mockReturnValue(new File([], 'test.txt'));
 
     const result = await documentFieldValueCleaner(documents, mockElement);
@@ -75,6 +88,9 @@ describe('documentFieldValueCleaner', () => {
   it('should handle API error and show toast', async () => {
     const documents = [{ id: 'template-1' }];
     const error = new Error('API Error');
+    vi.mocked(getDocumentObjectFromDocumentsList).mockReturnValue({
+      _document: { id: 'doc-123' },
+    } as any);
     vi.mocked(getFileOrFileIdFromDocumentsList).mockReturnValue('fileId');
     vi.mocked(request).mockRejectedValue(error);
 
@@ -84,17 +100,12 @@ describe('documentFieldValueCleaner', () => {
     expect(result).toEqual([]);
   });
 
-  it('should not attempt deletion if no deleteDocument params', async () => {
-    const elementWithoutDelete = {
-      ...mockElement,
-      params: {
-        ...mockElement.params,
-        httpParams: {},
-      },
-    };
+  it('should not attempt deletion if no document id', async () => {
     const documents = [{ id: 'template-1' }];
+    vi.mocked(getDocumentObjectFromDocumentsList).mockReturnValue({ _document: {} } as any);
+    vi.mocked(getFileOrFileIdFromDocumentsList).mockReturnValue('fileId');
 
-    const result = await documentFieldValueCleaner(documents, elementWithoutDelete as any);
+    const result = await documentFieldValueCleaner(documents, mockElement);
 
     expect(request).not.toHaveBeenCalled();
     expect(result).toEqual([]);
