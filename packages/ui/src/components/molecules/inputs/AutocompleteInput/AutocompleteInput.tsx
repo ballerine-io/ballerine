@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import { ComponentProps, FocusEvent, useCallback, useMemo } from 'react';
 
 export interface AutocompleteOption {
+  label?: string;
   value: string;
 }
 
@@ -53,11 +54,26 @@ export const AutocompleteInput = ({
     return value;
   }, [value]);
 
-  const optionLabels = useMemo(() => options.map(option => option.value), [options]);
+  const selectedOption = useMemo(() => {
+    return options.find(option => option.value === safeValue);
+  }, [options, safeValue]);
+
+  const displayValue = useMemo(() => {
+    return selectedOption?.label || safeValue;
+  }, [selectedOption, safeValue]);
 
   const handleChange: NonNullable<ComponentProps<typeof Autocomplete>['onChange']> = useCallback(
     (_, newValue) => {
-      onChange({ target: { value: newValue, name } } as AutocompleteChangeEvent);
+      onChange({
+        target: {
+          value: newValue
+            ? typeof newValue === 'string'
+              ? newValue
+              : (newValue as AutocompleteOption)?.value
+            : undefined,
+          name,
+        },
+      } as AutocompleteChangeEvent);
     },
     [name, onChange],
   );
@@ -79,10 +95,13 @@ export const AutocompleteInput = ({
       <Autocomplete
         id={id}
         disablePortal
-        options={optionLabels}
-        getOptionLabel={label => label}
+        options={options}
+        getOptionLabel={(option: AutocompleteOption | string) =>
+          typeof option === 'string' ? option : option.label || option.value
+        }
         freeSolo
-        inputValue={safeValue}
+        inputValue={displayValue}
+        value={safeValue ? selectedOption || safeValue : null}
         PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
         onChange={handleChange}
         disabled={disabled}
@@ -95,11 +114,16 @@ export const AutocompleteInput = ({
             disableRipple: true,
           },
         }}
-        renderOption={(props, option) => (
-          <li {...props} key={option} data-testid={testId ? `${testId}-option` : undefined}>
-            {option}
-          </li>
-        )}
+        renderOption={(props, option: string | AutocompleteOption) => {
+          const optionValue = typeof option === 'string' ? option : option.value;
+          const optionLabel = typeof option === 'string' ? option : option.label || option.value;
+
+          return (
+            <li {...props} key={optionValue} data-testid={testId ? `${testId}-option` : undefined}>
+              {optionLabel}
+            </li>
+          );
+        }}
         renderInput={params => (
           <TextField
             {...params}
