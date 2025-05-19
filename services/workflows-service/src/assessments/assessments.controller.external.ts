@@ -24,10 +24,10 @@ export class AssessmentsControllerExternal {
   }
 
   @common.Get('/kyb_and_ownership')
-  @swagger.ApiOperation({ summary: 'Get KYB and ownership assessments' })
+  @swagger.ApiOperation({ summary: 'Get KYB & Ownership assessments' })
   @swagger.ApiResponse({
     status: 200,
-    description: 'Successfully retrieved KYB and ownership assessments',
+    description: 'Successfully retrieved KYB & Ownership assessments',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   getKybAndOwnershipAssessments(
@@ -38,10 +38,10 @@ export class AssessmentsControllerExternal {
   }
 
   @common.Post('')
-  @swagger.ApiOperation({ summary: 'Create KYB and ownership assessment' })
+  @swagger.ApiOperation({ summary: 'Create KYB & Ownership assessment' })
   @swagger.ApiResponse({
     status: 201,
-    description: 'Successfully created KYB and ownership assessment',
+    description: 'Successfully created KYB & Ownership assessment',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   createKybAndOwnershipAssessment(
