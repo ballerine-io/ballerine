@@ -92,7 +92,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'proof_of_ownership',
@@ -100,7 +100,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'proof_of_ownership',
@@ -108,7 +108,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'financial_documents',
@@ -116,7 +116,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'corporate_authorization_and_delegation_documents',
@@ -124,7 +124,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'corporate_governance_and_legal_fillings',
@@ -132,7 +132,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'regulatory_compliance_certification',
@@ -140,7 +140,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
 
     {
@@ -293,7 +293,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'proof_of_address',
@@ -313,7 +313,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'general_documents',
@@ -321,7 +321,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'general_documents',
@@ -329,7 +329,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: {},
+      propertiesSchema: Type.Object({}),
     },
     {
       category: 'proof_of_ownership',
@@ -343,6 +343,107 @@ export const getUniversalDocuments = (): TDocument[] => {
         parentCompanyName: Type.Optional(Type.String()),
         documentDate: Type.Optional(Type.String({ format: 'date' })),
       }),
+    },
+    {
+      category: 'business_document',
+      type: 'firearms_dealer_authorization',
+      issuer: {
+        country: 'ZZ',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object(
+        {
+          authorizationNumber: Type.String({ pattern: '^[a-zA-Z0-9]*$' }),
+          businessName: Type.String(),
+          issuingAuthority: Type.String(),
+          issueDate: Type.String({ format: 'date' }),
+          expirationDate: Type.String({ format: 'date' }),
+        },
+        {
+          required: [
+            'authorizationNumber',
+            'businessName',
+            'issuingAuthority',
+            'issueDate',
+            'expirationDate',
+          ],
+        },
+      ),
+    },
+    {
+      category: 'business_document',
+      type: 'cannabis_activity_license',
+      issuer: {
+        country: 'ZZ',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object(
+        {
+          licenseNumber: Type.String({ pattern: '^[a-zA-Z0-9]*$' }),
+          businessName: Type.String(),
+          activityType: Type.Enum({
+            Cultivation: 'Cultivation',
+            Processing: 'Processing',
+            Retail: 'Retail',
+            Distribution: 'Distribution',
+            Testing: 'Testing',
+          }),
+          issuingAuthority: Type.String(),
+          issueDate: Type.String({ format: 'date' }),
+          expirationDate: Type.String({ format: 'date' }),
+        },
+        {
+          required: [
+            'licenseNumber',
+            'businessName',
+            'activityType',
+            'issuingAuthority',
+            'issueDate',
+            'expirationDate',
+          ],
+        },
+      ),
+    },
+    {
+      category: 'business_document',
+      type: 'gambling_operator_license',
+      issuer: {
+        type: 'government',
+        country: 'EU',
+      },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object(
+        {
+          licenseNumber: Type.String({ pattern: '^[a-zA-Z0-9]*$' }),
+          businessName: Type.String(),
+          issuingAuthority: Type.String(),
+          licenseType: Type.Enum({
+            'Online Casino': 'Online Casino',
+            'Sports Betting': 'Sports Betting',
+            Poker: 'Poker',
+            Lottery: 'Lottery',
+            Bingo: 'Bingo',
+            'Physical Casino': 'Physical Casino',
+          }),
+          jurisdiction: Type.String(),
+          issueDate: Type.String({ format: 'date' }),
+          expirationDate: Type.String({ format: 'date' }),
+        },
+        {
+          required: [
+            'licenseNumber',
+            'businessName',
+            'issuingAuthority',
+            'licenseType',
+            'jurisdiction',
+            'issueDate',
+            'expirationDate',
+          ],
+        },
+      ),
     },
   ];
 };
