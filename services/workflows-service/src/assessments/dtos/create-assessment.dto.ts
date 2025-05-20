@@ -12,6 +12,13 @@ export class CreateAssessmentDto {
   type!: 'kyb_and_ownership';
 
   @ApiProperty({
+    description: 'Business ID',
+    example: '1234567890',
+  })
+  @IsString()
+  businessId!: string;
+
+  @ApiProperty({
     description: 'Registration number of the company',
     example: 'REG123456',
   })
@@ -27,14 +34,14 @@ export class CreateAssessmentDto {
 
   @ApiProperty({
     description: 'Country where the company is registered',
-    example: 'United States',
+    example: 'US',
   })
   @IsString()
   country!: string;
 
   @ApiPropertyOptional({
     description: 'State where the company is registered (if applicable)',
-    example: 'California',
+    example: 'CA',
   })
   @IsString()
   @IsOptional()

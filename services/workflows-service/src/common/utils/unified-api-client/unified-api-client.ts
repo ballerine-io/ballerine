@@ -132,4 +132,34 @@ export class UnifiedApiClient {
       includeAnalysis: payload.includeAnalysis,
     });
   }
+
+  public async getAssessmentsByType(
+    assessmentType: 'kyb_and_ownership',
+    projectId: string,
+    queryParams: {
+      page: number;
+      limit: number;
+    },
+  ) {
+    return await this.axiosInstance.get(`/assessments/${assessmentType}?projectId=${projectId}`, {
+      params: queryParams,
+    });
+  }
+
+  public async getAssessmentById(id: string, projectId: string) {
+    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
+  }
+
+  public async createAssessment(
+    assessmentType: 'kyb_and_ownership',
+    payload: {
+      registrationNumber: string;
+      companyName: string;
+      country: string;
+      businessId: string;
+      projectId: string;
+    },
+  ) {
+    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+  }
 }
