@@ -354,7 +354,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object(
         {
-          authorizationNumber: Type.String({ pattern: '^[a-zA-Z0-9]*$' }),
+          authorizationNumber: Type.String(),
           businessName: Type.String(),
           issuingAuthority: Type.String(),
           issueDate: Type.String({ format: 'date' }),
@@ -381,15 +381,9 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object(
         {
-          licenseNumber: Type.String({ pattern: '^[a-zA-Z0-9]*$' }),
+          licenseNumber: Type.String(),
           businessName: Type.String(),
-          activityType: Type.Enum({
-            Cultivation: 'Cultivation',
-            Processing: 'Processing',
-            Retail: 'Retail',
-            Distribution: 'Distribution',
-            Testing: 'Testing',
-          }),
+          activityType: Type.String(),
           issuingAuthority: Type.String(),
           issueDate: Type.String({ format: 'date' }),
           expirationDate: Type.String({ format: 'date' }),
@@ -417,7 +411,7 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object(
         {
-          licenseNumber: Type.String({ pattern: '^[a-zA-Z0-9]*$' }),
+          licenseNumber: Type.String(),
           businessName: Type.String(),
           issuingAuthority: Type.String(),
           licenseType: Type.Enum({
