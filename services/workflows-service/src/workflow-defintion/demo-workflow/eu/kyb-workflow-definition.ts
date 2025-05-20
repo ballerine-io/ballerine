@@ -8,7 +8,7 @@ import {
   UBO_DONE_OR_ERRORED,
   WEBSITE_ANALYSIS_DONE,
 } from 'prisma/data-migrations/templates/utils/rules';
-import { createPluginSyncResponseTransform } from 'prisma/data-migrations/utils/create-plugin-response-mapping';
+import { createPluginSyncResponseTransform } from './create-plugin-response-mapping';
 import { demoInputSchema } from './demo.idle.schema';
 import { generateKycDefinition } from './kyc-workflow-definition';
 
