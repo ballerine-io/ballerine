@@ -34,7 +34,7 @@ export const StaticMetricsSection = ({
     <div className="grid grid-cols-4 gap-6 2xl:grid-cols-6">
       {isOngoingMonitoringEnabled && (
         <StatsCard
-          count={totalActiveMerchants}
+          value={totalActiveMerchants}
           centered={true}
           title="Total Active Merchants"
           description="Merchants currently subscribed to monitoring"
