@@ -349,8 +349,8 @@ importers:
         specifier: ^1.1.0
         version: 1.3.0(rollup@4.40.0)(vite@5.4.18(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       zod:
-        specifier: ^3.23.4
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@ballerine/config':
         specifier: ^1.1.41
@@ -656,8 +656,8 @@ importers:
         specifier: ^4.38.2
         version: 4.38.3
       zod:
-        specifier: ^3.23.4
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@ballerine/config':
         specifier: ^1.1.41
@@ -909,8 +909,8 @@ importers:
         specifier: ^4.38.0
         version: 4.38.3
       zod:
-        specifier: ^3.22.3
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@ballerine/config':
         specifier: ^1.1.41
@@ -1016,7 +1016,7 @@ importers:
         version: 1.2.0(svelte@3.59.2)
       '@felte/validator-zod':
         specifier: ^1.0.13
-        version: 1.0.18(zod@3.23.4)
+        version: 1.0.18(zod@3.23.8)
       '@fontsource/inter':
         specifier: ^4.5.15
         version: 4.5.15
@@ -1042,8 +1042,8 @@ importers:
         specifier: 4.37.1
         version: 4.37.1
       zod:
-        specifier: ^3.22.3
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1342,8 +1342,8 @@ importers:
         specifier: ^5.18.2
         version: 5.19.2
       zod:
-        specifier: ^3.23.4
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@babel/core':
         specifier: 7.17.9
@@ -1902,8 +1902,8 @@ importers:
         specifier: ^1.10.0
         version: 1.14.0
       zod:
-        specifier: ^3.23.4
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@ballerine/config':
         specifier: ^1.1.41
@@ -2074,8 +2074,8 @@ importers:
         specifier: ^4.35.2
         version: 4.38.3
       zod:
-        specifier: 3.23.4
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@babel/core':
         specifier: 7.17.9
@@ -2640,7 +2640,7 @@ importers:
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.2)
       '@t3-oss/env-core':
         specifier: ^0.3.1
-        version: 0.3.1(typescript@4.9.5)(zod@3.23.4)
+        version: 0.3.1(typescript@4.9.5)(zod@3.23.8)
       '@types/ws':
         specifier: ^8.5.4
         version: 8.18.1
@@ -2657,8 +2657,8 @@ importers:
         specifier: ^8.13.0
         version: 8.18.1
       zod:
-        specifier: ^3.22.3
-        version: 3.23.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2668,7 +2668,7 @@ importers:
         version: 9.3.0(@swc/core@1.11.22(@swc/helpers@0.5.17))
       '@nestjs/schematics':
         specifier: ^9.0.0
-        version: 9.2.0(chokidar@3.6.0)(typescript@4.9.5)
+        version: 9.2.0(chokidar@3.5.3)(typescript@4.9.5)
       '@nestjs/testing':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
@@ -18838,8 +18838,8 @@ packages:
   zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
 
-  zod@3.23.4:
-    resolution: {integrity: sha512-/AtWOKbBgjzEYYQRNfoGKHObgfAZag6qUJX1VbHo2PRBgS+wfWagEY2mizjfyAPcGesrJOcx/wcl0L9WnVrHFw==}
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zod@3.24.3:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
@@ -18893,16 +18893,6 @@ snapshots:
     optionalDependencies:
       chokidar: 3.5.3
 
-  '@angular-devkit/core@16.0.1(chokidar@3.6.0)':
-    dependencies:
-      ajv: 8.12.0
-      ajv-formats: 2.1.1(ajv@8.12.0)
-      jsonc-parser: 3.2.0
-      rxjs: 7.8.1
-      source-map: 0.7.4
-    optionalDependencies:
-      chokidar: 3.6.0
-
   '@angular-devkit/schematics-cli@15.2.4(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 15.2.4(chokidar@3.5.3)
@@ -18927,16 +18917,6 @@ snapshots:
   '@angular-devkit/schematics@16.0.1(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
-      jsonc-parser: 3.2.0
-      magic-string: 0.30.0
-      ora: 5.4.1
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - chokidar
-
-  '@angular-devkit/schematics@16.0.1(chokidar@3.6.0)':
-    dependencies:
-      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       magic-string: 0.30.0
       ora: 5.4.1
@@ -21597,14 +21577,14 @@ snapshots:
   '@branchlint/common@0.0.1':
     dependencies:
       inquirer: 8.0.1
-      zod: 3.23.4
+      zod: 3.23.8
 
   '@branchlint/default-config@1.0.3':
     dependencies:
       '@branchlint/common': 0.0.1
       lodash: 4.17.21
       yargs: 17.7.2
-      zod: 3.23.4
+      zod: 3.23.8
 
   '@changesets/apply-release-plan@7.0.12':
     dependencies:
@@ -22677,10 +22657,10 @@ snapshots:
       '@felte/common': 1.1.9
       svelte: 3.59.2
 
-  '@felte/validator-zod@1.0.18(zod@3.23.4)':
+  '@felte/validator-zod@1.0.18(zod@3.23.8)':
     dependencies:
       '@felte/common': 1.1.9
-      zod: 3.23.4
+      zod: 3.23.8
 
   '@floating-ui/core@1.6.9':
     dependencies:
@@ -23688,16 +23668,6 @@ snapshots:
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
       '@angular-devkit/schematics': 16.0.1(chokidar@3.5.3)
-      jsonc-parser: 3.2.0
-      pluralize: 8.0.0
-      typescript: 4.9.5
-    transitivePeerDependencies:
-      - chokidar
-
-  '@nestjs/schematics@9.2.0(chokidar@3.6.0)(typescript@4.9.5)':
-    dependencies:
-      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
-      '@angular-devkit/schematics': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       pluralize: 8.0.0
       typescript: 4.9.5
@@ -26824,10 +26794,10 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@t3-oss/env-core@0.3.1(typescript@4.9.5)(zod@3.23.4)':
+  '@t3-oss/env-core@0.3.1(typescript@4.9.5)(zod@3.23.8)':
     dependencies:
       typescript: 4.9.5
-      zod: 3.23.4
+      zod: 3.23.8
 
   '@t3-oss/env-core@0.6.1(typescript@4.9.3)(zod@3.22.4)':
     dependencies:
@@ -31851,7 +31821,7 @@ snapshots:
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.1)(typescript@5.8.3)
       eslint: 8.57.1
       eslint-config-standard: 17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
       typescript: 5.8.3
@@ -31861,7 +31831,7 @@ snapshots:
   eslint-config-standard@17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
 
@@ -31884,7 +31854,7 @@ snapshots:
       tinyglobby: 0.2.13
       unrs-resolver: 1.7.2
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -41088,7 +41058,7 @@ snapshots:
 
   zod@3.22.4: {}
 
-  zod@3.23.4: {}
+  zod@3.23.8: {}
 
   zod@3.24.3: {}
 

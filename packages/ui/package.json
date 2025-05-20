@@ -79,7 +79,7 @@
     "sonner": "^1.4.3",
     "string-ts": "1.2.0",
     "tailwind-merge": "^1.10.0",
-    "zod": "^3.23.4"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@ballerine/config": "^1.1.41",
