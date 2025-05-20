@@ -144,7 +144,7 @@
     "tailwindcss-animate": "^1.0.5",
     "ts-pattern": "^5.0.8",
     "vite-plugin-terminal": "^1.1.0",
-    "zod": "^3.23.4"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@ballerine/config": "^1.1.41",
