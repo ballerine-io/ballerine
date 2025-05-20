@@ -373,7 +373,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             onValueChange={value => {
                               field.onChange(value.split(':')[2]);
                             }}
-                            defaultValue={keyFactory(
+                            value={keyFactory(
                               'select',
                               valueId,
                               field.value,

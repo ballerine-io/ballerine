@@ -42,6 +42,19 @@ export const useSidebarItems = () => {
     [filterId, pathname],
   );
 
+  const businessSection = {
+    text: 'Businesses',
+    icon: BuildingIcon,
+    children:
+      businessesFilters?.map(({ id, name }) => ({
+        filterId: id,
+        text: name,
+        key: `nav-item-${id}`,
+        href: `/${locale}/case-management/entities?filterId=${id}`,
+      })) ?? [],
+    key: 'nav-item-businesses',
+  };
+
   const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
         {
@@ -56,12 +69,17 @@ export const useSidebarItems = () => {
           href: `/${locale}/merchant-monitoring`,
           key: 'nav-item-web-presence',
         },
-        {
-          text: 'Full Onboarding (Example)',
-          icon: LayersIcon,
-          href: `/${locale}/case-management/entities`,
-          key: 'nav-item-full-onboarding',
-        },
+        ,
+        ...(customer?.config?.isDemoKybEnabled
+          ? [businessSection]
+          : [
+              {
+                text: 'Full Onboarding (Example)',
+                icon: LayersIcon,
+                href: `/${locale}/case-management/entities`,
+                key: 'nav-item-full-onboarding',
+              },
+            ]),
         {
           text: 'KYB & UBOs',
           icon: BuildingIcon,
@@ -132,18 +150,7 @@ export const useSidebarItems = () => {
               },
             ]
           : []),
-        {
-          text: 'Businesses',
-          icon: BuildingIcon,
-          children:
-            businessesFilters?.map(({ id, name }) => ({
-              filterId: id,
-              text: name,
-              key: `nav-item-${id}`,
-              href: `/${locale}/case-management/entities?filterId=${id}`,
-            })) ?? [],
-          key: 'nav-item-businesses',
-        },
+        businessSection,
         {
           text: 'Individuals',
           icon: UsersIcon,
