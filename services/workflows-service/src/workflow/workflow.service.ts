@@ -2681,7 +2681,9 @@ export class WorkflowService {
       transaction,
     );
     const document = runtimeData?.context?.documents?.find(
-      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+      (document: DefaultContextSchema['documents'][number]) => {
+        return document._document?.id === documentId;
+      },
     );
 
     return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
