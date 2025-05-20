@@ -88,6 +88,8 @@ export const Home: FunctionComponent = () => {
 
           <OperationalOverviewSection from={mmFrom} to={mmTo} setDate={() => {}} />
 
+          <RiskAndAlertsOverviewSection />
+
           <DynamicMetricsSection
             locale={locale}
             from={mmFrom}
@@ -98,8 +100,6 @@ export const Home: FunctionComponent = () => {
             addedMerchantsCount={13}
             removedMerchantsCount={5}
           />
-
-          <RiskAndAlertsOverviewSection />
 
           <PortfolioRiskStatistics
             from={mmFrom}
