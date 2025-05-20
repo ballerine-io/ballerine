@@ -176,6 +176,7 @@ export const useHomeLogic = () => {
     avatarUrl,
     locale,
 
+    shouldShowDashboardV1: !!customer?.features?.mockDashboardV1,
     isMerchantMonitoringEnabled,
     isOngoingMonitoringEnabled,
     isCasesOnboardingEnabled,

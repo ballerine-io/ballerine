@@ -33,6 +33,9 @@ export interface ITheme {
     };
   };
   settings: Partial<ISettings>;
+  completedPage?: {
+    disableDuringRedirect?: boolean;
+  };
 }
 
 export interface ISettings {

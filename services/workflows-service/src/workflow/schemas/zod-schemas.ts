@@ -71,6 +71,8 @@ export const ConfigSchema = z
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
+    disableVideoGuide: z.boolean().optional(),
+    disableAiSummary: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z

@@ -3,9 +3,12 @@ import { FunctionComponent } from 'react';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapper/DemoAccessWrapper';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
+import { CurrentPortfolioStatus } from './components/CurrentPortfolioStatus/CurrentPortfolioStatus';
 import { DynamicMetricsSection } from './components/DynamicMetricsSection/DynamicMetricsSection';
 import { OnboardingCasesRiskAnalytics } from './components/OnboardingCasesRiskAnalytics/OnboardingCasesRiskAnalytics';
+import { OperationalOverviewSection } from './components/OperationalOverviewSection/OperationalOverviewSection';
 import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/PortfolioRiskStatistics';
+import { RiskAndAlertsOverviewSection } from './components/RiskAndAlertsOverviewSection/RiskAndAlertsOverviewSection';
 import { StaticMetricsSection } from './components/StaticMetricsSection/StaticMetricsSection';
 import { WelcomeSvg } from './components/WelcomeSvg/WelcomeSvg';
 
@@ -16,6 +19,7 @@ export const Home: FunctionComponent = () => {
     avatarUrl,
     locale,
 
+    shouldShowDashboardV1,
     isMerchantMonitoringEnabled,
     isOngoingMonitoringEnabled,
     isCasesOnboardingEnabled,
@@ -63,6 +67,56 @@ export const Home: FunctionComponent = () => {
           <div>
             <p>Use the sidebar to navigate and start managing your risk flows and processes.</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (shouldShowDashboardV1) {
+    return (
+      <div className={`space-y-10 p-10`}>
+        <div className="space-y-4">
+          <h1 className="text-3xl font-semibold">Analytics Dashboard</h1>
+          <p className="">
+            Get an overview of your portfolio&apos;s activity, risk levels, monitoring alerts, and
+            case analytics.
+          </p>
+        </div>
+
+        <div className="flex flex-col space-y-8">
+          <CurrentPortfolioStatus />
+
+          <OperationalOverviewSection from={mmFrom} to={mmTo} setDate={() => {}} />
+
+          <RiskAndAlertsOverviewSection />
+
+          <DynamicMetricsSection
+            locale={locale}
+            from={mmFrom}
+            to={mmTo}
+            setDate={() => {}}
+            isMerchantMonitoringEnabled={true}
+            isOngoingMonitoringEnabled={true}
+            addedMerchantsCount={13}
+            removedMerchantsCount={5}
+          />
+
+          <PortfolioRiskStatistics
+            from={mmFrom}
+            to={mmTo}
+            riskLevelCounts={{ low: 10, medium: 30, high: 25, critical: 15 }}
+            violationCounts={[
+              { name: 'Drop Shipping', id: 'drop-shipping', count: 15 },
+              { name: 'IP Rights Infringement', id: 'ip-rights-infringement', count: 12 },
+              {
+                name: 'Pharmaceuticals/Prescription Drugs',
+                id: 'pharmaceuticals-prescription-drugs',
+                count: 10,
+              },
+              { name: 'Gambling', id: 'gambling', count: 8 },
+              { name: 'Marijuana', id: 'marijuana', count: 4 },
+            ]}
+          />
         </div>
       </div>
     );

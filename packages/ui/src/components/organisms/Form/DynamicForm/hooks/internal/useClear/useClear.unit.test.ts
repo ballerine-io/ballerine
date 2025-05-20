@@ -65,7 +65,7 @@ describe('useClear', () => {
     const { result } = renderHook(() => useClear(element));
     await result.current(mockValue);
 
-    expect(documentFieldValueCleaner).toHaveBeenCalledWith(mockValue, element, mockMetadata);
+    expect(documentFieldValueCleaner).toHaveBeenCalledWith(mockValue, element, {}, mockMetadata);
     expect(mockOnChange).toHaveBeenCalledWith(await mockCleanedValue, true);
   });
 

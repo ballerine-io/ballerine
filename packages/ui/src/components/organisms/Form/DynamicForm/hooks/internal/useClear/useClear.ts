@@ -7,6 +7,7 @@ import {
   DOCUMENT_FIELD_VALUE_CLEANER,
   documentFieldValueCleaner,
 } from './value-cleaners/documentfield-value-cleaner';
+import { IHttpParams } from '@/common/hooks/useHttp';
 
 const CLEANERS = {
   [DOCUMENT_FIELD_VALUE_CLEANER]: documentFieldValueCleaner,
@@ -15,7 +16,7 @@ const CLEANERS = {
 export const useClear = (element: IFormElement<any, any>) => {
   const { stack } = useStack();
   const { onChange } = useField(element, stack);
-  const { metadata } = useDynamicForm();
+  const { metadata, httpParams } = useDynamicForm();
 
   const metadataRef = useRef(metadata);
 
@@ -30,8 +31,12 @@ export const useClear = (element: IFormElement<any, any>) => {
       return () => onChange(undefined, true);
     }
 
-    return async (value: any) => onChange(await cleaner(value, element, metadataRef.current), true);
-  }, [element, metadataRef, onChange]);
+    return async (value: any) =>
+      onChange(
+        await cleaner(value, element, (httpParams || {}) as IHttpParams, metadataRef.current),
+        true,
+      );
+  }, [element, httpParams, metadataRef, onChange]);
 
   return clean;
 };
