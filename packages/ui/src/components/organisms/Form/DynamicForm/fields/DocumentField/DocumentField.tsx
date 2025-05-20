@@ -140,7 +140,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
       element.params?.template?.id as string,
     );
 
-    const documentId = value;
+    const documentId = document?._document?.id;
 
     if (typeof documentId === 'string') {
       await deleteDocument({ ids: [documentId] });
@@ -152,7 +152,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [documentsList, element, onChange, id, removeTask, value, deleteDocument]);
+  }, [documentsList, document, element, onChange, id, removeTask, value, deleteDocument]);
 
   return (
     <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
