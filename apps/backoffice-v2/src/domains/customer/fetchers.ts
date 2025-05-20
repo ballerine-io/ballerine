@@ -31,6 +31,7 @@ const CustomerSchema = z.object({
         .object({ enabled: z.boolean().default(false), options: createBusinessReportOptions })
         .optional(),
       isDocumentOcrEnabled: z.boolean().default(false).optional(),
+      mockDashboardV1: z.boolean().default(false).optional(),
     })
     .nullable(),
   config: z
