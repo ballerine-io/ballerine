@@ -2682,7 +2682,11 @@ export class WorkflowService {
     );
     const document = runtimeData?.context?.documents?.find(
       (document: DefaultContextSchema['documents'][number]) => {
-        return document._document?.id === documentId;
+        if (document?._document?.id) {
+          return document._document?.id === documentId;
+        }
+
+        return document.id === documentId;
       },
     );
 
