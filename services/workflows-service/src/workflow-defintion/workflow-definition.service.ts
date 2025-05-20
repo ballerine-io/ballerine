@@ -12,6 +12,7 @@ import { DocumentInsertSchema, replaceNullsWithUndefined } from '@ballerine/comm
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowDefinition } from '@prisma/client';
 import { merge } from 'lodash';
+import { upsertDemoEuKybFlow } from './demo-workflow/eu/create-demo-workflow-eu';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -264,6 +265,10 @@ export class WorkflowDefinitionService {
       userId,
       workflowOverrides,
     );
+  }
+
+  async createDemoWorkflowDefinitionEu({ customerId }: { customerId: string }) {
+    return await upsertDemoEuKybFlow(customerId);
   }
 
   async getByWorkflowRuntimeDataId(workflowRuntimeDataId: string, projectIds: TProjectIds) {

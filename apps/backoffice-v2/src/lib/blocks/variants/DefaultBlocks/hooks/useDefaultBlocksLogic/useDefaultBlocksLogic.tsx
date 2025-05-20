@@ -632,6 +632,7 @@ export const useDefaultBlocksLogic = () => {
 
   const aiSummaryBlock = useAISummaryBlock({
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    isEnabled: !workflow?.workflowDefinition?.config?.disableAiSummary,
   });
 
   const allBlocks = useMemo(() => {

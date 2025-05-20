@@ -134,7 +134,7 @@ export const useUbosRegistryProvidedBlock = ({
           .addBlock()
           .addCell({
             type: 'heading',
-            value: 'UBOs',
+            value: 'Corporate Structure',
           })
           .addCell({
             type: 'subheading',
