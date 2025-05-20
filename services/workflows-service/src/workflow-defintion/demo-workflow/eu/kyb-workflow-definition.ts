@@ -305,7 +305,7 @@ export const generateWorkflowDefinition = ({
           stateNames: [],
           successAction: 'NO_OP',
           payload: {
-            clientId: 'nuvei',
+            clientId: 'demo_account',
             vendor: 'veriff',
             ongoingMonitoring: false,
             immediateResults: true,
