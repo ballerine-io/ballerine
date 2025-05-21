@@ -6,7 +6,7 @@ import { associatedCompanyAdapter } from './associated-company-adapter';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },

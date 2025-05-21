@@ -4,7 +4,7 @@ import { ComponentProps, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { toTitleCase } from 'string-ts';
 import { checkIsUrl } from '@ballerine/common';
-import { systemCreatedIconCell } from '../../utils/constants';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useCompanySanctionsBlock = companySanctions => {
   return useMemo(() => {

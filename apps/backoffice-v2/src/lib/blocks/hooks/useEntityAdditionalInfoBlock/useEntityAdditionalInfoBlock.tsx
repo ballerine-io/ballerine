@@ -4,7 +4,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useEntityAdditionalInfoBlock = ({
   entity,

@@ -28,12 +28,7 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import {
-  SYSTEM_CREATED_LABEL_CDN_LINK,
-  systemCreatedIconCell,
-  USER_CREATED_LABEL_CDN_LINK,
-  userCreatedIconCell,
-} from '@/lib/blocks/utils/constants';
+import { systemCreatedIconCell, userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },

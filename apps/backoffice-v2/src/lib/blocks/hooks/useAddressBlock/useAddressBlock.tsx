@@ -1,7 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useAddressBlock = ({
   address,

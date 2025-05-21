@@ -5,7 +5,7 @@ import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { buildTree } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/build-tree';
 import { CustomNode } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/CustomNode';
-import { systemCreatedIconCell } from '../../utils/constants';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 const nodeTypes = {
   customNode: CustomNode,

@@ -4,7 +4,7 @@ import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
 import { titleCase } from 'string-ts';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useEntityInfoBlock = ({
   entity,

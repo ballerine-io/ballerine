@@ -2,8 +2,7 @@ import { useMemo } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@ballerine/common';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { keyFactory } from '@/common/utils/key-factory/key-factory';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[]) => {
   return useMemo(() => {

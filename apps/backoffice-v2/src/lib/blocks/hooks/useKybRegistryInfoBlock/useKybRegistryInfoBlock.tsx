@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@ballerine/ui';
-import { systemCreatedIconCell } from '../../utils/constants';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
   const getCell = useCallback(() => {

@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react';
 import { ReadOnlyDetailsCell } from '../../components/ReadOnlyDetailsCell/ReadOnlyDetailsCell';
 import { ExtendedJson } from '@/common/types';
 import { titleCase } from 'string-ts';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useIndividualsUserProvidedBlock = (
   individualsUserProvided: Array<{

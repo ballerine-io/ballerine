@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { userCreatedIconCell } from '../../utils/constants';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
   const isEmpty = useMemo(() => Object.keys(bankDetails ?? {}).length === 0, [bankDetails]);

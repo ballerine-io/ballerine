@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { ExtractCellProps } from '@ballerine/blocks';
-import { systemCreatedIconCell } from '../../utils/constants';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useRegistryInfoBlock = ({
   registryInfo,
