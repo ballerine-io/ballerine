@@ -13,5 +13,7 @@
     "**/data-migrations": false
   },
   "search.followSymlinks": true,
-  "search.useIgnoreFiles": false
+  "search.useIgnoreFiles": false,
+  "zentabs.maximumOpenedTabs": 2,
+  "zentabs.switchWithCurrentTab": true
 }

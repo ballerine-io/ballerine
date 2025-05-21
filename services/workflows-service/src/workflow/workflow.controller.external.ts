@@ -549,7 +549,7 @@ export class WorkflowControllerExternal {
           currentProjectId: workflowRuntime.projectId,
         });
 
-        if (params.event !== BUILT_IN_EVENT.NO_OP) {
+        if (typeof query.saveContext === 'undefined' || query.saveContext) {
           await this.workflowService.event(
             {
               id: params.id,

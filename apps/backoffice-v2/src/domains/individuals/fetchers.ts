@@ -22,12 +22,17 @@ export const EndUserSchema = z.object({
   amlHits: z.array(HitSchema.extend({ vendor: z.string().optional() })).optional(),
   individualVerificationsChecks: z
     .object({
-      kyc_session_1: z.object({
-        vendor: z.string(),
-        result: z.object({
-          entity: z.record(z.string(), z.any()),
-          decision: z.record(z.string(), z.any()),
-          aml: z.record(z.string(), z.any()),
+      status: z.string(),
+      data: z.object({
+        kyc_session_1: z.object({
+          vendor: z.string(),
+          result: z
+            .object({
+              entity: z.record(z.string(), z.any()),
+              decision: z.record(z.string(), z.any()),
+              aml: z.record(z.string(), z.any()).optional(),
+            })
+            .nullable(),
         }),
       }),
     })

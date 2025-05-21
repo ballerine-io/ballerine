@@ -5,8 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { BadRequestException, InternalServerErrorException, Injectable } from '@nestjs/common';
 import { EndUserService } from '@/end-user/end-user.service';
-import { type TProjectIds } from '@/types';
+import { TProjectId, type TProjectIds } from '@/types';
 import { CustomerService } from '@/customer/customer.service';
+import { isType } from '@ballerine/common';
+import z from 'zod';
 @Injectable()
 export class KycService {
   private readonly axiosClient: AxiosInstance;
@@ -24,6 +26,7 @@ export class KycService {
 
   async initiateIndividualVerification(data: {
     endUserId: string;
+    workflowRuntimeDataId: string;
     sessionId: string | undefined;
     clientId: string;
 
@@ -35,6 +38,7 @@ export class KycService {
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
+    projectId: string;
   }) {
     const response = await this.unifiedApiClient.runIndividualVerification(data);
 
@@ -47,12 +51,16 @@ export class KycService {
     kycLink,
     language,
     customerName,
+    companyName,
+    revisionReason,
   }: {
     email: string;
     firstName: string;
     kycLink: string;
     language: string;
     customerName: string;
+    companyName: string;
+    revisionReason: string | undefined;
   }) {
     const EMAIL_API_URL = this.configService.get('EMAIL_API_URL');
     const EMAIL_API_TOKEN = this.configService.get('EMAIL_API_TOKEN');
@@ -66,14 +74,19 @@ export class KycService {
           subject: `${customerName} activation, Action needed.`,
           to: [{ email }],
           dynamic_template_data: {
+            kybCompanyName: companyName,
+            customerCompanyName: customerName,
             firstName,
             kycLink,
             language,
-            customerName,
+            supportEmail: `support@${customerName}.com`,
+            revisionReason,
           },
         },
       ],
-      template_id: 'd-7843c28e3653430597c9e8d0b8f14bd0',
+      template_id: revisionReason
+        ? 'd-2c6ae291d9df4f4a8770d6a4e272d803'
+        : 'd-61c568cfa5b145b5916ff89790fe2065',
     };
 
     if (!EMAIL_API_URL) {
@@ -99,90 +112,64 @@ export class KycService {
   }
 
   async initiateIndividualVerificationAndSendEmail({
-    endUserCorrelationId,
-    firstName,
-    lastName,
-    email,
-    dateOfBirth,
+    endUserId,
+    workflowRuntimeDataId,
     vendor,
     withAml,
     ongoingMonitoring,
     language,
-    projectIds,
+    revisionReason,
+    projectId,
   }: {
-    endUserCorrelationId?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    dateOfBirth?: string;
-
+    endUserId: string;
+    workflowRuntimeDataId: string;
     vendor: 'veriff';
     withAml?: boolean;
     ongoingMonitoring?: boolean;
     language: string;
-    projectIds: NonNullable<TProjectIds>;
+    revisionReason: string | undefined;
+    projectId: TProjectId;
   }) {
-    let endUser;
-
-    if (!endUserCorrelationId) {
-      endUser = await this.endUserService.create({
-        data: {
-          firstName: firstName!,
-          lastName: lastName!,
-          email: email!,
-          dateOfBirth: dateOfBirth!,
-          projectId: projectIds[0]!,
-        },
+    const endUser = await this.endUserService.getById(
+      endUserId,
+      {
         select: {
           id: true,
           firstName: true,
           lastName: true,
           email: true,
+          dateOfBirth: true,
+          additionalInfo: true,
         },
-      });
-    }
-
-    if (endUserCorrelationId) {
-      endUser = await this.endUserService.getByCorrelationId(endUserCorrelationId, projectIds, {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-        },
-      });
-    }
-
-    if (!endUser) {
-      endUser = await this.endUserService.create({
-        data: {
-          correlationId: endUserCorrelationId,
-          firstName: firstName!,
-          lastName: lastName!,
-          email: email!,
-          dateOfBirth: new Date(dateOfBirth!),
-          projectId: projectIds[0]!,
-        },
-      });
-    }
+      },
+      [projectId],
+    );
 
     if (!endUser.email) {
       throw new BadRequestException('End-user email is required');
     }
 
-    const customer = await this.customerService.getByProjectId(projectIds[0]!, {
+    const customer = await this.customerService.getByProjectId(projectId, {
       select: {
         name: true,
         displayName: true,
       },
     });
 
+    const APP_API_URL = this.configService.get('APP_API_URL');
+
+    if (!APP_API_URL) {
+      throw new InternalServerErrorException('APP_API_URL is not defined');
+    }
+
+    const callbackUrl = `${APP_API_URL}/api/v1/external/workflows/${workflowRuntimeDataId}/hook/NO_OP?processName=kyc-unified-api`;
     const {
       id: sessionId,
       url: kycLink,
       checkId,
     } = await this.initiateIndividualVerification({
       endUserId: endUser.id,
+      workflowRuntimeDataId,
       // TODO: Get from KYC check table
       sessionId: undefined,
       clientId: customer.name,
@@ -190,12 +177,17 @@ export class KycService {
       vendor,
       withAml: withAml ?? true,
       ongoingMonitoring: ongoingMonitoring ?? false,
-      callbackUrl: `https://webhook.site/5bf8746c-399a-445d-8f6d-830bd8140b19k`,
+      callbackUrl,
 
       firstName: endUser.firstName,
       lastName: endUser.lastName,
       dateOfBirth: endUser.dateOfBirth?.toISOString().split('T')[0] ?? undefined,
+      projectId,
     });
+
+    if (!isType(z.object({ additionalInfo: z.object({ companyName: z.string() }) }))(endUser)) {
+      throw new BadRequestException('End-user company name is required');
+    }
 
     await this.sendIndividualVerificationEmail({
       firstName: endUser.firstName,
@@ -203,6 +195,8 @@ export class KycService {
       email: endUser.email,
       customerName: customer.displayName,
       language,
+      companyName: endUser.additionalInfo?.companyName,
+      revisionReason,
     });
 
     return {

@@ -228,6 +228,7 @@ export class UnifiedApiClient {
   public async runIndividualVerification({
     clientId,
     endUserId,
+    workflowRuntimeDataId,
     sessionId,
     vendor,
     withAml,
@@ -236,9 +237,11 @@ export class UnifiedApiClient {
     firstName,
     lastName,
     dateOfBirth,
+    projectId,
   }: {
     clientId: string;
     endUserId: string;
+    workflowRuntimeDataId: string;
     sessionId: string | undefined;
     vendor: 'veriff';
     withAml: boolean;
@@ -248,11 +251,12 @@ export class UnifiedApiClient {
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
+    projectId: string;
   }) {
-    return await this.axiosInstance.post('/individual-verification-sessions', {
+    return await this.axiosInstance.post(`/individual-verification-sessions`, {
       clientId,
       endUserId: `${endUserId}__${sessionId ?? ''}`,
-
+      workflowRuntimeDataId,
       vendor,
       withAml,
       ongoingMonitoring,
@@ -261,6 +265,8 @@ export class UnifiedApiClient {
       firstName,
       lastName,
       dateOfBirth,
+
+      projectId,
     });
   }
 }

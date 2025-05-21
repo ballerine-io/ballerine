@@ -33,14 +33,6 @@ export class EndUserService {
     return await this.repository.findById(id, args, projectIds);
   }
 
-  async getByCorrelationId(
-    correlationId: string,
-    projectIds: TProjectIds,
-    args?: Omit<Parameters<EndUserRepository['find']>[0], 'where'>,
-  ): Promise<EndUser | null> {
-    return await this.repository.find({ ...args, where: { correlationId } }, projectIds);
-  }
-
   async createWithBusiness(
     {
       endUser,

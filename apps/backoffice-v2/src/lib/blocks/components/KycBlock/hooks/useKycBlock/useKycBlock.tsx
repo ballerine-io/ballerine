@@ -282,12 +282,11 @@ export const useKycBlock = ({
     : [];
 
   const isDisabled = isActionsDisabled || noAction || isLoadingApprove || isLoadingReuploadNeeded;
+  const badgeClassNames = 'text-sm font-bold';
 
   const getDecisionStatusOrAction = (
     status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined,
   ) => {
-    const badgeClassNames = 'text-sm font-bold';
-
     if (status === 'revision') {
       return createBlocksTyped()
         .addBlock()
@@ -502,7 +501,18 @@ export const useKycBlock = ({
         .addBlock()
         .addCell({
           type: 'heading',
-          value: `${valueOrNA(entityData?.firstName)} ${valueOrNA(entityData?.lastName)}`,
+          value: (
+            <div className="flex items-center gap-x-2">
+              <span>{`${valueOrNA(entityData?.firstName)} ${valueOrNA(
+                entityData?.lastName,
+              )}`}</span>
+              {entityData?.role && (
+                <span className="rounded-md bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-700">
+                  {entityData?.role}
+                </span>
+              )}
+            </div>
+          ),
           props: {
             className: 'mt-0',
           },
