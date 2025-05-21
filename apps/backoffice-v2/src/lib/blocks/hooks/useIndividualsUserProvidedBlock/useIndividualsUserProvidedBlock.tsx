@@ -92,7 +92,7 @@ export const useIndividualsUserProvidedBlock = (
               })
               .buildFlat(),
             props: {
-              className: 'flex space-x-1 items-center',
+              className: 'flex space-x-1 items-center mt-4',
             },
           })
           .addCell({
