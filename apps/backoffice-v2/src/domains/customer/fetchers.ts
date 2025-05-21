@@ -32,6 +32,7 @@ const CustomerSchema = z.object({
         .optional(),
       isDocumentOcrEnabled: z.boolean().default(false).optional(),
       mockDashboardV1: z.boolean().default(false).optional(),
+      enableWebPresenceReportExport: z.boolean().default(false).optional(),
     })
     .nullable(),
   config: z

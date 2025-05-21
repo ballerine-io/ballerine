@@ -33,10 +33,9 @@ export class BusinessRepository {
   async findMany<T extends Prisma.BusinessFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessFindManyArgs>,
     projectIds: TProjectIds,
+    transaction: PrismaClient | PrismaTransaction = this.prismaService,
   ) {
-    return await this.prismaService.business.findMany(
-      this.scopeService.scopeFindMany(args, projectIds),
-    );
+    return await transaction.business.findMany(this.scopeService.scopeFindMany(args, projectIds));
   }
 
   async findManyUnscoped<T extends Prisma.BusinessFindManyArgs>(
