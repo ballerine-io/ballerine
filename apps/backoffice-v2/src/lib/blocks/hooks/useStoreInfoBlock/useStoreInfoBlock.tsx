@@ -1,6 +1,7 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { useMemo } from 'react';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useStoreInfoBlock = ({ storeInfo, workflow }) => {
   return useMemo(() => {
@@ -15,12 +16,29 @@ export const useStoreInfoBlock = ({ storeInfo, workflow }) => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'heading',
-            value: 'Store',
-          })
-          .addCell({
-            type: 'subheading',
-            value: 'User-Provided Data',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(userCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'heading',
+                    value: 'Store',
+                    props: { className: 'mt-0' },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
+            props: {
+              className: 'flex space-x-1 items-center',
+            },
           })
           .addCell({
             type: 'container',
