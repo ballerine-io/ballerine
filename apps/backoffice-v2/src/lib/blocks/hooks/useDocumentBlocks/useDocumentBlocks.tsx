@@ -527,7 +527,9 @@ export const useDocumentBlocks = ({
                       <p>Status</p>
                       <p
                         className={ctw(
-                          inconsistencyCheck.status === 'failed' && 'text-destructive',
+                          inconsistencyCheck.status === 'failed'
+                            ? 'text-destructive'
+                            : 'text-green-600',
                         )}
                       >
                         {capitalize(inconsistencyCheck.status)}
@@ -608,7 +610,9 @@ export const useDocumentBlocks = ({
                       <p>Status</p>
                       <p
                         className={ctw(
-                          documentAuthenticity.status === 'failed' && 'text-destructive',
+                          documentAuthenticity.status === 'failed'
+                            ? 'text-destructive'
+                            : 'text-green-600',
                         )}
                       >
                         {capitalize(documentAuthenticity.status)}
@@ -619,17 +623,21 @@ export const useDocumentBlocks = ({
                 .addCell({
                   type: 'node',
                   value: (
-                    <div className="space-y-2">
-                      <p>Warnings</p>
+                    <>
+                      {documentAuthenticity.warnings && documentAuthenticity.warnings.length > 0 && (
+                        <div className="space-y-2">
+                          <p>Warnings</p>
 
-                      {documentAuthenticity.warnings.map(warning => (
-                        <div key={warning} className="w-full">
-                          <div className="inline-flex rounded-lg bg-orange-100 px-3 py-1 text-warning">
-                            {warning}
-                          </div>
+                          {documentAuthenticity.warnings.map(warning => (
+                            <div key={warning} className="w-full">
+                              <div className="inline-flex rounded-lg bg-orange-100 px-3 py-1 text-warning">
+                                {warning}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    </>
                   ),
                 })
                 .buildFlat(),
