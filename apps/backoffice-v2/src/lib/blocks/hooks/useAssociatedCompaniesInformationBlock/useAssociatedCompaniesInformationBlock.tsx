@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@ballerine/common';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { keyFactory } from '@/common/utils/key-factory/key-factory';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[]) => {
   return useMemo(() => {
@@ -25,20 +25,28 @@ export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[
             .addBlock()
             .addCell({
               type: 'container',
-              keyProp: 'key',
-              key: keyFactory('container', 'associated-companies-information', workflow?.id),
               value: createBlocksTyped()
                 .addBlock()
+                .addCell(userCreatedIconCell)
                 .addCell({
-                  type: 'heading',
-                  value: `${valueOrNA(workflow?.entity?.name ?? '')} Information`,
+                  type: 'container',
+                  value: createBlocksTyped()
+                    .addBlock()
+                    .addCell({
+                      type: 'heading',
+                      value: `${valueOrNA(workflow?.entity?.name ?? '')} Information`,
+                      props: { className: 'mt-0' },
+                    })
+                    .addCell({
+                      type: 'subheading',
+                      value: 'User-Provided Data',
+                    })
+                    .buildFlat(),
                 })
-                .addCell({
-                  type: 'subheading',
-                  value: 'User-Provided Data',
-                })
-                .build()
-                .flat(1),
+                .buildFlat(),
+              props: {
+                className: 'flex space-x-1 items-center',
+              },
             })
             .addCell({
               id: 'visible-title',

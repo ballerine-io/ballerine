@@ -4,6 +4,7 @@ import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
 import { titleCase } from 'string-ts';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useEntityInfoBlock = ({
   entity,
@@ -50,15 +51,26 @@ export const useEntityInfoBlock = ({
                 type: 'container',
                 value: createBlocksTyped()
                   .addBlock()
+                  .addCell(userCreatedIconCell)
                   .addCell({
-                    type: 'heading',
-                    value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
-                  })
-                  .addCell({
-                    type: 'subheading',
-                    value: 'User-Provided Data',
+                    type: 'container',
+                    value: createBlocksTyped()
+                      .addBlock()
+                      .addCell({
+                        type: 'heading',
+                        value: `${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                        props: { className: 'mt-0' },
+                      })
+                      .addCell({
+                        type: 'subheading',
+                        value: 'User-Provided Data',
+                      })
+                      .buildFlat(),
                   })
                   .buildFlat(),
+                props: {
+                  className: 'flex space-x-1 items-center',
+                },
               })
               .addCell({
                 type: 'callToAction',

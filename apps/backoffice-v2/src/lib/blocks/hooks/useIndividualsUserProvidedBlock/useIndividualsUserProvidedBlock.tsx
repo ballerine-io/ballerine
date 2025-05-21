@@ -6,6 +6,7 @@ import { ChevronDown } from 'lucide-react';
 import { ReadOnlyDetailsCell } from '../../components/ReadOnlyDetailsCell/ReadOnlyDetailsCell';
 import { ExtendedJson } from '@/common/types';
 import { titleCase } from 'string-ts';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useIndividualsUserProvidedBlock = (
   individualsUserProvided: Array<{
@@ -70,14 +71,28 @@ export const useIndividualsUserProvidedBlock = (
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'heading',
-            value: 'Individuals',
-          })
-          .addCell({
-            type: 'subheading',
-            value: 'User-Provided Data',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(userCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'heading',
+                    value: 'Individuals',
+                    props: { className: 'mt-0' },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
             props: {
-              className: 'mb-4',
+              className: 'flex space-x-1 items-center',
             },
           })
           .addCell({

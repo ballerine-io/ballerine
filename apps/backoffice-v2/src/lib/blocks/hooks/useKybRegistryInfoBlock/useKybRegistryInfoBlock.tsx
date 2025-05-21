@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@ballerine/ui';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
   const getCell = useCallback(() => {
@@ -90,21 +91,34 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            id: 'nested-details-heading',
-            type: 'heading',
-            value: 'Registry Information',
-          })
-          .addCell({
-            id: 'nested-details-subheading',
-            type: 'subheading',
-            value: 'Registry-Provided Data',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(systemCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: 'Registry Information',
+                    props: { className: 'mt-0' },
+                  })
+                  .addCell({
+                    id: 'nested-details-subheading',
+                    type: 'subheading',
+                    value: 'Registry-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
             props: {
-              className: 'mb-4',
+              className: 'flex space-x-1 items-center',
             },
           })
           .addCell(cell)
-          .build()
-          .flat(1),
+          .buildFlat(),
       })
       .build();
   }, [getCell]);
