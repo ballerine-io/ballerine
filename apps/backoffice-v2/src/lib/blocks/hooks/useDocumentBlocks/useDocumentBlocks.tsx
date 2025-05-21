@@ -453,7 +453,7 @@ export const useDocumentBlocks = ({
         documentNameOrNA === 'Proof of Bank Account - Voided Check';
 
       const inconsistencyCheck =
-        category === 'Proof of Bank Account' && docType === 'Voided Check'
+        documentNameOrNA === 'Proof of Bank Account - Voided Check'
           ? {
               status: 'clear',
               warnings: [],
@@ -534,7 +534,7 @@ export const useDocumentBlocks = ({
         .cellAt(0, 0);
 
       const documentAuthenticity =
-        category === 'Proof of Bank Account' && docType === 'Voided Check'
+        documentNameOrNA === 'Proof of Bank Account - Voided Check'
           ? {
               status: 'clear',
               warnings: [],
