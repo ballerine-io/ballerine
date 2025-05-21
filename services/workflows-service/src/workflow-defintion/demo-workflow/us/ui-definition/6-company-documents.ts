@@ -101,7 +101,7 @@ export const CompanyDocumentsPage = {
           element: 'documentfield',
           valueDestination: 'documents',
           params: {
-            label: 'Company Structure Document - optional',
+            label: 'Company Structure Document',
             description:
               'Operating Agreement, Shareholder Register (Required for LLCs, partnerships, and corporations with more than one owner.)',
             documentType: 'document',
@@ -119,16 +119,76 @@ export const CompanyDocumentsPage = {
             },
             uploadOn: 'submit',
           },
-          validate: [
-            {
-              type: 'document',
-              considerRequired: false,
-              message: 'Company Structure Document is invalid',
-              value: {
-                id: 'document-company-structure',
+          validate: [],
+        },
+        {
+          id: 'company-documents-page-document-afs-example',
+          element: 'documentfield',
+          valueDestination: 'documents',
+          params: {
+            label: 'AFS Example Document',
+            documentType: 'document',
+            documentVariant: 'front',
+            template: {
+              id: 'document-afs-example',
+              category: 'collection_documents',
+              type: 'afs_example',
+              issuer: {
+                country: 'ZZ',
               },
+              version: '1',
+              issuingVersion: 1,
+              properties: {},
             },
-          ],
+            uploadOn: 'submit',
+          },
+          validate: [],
+        },
+        {
+          id: 'company-documents-page-document-bank-letter',
+          element: 'documentfield',
+          valueDestination: 'documents',
+          params: {
+            label: 'Bank Letter',
+            documentType: 'document',
+            documentVariant: 'front',
+            template: {
+              id: 'document-bank-letter',
+              category: 'proof_of_bank_ownership',
+              type: 'bank_letter',
+              issuer: {
+                country: 'ZZ',
+              },
+              version: '1',
+              issuingVersion: 1,
+              properties: {},
+            },
+            uploadOn: 'submit',
+          },
+          validate: [],
+        },
+        {
+          id: 'company-documents-page-document-voided-check',
+          element: 'documentfield',
+          valueDestination: 'documents',
+          params: {
+            label: 'Voided Check',
+            documentType: 'document',
+            documentVariant: 'front',
+            template: {
+              id: 'document-voided-check',
+              category: 'proof_of_bank_ownership',
+              type: 'voided_check',
+              issuer: {
+                country: 'ZZ',
+              },
+              version: '1',
+              issuingVersion: 1,
+              properties: {},
+            },
+            uploadOn: 'submit',
+          },
+          validate: [],
         },
         {
           id: 'company-documents-page-description',
