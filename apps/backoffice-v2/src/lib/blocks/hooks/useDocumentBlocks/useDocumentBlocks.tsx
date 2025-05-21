@@ -448,12 +448,40 @@ export const useDocumentBlocks = ({
       });
 
       // TODO: temporary mocks
+      //   {
+      //   category: 'proof_of_bank_ownership',
+      //   type: 'bank_letter',
+      //   issuer: { country: 'ZZ' },
+      //   issuingVersion: 1,
+      //   version: 1,
+      //   propertiesSchema: Type.Object({
+      //     accountHolderName: Type.Optional(Type.String()),
+      //     accountNumber: Type.Optional(Type.String()),
+      //     bankName: Type.Optional(Type.String()),
+      //     issueDate: OptionalTypePastDate,
+      //     branchInformation: Type.Optional(Type.String()),
+      //   }),
+      // },
+      // {
+      //   category: 'proof_of_bank_ownership',
+      //   type: 'voided_check',
+      //   issuer: { country: 'ZZ' },
+      //   issuingVersion: 1,
+      //   version: 1,
+      //   propertiesSchema: Type.Object({
+      //     accountHolderName: Type.Optional(Type.String()),
+      //     accountNumber: Type.Optional(Type.String()),
+      //     routingNumber: Type.Optional(Type.String()),
+      //     bankName: Type.Optional(Type.String()),
+      //     checkDate: OptionalTypePastDate,
+      //   }),
+      // },
       const shouldShowMockChecks =
-        documentNameOrNA === 'Proof of Bank Account - Bank Letter' ||
-        documentNameOrNA === 'Proof of Bank Account - Voided Check';
+        category === 'proof_of_bank_ownership' &&
+        (docType === 'bank_letter' || docType === 'voided_check');
 
       const inconsistencyCheck =
-        documentNameOrNA === 'Proof of Bank Account - Voided Check'
+        docType === 'voided_check'
           ? {
               status: 'clear',
               warnings: [],
@@ -534,7 +562,7 @@ export const useDocumentBlocks = ({
         .cellAt(0, 0);
 
       const documentAuthenticity =
-        documentNameOrNA === 'Proof of Bank Account - Voided Check'
+        docType === 'voided_check'
           ? {
               status: 'clear',
               warnings: [],
