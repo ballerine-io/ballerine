@@ -28,6 +28,12 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
+import {
+  SYSTEM_CREATED_LABEL_CDN_LINK,
+  systemCreatedIconCell,
+  USER_CREATED_LABEL_CDN_LINK,
+  userCreatedIconCell,
+} from '@/lib/blocks/utils/constants';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -601,10 +607,14 @@ export const useKycBlock = ({
                   type: 'container',
                   value: createBlocksTyped()
                     .addBlock()
+                    .addCell(userCreatedIconCell)
                     .addCell({
                       id: 'header',
                       type: 'heading',
                       value: 'Details',
+                      props: {
+                        className: 'mt-0 p-0',
+                      },
                     })
                     .addCell({
                       type: 'readOnlyDetails',
@@ -632,6 +642,7 @@ export const useKycBlock = ({
                   value: documentExtractedData.length
                     ? createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           id: 'header',
                           type: 'heading',
@@ -642,6 +653,7 @@ export const useKycBlock = ({
                         .flat(1)
                     : createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           type: 'heading',
                           value: 'Document Extracted Data',
@@ -660,6 +672,7 @@ export const useKycBlock = ({
                   value: decision.length
                     ? createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           id: 'header',
                           type: 'heading',
@@ -706,6 +719,7 @@ export const useKycBlock = ({
                         .buildFlat()
                     : createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           type: 'heading',
                           value: 'Document Verification Results',

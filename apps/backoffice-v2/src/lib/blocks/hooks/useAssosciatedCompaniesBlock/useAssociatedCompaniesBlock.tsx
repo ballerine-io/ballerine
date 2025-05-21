@@ -6,6 +6,7 @@ import { associatedCompanyAdapter } from './associated-company-adapter';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
+import { userCreatedIconCell } from '../../utils/constants';
 
 export const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -57,14 +58,31 @@ export const useAssociatedCompaniesBlock = ({
             value: createBlocksTyped()
               .addBlock()
               .addCell({
-                type: 'heading',
-                value: 'Associated Companies',
-              })
-              .addCell({
-                type: 'subheading',
-                value: 'User-Provided Data',
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell(userCreatedIconCell)
+                  .addCell({
+                    type: 'container',
+                    value: createBlocksTyped()
+                      .addBlock()
+                      .addCell({
+                        id: 'header',
+                        type: 'heading',
+                        value: 'Associated Companies',
+                        props: {
+                          className: 'mt-0',
+                        },
+                      })
+                      .addCell({
+                        type: 'subheading',
+                        value: 'User-Provided Data',
+                      })
+                      .buildFlat(),
+                  })
+                  .buildFlat(),
                 props: {
-                  className: 'mb-4',
+                  className: 'flex space-x-1 items-center mt-4',
                 },
               })
               .addCell({
