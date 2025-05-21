@@ -7,6 +7,7 @@ export const DOWNLOAD_ONLY_MIME_TYPES = [
 
 export const BALLERINE_CALENDLY_LINK = 'https://calendly.com/d/cp53-ryw-4s3/ballerine-intro';
 
+// Taken from https://gist.github.com/dperini/729294, changed a bit to allow only http/https and make protocol optional
 export const URL_REGEX =
   /((https?):\/\/)?([a-zA-Z0-9-_]+\.)+[a-zA-Z0-9]+(\.[a-z]{2})?(\/[a-zA-Z0-9_#-]+)*(\/)?(\?[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+(&[a-zA-Z0-9_-]+=[a-zA-Z0-9_-]+)*)?(#[a-zA-Z0-9_-]+)?/;
 
