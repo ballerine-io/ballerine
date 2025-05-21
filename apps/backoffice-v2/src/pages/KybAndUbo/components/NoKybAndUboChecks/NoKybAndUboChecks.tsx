@@ -4,7 +4,7 @@ import { NoCasesSvg } from '@/common/components/atoms/icons';
 export const NoKybAndUboChecks = () => {
   return (
     <NoItems
-      resource="KYB reports"
+      resource="KYB checks"
       resourceMissingFrom="system"
       suggestions={[
         'Make sure to refresh or check back often for new KYB reports.',

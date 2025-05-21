@@ -42,6 +42,19 @@ export const useSidebarItems = () => {
     [filterId, pathname],
   );
 
+  const businessSection: TRoute = {
+    text: 'Businesses',
+    icon: BuildingIcon,
+    children:
+      businessesFilters?.map(({ id, name }) => ({
+        filterId: id,
+        text: name,
+        key: `nav-item-${id}`,
+        href: `/${locale}/case-management/entities?filterId=${id}`,
+      })) ?? [],
+    key: 'nav-item-businesses',
+  };
+
   const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
         {
@@ -56,19 +69,8 @@ export const useSidebarItems = () => {
           href: `/${locale}/merchant-monitoring`,
           key: 'nav-item-web-presence',
         },
-        ,
-        ...(customer?.config?.isDemoKybEnabled
-          ? [businessSection]
-          : [
-              {
-                text: 'Full Onboarding (Example)',
-                icon: LayersIcon,
-                href: `/${locale}/case-management/entities`,
-                key: 'nav-item-full-onboarding',
-              },
-            ]),
         {
-          text: 'KYB & UBOs',
+          text: 'KYB & Ownership',
           icon: BuildingIcon,
           premium: {
             caption: 'Verify businesses, activity, and ownership to stay compliant.',
@@ -79,6 +81,19 @@ export const useSidebarItems = () => {
             ],
           },
           key: 'nav-item-kyb-ubos',
+        },
+        {
+          text: 'Documents Verification',
+          icon: FileCheck2Icon,
+          premium: {
+            caption: 'Extract data, classify, validate and verify documents.',
+            checkList: [
+              'All types of documents',
+              'Works in every language',
+              'Detect faults and fakes',
+            ],
+          },
+          key: 'nav-item-documents-verifications',
         },
         {
           text: 'Identity Verification',
@@ -93,6 +108,16 @@ export const useSidebarItems = () => {
           },
           key: 'nav-item-identity-verification',
         },
+        ...(customer?.config?.isDemoKybEnabled
+          ? [businessSection]
+          : [
+              {
+                text: 'Full Onboarding (Example)',
+                icon: LayersIcon,
+                href: `/${locale}/case-management/entities`,
+                key: 'nav-item-full-onboarding',
+              },
+            ]),
         {
           text: 'Sanctions Screening',
           icon: GavelIcon,
@@ -105,19 +130,6 @@ export const useSidebarItems = () => {
             ],
           },
           key: 'nav-item-sanctions-screening',
-        },
-        {
-          text: 'Documents Verification',
-          icon: FileCheck2Icon,
-          premium: {
-            caption: 'Extract data, classify, validate and verify documents.',
-            checkList: [
-              'All types of documents',
-              'Works in every language',
-              'Detect faults and fakes',
-            ],
-          },
-          key: 'nav-item-documents-verifications',
         },
       ]
     : [
@@ -157,18 +169,7 @@ export const useSidebarItems = () => {
               },
             ]
           : []),
-        {
-          text: 'Businesses',
-          icon: BuildingIcon,
-          children:
-            businessesFilters?.map(({ id, name }) => ({
-              filterId: id,
-              text: name,
-              key: `nav-item-${id}`,
-              href: `/${locale}/case-management/entities?filterId=${id}`,
-            })) ?? [],
-          key: 'nav-item-businesses',
-        },
+        businessSection,
         {
           text: 'Individuals',
           icon: UsersIcon,
