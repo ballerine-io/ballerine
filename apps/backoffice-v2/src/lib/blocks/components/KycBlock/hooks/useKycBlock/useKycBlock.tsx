@@ -185,18 +185,12 @@ export const useKycBlock = ({
           props: {
             className: ctw({
               'text-success': kycSession[key]?.result?.decision?.status === 'approved',
-              'text-destructive': kycSession[key]?.result?.decision?.status === 'rejected',
+              'text-destructive': kycSession[key]?.result?.decision?.status === 'declined',
               'font-bold':
                 kycSession[key]?.result?.decision?.status === 'approved' ||
-                kycSession[key]?.result?.decision?.status === 'rejected',
+                kycSession[key]?.result?.decision?.status === 'declined',
             }),
           },
-        },
-        {
-          label: 'Issues',
-          value: kycSession[key]?.decision?.riskLabels?.length
-            ? kycSession[key]?.decision?.riskLabels?.join(', ')
-            : 'none',
         },
         ...(isObject(kycSession[key])
           ? [
