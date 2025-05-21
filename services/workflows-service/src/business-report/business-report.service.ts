@@ -187,7 +187,7 @@ export class BusinessReportService {
         const allCorrelationIds = new Set(
           businessReportsRequests
             .map(({ correlationId }) => correlationId)
-            .filter(correlationId => !!correlationId) as string[],
+            .filter(Boolean) as string[],
         );
 
         if (allCorrelationIds.size > 0) {
