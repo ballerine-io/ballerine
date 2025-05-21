@@ -13,7 +13,7 @@ import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBl
 import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { useKybAndOwnershipAssessmentsQuery } from '@/domains/assessments/hooks/queries/useKybAndOwnershipAssessmentsQuery/useKybAndOwnershipAssessmentsQuery';
+import { useKybAndOwnershipAssessmentQuery } from '@/domains/assessments/hooks/queries/useKybAndOwnershipAssessmentQuery/useKybAndOwnershipAssessmentQuery';
 
 type AssessmentPageSection = {
   id: string;
@@ -30,19 +30,9 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
   const { assessmentId } = useParams<{ assessmentId: string }>();
   const { data: customer } = useCustomerQuery();
 
-  // TODO: replace with fetch by id endpoint
-  const { data: allAssessments, isLoading: isLoadingAssessments } =
-    useKybAndOwnershipAssessmentsQuery({
-      page: { number: 1, size: 10 },
-    });
-
-  const assessment = useMemo(() => {
-    if (!allAssessments) {
-      return null;
-    }
-
-    return allAssessments.data.find(assessment => assessment.id === assessmentId);
-  }, [allAssessments, assessmentId]);
+  const { data: assessment, isLoading: isLoadingAssessment } = useKybAndOwnershipAssessmentQuery({
+    id: assessmentId ?? '',
+  });
 
   const navigate = useNavigate();
   const onNavigateBack = () => navigate(-1);
@@ -54,7 +44,7 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
   //   noteableType: 'Report',
   // });
 
-  const companySanctions = assessment?.sanctions?.output?.data?.map(sanction => ({
+  const companySanctions = assessment?.companySanctions?.output?.data?.map(sanction => ({
     sources: sanction?.entity?.sources,
     officialLists: sanction?.entity?.officialLists,
     fullReport: sanction,
@@ -67,11 +57,12 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     alternativeNames: sanction?.entity?.otherNames,
     places: sanction?.entity?.places,
   }));
+
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
   const registryInfoBlock = useKybRegistryInfoBlock({
     pluginsOutput: {
-      businessInformation: { data: [assessment?.registryInformation?.output?.data] },
+      businessInformation: { data: [assessment?.companyRegistryInformation?.output?.data] },
     },
     workflow: {},
   });
@@ -92,13 +83,13 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
         Icon: AlertTriangleIcon,
         Component: (
           <>
-            {assessment?.sanctions ? (
+            {assessment?.companySanctions ? (
               <BlocksComponent blocks={[...companySanctionsBlock]} cells={cells}>
                 {(Cell, cell) => <Cell {...cell} />}
               </BlocksComponent>
             ) : (
               <Card>
-                <CardContent className="p-6">Data not Available</CardContent>
+                <CardContent className="p-6">Company Sanctions data is not available</CardContent>
               </Card>
             )}
           </>
@@ -110,13 +101,15 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
         Icon: UsersRoundIcon,
         Component: (
           <>
-            {assessment?.registryInformation?.output?.data ? (
+            {assessment?.companyRegistryInformation?.output?.data ? (
               <BlocksComponent blocks={[...registryInfoBlock]} cells={cells}>
                 {(Cell, cell) => <Cell {...cell} />}
               </BlocksComponent>
             ) : (
               <Card>
-                <CardContent className="p-6">Data not Available</CardContent>
+                <CardContent className="p-6">
+                  Company Registry Information data is not available
+                </CardContent>
               </Card>
             )}
           </>
@@ -134,7 +127,7 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
               </BlocksComponent>
             ) : (
               <Card>
-                <CardContent className="p-6">Data not Available</CardContent>
+                <CardContent className="p-6">Company Structure data is not available</CardContent>
               </Card>
             )}
           </>
@@ -143,8 +136,8 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     ] satisfies AssessmentPageSection[];
   }, [
     assessment?.companyStructure?.output,
-    assessment?.registryInformation?.output?.data,
-    assessment?.sanctions,
+    assessment?.companyRegistryInformation?.output?.data,
+    assessment?.companySanctions,
     companySanctionsBlock,
     companyStructureBlock,
     registryInfoBlock,
@@ -162,7 +155,7 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
 
   return {
     assessment,
-    isLoadingAssessments,
+    isLoadingAssessment,
     customer,
     assessmentId,
     onNavigateBack,

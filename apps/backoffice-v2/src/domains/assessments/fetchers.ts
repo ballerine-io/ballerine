@@ -30,7 +30,7 @@ export const KybAndOwnershipAssessmentSchema = z
       .nullable(),
     // findings: z.array(z.string()).optional(),
     // riskLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
-    sanctions: z
+    companySanctions: z
       .object({
         createdAt: z.string().optional(),
         updatedAt: z.string().optional(),
@@ -44,7 +44,7 @@ export const KybAndOwnershipAssessmentSchema = z
       .passthrough()
       .nullable()
       .optional(),
-    registryInformation: z
+    companyRegistryInformation: z
       .object({
         createdAt: z.string().optional(),
         updatedAt: z.string().optional(),
@@ -84,7 +84,26 @@ export interface IKybAndOwnershipAssessmentsParams extends PaginationParams {
   to?: string;
 }
 
+export interface IKybAndOwnershipAssessmentParams {
+  id: string;
+}
+
 export type TKybAndOwnershipAssessments = z.infer<typeof KybAndOwnershipAssessmentsSchema>;
+
+export const fetchKybAndOwnershipAssessment = async (id: string) => {
+  const [result, error] = await apiClient({
+    endpoint: `../external/assessments/kyb_and_ownership/${id}`,
+    method: Method.GET,
+    schema: KybAndOwnershipAssessmentSchema,
+    timeout: 30_000,
+  });
+
+  if (error) {
+    return handleZodError(error, result);
+  }
+
+  return KybAndOwnershipAssessmentSchema.parse(result);
+};
 
 export const fetchKybAndOwnershipAssessments = async (
   params: IKybAndOwnershipAssessmentsParams,

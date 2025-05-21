@@ -13,7 +13,7 @@ export const useKybAndOwnershipAssessmentsTableLogic = () => {
     children,
   }) => {
     return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
-      <Link to={`/${locale}/merchant-monitoring/${cell.row.id}`}>{children}</Link>
+      <Link to={`/${locale}/kyb-and-ownership/${cell.row.id}`}>{children}</Link>
     ) : (
       <div className="opacity-50">{children}</div>
     );
