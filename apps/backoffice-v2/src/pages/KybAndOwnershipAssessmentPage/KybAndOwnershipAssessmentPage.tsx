@@ -15,7 +15,7 @@ export const KybAndOwnershipAssessmentPage = () => {
   const {
     sections,
     assessment,
-    isLoadingAssessments,
+    isLoadingAssessment,
     assessmentId,
     onNavigateBack,
     notes,
@@ -25,7 +25,7 @@ export const KybAndOwnershipAssessmentPage = () => {
 
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  if (isLoadingAssessments || !assessment) {
+  if (isLoadingAssessment || !assessment) {
     return (
       <>
         <Skeleton className="h-6 w-72" />
@@ -65,7 +65,7 @@ export const KybAndOwnershipAssessmentPage = () => {
             <MerchantMonitoringReportStatus
               reportId={assessmentId}
               status={assessment.status}
-              businessId={assessment.input?.businessId}
+              businessId={assessment.input?.businessId ?? ''}
             />
           </div>
 

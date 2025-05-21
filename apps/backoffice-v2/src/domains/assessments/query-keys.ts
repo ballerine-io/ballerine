@@ -2,6 +2,7 @@ import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 import {
   fetchIdentityVerificationAssessments,
+  fetchKybAndOwnershipAssessment,
   fetchKybAndOwnershipAssessments,
   IIdentityVerificationAssessmentsParams,
   IKybAndOwnershipAssessmentsParams,
@@ -19,6 +20,10 @@ export const kybAndOwnershipAssessmentsQueryKey = createQueryKeys('kyb-and-owner
 
       return fetchKybAndOwnershipAssessments(data);
     },
+  }),
+  findById: ({ id }: { id: string }) => ({
+    queryKey: [{ id }],
+    queryFn: () => fetchKybAndOwnershipAssessment(id),
   }),
 });
 
