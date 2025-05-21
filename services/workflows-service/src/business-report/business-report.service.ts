@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import uniqBy from 'lodash/uniqBy';
 import { Business } from '@prisma/client';
-import { TProjectId } from '@/types';
+import { type PrismaTransaction, TProjectId } from '@/types';
 import { parseCsv } from '@/common/utils/parse-csv/parse-csv';
-import { BusinessReportRequestSchema } from '@/common/schemas';
+import { BusinessReportRequestSchema, TBusinessReportRequest } from '@/common/schemas';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BusinessService } from '@/business/business.service';
 import { env } from '@/env';
@@ -113,6 +114,27 @@ export class BusinessReportService {
     return await this.merchantMonitoringClient.count(args);
   }
 
+  private async createBusiness(
+    projectId: string,
+    businessReportRequest: TBusinessReportRequest,
+    transaction?: PrismaTransaction,
+  ) {
+    return await this.businessService.create(
+      {
+        data: {
+          ...(businessReportRequest.correlationId
+            ? { correlationId: businessReportRequest.correlationId }
+            : {}),
+          companyName: businessReportRequest.merchantName || 'Not detected',
+          website: businessReportRequest.websiteUrl || '',
+          country: businessReportRequest.countryCode || '',
+          projectId,
+        },
+      },
+      transaction,
+    );
+  }
+
   async processBatchFile({
     type,
     projectId,
@@ -160,27 +182,58 @@ export class BusinessReportService {
 
     await this.prisma.$transaction(
       async transaction => {
+        const businessesLookup = new Map<string, Business>();
+
+        const allCorrelationIds = new Set(
+          businessReportsRequests
+            .map(({ correlationId }) => correlationId)
+            .filter(correlationId => !!correlationId) as string[],
+        );
+        console.log({ allCorrelationIds });
+
+        if (allCorrelationIds.size > 0) {
+          const businesses = await this.businessService.list(
+            {
+              where: {
+                correlationId: {
+                  in: [...allCorrelationIds],
+                },
+              },
+            },
+            [projectId],
+            transaction,
+          );
+          for (const business of businesses) {
+            businessesLookup.set(business.correlationId || business.id, business);
+          }
+        }
+
+        const businessesToCreate = uniqBy(
+          businessReportsRequests.filter(
+            ({ correlationId }) => !!correlationId && !businessesLookup.has(correlationId),
+          ),
+          'correlationId',
+        );
+        console.log({ businessesToCreate });
+        if (businessesToCreate.length > 0) {
+          const businesses = await Promise.all(
+            businessesToCreate.map(business =>
+              this.createBusiness(projectId, business, transaction),
+            ),
+          );
+          for (const business of businesses) {
+            businessesLookup.set(business.correlationId || business.id, business);
+          }
+        }
+
+        console.log({ businessesLookup });
+
         const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
           let business =
             businessReportRequest.correlationId &&
-            (await this.businessService.getByCorrelationId(businessReportRequest.correlationId, [
-              projectId,
-            ]));
+            businessesLookup.get(businessReportRequest.correlationId);
 
-          business ||= await this.businessService.create(
-            {
-              data: {
-                ...(businessReportRequest.correlationId
-                  ? { correlationId: businessReportRequest.correlationId }
-                  : {}),
-                companyName: businessReportRequest.merchantName || 'Not detected',
-                website: businessReportRequest.websiteUrl || '',
-                country: businessReportRequest.countryCode || '',
-                projectId,
-              },
-            },
-            transaction,
-          );
+          business ||= await this.createBusiness(projectId, businessReportRequest, transaction);
 
           return {
             businessReportRequest,
