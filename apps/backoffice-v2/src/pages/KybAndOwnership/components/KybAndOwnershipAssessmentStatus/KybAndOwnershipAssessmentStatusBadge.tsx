@@ -1,20 +1,20 @@
 import { Badge } from '@ballerine/ui';
-import { titleCase } from 'string-ts';
 import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
 
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { captureSentryError } from '@/sentry/capture-exception';
-
-const reportInProgressData = {
-  variant: 'gray',
-  title: 'Scan in progress',
-  text: '',
-};
 
 export const statusToData = {
-  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: reportInProgressData,
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: reportInProgressData,
+  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: {
+    variant: 'gray',
+    title: 'Case in progress',
+    text: '',
+  },
+  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
+    variant: 'gray',
+    title: 'Case in progress',
+    text: '',
+  },
   [MERCHANT_REPORT_STATUSES_MAP['pending-review']]: {
     variant: 'gray',
     title: 'Pending Review',
@@ -32,23 +32,17 @@ export const statusToData = {
   },
   [MERCHANT_REPORT_STATUSES_MAP['cleared']]: {
     variant: 'success',
-    title: 'Cleared',
+    title: 'Approved',
     text: 'Merchant reviewed and found compliant or low risk',
   },
   [MERCHANT_REPORT_STATUSES_MAP['terminated']]: {
     variant: 'destructive',
-    title: 'Terminated',
+    title: 'Rejected',
     text: 'Merchant reviewed and confirmed non-compliant or high risk',
-  },
-  // TODO: remove
-  completed: {
-    variant: 'success',
-    title: 'Completed',
-    text: 'Merchant review has been completed',
   },
 } as const;
 
-export const MerchantMonitoringStatusBadge = ({
+export const KybAndOwnershipAssessmentStatusBadge = ({
   status,
   disabled = false,
   ...props
@@ -56,19 +50,6 @@ export const MerchantMonitoringStatusBadge = ({
   status: keyof typeof statusToData;
   disabled?: boolean;
 }) => {
-  // TODO: Can be removed when we get rid of records that have this status
-  if ((status as string) === MERCHANT_REPORT_STATUSES_MAP['completed']) {
-    status = MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'];
-  }
-
-  if (!statusToData[status]) {
-    captureSentryError(
-      new Error(`MerchantMonitoringStatusBadge: status "${status}" not found in statusToData.`),
-      { componentName: 'MerchantMonitoringStatusBadge' },
-    );
-    return null;
-  }
-
   const isReportInProgress = [
     MERCHANT_REPORT_STATUSES_MAP['in-progress'],
     MERCHANT_REPORT_STATUSES_MAP['quality-control'],
@@ -107,10 +88,10 @@ export const MerchantMonitoringStatusBadge = ({
         &nbsp;
       </span>
       <span ref={ref} style={{ ...styles, width: '100%' }}>
-        {statusToData[status].title ?? titleCase(status ?? '')}
+        {statusToData[status].title}
       </span>
     </Badge>
   );
 };
 
-MerchantMonitoringStatusBadge.displayName = 'MerchantMonitoringStatusBadge';
+KybAndOwnershipAssessmentStatusBadge.displayName = 'KybAndUboChecksStatusBadge';
