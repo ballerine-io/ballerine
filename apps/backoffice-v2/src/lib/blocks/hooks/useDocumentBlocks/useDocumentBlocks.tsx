@@ -448,9 +448,9 @@ export const useDocumentBlocks = ({
       });
 
       // TODO: temporary mocks
-      const shouldShowMockChecks = true;
-      // documentNameOrNA === 'Proof of Bank Account - Bank Letter' ||
-      // documentNameOrNA === 'Proof of Bank Account - Voided Check';
+      const shouldShowMockChecks =
+        documentNameOrNA === 'Proof of Bank Account - Bank Letter' ||
+        documentNameOrNA === 'Proof of Bank Account - Voided Check';
 
       const inconsistencyCheck =
         category === 'Proof of Bank Account' && docType === 'Voided Check'
