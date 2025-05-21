@@ -42,19 +42,6 @@ export const useSidebarItems = () => {
     [filterId, pathname],
   );
 
-  const businessSection = {
-    text: 'Businesses',
-    icon: BuildingIcon,
-    children:
-      businessesFilters?.map(({ id, name }) => ({
-        filterId: id,
-        text: name,
-        key: `nav-item-${id}`,
-        href: `/${locale}/case-management/entities?filterId=${id}`,
-      })) ?? [],
-    key: 'nav-item-businesses',
-  };
-
   const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
         {
@@ -150,7 +137,24 @@ export const useSidebarItems = () => {
               },
             ]
           : []),
-        businessSection,
+        {
+          text: 'KYB & UBOs',
+          icon: BuildingIcon,
+          href: `/${locale}/kyb-ubo`,
+          key: 'nav-item-kyb-ubos',
+        },
+        {
+          text: 'Businesses',
+          icon: BuildingIcon,
+          children:
+            businessesFilters?.map(({ id, name }) => ({
+              filterId: id,
+              text: name,
+              key: `nav-item-${id}`,
+              href: `/${locale}/case-management/entities?filterId=${id}`,
+            })) ?? [],
+          key: 'nav-item-businesses',
+        },
         {
           text: 'Individuals',
           icon: UsersIcon,
