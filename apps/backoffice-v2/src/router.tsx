@@ -126,25 +126,25 @@ const router = createBrowserRouter([
                   },
                 ],
               },
-              {
-                loader: async () => {
-                  await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
-                  return true;
-                },
-                errorElement: <RouteError />,
-                children: [
-                  {
-                    path: '/:locale/identity-verification',
-                    element: <IdentityVerification />,
-                    errorElement: <RouteError />,
-                  },
-                  {
-                    path: '/:locale/identity-verification/:checkId',
-                    element: <IdentityVerificationCheckPage />,
-                    errorElement: <RouteError />,
-                  },
-                ],
-              },
+              // {
+              //   loader: async () => {
+              //     await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+              //     return true;
+              //   },
+              //   errorElement: <RouteError />,
+              //   children: [
+              //     {
+              //       path: '/:locale/identity-verification',
+              //       element: <IdentityVerification />,
+              //       errorElement: <RouteError />,
+              //     },
+              //     {
+              //       path: '/:locale/identity-verification/:checkId',
+              //       element: <IdentityVerificationCheckPage />,
+              //       errorElement: <RouteError />,
+              //     },
+              //   ],
+              // },
               {
                 path: '/:locale/case-management',
                 element: <CaseManagement />,
