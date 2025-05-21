@@ -189,7 +189,6 @@ export class BusinessReportService {
             .map(({ correlationId }) => correlationId)
             .filter(correlationId => !!correlationId) as string[],
         );
-        console.log({ allCorrelationIds });
 
         if (allCorrelationIds.size > 0) {
           const businesses = await this.businessService.list(
@@ -214,7 +213,6 @@ export class BusinessReportService {
           ),
           'correlationId',
         );
-        console.log({ businessesToCreate });
         if (businessesToCreate.length > 0) {
           const businesses = await Promise.all(
             businessesToCreate.map(business =>
@@ -225,8 +223,6 @@ export class BusinessReportService {
             businessesLookup.set(business.correlationId || business.id, business);
           }
         }
-
-        console.log({ businessesLookup });
 
         const businessCreatePromises = businessReportsRequests.map(async businessReportRequest => {
           let business =
