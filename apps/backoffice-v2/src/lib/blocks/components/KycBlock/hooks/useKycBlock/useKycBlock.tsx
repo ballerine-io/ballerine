@@ -572,9 +572,7 @@ export const useKycBlock = ({
             .addCell({
               type: 'heading',
               value: 'Identity Verification Results',
-              props: {
-                className: 'mt-0',
-              },
+              props: { className: 'mt-0' },
             })
             .addCell({
               type: 'container',
@@ -596,13 +594,22 @@ export const useKycBlock = ({
                   type: 'container',
                   value: createBlocksTyped()
                     .addBlock()
-                    .addCell(userCreatedIconCell)
                     .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Details',
+                      type: 'container',
+                      value: createBlocksTyped()
+                        .addBlock()
+                        .addCell(userCreatedIconCell)
+                        .addCell({
+                          id: 'header',
+                          type: 'heading',
+                          value: 'Details',
+                          props: {
+                            className: 'mt-0 p-0',
+                          },
+                        })
+                        .buildFlat(),
                       props: {
-                        className: 'mt-0 p-0',
+                        className: 'flex space-x-1 items-center mt-6 px-4',
                       },
                     })
                     .addCell({
@@ -631,21 +638,40 @@ export const useKycBlock = ({
                   value: documentExtractedData.length
                     ? createBlocksTyped()
                         .addBlock()
-                        .addCell(systemCreatedIconCell)
                         .addCell({
-                          id: 'header',
-                          type: 'heading',
-                          value: 'Document Extracted Data',
+                          type: 'container',
+                          value: createBlocksTyped()
+                            .addBlock()
+                            .addCell(systemCreatedIconCell)
+                            .addCell({
+                              id: 'header',
+                              type: 'heading',
+                              value: 'Document Extracted Data',
+                            })
+                            .buildFlat(),
+                          props: {
+                            className: 'flex space-x-1 items-center mt-6 px-4',
+                          },
                         })
                         .build()
                         .concat(documentExtractedData)
                         .flat(1)
                     : createBlocksTyped()
                         .addBlock()
-                        .addCell(systemCreatedIconCell)
                         .addCell({
-                          type: 'heading',
-                          value: 'Document Extracted Data',
+                          type: 'container',
+                          value: createBlocksTyped()
+                            .addBlock()
+                            .addCell(systemCreatedIconCell)
+                            .addCell({
+                              id: 'header',
+                              type: 'heading',
+                              value: 'Document Extracted Data',
+                            })
+                            .buildFlat(),
+                          props: {
+                            className: 'flex space-x-1 items-center mt-6 px-4',
+                          },
                         })
                         .addCell({
                           type: 'paragraph',
@@ -661,11 +687,20 @@ export const useKycBlock = ({
                   value: decision.length
                     ? createBlocksTyped()
                         .addBlock()
-                        .addCell(systemCreatedIconCell)
                         .addCell({
-                          id: 'header',
-                          type: 'heading',
-                          value: 'Document Verification Results',
+                          type: 'container',
+                          value: createBlocksTyped()
+                            .addBlock()
+                            .addCell(systemCreatedIconCell)
+                            .addCell({
+                              id: 'header',
+                              type: 'heading',
+                              value: 'Document Verification Results',
+                            })
+                            .buildFlat(),
+                          props: {
+                            className: 'flex space-x-1 items-center mt-6 px-4',
+                          },
                         })
                         .addCell({
                           type: 'readOnlyDetails',
@@ -708,10 +743,19 @@ export const useKycBlock = ({
                         .buildFlat()
                     : createBlocksTyped()
                         .addBlock()
-                        .addCell(systemCreatedIconCell)
                         .addCell({
-                          type: 'heading',
-                          value: 'Document Verification Results',
+                          type: 'container',
+                          value: createBlocksTyped()
+                            .addBlock()
+                            .addCell(systemCreatedIconCell)
+                            .addCell({
+                              type: 'heading',
+                              value: 'Document Verification Results',
+                            })
+                            .buildFlat(),
+                          props: {
+                            className: 'flex space-x-1 items-center mt-6 px-4',
+                          },
                         })
                         .addCell({
                           type: 'paragraph',
