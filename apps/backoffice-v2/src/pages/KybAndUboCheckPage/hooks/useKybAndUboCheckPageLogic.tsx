@@ -37,6 +37,23 @@ type CheckPageSection = {
   condition?: () => boolean;
 };
 
+// TODO: remove when the source of this data is determined and checks data query is available
+const checks = [
+  { displayName: 'Registry Information', status: 'positive', note: 'Extracted' },
+  { displayName: 'Company Structure', status: 'neutral', note: 'Unverified' },
+  { displayName: 'Active Company', status: 'positive', note: 'Verified' },
+  { displayName: 'Company Sanctions', status: 'negative', note: 'Flagged' },
+  { displayName: 'Incorporated > 1 year ago', status: 'positive', note: 'Verified' },
+  { displayName: 'Registered Address', status: 'positive', note: 'Extracted' },
+  { displayName: 'Company Jurisdiction', status: 'negative', note: 'High Risk' },
+] as const;
+
+const checkIconMap = {
+  positive: <ShieldCheckIcon className="size-5 text-green-500" />,
+  negative: <ShieldAlertIcon className="size-5 text-red-500" />,
+  neutral: <ShieldQuestionIcon className="size-5" />,
+};
+
 export const useKybAndUboCheckPageLogic = () => {
   const { checkId } = useParams<{ checkId: string }>();
   const { data: customer } = useCustomerQuery();
@@ -88,22 +105,10 @@ export const useKybAndUboCheckPageLogic = () => {
       : { nodes: [], edges: [] },
   );
 
-  // TODO: remove when the source of this data is determined
-  const checks = [
-    { displayName: 'Registry Information', status: 'positive', note: 'Extracted' },
-    { displayName: 'Company Structure', status: 'neutral', note: 'Unverified' },
-    { displayName: 'Active Company', status: 'positive', note: 'Verified' },
-    { displayName: 'Company Sanctions', status: 'negative', note: 'Flagged' },
-    { displayName: 'Incorporated > 1 year ago', status: 'positive', note: 'Verified' },
-    { displayName: 'Registered Address', status: 'positive', note: 'Extracted' },
-    { displayName: 'Company Jurisdiction', status: 'negative', note: 'High Risk' },
-  ] as const;
-
-  const checkIconMap = {
-    positive: <ShieldCheckIcon className="size-5 text-green-500" />,
-    negative: <ShieldAlertIcon className="size-5 text-red-500" />,
-    neutral: <ShieldQuestionIcon className="size-5" />,
-  };
+  // TODO: uncomment when the checks data query is available
+  // const { data: checksSectionData, isLoading: isLoadingChecksSectionData } = useChecksDataQuery({
+  //   checkId: check?.id || '',
+  // })
 
   const sections = useMemo(() => {
     return [
