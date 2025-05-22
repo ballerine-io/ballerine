@@ -4,6 +4,9 @@ import {
   AlertTriangleIcon,
   ListChecksIcon,
   LucideIcon,
+  ShieldAlertIcon,
+  ShieldCheckIcon,
+  ShieldQuestionIcon,
   UsersIcon,
   UsersRoundIcon,
 } from 'lucide-react';
@@ -20,6 +23,7 @@ import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistry
 import { useKybAndUbosChecksQuery } from '@/domains/checks/hooks/queries/useKybAndUbosChecksQuery/useKybAndUbosChecksQuery';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 type CheckPageSection = {
   id: string;
@@ -84,12 +88,22 @@ export const useKybAndUboCheckPageLogic = () => {
       : { nodes: [], edges: [] },
   );
 
+  // TODO: remove when the source of this data is determined
   const checks = [
-    {
-      displayName: 'Registry Information',
-      status: 'positive',
-    },
-  ];
+    { displayName: 'Registry Information', status: 'positive', note: 'Extracted' },
+    { displayName: 'Company Structure', status: 'neutral', note: 'Unverified' },
+    { displayName: 'Active Company', status: 'positive', note: 'Verified' },
+    { displayName: 'Company Sanctions', status: 'negative', note: 'Flagged' },
+    { displayName: 'Incorporated > 1 year ago', status: 'positive', note: 'Verified' },
+    { displayName: 'Registered Address', status: 'positive', note: 'Extracted' },
+    { displayName: 'Company Jurisdiction', status: 'negative', note: 'High Risk' },
+  ] as const;
+
+  const checkIconMap = {
+    positive: <ShieldCheckIcon className="size-5 text-green-500" />,
+    negative: <ShieldAlertIcon className="size-5 text-red-500" />,
+    neutral: <ShieldQuestionIcon className="size-5" />,
+  };
 
   const sections = useMemo(() => {
     return [
@@ -99,9 +113,22 @@ export const useKybAndUboCheckPageLogic = () => {
         Icon: ListChecksIcon,
         Component: (
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="grid grid-cols-3 gap-4 p-6">
               {checks.map(check => (
-                <div>hey</div>
+                <div
+                  className={ctw(
+                    'flex h-16 items-center justify-between rounded-md border border-gray-200 px-4',
+                    check.status === 'positive' && 'bg-green-50',
+                    check.status === 'negative' && 'bg-red-50',
+                  )}
+                >
+                  <p className="font-semibold">{check.displayName}</p>
+
+                  <div className="flex w-[6.5rem] items-center gap-3">
+                    <p>{checkIconMap[check.status]}</p>
+                    <p>{check.note}</p>
+                  </div>
+                </div>
               ))}
             </CardContent>
           </Card>
