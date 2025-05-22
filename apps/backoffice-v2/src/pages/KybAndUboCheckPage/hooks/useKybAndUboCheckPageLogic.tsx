@@ -1,6 +1,12 @@
 import { BlocksComponent } from '@ballerine/blocks';
 import { ParsedBooleanSchema } from '@ballerine/ui';
-import { AlertTriangleIcon, ListChecksIcon, LucideIcon, UsersRoundIcon } from 'lucide-react';
+import {
+  AlertTriangleIcon,
+  ListChecksIcon,
+  LucideIcon,
+  UsersIcon,
+  UsersRoundIcon,
+} from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
@@ -78,8 +84,29 @@ export const useKybAndUboCheckPageLogic = () => {
       : { nodes: [], edges: [] },
   );
 
+  const checks = [
+    {
+      displayName: 'Registry Information',
+      status: 'positive',
+    },
+  ];
+
   const sections = useMemo(() => {
     return [
+      {
+        id: 'checks',
+        title: 'Checks',
+        Icon: ListChecksIcon,
+        Component: (
+          <Card>
+            <CardContent className="p-6">
+              {checks.map(check => (
+                <div>hey</div>
+              ))}
+            </CardContent>
+          </Card>
+        ),
+      },
       {
         id: 'company-sanctions',
         title: 'Company Sanctions',
@@ -119,7 +146,7 @@ export const useKybAndUboCheckPageLogic = () => {
       {
         id: 'company-structure',
         title: 'Company Structure',
-        Icon: ListChecksIcon,
+        Icon: UsersIcon,
         Component: (
           <>
             {!!check?.companyStructure?.output ? (
