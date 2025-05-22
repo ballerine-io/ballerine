@@ -141,8 +141,11 @@ export class UnifiedApiClient {
       limit: number;
     },
   ) {
-    return await this.axiosInstance.get(`/assessments/${assessmentType}?projectId=${projectId}`, {
-      params: queryParams,
+    return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
+      params: {
+        ...queryParams,
+        projectId,
+      },
     });
   }
 

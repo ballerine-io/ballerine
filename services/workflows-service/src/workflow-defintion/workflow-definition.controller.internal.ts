@@ -33,4 +33,14 @@ export class WorkflowControllerInternal {
       customerId: data.customerId,
     });
   }
+
+  @common.Post('/create-demo-us')
+  @swagger.ApiOkResponse()
+  @common.UseGuards(AdminAuthGuard)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createDemoWorkflowUs(@common.Body() data: CreateDemoWorkflowDefinitionEuDto) {
+    return await this.service.createDemoWorkflowDefinitionUs({
+      customerId: data.customerId,
+    });
+  }
 }
