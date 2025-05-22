@@ -139,6 +139,7 @@ export const Home: FunctionComponent = () => {
             <h3 className="text-xl font-medium">Portfolio Analytics</h3>
 
             <StaticMetricsSection
+              isMerchantMonitoringEnabled={isMerchantMonitoringEnabled}
               isOngoingMonitoringEnabled={isOngoingMonitoringEnabled}
               isCasesOnboardingEnabled={isCasesOnboardingEnabled}
               casesByStatus={casesByStatus}
