@@ -9,7 +9,8 @@ export const StaticMetricsSection = ({
   casesByStatus,
   ongoingCasesByRisk,
   approvedCasesByRisk,
-  totalActiveMerchants,
+  activeBusinessesCount,
+  activeWebsitesCount,
 
   statusConfig,
   ongoingRiskConfig,
@@ -23,7 +24,8 @@ export const StaticMetricsSection = ({
   | 'casesByStatus'
   | 'ongoingCasesByRisk'
   | 'approvedCasesByRisk'
-  | 'totalActiveMerchants'
+  | 'activeBusinessesCount'
+  | 'activeWebsitesCount'
   | 'statusConfig'
   | 'ongoingRiskConfig'
   | 'approvedRiskConfig'
@@ -33,12 +35,21 @@ export const StaticMetricsSection = ({
   return (
     <div className="grid grid-cols-4 gap-6 2xl:grid-cols-6">
       {isOngoingMonitoringEnabled && (
-        <StatsCard
-          value={totalActiveMerchants}
-          centered={true}
-          title="Total Active Merchants"
-          description="Merchants currently subscribed to monitoring"
-        />
+        <>
+          <StatsCard
+            value={activeBusinessesCount}
+            centered={true}
+            title="Total Active Merchants"
+            description="Number of unique merchants with active, non-terminated websites"
+          />
+
+          <StatsCard
+            value={activeWebsitesCount}
+            centered={true}
+            title="Total Active Websites"
+            description="Number of unique URLs currently subscribed to ongoing monitoring"
+          />
+        </>
       )}
 
       {isCasesOnboardingEnabled && (
