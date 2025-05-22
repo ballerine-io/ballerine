@@ -609,7 +609,7 @@ export const useKycBlock = ({
                         })
                         .buildFlat(),
                       props: {
-                        className: 'flex space-x-1 items-center mt-6 px-4',
+                        className: 'flex space-x-4 items-center mt-6 px-4',
                       },
                     })
                     .addCell({
@@ -647,10 +647,11 @@ export const useKycBlock = ({
                               id: 'header',
                               type: 'heading',
                               value: 'Document Extracted Data',
+                              props: { className: 'mt-0' },
                             })
                             .buildFlat(),
                           props: {
-                            className: 'flex space-x-1 items-center mt-6 px-4',
+                            className: 'flex space-x-2 items-center px-4 mt-4',
                           },
                         })
                         .build()
@@ -667,10 +668,11 @@ export const useKycBlock = ({
                               id: 'header',
                               type: 'heading',
                               value: 'Document Extracted Data',
+                              props: { className: 'mt-0' },
                             })
                             .buildFlat(),
                           props: {
-                            className: 'flex space-x-1 items-center mt-6 px-4',
+                            className: 'flex space-x-2 items-center px-4 mt-4',
                           },
                         })
                         .addCell({
@@ -696,10 +698,11 @@ export const useKycBlock = ({
                               id: 'header',
                               type: 'heading',
                               value: 'Document Verification Results',
+                              props: { className: 'mt-0' },
                             })
                             .buildFlat(),
                           props: {
-                            className: 'flex space-x-1 items-center mt-6 px-4',
+                            className: 'flex space-x-2 items-center px-4 mt-4',
                           },
                         })
                         .addCell({
@@ -751,10 +754,11 @@ export const useKycBlock = ({
                             .addCell({
                               type: 'heading',
                               value: 'Document Verification Results',
+                              props: { className: 'mt-0' },
                             })
                             .buildFlat(),
                           props: {
-                            className: 'flex space-x-1 items-center mt-6 px-4',
+                            className: 'flex space-x-2 items-center px-4 mt-4',
                           },
                         })
                         .addCell({
