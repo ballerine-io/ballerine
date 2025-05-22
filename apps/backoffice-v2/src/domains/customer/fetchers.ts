@@ -32,6 +32,7 @@ const CustomerSchema = z.object({
         .optional(),
       isDocumentOcrEnabled: z.boolean().default(false).optional(),
       mockDashboardV1: z.boolean().default(false).optional(),
+      enableWebPresenceReportExport: z.boolean().default(false).optional(),
     })
     .nullable(),
   config: z
@@ -42,6 +43,8 @@ const CustomerSchema = z.object({
       isExample: z.boolean().default(false),
       isDemoAccount: z.boolean().default(false),
       isDemoKybEnabled: z.boolean().default(false),
+      createKybAndOwnershipAssessment: z.boolean().default(true),
+      createIdentityVerification: z.boolean().default(true),
       demoAccessDetails: z
         .object({
           totalReports: z.number(),

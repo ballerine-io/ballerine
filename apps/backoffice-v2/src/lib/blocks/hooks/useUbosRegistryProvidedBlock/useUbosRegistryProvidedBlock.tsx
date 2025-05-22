@@ -5,6 +5,7 @@ import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { buildTree } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/build-tree';
 import { CustomNode } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/CustomNode';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 const nodeTypes = {
   customNode: CustomNode,
@@ -133,19 +134,32 @@ export const useUbosRegistryProvidedBlock = ({
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'heading',
-            value: 'Corporate Structure',
-          })
-          .addCell({
-            type: 'subheading',
-            value: 'Registry-Provided Data',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(systemCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'heading',
+                    value: 'Corporate Structure',
+                    props: { className: 'mt-0' },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'Registry-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
             props: {
-              className: 'mb-4',
+              className: 'flex space-x-1 items-center mt-4',
             },
           })
           .addCell(cell)
-          .build()
-          .flat(1),
+          .buildFlat(),
       })
       .build();
   }, [getCell]);

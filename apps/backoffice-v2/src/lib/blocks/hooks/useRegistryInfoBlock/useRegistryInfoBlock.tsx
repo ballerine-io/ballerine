@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { ExtractCellProps } from '@ballerine/blocks';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useRegistryInfoBlock = ({
   registryInfo,
@@ -33,17 +34,28 @@ export const useRegistryInfoBlock = ({
                 type: 'container',
                 value: createBlocksTyped()
                   .addBlock()
+                  .addCell(systemCreatedIconCell)
                   .addCell({
-                    id: 'nested-details-heading',
-                    type: 'heading',
-                    value: 'Registry Information',
+                    type: 'container',
+                    value: createBlocksTyped()
+                      .addBlock()
+                      .addCell({
+                        id: 'nested-details-heading',
+                        type: 'heading',
+                        value: 'Registry Information',
+                        props: { className: 'mt-0' },
+                      })
+                      .addCell({
+                        id: 'nested-details-subheading',
+                        type: 'subheading',
+                        value: 'Registry-Provided Data',
+                      })
+                      .buildFlat(),
                   })
-                  .addCell({
-                    type: 'subheading',
-                    value: 'Registry-Provided Data',
-                  })
-                  .build()
-                  .flat(1),
+                  .buildFlat(),
+                props: {
+                  className: 'flex space-x-1 items-center mt-4',
+                },
               })
               .addCell({
                 type: 'details',
@@ -58,8 +70,7 @@ export const useRegistryInfoBlock = ({
                 documents: documents?.map(({ details: _details, ...document }) => document),
                 isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
               })
-              .build()
-              .flat(1),
+              .buildFlat(),
           })
           .build(),
       );
