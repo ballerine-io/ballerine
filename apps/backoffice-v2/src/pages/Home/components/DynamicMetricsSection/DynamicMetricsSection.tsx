@@ -63,7 +63,7 @@ export const DynamicMetricsSection = ({
             })}`}
             value={addedWebsitesCount}
             title="New Websites"
-            description="Number of URLs added to ongoing monitoring during the selected time range"
+            description="Number of new websites added during the selected time range"
           />
         )}
 
@@ -71,7 +71,7 @@ export const DynamicMetricsSection = ({
           <StatsCard
             value={removedWebsitesCount}
             title="Websites Removed"
-            description="Number of URLs removed from ongoing monitoring during the selected time range"
+            description="Number of websites removed from ongoing monitoring during the selected time range"
           />
         )}
       </div>

@@ -40,14 +40,14 @@ export const StaticMetricsSection = ({
             value={activeBusinessesCount}
             centered={true}
             title="Total Active Merchants"
-            description="Number of unique merchants with active, non-terminated websites"
+            description="Number of merchants with active, non-terminated websites"
           />
 
           <StatsCard
             value={activeWebsitesCount}
             centered={true}
             title="Total Active Websites"
-            description="Number of unique URLs currently subscribed to ongoing monitoring"
+            description="Number of websites currently subscribed to ongoing monitoring"
           />
         </>
       )}
