@@ -11,8 +11,17 @@ import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/Po
 import { RiskAndAlertsOverviewSection } from './components/RiskAndAlertsOverviewSection/RiskAndAlertsOverviewSection';
 import { StaticMetricsSection } from './components/StaticMetricsSection/StaticMetricsSection';
 import { WelcomeSvg } from './components/WelcomeSvg/WelcomeSvg';
+import { ErrorAlert } from './components/ErrorAlert/ErrorAlert';
 
 export const Home: FunctionComponent = () => {
+  return (
+    <ErrorAlert>
+      <p>This is a test error alert.</p>
+    </ErrorAlert>
+  );
+};
+
+const Home_: FunctionComponent = () => {
   const {
     firstName,
     fullName,

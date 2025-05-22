@@ -1,8 +1,8 @@
-import { FunctionComponentWithChildren } from '../../../types';
 import { Alert } from '../Alert/Alert';
 import { AlertCircle } from 'lucide-react';
 import { AlertTitle } from '../Alert/Alert.Title';
 import { AlertDescription } from '../Alert/Alert.Description';
+import { FunctionComponentWithChildren } from '@ballerine/ui';
 
 export const ErrorAlert: FunctionComponentWithChildren = ({ children }) => {
   return (
