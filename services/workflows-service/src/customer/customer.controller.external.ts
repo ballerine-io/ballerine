@@ -82,6 +82,33 @@ export class CustomerControllerExternal {
       throw new BadRequestException('Customer not found');
     }
 
+    // Fix invalid feature options that don't match the schema
+    if (customer.features && typeof customer.features === 'object') {
+      const features = customer.features as Record<string, any>;
+
+      // Fix createBusinessReport options
+      if (features.createBusinessReport?.options) {
+        const options = features.createBusinessReport.options;
+        if (options.type === 'batch' || options.type === 'standard') {
+          options.type = 'MERCHANT_REPORT_T1';
+        }
+        if (options.version === 'v1' || options.version === 'v2' || options.version === 'v3') {
+          options.version = options.version.replace('v', '');
+        }
+      }
+
+      // Fix createBusinessReportBatch options
+      if (features.createBusinessReportBatch?.options) {
+        const options = features.createBusinessReportBatch.options;
+        if (options.type === 'batch' || options.type === 'standard') {
+          options.type = 'MERCHANT_REPORT_T1';
+        }
+        if (options.version === 'v1' || options.version === 'v2' || options.version === 'v3') {
+          options.version = options.version.replace('v', '');
+        }
+      }
+    }
+
     if (customer.config?.isDemoAccount) {
       customer.config = {
         ...customer.config,
