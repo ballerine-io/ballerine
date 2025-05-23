@@ -105,6 +105,8 @@ runs:
 
         scale_ingress_controllers
 
+        scale_namespace_deployments "argocd" "1" "" "argocd-applicationset-controller:2 argocd-repo-server:2 argocd-server:3"
+
         for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
           scale_namespace_deployments "$ns" "1" "" ""
         done
