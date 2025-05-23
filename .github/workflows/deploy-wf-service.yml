@@ -222,13 +222,13 @@ jobs:
           ref: main
           fetch-depth: 1
           sparse-checkout: |
-            kubernetes/helm/wf-service-migration
+            kubernetes/helm/wf-service
           sparse-checkout-cone-mode: true
       - name: Check if values yaml file exists 
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service-migration/${{ inputs.environment }}-custom-values.yaml" ]; then
+          if [ -f "kubernetes/helm/wf-service/${{ inputs.environment }}-custom-values.yaml" ]; then
             echo "file_name=${{ inputs.environment }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
             echo ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}
           else
@@ -246,7 +246,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service-migration/${{steps.update_helm_check.outputs.file_name}}": {
+              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
                 "image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
                 "prismaMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
                 "dbMigrate.image.tag": "${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}",
@@ -286,7 +286,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-prisma-migrate&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-prisma-migrate&version=v1&kind=Job&group=batch"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/wf-service/resource?name=wf-service-prisma-migrate&appNamespace=argocd&namespace=default&resourceName=wf-service-prisma-migrate&version=v1&kind=Job&group=batch"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Job'
@@ -304,7 +304,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service&version=v1&kind=Deployment&group=apps"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/wf-service/resource?name=wf-service&appNamespace=argocd&namespace=default&resourceName=wf-service&version=v1&kind=Deployment&group=apps"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Deployment'
@@ -322,7 +322,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-migrate&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-migrate&version=v1&kind=Job&group=batch"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/wf-service/resource?name=wf-service-db-data-migrations&appNamespace=argocd&namespace=default&resourceName=wf-service-db-data-migrations&version=v1&kind=Job&group=batch"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Job'
@@ -340,7 +340,7 @@ jobs:
           argocd_username: ${{ secrets.ARGOCD_USERNAME }}
           argocd_password: ${{ secrets.ARGOCD_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/test-wf-service/resource?name=test-wf-service-db-sync&appNamespace=argocd&namespace=wf-migration-jobs&resourceName=test-wf-service-db-sync&version=v1&kind=Job&group=batch"
+          argocd_api_url: "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/wf-service/resource?name=wf-service-db-data-sync&appNamespace=argocd&namespace=default&resourceName=wf-service-db-data-sync&version=v1&kind=Job&group=batch"
           tg_svc_key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
           app_image_tag: ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}
           resource_type: 'Job'
