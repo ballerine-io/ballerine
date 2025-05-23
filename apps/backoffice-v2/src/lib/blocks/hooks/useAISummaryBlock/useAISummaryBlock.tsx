@@ -737,6 +737,7 @@ export const useAISummaryBlock = ({
   actions,
   modelInfo = defaultModelInfo,
   useAdvancedAI = true, // Feature flag to toggle between simple/advanced versions
+  isEnabled = true,
 }: {
   isDemoAccount: boolean;
   sections?: Section[];
@@ -748,8 +749,9 @@ export const useAISummaryBlock = ({
   }>;
   modelInfo?: AIModelInfo;
   useAdvancedAI?: boolean; // Feature flag parameter
+  isEnabled?: boolean;
 }) => {
-  if (!isDemoAccount) {
+  if (!isDemoAccount || !isEnabled) {
     return [];
   }
 
