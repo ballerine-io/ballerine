@@ -34,8 +34,8 @@ const composePropertiesSchema = (
 });
 
 const getPropertiesSchemaForDocument = (document: DefaultContextSchema['documents'][number]) => {
-  const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
-  const documentSchemaForDocument = findDocumentSchemaForDocument(documentsByCountry, document);
+  const documentsSchemasByCountry = getDocumentsByCountry(document?.issuer?.country);
+  const documentSchemaForDocument = findDocumentSchemaForDocument(documentsSchemasByCountry, document);
 
   return composePropertiesSchema(documentSchemaForDocument);
 };
@@ -87,10 +87,16 @@ const getPropertiesFromDefinition = (
 };
 
 const findDocumentSchemaForDocument = (
-  documentsByCountry: TDocument[],
+  documentsSchemasByCountry: TDocument[],
   document: DefaultContextSchema['documents'][number],
 ) => {
   const documentId = getDocumentId(document, false);
 
-  return documentsByCountry?.find(doc => getDocumentId(doc, false) === documentId);
+  return documentsSchemasByCountry?.find(doc => {
+    // Augmenting document schema with version for consistency of id composition
+    const schemaDocumentWithVersion = { ...doc, version: document.version };
+    const schemaDocumentId = getDocumentId(schemaDocumentWithVersion, false);
+
+    return schemaDocumentId === documentId;
+  });
 };
