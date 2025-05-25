@@ -196,14 +196,14 @@ export const ASSESSMENT_STATUSES_MAP = Object.fromEntries(
   ASSESSMENT_STATUSES.map(status => [status, status]),
 ) as { [K in AssessmentStatus]: K };
 
-export type UpdateableAssessmentStatus =
-  | (typeof ASSESSMENT_STATUSES_MAP)['pending-review']
-  | (typeof ASSESSMENT_STATUSES_MAP)['under-review'];
-
 export const UPDATEABLE_ASSESSMENT_STATUSES = [
   ASSESSMENT_STATUSES_MAP['pending-review'],
   ASSESSMENT_STATUSES_MAP['under-review'],
+  ASSESSMENT_STATUSES_MAP['approved'],
+  ASSESSMENT_STATUSES_MAP['rejected'],
 ] as const;
+
+export type UpdateableAssessmentStatus = (typeof UPDATEABLE_ASSESSMENT_STATUSES)[number];
 
 export const MERCHANT_REPORT_STATUSES = [
   'in-progress',

@@ -1,16 +1,16 @@
+import { t } from 'i18next';
 import { toast } from 'sonner';
-import type { UpdateableReportStatus } from '@ballerine/common';
+import type { UpdateableAssessmentStatus } from '@ballerine/common';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
-import { updateReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/fetchers';
-import { t } from 'i18next';
+import { updateAssessmentStatus } from '../../fetchers';
 
 export const useUpdateKybAndOwnershipAssessmentStatus = ({
   onSuccess,
   onError,
 }: {
-  onSuccess?: (data: Awaited<ReturnType<typeof updateReportStatus>>) => void;
+  onSuccess?: (data: Awaited<ReturnType<typeof updateAssessmentStatus>>) => void;
   onError?: (error: unknown) => void;
 } = {}) => {
   const queryClient = useQueryClient();
@@ -18,22 +18,21 @@ export const useUpdateKybAndOwnershipAssessmentStatus = ({
   return useMutation({
     mutationFn: async ({
       status,
-      reportId,
+      assessmentId,
     }: {
-      text?: string;
-      reportId?: string;
-      status?: UpdateableReportStatus;
+      assessmentId?: string;
+      status?: UpdateableAssessmentStatus;
     }) => {
-      if (!reportId || !status) {
+      if (!assessmentId || !status) {
         return;
       }
 
-      return await updateReportStatus({ reportId, status });
+      return await updateAssessmentStatus({ assessmentId, status });
     },
     onSuccess: data => {
       void queryClient.invalidateQueries();
 
-      toast.success(t(`toast:business_report_status_update.success`));
+      toast.success(t(`toast:assessment_status_update.success`));
       onSuccess?.(data);
     },
     onError: (error: unknown) => {
@@ -43,7 +42,7 @@ export const useUpdateKybAndOwnershipAssessmentStatus = ({
         return;
       }
 
-      toast.error(t(`toast:business_report_status_update.error`));
+      toast.error(t(`toast:assessment_status_update.error`));
       onError?.(error);
     },
   });

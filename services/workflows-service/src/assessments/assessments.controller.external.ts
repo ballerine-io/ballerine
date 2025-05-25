@@ -7,6 +7,7 @@ import type { TProjectId } from '@/types';
 import { AssessmentsService } from './assessments.service';
 import { CreateAssessmentDto } from './dtos/create-assessment.dto';
 import { GetKybAndOwnershipAssessmentsDto } from './dtos/get-kyb-and-ownership-assessments.dto';
+import type { UpdateableAssessmentStatus } from '@ballerine/common';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Assessments')
@@ -54,5 +55,20 @@ export class AssessmentsControllerExternal {
     @CurrentProject() projectId: TProjectId,
   ) {
     return this.assessmentsService.createAssessment(body, projectId);
+  }
+
+  @common.Put('/:id/status/:status')
+  @swagger.ApiOperation({ summary: 'Update assessment status' })
+  @swagger.ApiResponse({
+    status: 200,
+    description: 'Successfully updated assessment status',
+  })
+  @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
+  updateKybAndOwnershipAssessmentStatus(
+    @common.Param('id') id: string,
+    @common.Param('status') status: UpdateableAssessmentStatus,
+    @CurrentProject() projectId: TProjectId,
+  ) {
+    return this.assessmentsService.updateAssessmentStatus(id, status, projectId);
   }
 }

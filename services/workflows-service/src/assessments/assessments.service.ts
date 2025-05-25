@@ -2,6 +2,7 @@ import { TProjectId } from '@/types';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GetKybAndOwnershipAssessmentsDto } from './dtos/get-kyb-and-ownership-assessments.dto';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { UpdateableAssessmentStatus } from '@ballerine/common';
 
 @Injectable()
 export class AssessmentsService {
@@ -60,6 +61,20 @@ export class AssessmentsService {
       };
 
       const result = await new UnifiedApiClient().createAssessment(payload.type, data);
+
+      return result.data;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async updateAssessmentStatus(
+    id: string,
+    status: UpdateableAssessmentStatus,
+    projectId: TProjectId,
+  ) {
+    try {
+      const result = await new UnifiedApiClient().updateAssessmentStatus(id, status, projectId);
 
       return result.data;
     } catch (error) {

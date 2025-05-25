@@ -1,12 +1,10 @@
 import { z } from 'zod';
+import { t } from 'i18next';
+import { toast } from 'sonner';
 import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  isObject,
-  MERCHANT_REPORT_STATUSES_MAP,
-  UPDATEABLE_ASSESSMENT_STATUSES,
-} from '@ballerine/common';
+import { ASSESSMENT_STATUSES_MAP, UPDATEABLE_ASSESSMENT_STATUSES } from '@ballerine/common';
 import {
   ctw,
   Dialog,
@@ -30,104 +28,53 @@ import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
-import { useUpdateReportStatusMutation } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/hooks/useUpdateReportStatusMutation/useUpdateReportStatusMutation';
-import {
-  MerchantMonitoringStatusBadge,
-  statusToData,
-} from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
-import { toast } from 'sonner';
-import { t } from 'i18next';
-import { getNoteContentForUnsubscribe } from './helpers/get-note-content-for-unsubscribe';
-import { getBaseNoteContent } from './helpers/get-base-note-content';
-import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
-import { useKybAndOwnershipStatusDialog } from './hooks/useKybAndOwnershipStatusDialog/useKybAndOwnershipStatusDialog';
-import { KybAndOwnershipAssessmentStatusBadge } from './KybAndOwnershipAssessmentStatusBadge';
 import { KybAndUboChecksStatusButton } from './KybAndOwnershipAssessmentStatusButton';
+import { useKybAndOwnershipStatusDialog } from './hooks/useKybAndOwnershipStatusDialog/useKybAndOwnershipStatusDialog';
+import { useUpdateKybAndOwnershipAssessmentStatus } from './hooks/useUpdateKybAndOwnershipAssessmentStatus/useUpdateKybAndOwnershipAssessmentStatus';
+import {
+  KybAndOwnershipAssessmentStatusBadge,
+  statusToData,
+} from './KybAndOwnershipAssessmentStatusBadge';
 
-const MerchantMonitoringCompletedStatusFormSchema = z.object({
+const AssessmentCompletedStatusFormSchema = z.object({
   text: z.string().min(1, { message: 'Please provide additional details' }),
 });
 
 export const KybAndOwnershipAssessmentStatus = ({
   status,
-  reportId,
+  assessmentId,
   className,
-  businessId,
 }: {
-  reportId?: string;
+  assessmentId?: string;
   className?: string;
-  businessId?: string;
   status?: keyof typeof statusToData;
 }) => {
-  const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
-
-  const { mutate: mutateUpdateReportStatus, isLoading: isUpdatingReportStatus } =
-    useUpdateReportStatusMutation();
-  const { mutateAsync: turnOffMonitoringMutation, isLoading: isTurningOffMonitoring } =
-    useToggleMonitoringMutation({
-      state: 'off',
-      onSuccess: () => {
-        form.reset();
-        toast.success(t(`toast:business_monitoring_off.success`));
-      },
-      onError: error => {
-        toast.error(
-          t(`toast:business_monitoring_off.error`, {
-            errorMessage: isObject(error) && 'message' in error ? error.message : error,
-          }),
-        );
-      },
-    });
-
-  const isUpdatingReport = useMemo(
-    () => isUpdatingReportStatus || isTurningOffMonitoring,
-    [isUpdatingReportStatus, isTurningOffMonitoring],
-  );
+  const { mutate: mutateUpdateAssessmentStatus, isLoading: isUpdatingAssessmentStatus } =
+    useUpdateKybAndOwnershipAssessmentStatus();
 
   const formDefaultValues = {
     text: '',
-  } satisfies z.infer<typeof MerchantMonitoringCompletedStatusFormSchema>;
+  } satisfies z.infer<typeof AssessmentCompletedStatusFormSchema>;
 
   const form = useForm({
-    resolver: zodResolver(MerchantMonitoringCompletedStatusFormSchema),
+    resolver: zodResolver(AssessmentCompletedStatusFormSchema),
     defaultValues: formDefaultValues,
   });
 
   const [isStatusDropdownOpen, toggleStatusDropdownOpen] = useToggle(false);
   const { dialogState, toggleDialogOpenState, closeDialog } = useKybAndOwnershipStatusDialog();
 
-  const onSubmit: SubmitHandler<
-    z.infer<typeof MerchantMonitoringCompletedStatusFormSchema>
-  > = async ({ text }) => {
+  const onSubmit: SubmitHandler<z.infer<typeof AssessmentCompletedStatusFormSchema>> = async ({
+    text,
+  }) => {
     if (!dialogState.status) {
       console.error('No status selected');
-      toast.error(t(`toast:business_report_status_update.unexpected_error`));
+      toast.error(t(`toast:assessment_status_update.unexpected_error`));
 
       return;
     }
 
-    const isShouldUnsubscribe = dialogState.status === MERCHANT_REPORT_STATUSES_MAP['terminated'];
-
-    const statusReadableText = statusToData[dialogState.status as keyof typeof statusToData]?.title;
-    const noteContent = isShouldUnsubscribe
-      ? getNoteContentForUnsubscribe(statusReadableText, text)
-      : getBaseNoteContent(statusReadableText, text);
-
-    if (isShouldUnsubscribe) {
-      await turnOffMonitoringMutation(businessId ?? '');
-    }
-
-    mutateUpdateReportStatus({ reportId, status: dialogState.status, text });
-
-    void mutateCreateNote({
-      content: noteContent,
-      entityId: businessId ?? '',
-      entityType: 'Business',
-      noteableId: reportId ?? '',
-      noteableType: 'Report',
-      parentNoteId: null,
-    });
+    mutateUpdateAssessmentStatus({ assessmentId, status: dialogState.status });
 
     closeDialog();
     form.reset();
@@ -135,20 +82,17 @@ export const KybAndOwnershipAssessmentStatus = ({
 
   const disabled = useMemo(
     () =>
-      isUpdatingReport ||
+      isUpdatingAssessmentStatus ||
       (status &&
         [
-          MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-          MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-          MERCHANT_REPORT_STATUSES_MAP['completed'],
-          MERCHANT_REPORT_STATUSES_MAP['cleared'],
-          MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
-          MERCHANT_REPORT_STATUSES_MAP['terminated'],
+          ASSESSMENT_STATUSES_MAP['in-progress'],
+          ASSESSMENT_STATUSES_MAP['approved'],
+          ASSESSMENT_STATUSES_MAP['rejected'],
         ].includes(status)),
-    [isUpdatingReport, status],
+    [isUpdatingAssessmentStatus, status],
   );
 
-  if (!status || !reportId) {
+  if (!status || !assessmentId) {
     return null;
   }
 
@@ -159,7 +103,7 @@ export const KybAndOwnershipAssessmentStatus = ({
           disabled={disabled}
           className={ctw(`flex items-center pr-1 focus-visible:outline-none`, className)}
         >
-          <MerchantMonitoringStatusBadge disabled={disabled} status={status} />
+          <KybAndOwnershipAssessmentStatusBadge disabled={disabled} status={status} />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
@@ -180,14 +124,12 @@ export const KybAndOwnershipAssessmentStatus = ({
             >
               <KybAndUboChecksStatusButton
                 status={selectableStatus}
-                disabled={selectableStatus === status || isUpdatingReport}
+                disabled={selectableStatus === status || isUpdatingAssessmentStatus}
                 onClick={() => {
                   if (
-                    [
-                      MERCHANT_REPORT_STATUSES_MAP.cleared,
-                      MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
-                      MERCHANT_REPORT_STATUSES_MAP.terminated,
-                    ].includes(selectableStatus)
+                    [ASSESSMENT_STATUSES_MAP.approved, ASSESSMENT_STATUSES_MAP.rejected].includes(
+                      selectableStatus,
+                    )
                   ) {
                     setTimeout(() => {
                       toggleDialogOpenState(selectableStatus);
@@ -196,7 +138,7 @@ export const KybAndOwnershipAssessmentStatus = ({
                     return;
                   }
 
-                  mutateUpdateReportStatus({ reportId, status: selectableStatus });
+                  mutateUpdateAssessmentStatus({ assessmentId, status: selectableStatus });
                   toggleStatusDropdownOpen();
                 }}
               />

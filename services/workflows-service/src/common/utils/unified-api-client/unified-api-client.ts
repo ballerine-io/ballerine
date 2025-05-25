@@ -5,6 +5,7 @@ import { Business, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
+import { UpdateableAssessmentStatus } from '@ballerine/common';
 
 export type BusinessPayload = Pick<
   Business,
@@ -164,5 +165,16 @@ export class UnifiedApiClient {
     },
   ) {
     return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+  }
+
+  public async updateAssessmentStatus(
+    id: string,
+    status: UpdateableAssessmentStatus,
+    projectId: string,
+  ) {
+    return await this.axiosInstance.put(`/assessments/${id}/status`, {
+      status,
+      projectId,
+    });
   }
 }

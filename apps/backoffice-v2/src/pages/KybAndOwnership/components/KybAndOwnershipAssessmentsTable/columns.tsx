@@ -4,8 +4,8 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { useMemo } from 'react';
-import { KybAndOwnershipAssessmentStatusBadge } from '../KybAndOwnershipAssessmentStatus/KybAndOwnershipAssessmentStatusBadge';
 import { TKybAndOwnershipAssessment } from '@/domains/assessments/fetchers';
+import { KybAndOwnershipAssessmentStatus } from '../KybAndOwnershipAssessmentStatus/KybAndOwnershipAssessmentStatus';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -91,10 +91,12 @@ export const useColumns = () => {
         header: 'Created At',
       }),
       columnHelper.accessor('status', {
-        cell: ({ getValue }) => {
-          const status = getValue();
+        cell: info => {
+          const status = info.getValue();
 
-          return <KybAndOwnershipAssessmentStatusBadge status={status} />;
+          return (
+            <KybAndOwnershipAssessmentStatus status={status} assessmentId={info.row.original.id} />
+          );
         },
         header: 'Status',
       }),

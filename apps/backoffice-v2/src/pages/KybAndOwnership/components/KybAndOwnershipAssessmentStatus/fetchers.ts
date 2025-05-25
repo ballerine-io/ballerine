@@ -1,22 +1,22 @@
 import { z } from 'zod';
-import { UpdateableReportStatus } from '@ballerine/common';
+import { UpdateableAssessmentStatus } from '@ballerine/common';
 
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 
-export const updateReportStatus = async ({
-  reportId,
+export const updateAssessmentStatus = async ({
+  assessmentId,
   status,
 }: {
-  reportId: string;
-  status: UpdateableReportStatus;
+  assessmentId: string;
+  status: UpdateableAssessmentStatus;
 }) => {
   const [data, error] = await apiClient({
-    endpoint: `../external/business-reports/${reportId}/status/${status}`,
+    endpoint: `../external/assessments/${assessmentId}/status/${status}`,
     method: Method.PUT,
     schema: z.object({
-      reportId: z.string(),
+      id: z.string(),
       status: z.string(),
     }),
     timeout: 300_000,

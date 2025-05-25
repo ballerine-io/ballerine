@@ -40,7 +40,7 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
   status: keyof typeof statusToData;
   disabled?: boolean;
 }) => {
-  const isReportInProgress = [ASSESSMENT_STATUSES_MAP['in-progress']].includes(status);
+  const isInProgress = status === ASSESSMENT_STATUSES_MAP['in-progress'];
 
   const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
 
@@ -50,7 +50,7 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
       variant={statusToData[status].variant}
       className={ctw(`h-6 space-x-1 text-sm font-medium`, {
         '!cursor-not-allowed': disabled,
-        ' bg-[#E3E2E0] text-[#32302C]/40 ': isReportInProgress,
+        ' bg-[#E3E2E0] text-[#32302C]/40 ': isInProgress,
         'cursor-pointer hover:shadow-[0_0_2px_rgba(0,0,0,0.3)]': !disabled,
         'bg-[#E3E2E0] text-[#32302C]': status === ASSESSMENT_STATUSES_MAP['pending-review'],
         'text-[#32302C]/40': status === ASSESSMENT_STATUSES_MAP['pending-review'] && disabled,
@@ -62,8 +62,7 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
     >
       <span
         className={ctw(`rounded-full d-2`, {
-          'bg-[#91918E]':
-            isReportInProgress || status === ASSESSMENT_STATUSES_MAP['pending-review'],
+          'bg-[#91918E]': isInProgress || status === ASSESSMENT_STATUSES_MAP['pending-review'],
           'bg-[#5B97BD]': status === ASSESSMENT_STATUSES_MAP['under-review'],
           'bg-[#6C9B7D]': status === ASSESSMENT_STATUSES_MAP['approved'],
           'bg-[#DF2222]': status === ASSESSMENT_STATUSES_MAP['rejected'],
