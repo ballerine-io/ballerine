@@ -158,7 +158,18 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
       assessment?.companyRegistryInformation?.errors,
       assessment?.companyStructure?.errors,
       assessment?.companySanctions?.errors,
-    ].filter(Boolean);
+    ].filter(error => error && !error?.toLowerCase()?.endsWith('not available at the moment'));
+  }, [
+    assessment?.companyRegistryInformation?.errors,
+    assessment?.companyStructure?.errors,
+    assessment?.companySanctions?.errors,
+  ]);
+  const checksNotifications = useMemo(() => {
+    return [
+      assessment?.companyRegistryInformation?.errors,
+      assessment?.companyStructure?.errors,
+      assessment?.companySanctions?.errors,
+    ].filter(error => error?.toLowerCase()?.endsWith('not available at the moment'));
   }, [
     assessment?.companyRegistryInformation?.errors,
     assessment?.companyStructure?.errors,
@@ -176,5 +187,6 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     setIsNotesOpen,
     notes,
     checksErrors,
+    checksNotifications,
   };
 };
