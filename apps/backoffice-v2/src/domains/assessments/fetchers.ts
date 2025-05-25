@@ -132,6 +132,10 @@ const CreateKybAndOwnershipAssessmentSchema = z.object({
   correlationId: z.string(),
 });
 
+const CreateKybAndOwnershipAssessmentResponseSchema = z.object({
+  id: z.string(),
+});
+
 export type TCreateKybAndOwnershipAssessmentPayload = z.infer<
   typeof CreateKybAndOwnershipAssessmentSchema
 >;
@@ -146,7 +150,7 @@ export const createKybAndOwnershipAssessment = async (
       type: 'kyb_and_ownership',
       ...payload,
     },
-    schema: CreateKybAndOwnershipAssessmentSchema,
+    schema: CreateKybAndOwnershipAssessmentResponseSchema,
   });
 
   return handleZodError(error, result);

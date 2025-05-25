@@ -77,7 +77,7 @@ const CreateKybAndUboCheckDialogSuccessContent = () => {
           <CheckIcon className="text-white d-12" />
         </div>
 
-        <p className="mt-2">Your KYB & UBO check is being generated.</p>
+        <p className="mt-2">Your KYB & Ownership check is being generated.</p>
       </div>
 
       <div className="mb-16 rounded-md border border-gray-200 bg-gray-50 px-1 py-2">

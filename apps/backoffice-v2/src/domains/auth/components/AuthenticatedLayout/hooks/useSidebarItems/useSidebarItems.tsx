@@ -84,7 +84,7 @@ export const useSidebarItems = () => {
               },
             ]),
         {
-          text: 'KYB & UBOs',
+          text: 'KYB & Ownership',
           icon: BuildingIcon,
           premium: {
             caption: 'Verify businesses, activity, and ownership to stay compliant.',
@@ -94,7 +94,7 @@ export const useSidebarItems = () => {
               'Identify key stakeholders',
             ],
           },
-          key: 'nav-item-kyb-ubos',
+          key: 'nav-item-kyb-ownership',
         },
         {
           text: 'Identity Verification',
