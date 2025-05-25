@@ -40,6 +40,7 @@ export const KybAndOwnershipAssessmentSchema = z
           })
           .passthrough()
           .nullable(),
+        errors: z.string().nullable().optional(),
       })
       .passthrough()
       .nullable()
@@ -54,6 +55,7 @@ export const KybAndOwnershipAssessmentSchema = z
           })
           .passthrough()
           .nullable(),
+        errors: z.string().nullable().optional(),
       })
       .passthrough()
       .nullable()
@@ -63,6 +65,7 @@ export const KybAndOwnershipAssessmentSchema = z
         createdAt: z.string().optional(),
         updatedAt: z.string().optional(),
         output: z.any().optional(),
+        errors: z.string().nullable().optional(),
       })
       .passthrough()
       .nullable()

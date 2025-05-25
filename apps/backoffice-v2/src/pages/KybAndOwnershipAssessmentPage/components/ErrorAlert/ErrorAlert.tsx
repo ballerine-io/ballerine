@@ -11,7 +11,7 @@ export const ErrorAlert: FunctionComponentWithChildren<ComponentProps<typeof Ale
 }) => {
   return (
     <Alert
-      className={ctw('flex items-center gap-x-2 bg-destructive/20 !px-6 py-4', className)}
+      className={ctw('flex items-center gap-x-2 bg-destructive/20 !px-6 py-[0.8132rem]', className)}
       {...props}
     >
       <div>
