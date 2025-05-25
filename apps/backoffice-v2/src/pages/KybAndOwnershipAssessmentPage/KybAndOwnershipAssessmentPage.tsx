@@ -11,6 +11,7 @@ import { NotesSheet } from '@/domains/notes/NotesSheet';
 import { NotesButton } from '@/domains/notes/NotesButton';
 import { MerchantMonitoringReportStatus } from '../MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { ErrorAlert } from './components/ErrorAlert/ErrorAlert';
+import { InfoAlert } from './components/InfoAlert/InfoAlert';
 
 export const KybAndOwnershipAssessmentPage = () => {
   const {
@@ -23,6 +24,7 @@ export const KybAndOwnershipAssessmentPage = () => {
     isNotesOpen,
     setIsNotesOpen,
     checksErrors,
+    checksNotifications,
   } = useKybAndOwnershipAssessmentPageLogic();
 
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -100,6 +102,15 @@ export const KybAndOwnershipAssessmentPage = () => {
                   <ErrorAlert key={checkError}>
                     <p>{checkError}</p>
                   </ErrorAlert>
+                ))}
+              </div>
+            )}
+            {!!checksNotifications.length && (
+              <div className="flex flex-col gap-y-2">
+                {checksNotifications.map(checkNotification => (
+                  <InfoAlert key={checkNotification}>
+                    <p>{checkNotification}</p>
+                  </InfoAlert>
                 ))}
               </div>
             )}
