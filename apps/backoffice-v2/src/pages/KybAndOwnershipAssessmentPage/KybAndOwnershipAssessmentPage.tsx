@@ -10,6 +10,7 @@ import { useKybAndOwnershipAssessmentPageLogic } from './hooks/useKybAndOwnershi
 import { NotesSheet } from '@/domains/notes/NotesSheet';
 import { NotesButton } from '@/domains/notes/NotesButton';
 import { MerchantMonitoringReportStatus } from '../MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
+import { ErrorAlert } from './components/ErrorAlert/ErrorAlert';
 
 export const KybAndOwnershipAssessmentPage = () => {
   const {
@@ -21,6 +22,7 @@ export const KybAndOwnershipAssessmentPage = () => {
     notes,
     isNotesOpen,
     setIsNotesOpen,
+    checksErrors,
   } = useKybAndOwnershipAssessmentPageLogic();
 
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -90,9 +92,17 @@ export const KybAndOwnershipAssessmentPage = () => {
             <NotesButton numberOfNotes={notes?.length} />
           </NotesSheet>
         </div>
-
         <div className={`flex transition-all duration-300`}>
           <div className={`flex-1 overflow-y-visible transition-all duration-300`}>
+            {!!checksErrors.length && (
+              <div className="flex flex-col gap-y-2">
+                {checksErrors.map(checkError => (
+                  <ErrorAlert key={checkError}>
+                    <p>{checkError}</p>
+                  </ErrorAlert>
+                ))}
+              </div>
+            )}
             {sections.map(section => {
               const titleContent = (
                 <div className="mb-6 mt-8 flex items-center gap-2 text-lg font-bold">

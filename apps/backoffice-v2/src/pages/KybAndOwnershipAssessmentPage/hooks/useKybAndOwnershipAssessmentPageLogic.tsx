@@ -153,6 +153,18 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     [setSearchParams],
   );
 
+  const checksErrors = useMemo(() => {
+    return [
+      assessment?.companyRegistryInformation?.errors,
+      assessment?.companyStructure?.errors,
+      assessment?.companySanctions?.errors,
+    ].filter(Boolean);
+  }, [
+    assessment?.companyRegistryInformation?.errors,
+    assessment?.companyStructure?.errors,
+    assessment?.companySanctions?.errors,
+  ]);
+
   return {
     assessment,
     isLoadingAssessment,
@@ -163,5 +175,6 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     isNotesOpen,
     setIsNotesOpen,
     notes,
+    checksErrors,
   };
 };
