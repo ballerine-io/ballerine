@@ -12,7 +12,6 @@ import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useCreateKybAndOwnershipAssessmentDialogLogic } from './hooks/useCreateKybAndOwnershipAssessmentDialogLogic';
 import { Select } from '@/common/components/atoms/Select/Select';
@@ -37,7 +36,7 @@ export const CreateKybAndOwnershipAssessmentDialog = ({
   open,
   toggleOpen: toggleOpenProps,
 }: CreateKybAndOwnershipAssessmentDialogProps) => {
-  const { form, showSuccess, isSubmitting, onSubmit, reportsLeft, demoDaysLeft, toggleOpen } =
+  const { form, showSuccess, isSubmitting, onSubmit, toggleOpen } =
     useCreateKybAndOwnershipAssessmentDialogLogic({ toggleOpen: toggleOpenProps });
 
   return (
@@ -57,8 +56,6 @@ export const CreateKybAndOwnershipAssessmentDialog = ({
             form={form}
             onSubmit={onSubmit}
             isSubmitting={isSubmitting}
-            demoDaysLeft={demoDaysLeft}
-            reportsLeft={reportsLeft}
           />
         )}
       </DialogContent>
@@ -90,35 +87,17 @@ const CreateKybAndUboCheckDialogSuccessContent = () => {
 
 type CreateKybAndUboCheckDialogFormContentProps = Pick<
   ReturnType<typeof useCreateKybAndOwnershipAssessmentDialogLogic>,
-  'form' | 'onSubmit' | 'isSubmitting' | 'demoDaysLeft' | 'reportsLeft'
+  'form' | 'onSubmit' | 'isSubmitting'
 >;
 const CreateKybAndUboCheckDialogFormContent = ({
   form,
   onSubmit,
   isSubmitting,
-  demoDaysLeft,
-  reportsLeft,
 }: CreateKybAndUboCheckDialogFormContentProps) => {
-  const shouldDisableForm =
-    (reportsLeft && reportsLeft <= 0) || (demoDaysLeft && demoDaysLeft <= 0);
-  const { data: customer } = useCustomerQuery();
-  const isDemoAccount = customer?.config?.isDemoAccount;
-
   return (
     <div>
-      {isDemoAccount && (
-        <BusinessReportsLeftCard
-          reportsLeft={reportsLeft}
-          demoDaysLeft={demoDaysLeft}
-          className="mx-6 mt-6"
-        />
-      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
-          {shouldDisableForm && (
-            <div className="absolute right-0 top-0 h-full w-full bg-white opacity-70" />
-          )}
-
           <div className="my-12 border-y border-gray-200 bg-gray-50 py-6">
             <fieldset className="mx-6 space-y-4">
               <FormField
@@ -132,7 +111,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
                         placeholder="ACME Corp."
                         autoFocus
                         {...field}
-                        disabled={shouldDisableForm || isSubmitting}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,11 +125,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
                   <FormItem className="w-1/2 space-y-1">
                     <FormLabel>Registration Number</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="1234567890"
-                        {...field}
-                        disabled={shouldDisableForm || isSubmitting}
-                      />
+                      <Input placeholder="1234567890" {...field} disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -248,7 +223,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
                       <Input
                         placeholder="q1w2e3r4t5y6u7i8o9p0"
                         {...field}
-                        disabled={shouldDisableForm || isSubmitting}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -264,7 +239,7 @@ const CreateKybAndUboCheckDialogFormContent = ({
             className={
               'mx-6 ml-auto flex items-center gap-1.5 px-6 font-bold aria-disabled:pointer-events-none aria-disabled:opacity-50'
             }
-            disabled={shouldDisableForm || isSubmitting}
+            disabled={isSubmitting}
           >
             {isSubmitting && <Loader2 className="animate-spin d-6" />}
             Create Case

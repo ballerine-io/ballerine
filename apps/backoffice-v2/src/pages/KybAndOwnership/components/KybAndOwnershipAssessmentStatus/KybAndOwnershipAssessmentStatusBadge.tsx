@@ -1,41 +1,31 @@
 import { Badge } from '@ballerine/ui';
-import { MERCHANT_REPORT_STATUSES_MAP } from '@ballerine/common';
+import { ASSESSMENT_STATUSES_MAP } from '@ballerine/common';
 
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 
 export const statusToData = {
-  [MERCHANT_REPORT_STATUSES_MAP['in-progress']]: {
+  [ASSESSMENT_STATUSES_MAP['in-progress']]: {
     variant: 'gray',
     title: 'Case in progress',
     text: '',
   },
-  [MERCHANT_REPORT_STATUSES_MAP['quality-control']]: {
-    variant: 'gray',
-    title: 'Case in progress',
-    text: '',
-  },
-  [MERCHANT_REPORT_STATUSES_MAP['pending-review']]: {
+  [ASSESSMENT_STATUSES_MAP['pending-review']]: {
     variant: 'gray',
     title: 'Pending Review',
     text: 'The review process has not yet started',
   },
-  [MERCHANT_REPORT_STATUSES_MAP['under-review']]: {
+  [ASSESSMENT_STATUSES_MAP['under-review']]: {
     variant: 'info',
     title: 'Under Review',
     text: 'The merchant is currently being assessed',
   },
-  [MERCHANT_REPORT_STATUSES_MAP['conditionally-approved']]: {
-    variant: 'warning',
-    title: 'Conditionally Approved',
-    text: 'Merchant reviewed with minor or borderline issues',
-  },
-  [MERCHANT_REPORT_STATUSES_MAP['cleared']]: {
+  [ASSESSMENT_STATUSES_MAP['approved']]: {
     variant: 'success',
     title: 'Approved',
     text: 'Merchant reviewed and found compliant or low risk',
   },
-  [MERCHANT_REPORT_STATUSES_MAP['terminated']]: {
+  [ASSESSMENT_STATUSES_MAP['rejected']]: {
     variant: 'destructive',
     title: 'Rejected',
     text: 'Merchant reviewed and confirmed non-compliant or high risk',
@@ -50,10 +40,7 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
   status: keyof typeof statusToData;
   disabled?: boolean;
 }) => {
-  const isReportInProgress = [
-    MERCHANT_REPORT_STATUSES_MAP['in-progress'],
-    MERCHANT_REPORT_STATUSES_MAP['quality-control'],
-  ].includes(status);
+  const isReportInProgress = [ASSESSMENT_STATUSES_MAP['in-progress']].includes(status);
 
   const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
 
@@ -65,24 +52,21 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
         '!cursor-not-allowed': disabled,
         ' bg-[#E3E2E0] text-[#32302C]/40 ': isReportInProgress,
         'cursor-pointer hover:shadow-[0_0_2px_rgba(0,0,0,0.3)]': !disabled,
-        'bg-[#E3E2E0] text-[#32302C]': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'],
-        'text-[#32302C]/40': status === MERCHANT_REPORT_STATUSES_MAP['pending-review'] && disabled,
-        'bg-[#D3E5EF] text-[#183347]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
-        'text-[#183347]/40': status === MERCHANT_REPORT_STATUSES_MAP['under-review'] && disabled,
-        'bg-[#DBEDDB] text-[#1C3829]': status === MERCHANT_REPORT_STATUSES_MAP['cleared'],
-        'bg-[#F4D8B9] text-[#183347]':
-          status === MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
-        'bg-[#ECA1A5] text-[#32302C]': status === MERCHANT_REPORT_STATUSES_MAP['terminated'],
+        'bg-[#E3E2E0] text-[#32302C]': status === ASSESSMENT_STATUSES_MAP['pending-review'],
+        'text-[#32302C]/40': status === ASSESSMENT_STATUSES_MAP['pending-review'] && disabled,
+        'bg-[#D3E5EF] text-[#183347]': status === ASSESSMENT_STATUSES_MAP['under-review'],
+        'text-[#183347]/40': status === ASSESSMENT_STATUSES_MAP['under-review'] && disabled,
+        'bg-[#DBEDDB] text-[#1C3829]': status === ASSESSMENT_STATUSES_MAP['approved'],
+        'bg-[#F4D8B9] text-[#183347]': status === ASSESSMENT_STATUSES_MAP['rejected'],
       })}
     >
       <span
         className={ctw(`rounded-full d-2`, {
           'bg-[#91918E]':
-            isReportInProgress || status === MERCHANT_REPORT_STATUSES_MAP['pending-review'],
-          'bg-[#5B97BD]': status === MERCHANT_REPORT_STATUSES_MAP['under-review'],
-          'bg-[#6C9B7D]': status === MERCHANT_REPORT_STATUSES_MAP['cleared'],
-          'bg-[#F4AA52]': status === MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
-          'bg-[#DF2222]': status === MERCHANT_REPORT_STATUSES_MAP['terminated'],
+            isReportInProgress || status === ASSESSMENT_STATUSES_MAP['pending-review'],
+          'bg-[#5B97BD]': status === ASSESSMENT_STATUSES_MAP['under-review'],
+          'bg-[#6C9B7D]': status === ASSESSMENT_STATUSES_MAP['approved'],
+          'bg-[#DF2222]': status === ASSESSMENT_STATUSES_MAP['rejected'],
         })}
       >
         &nbsp;

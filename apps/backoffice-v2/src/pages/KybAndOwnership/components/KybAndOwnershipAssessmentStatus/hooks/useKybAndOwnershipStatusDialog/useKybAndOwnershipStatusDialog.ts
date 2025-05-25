@@ -1,18 +1,18 @@
 import { useCallback, useState } from 'react';
-import { UpdateableReportStatus } from '@ballerine/common';
+import { UpdateableAssessmentStatus } from '@ballerine/common';
 
-interface IMerchantMonitoringStatusDialogState {
+interface IAssessmentStatusDialogState {
   isOpen: boolean;
-  status: UpdateableReportStatus | null;
+  status: UpdateableAssessmentStatus | null;
 }
 
 export const useKybAndOwnershipStatusDialog = () => {
-  const [dialogState, setDialogState] = useState<IMerchantMonitoringStatusDialogState>({
+  const [dialogState, setDialogState] = useState<IAssessmentStatusDialogState>({
     isOpen: false,
     status: null,
   });
 
-  const toggleDialogOpenState = useCallback((status: UpdateableReportStatus | null = null) => {
+  const toggleDialogOpenState = useCallback((status: UpdateableAssessmentStatus | null = null) => {
     setDialogState(prev => ({
       ...prev,
       isOpen: !prev.isOpen,
@@ -28,7 +28,7 @@ export const useKybAndOwnershipStatusDialog = () => {
     }));
   }, []);
 
-  const openDialog = useCallback((status: UpdateableReportStatus) => {
+  const openDialog = useCallback((status: UpdateableAssessmentStatus) => {
     setDialogState(prev => ({
       ...prev,
       isOpen: true,

@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   isObject,
   MERCHANT_REPORT_STATUSES_MAP,
-  UPDATEABLE_REPORT_STATUSES as _UPDATEABLE_REPORT_STATUSES,
+  UPDATEABLE_ASSESSMENT_STATUSES,
 } from '@ballerine/common';
 import {
   ctw,
@@ -44,11 +44,6 @@ import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessR
 import { useKybAndOwnershipStatusDialog } from './hooks/useKybAndOwnershipStatusDialog/useKybAndOwnershipStatusDialog';
 import { KybAndOwnershipAssessmentStatusBadge } from './KybAndOwnershipAssessmentStatusBadge';
 import { KybAndUboChecksStatusButton } from './KybAndOwnershipAssessmentStatusButton';
-
-/* TODO: Remove this filtering once completed status is removed */
-const UPDATEABLE_REPORT_STATUSES = _UPDATEABLE_REPORT_STATUSES.filter(
-  status => status !== 'completed',
-);
 
 const MerchantMonitoringCompletedStatusFormSchema = z.object({
   text: z.string().min(1, { message: 'Please provide additional details' }),
@@ -178,7 +173,7 @@ export const KybAndOwnershipAssessmentStatus = ({
             closeDialog();
           }}
         >
-          {UPDATEABLE_REPORT_STATUSES.map(selectableStatus => (
+          {UPDATEABLE_ASSESSMENT_STATUSES.map(selectableStatus => (
             <DropdownMenuItem
               key={selectableStatus}
               className="flex w-full cursor-pointer items-center p-0"

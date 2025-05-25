@@ -4,7 +4,7 @@ import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import qs from 'qs';
-import { MERCHANT_REPORT_STATUSES } from '@ballerine/common';
+import { ASSESSMENT_STATUSES } from '@ballerine/common';
 
 export const KybAndOwnershipAssessmentStatusSchema = z.enum([
   'pending',
@@ -16,15 +16,15 @@ export const KybAndOwnershipAssessmentStatusSchema = z.enum([
 export const KybAndOwnershipAssessmentSchema = z
   .object({
     id: z.string(),
-    status: z.enum(MERCHANT_REPORT_STATUSES).catch('failed'),
+    status: z.enum(ASSESSMENT_STATUSES).catch('failed'),
     type: z.literal('kyb_and_ownership'),
     createdAt: z.string(),
     input: z
       .object({
-        companyName: z.string().nullable().optional(),
+        companyName: z.string(),
+        country: z.string(),
+        registrationNumber: z.string(),
         businessId: z.string().nullable().optional(),
-        country: z.string().nullable().optional(),
-        registrationNumber: z.string().nullable().optional(),
       })
       .optional()
       .nullable(),
@@ -129,7 +129,7 @@ const CreateKybAndOwnershipAssessmentSchema = z.object({
   registrationNumber: z.string(),
   country: z.string(),
   state: z.string(),
-  correlationId: z.string(),
+  businessId: z.string().optional(),
 });
 
 const CreateKybAndOwnershipAssessmentResponseSchema = z.object({

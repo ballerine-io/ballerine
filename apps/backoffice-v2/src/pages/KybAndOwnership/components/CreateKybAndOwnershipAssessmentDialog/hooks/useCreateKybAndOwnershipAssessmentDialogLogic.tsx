@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { CreateKybAndOwnershipAssessmentDialogSchema } from '../../../schemas';
 import { TCreateKybAndOwnershipAssessmentPayload } from '@/domains/assessments/fetchers';
 import { useCreateKybAndOwnershipAssessmentMutation } from '@/domains/assessments/hooks/mutations/useCreateKybAndOwnershipAssessmentMutation/useCreateKybAndOwnershipAssessmentMutation';
@@ -12,15 +11,12 @@ export const useCreateKybAndOwnershipAssessmentDialogLogic = ({
 }: {
   toggleOpen: (val?: boolean) => void;
 }) => {
-  const { data: customer } = useCustomerQuery();
-  const { reportsLeft, demoDaysLeft } = customer?.config?.demoAccessDetails ?? {};
-
   const form = useForm({
     defaultValues: {
-      companyName: undefined,
-      registrationNumber: undefined,
-      country: undefined,
-      state: undefined,
+      companyName: '',
+      registrationNumber: '',
+      country: '',
+      state: '',
       businessId: undefined,
     },
     resolver: zodResolver(CreateKybAndOwnershipAssessmentDialogSchema),
@@ -53,8 +49,6 @@ export const useCreateKybAndOwnershipAssessmentDialogLogic = ({
     showSuccess,
     isSubmitting,
     onSubmit,
-    reportsLeft,
-    demoDaysLeft,
     toggleOpen,
   };
 };

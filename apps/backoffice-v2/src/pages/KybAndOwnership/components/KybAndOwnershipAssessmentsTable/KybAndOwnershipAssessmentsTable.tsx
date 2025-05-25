@@ -7,7 +7,6 @@ import { TKybAndOwnershipAssessments } from '@/domains/assessments/fetchers';
 
 export const KybAndOwnershipAssessmentsTable: FunctionComponent<{
   data: TKybAndOwnershipAssessments['data'];
-  isDemoAccount: boolean;
 }> = ({ data }) => {
   const { Cell } = useKybAndOwnershipAssessmentsTableLogic();
   const columns = useColumns();

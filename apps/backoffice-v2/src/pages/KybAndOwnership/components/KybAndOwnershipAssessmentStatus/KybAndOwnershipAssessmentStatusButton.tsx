@@ -3,9 +3,9 @@ import { ComponentProps } from 'react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import {
+  KybAndOwnershipAssessmentStatusBadge,
   statusToData,
-  MerchantMonitoringStatusBadge,
-} from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringStatusBadge';
+} from './KybAndOwnershipAssessmentStatusBadge';
 
 export const KybAndUboChecksStatusButton = ({
   status,
@@ -28,7 +28,7 @@ export const KybAndUboChecksStatusButton = ({
       '!cursor-not-allowed': disabled,
     })}
   >
-    <MerchantMonitoringStatusBadge status={status} disabled={disabled} />
+    <KybAndOwnershipAssessmentStatusBadge status={status} disabled={disabled} />
     <span className={`text-start text-xs font-semibold leading-5 text-[#94A3B8]`}>
       {statusToData[status].text}
     </span>
