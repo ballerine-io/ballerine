@@ -224,7 +224,7 @@ export class CollectionFlowStateService {
     return collectionFlowState.steps?.at(-1)?.stepName;
   }
 
-  private computeCurrentStatus(collectionFlowState: TCollectionFlowState) {
+  computeCurrentStatus(collectionFlowState: TCollectionFlowState) {
     // Statuses that should not be dynamically computed from steps state
     if (
       [
@@ -251,6 +251,18 @@ export class CollectionFlowStateService {
       )
     ) {
       return CollectionFlowStatusesEnum.revision;
+    }
+
+    // Computing inProgress status
+    if (
+      collectionFlowState.steps?.some(
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.completed,
+      ) &&
+      !collectionFlowState.steps?.every(
+        (step: TCollectionFlowStep) => step.state === CollectionFlowStepStatesEnum.completed,
+      )
+    ) {
+      return CollectionFlowStatusesEnum.inprogress;
     }
 
     // Computing completed status
