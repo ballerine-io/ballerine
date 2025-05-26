@@ -624,19 +624,20 @@ export const useDocumentBlocks = ({
                   type: 'node',
                   value: (
                     <>
-                      {documentAuthenticity.warnings && documentAuthenticity.warnings.length > 0 && (
-                        <div className="space-y-2">
-                          <p>Warnings</p>
+                      {documentAuthenticity.warnings &&
+                        documentAuthenticity.warnings.length > 0 && (
+                          <div className="space-y-2">
+                            <p>Warnings</p>
 
-                          {documentAuthenticity.warnings.map(warning => (
-                            <div key={warning} className="w-full">
-                              <div className="inline-flex rounded-lg bg-orange-100 px-3 py-1 text-warning">
-                                {warning}
+                            {documentAuthenticity.warnings.map(warning => (
+                              <div key={warning} className="w-full">
+                                <div className="inline-flex rounded-lg bg-orange-100 px-3 py-1 text-warning">
+                                  {warning}
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        )}
                     </>
                   ),
                 })
