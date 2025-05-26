@@ -35,7 +35,10 @@ const composePropertiesSchema = (
 
 const getPropertiesSchemaForDocument = (document: DefaultContextSchema['documents'][number]) => {
   const documentsSchemasByCountry = getDocumentsByCountry(document?.issuer?.country);
-  const documentSchemaForDocument = findDocumentSchemaForDocument(documentsSchemasByCountry, document);
+  const documentSchemaForDocument = findDocumentSchemaForDocument(
+    documentsSchemasByCountry,
+    document,
+  );
 
   return composePropertiesSchema(documentSchemaForDocument);
 };
