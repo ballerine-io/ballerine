@@ -27,7 +27,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                 .addCell({
                   id: 'nested-details-heading',
                   type: 'heading',
-                  value: 'Registry Information',
+                  value: 'Company Sanctions',
                   props: { className: 'mt-0' },
                 })
                 .buildFlat(),
