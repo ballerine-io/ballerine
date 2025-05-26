@@ -1,0 +1,118 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Data Migrations and Workflow Management in Ballerine
+
+This guide explains how to create data migrations that add new workflows, UI definitions, and filters to the Ballerine platform.
+
+## Data Migration Structure
+
+All data migrations are located in:
+- `services/workflows-service/prisma/data-migrations/local/` (local development)
+- `services/workflows-service/prisma/data-migrations/prod/` (production)
+
+Migrations follow a timestamp naming convention: `YYYYMMDDHHMMSS_descriptive_name.ts`
+
+## Creating a New Workflow Definition
+
+To add a new workflow definition:
+
+```typescript
+// 1. Generate the workflow definition using a template
+const workflowDefinition = generateWorkflowDefinition({
+  id: "unique_workflow_id",
+  name: "Workflow Name",
+  projectId: "target_project_id",
+  // Additional options as needed
+});
+
+// 2. Create the workflow definition in the database
+await transaction.workflowDefinition.create({
+  data: workflowDefinition,
+});
+```
+
+## Connecting UI Definitions to Workflows
+
+UI definitions must be linked to workflow definitions via the `workflowDefinitionId` field:
+
+```typescript
+// 1. Generate the UI definition
+const uiDefinition = composeUiDefinition(workflowDefinitionId);
+
+// 2. Create and link the UI definition
+await transaction.uiDefinition.create({
+  data: {
+    id: "unique_ui_definition_id",
+    name: "UI Definition Name",
+    projectId: "target_project_id",
+    uiContext: uiDefinition.uiContext,
+    uiSchema: uiDefinition.uiSchema,
+    definition: uiDefinition.definition,
+    workflowDefinitionId: workflowDefinitionId, // This creates the link
+  },
+});
+```
+
+## IMPORTANT: Common Mistakes to Avoid
+
+1. **Do NOT create a separate "workflowDefinitionUiDefinition" relation**:
+   - The relationship between workflow definitions and UI definitions is established SOLELY through the `workflowDefinitionId` field in the UiDefinition model
+   - There is no junction table or separate relation that needs to be created
+   - See the Prisma schema for reference: UiDefinition has a workflowDefinitionId field
+
+2. **UI Definition composition**:
+   - Always check what parameters the specific compose function requires
+   - Some compose functions take different parameters - verify the function signature
+
+3. **Filter creation is mandatory**:
+   - Workflows will NOT appear in the backoffice without a corresponding filter
+   - Always create a filter with a descriptive name that helps users identify the workflow
+
+4. **Import paths must be correct**:
+   - Use `../templates` for importing from the templates directory
+   - Use the full path for specific templates like `../templates/creation/specific-template/...`
+
+## Adding Filters for Backoffice Visibility
+
+For a workflow to appear in the backoffice, create a filter:
+
+```typescript
+const filterData = generateBusinessesFilter({
+  filterName: "Filter Name in Backoffice",
+  definitionId: workflowDefinitionId,
+  projectId: "target_project_id",
+});
+
+await transaction.filter.create({
+  data: filterData,
+});
+```
+
+## Schema Reference
+
+Key relationships according to the schema:
+
+```typescript
+// From schema.prisma - UiDefinition model
+model UiDefinition {
+  id                   String              @id @default(cuid())
+  workflowDefinitionId String // This field establishes the relationship
+  workflowDefinition   WorkflowDefinition  @relation(fields: [workflowDefinitionId], references: [id])
+  // ... other fields
+}
+```
+
+## Best Practices
+
+1. Always wrap migrations in a transaction
+2. Use consistent naming for related components
+3. Properly link workflows to UI definitions
+4. Create filters with descriptive names
+5. Set appropriate timeouts for transactions
+
+## Example Migration
+
+See [20240612123559_kyb_demo_eu_init.ts](mdc:services/workflows-service/prisma/data-migrations/local/20240612123559_kyb_demo_eu_init.ts) for a complete example of adding a workflow with all necessary components.

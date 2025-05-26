@@ -4,6 +4,7 @@ import { ComponentProps, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { toTitleCase } from 'string-ts';
 import { checkIsUrl } from '@ballerine/common';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useCompanySanctionsBlock = companySanctions => {
   return useMemo(() => {
@@ -19,8 +20,20 @@ export const useCompanySanctionsBlock = companySanctions => {
           ...createBlocksTyped()
             .addBlock()
             .addCell({
-              type: 'heading',
-              value: 'Company Sanctions',
+              type: 'container',
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell(systemCreatedIconCell)
+                .addCell({
+                  id: 'nested-details-heading',
+                  type: 'heading',
+                  value: 'Registry Information',
+                  props: { className: 'mt-0' },
+                })
+                .buildFlat(),
+              props: {
+                className: 'flex space-x-1 items-center mt-4',
+              },
             })
             .addCell({
               type: 'container',
@@ -88,11 +101,9 @@ export const useCompanySanctionsBlock = companySanctions => {
                     ],
                   },
                 })
-                .build()
-                .flat(1),
+                .buildFlat(),
             })
-            .build()
-            .flat(1),
+            .buildFlat(),
           ...companySanctions?.flatMap((sanction, index) =>
             createBlocksTyped()
               .addBlock()
@@ -318,11 +329,9 @@ export const useCompanySanctionsBlock = companySanctions => {
                       })),
                     },
                   })
-                  .build()
-                  .flat(1),
+                  .buildFlat(),
               })
-              .build()
-              .flat(1),
+              .buildFlat(),
           ),
         ],
       })

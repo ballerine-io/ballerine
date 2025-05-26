@@ -61,7 +61,7 @@ export const DynamicMetricsSection = ({
               from: from ?? undefined,
               to: to ?? undefined,
             })}`}
-            count={addedMerchantsCount}
+            value={addedMerchantsCount}
             title="New Merchants"
             description="Merchants added within the selected time range"
           />
@@ -69,7 +69,7 @@ export const DynamicMetricsSection = ({
 
         {isOngoingMonitoringEnabled && (
           <StatsCard
-            count={removedMerchantsCount}
+            value={removedMerchantsCount}
             title="Merchants Removed"
             description="Merchants removed from monitoring within the selected time range"
           />
