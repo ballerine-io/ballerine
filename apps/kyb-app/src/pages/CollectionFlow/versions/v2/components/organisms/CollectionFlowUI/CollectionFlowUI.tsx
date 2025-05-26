@@ -4,8 +4,10 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
+  CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
+  setCollectionFlowStatus,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
@@ -193,6 +195,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
             state: CollectionFlowStepStatesEnum.completed,
           });
         }
+
+        setCollectionFlowStatus(values, CollectionFlowStatusesEnum.inprogress);
 
         stateApi.setContext(values);
 
