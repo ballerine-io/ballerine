@@ -34,9 +34,10 @@ const MetricsResponseSchema = z.object({
       count: z.number(),
     }),
   ),
-  totalActiveMerchants: z.number(),
-  addedMerchantsCount: z.number(),
-  removedMerchantsCount: z.number(),
+  activeBusinessesCount: z.number(),
+  activeWebsitesCount: z.number(),
+  addedWebsitesCount: z.number(),
+  removedWebsitesCount: z.number(),
 });
 
 @Injectable()
