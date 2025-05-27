@@ -34,7 +34,7 @@ const isFailed = (state: string) => state === 'failed';
 
 export const CollectionFlowV2 = withSessionProtected(() => {
   const { language } = useLanguageParam();
-  const { data: schema } = useUISchemasQuery(language);
+  const { data: schema, isLoading: isSchemaLoading } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();
   const collectionFlowContext = useCollectionFlowContext(
     collectionFlowData?.context as CollectionFlowContext,
@@ -64,35 +64,38 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
+  console.log({
+    collectionFlowContext,
+    isSchemaLoading,
+  });
+
+  if (!collectionFlowContext || isSchemaLoading) {
+    return <LoadingScreen />;
+  }
+
   if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.approved
+    getCollectionFlowState(collectionFlowContext)?.status === CollectionFlowStatusesEnum.approved
   ) {
     return <Approved />;
   }
 
   if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.rejected
+    getCollectionFlowState(collectionFlowContext)?.status === CollectionFlowStatusesEnum.rejected
   ) {
     return <Rejected />;
   }
 
   if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.completed
+    getCollectionFlowState(collectionFlowContext)?.status === CollectionFlowStatusesEnum.completed
   ) {
     return <CompletedScreen redirectUrl={successRedirectUrl} />;
   }
 
-  if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.failed
-  ) {
+  if (getCollectionFlowState(collectionFlowContext)?.status === CollectionFlowStatusesEnum.failed) {
     return <FailedScreen redirectUrl={failureRedirectUrl} />;
   }
 
-  return definition && collectionFlowContext ? (
+  return definition ? (
     <GlobalUIState>
       <DynamicUI>
         <DynamicUI.StateManager
@@ -105,6 +108,10 @@ export const CollectionFlowV2 = withSessionProtected(() => {
           additionalContext={additionalContext}
         >
           {({ state, stateApi, payload }) => {
+            console.log(
+              'payload documents',
+              payload?.documents ? JSON.stringify(payload?.documents, null, 2) : 'no documents',
+            );
             return (
               <DynamicUI.TransitionListener
                 pages={elements as unknown as Array<UIPage<'v1'>>}

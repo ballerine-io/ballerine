@@ -5,25 +5,87 @@ import {
   getDocumentObjectFromDocumentsList,
   getFieldDefinitionsFromSchema,
   getFileOrFileIdFromDocumentsList,
+  IDocumentFieldParams,
+  IDocumentTemplate,
   IFormElement,
   isDocumentFieldDefinition,
+  removeDocumentFromListByTemplateId,
   TBaseFields,
   TDeepthLevelStack,
 } from '@ballerine/ui';
 import get from 'lodash/get';
+import set from 'lodash/set';
+import { findDocumentDefinitionByTypeAndCategory } from '../../../components/organisms/CollectionFlowUI/helpers/find-document-definition-by-type-and-category';
+
+const getEntityTypeFromElementDefinition = (
+  definition: IFormElement<'documentfield', IDocumentFieldParams>,
+): 'business' | 'ubo' | 'director' => {
+  const { valueDestination } = definition;
+
+  if (valueDestination.includes('entity.data.additionalInfo.ubos')) {
+    return 'ubo';
+  }
+
+  if (valueDestination.includes('entity.data.additionalInfo.directors')) {
+    return 'director';
+  }
+
+  if (valueDestination === 'documents') return 'business';
+
+  throw new Error('Invalid value destination');
+};
+
+const isParentDocumentTypeAndCategoryDifferentFromRecord = (
+  parentDocument: IDocumentTemplate,
+  record: IDocumentRecord,
+) => {
+  if (record?.type !== parentDocument.type || record?.category !== parentDocument.category)
+    return true;
+
+  return false;
+};
+
+const overrideDocumentWithUpdatedDocumentRecord = ({
+  document,
+  record,
+  definition,
+}: {
+  document: IDocumentTemplate;
+  record: IDocumentRecord;
+  definition: IFormElement<'documentfield', IDocumentFieldParams>;
+}): IDocumentTemplate => {
+  const newDocument = structuredClone(document);
+
+  if (!definition?.params?.template?.id) {
+    throw new Error('Document field definition must have a template id');
+  }
+
+  newDocument.id = definition.params?.template?.id as string;
+  newDocument.type = record.type;
+  newDocument.category = record.category;
+  newDocument._document = record;
+
+  return newDocument;
+};
 
 export const mapDocumentRecordsToContextDocuments = (
-  context: CollectionFlowContext,
+  _context: CollectionFlowContext,
   uiSchema: UISchema,
   createdDocuments: IDocumentRecord[],
 ) => {
+  const context = structuredClone(_context);
+
   const documentsMap = createdDocuments.reduce((acc, document) => {
     acc[document.id] = document;
 
     return acc;
   }, {} as Record<string, IDocumentRecord>);
 
-  const run = (elements: Array<IFormElement<TBaseFields, any>>, stack: TDeepthLevelStack = []) => {
+  const run = (
+    elements: Array<IFormElement<TBaseFields, any>>,
+    pageElements: Array<IFormElement<any, any>>,
+    stack: TDeepthLevelStack = [],
+  ) => {
     for (const element of elements) {
       if (isDocumentFieldDefinition(element)) {
         const documents = get(context, formatValueDestination(element.valueDestination, stack));
@@ -57,7 +119,45 @@ export const mapDocumentRecordsToContextDocuments = (
 
         const documentRecord = documentsMap?.[document._document.id!];
 
-        document._document = documentRecord;
+        if (!documentRecord) {
+          throw new Error('Failed to map document record to context document');
+        }
+
+        if (isParentDocumentTypeAndCategoryDifferentFromRecord(document, documentRecord)) {
+          const newDocuments = removeDocumentFromListByTemplateId(documents, document.id);
+          const entityType = getEntityTypeFromElementDefinition(element);
+          const newDocumentDefinition = findDocumentDefinitionByTypeAndCategory({
+            elements: pageElements,
+            entityType,
+            type: documentRecord.type,
+            category: documentRecord.category,
+          });
+
+          if (!newDocumentDefinition) {
+            throw new Error('Document definition not found');
+          }
+
+          if (!documentRecord) {
+            throw new Error('Failed to map document record to context document');
+          }
+
+          // Updating category & type on document for cases when _document type or category were updated in backoffice
+          const newDocument = overrideDocumentWithUpdatedDocumentRecord({
+            document,
+            record: documentRecord,
+            definition: newDocumentDefinition,
+          });
+
+          newDocument._document = documentRecord;
+
+          newDocuments.push(newDocument);
+
+          set(context, formatValueDestination(element.valueDestination, stack), newDocuments);
+        } else {
+          const documentRecord = documentsMap?.[document._document.id!];
+
+          document._document = documentRecord;
+        }
       }
 
       if (Array.isArray(element.children) && element.children.length > 0) {
@@ -68,7 +168,7 @@ export const mapDocumentRecordsToContextDocuments = (
         }
 
         value?.forEach((_: unknown, index: number) => {
-          run(element.children as Array<IFormElement<any, any>>, [...stack, index]);
+          run(element.children as Array<IFormElement<any, any>>, pageElements, [...stack, index]);
         });
       }
     }
@@ -76,7 +176,11 @@ export const mapDocumentRecordsToContextDocuments = (
 
   (uiSchema.uiSchema.elements as unknown as Array<UIPage<'v2'>>).forEach(
     (element: UIPage<'v2'>) => {
-      run(getFieldDefinitionsFromSchema(element.elements) as Array<IFormElement<TBaseFields, any>>);
+      const pageDefinitions = getFieldDefinitionsFromSchema(element.elements) as Array<
+        IFormElement<TBaseFields, any>
+      >;
+
+      run(pageDefinitions, pageDefinitions);
     },
   );
 

@@ -22,11 +22,14 @@ export const useCollectionFlowContext = (context: CollectionFlowContext, uiSchem
         }
 
         const documents = await fetchDocumentsByIds(documentIds);
+        const mappedContext = mapDocumentRecordsToContextDocuments(context, uiSchema, documents);
 
-        setFinalContext(mapDocumentRecordsToContextDocuments(context, uiSchema, documents));
+        setFinalContext(mappedContext);
       } catch (error) {
         setDocumentsState({ isLoading: false, documentIds: [] });
         setFinalContext(context);
+
+        throw error;
       }
     };
 

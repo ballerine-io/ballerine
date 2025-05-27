@@ -78,6 +78,8 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     element as IFormElement<'documentfield', IDocumentFieldParams>,
   );
 
+  console.log('document state', documentState);
+
   const { stack } = useStack();
   const id = useElementId(element, stack);
   const {
