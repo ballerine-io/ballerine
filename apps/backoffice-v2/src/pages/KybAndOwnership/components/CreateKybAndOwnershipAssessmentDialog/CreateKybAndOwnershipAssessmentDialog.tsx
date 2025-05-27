@@ -1,4 +1,4 @@
-import { Input } from '@ballerine/ui';
+import { Input, SearchableDropdown } from '@ballerine/ui';
 import { CheckIcon, Loader2 } from 'lucide-react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
@@ -137,8 +137,8 @@ const CreateKybAndUboCheckDialogFormContent = ({
                 render={({ field }) => {
                   const countries = getCountries('en');
                   const availableCountries = countries.map(country => ({
-                    value: country.const,
-                    label: country.title,
+                    value: country.const as string,
+                    label: country.title as string,
                   }));
 
                   return (
@@ -146,24 +146,13 @@ const CreateKybAndUboCheckDialogFormContent = ({
                       <FormLabel>Country</FormLabel>
                       <div className="bg-white">
                         <FormControl>
-                          <Select
+                          <SearchableDropdown
                             value={field.value}
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger className="h-9 w-full">
-                              <SelectValue placeholder="Select a country" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {availableCountries.map(country => (
-                                  <SelectItem key={country.value} value={country.value}>
-                                    {country.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
+                            onChange={field.onChange}
+                            options={availableCountries}
+                            placeholder="Select a country"
+                            disablePortal
+                          />
                         </FormControl>
                       </div>
                       <FormMessage />

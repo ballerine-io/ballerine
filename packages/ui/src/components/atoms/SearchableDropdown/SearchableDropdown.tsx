@@ -7,7 +7,7 @@ import { Button } from '../Button';
 import { Command } from '../Command';
 import { ctw } from '@/common';
 import { useCallback, useMemo, useState } from 'react';
-import { findOptionByValue, findValueInOptions } from './helpers';
+import { findOptionByValue } from './helpers';
 
 export interface ISearchableDropdownOption {
   value: string;
@@ -24,6 +24,7 @@ interface ISearchableDropdownProps {
   onChange: (value: string) => void;
   onBlur?: () => void;
   onFocus?: () => void;
+  disablePortal?: boolean;
 }
 
 export const SearchableDropdown = ({
@@ -36,6 +37,7 @@ export const SearchableDropdown = ({
   onChange,
   onBlur,
   onFocus,
+  disablePortal = false,
 }: ISearchableDropdownProps) => {
   const [open, setOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -44,12 +46,14 @@ export const SearchableDropdown = ({
 
   const handleSelect = useCallback(
     (currentValue: string) => {
-      const newValue = findValueInOptions(options, currentValue);
+      const selectedOption = options.find(option => option.label === currentValue);
 
-      onChange(newValue as string);
+      if (selectedOption) {
+        onChange(selectedOption.value);
+      }
       setOpen(false);
     },
-    [onChange],
+    [onChange, options],
   );
 
   const handleBlur = useCallback(() => {
@@ -71,11 +75,11 @@ export const SearchableDropdown = ({
         onBlur?.();
       }
     },
-    [isFocused, onBlur],
+    [onBlur],
   );
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={handleOpenChange} modal={false}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -96,7 +100,15 @@ export const SearchableDropdown = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+        align="start"
+        side="bottom"
+        sideOffset={4}
+        avoidCollisions={true}
+        disablePortal={disablePortal}
+        collisionBoundary={typeof window !== 'undefined' ? document.body : undefined}
+      >
         <Command>
           <CommandInput
             placeholder={placeholder}
@@ -110,15 +122,18 @@ export const SearchableDropdown = ({
               {options.map(option => (
                 <CommandItem
                   key={option.value}
-                  value={option.value}
+                  value={option.label}
                   data-testid={testId ? `${testId}-option-${option.value}` : undefined}
-                  onSelect={() => handleSelect(option.value)}
+                  onSelect={() => handleSelect(option.label)}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                 >
                   {option.label}
                   <Check
-                    className={ctw('ml-auto', value === option.value ? 'opacity-100' : 'opacity-0')}
+                    className={ctw(
+                      'ml-auto h-4 w-4',
+                      value === option.value ? 'opacity-100' : 'opacity-0',
+                    )}
                   />
                 </CommandItem>
               ))}
