@@ -11,6 +11,7 @@
 ### Patch Changes
 
 - bump
+- version bump
 
 ## 0.9.104
 

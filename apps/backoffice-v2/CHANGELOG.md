@@ -19,6 +19,9 @@
   - @ballerine/common@0.9.105
   - @ballerine/react-pdf-toolkit@1.2.119
   - @ballerine/ui@0.7.154
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.105
   - @ballerine/workflow-browser-sdk@0.6.128
   - @ballerine/workflow-node-sdk@0.6.128
 

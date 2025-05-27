@@ -13,6 +13,7 @@
 - bump
 - Updated dependencies
   - @ballerine/workflow-core@0.6.128
+- @ballerine/workflow-core@0.6.128
 
 ## 0.6.127
 
