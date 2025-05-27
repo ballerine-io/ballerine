@@ -7,7 +7,6 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { IS_ALERT_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { KybAndOwnershipAssessmentsSearchSchema } from '../../schemas';
@@ -15,7 +14,6 @@ import { useKybAndOwnershipAssessmentsQuery } from '@/domains/assessments/hooks/
 
 export const useKybAndOwnershipLogic = () => {
   const locale = useLocale();
-  const { data: customer } = useCustomerQuery();
 
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
@@ -68,13 +66,10 @@ export const useKybAndOwnershipLogic = () => {
 
   const onClearAllFilters = useCallback(() => {
     setSearchParams({
-      reportType: 'All',
-      riskLevels: [],
       statuses: [],
       findings: [],
       from: undefined,
       to: undefined,
-      isAlert: 'All',
       page: '1',
     });
 
