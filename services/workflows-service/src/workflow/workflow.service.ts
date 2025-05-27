@@ -1973,8 +1973,7 @@ export class WorkflowService {
       return;
     }
 
-    this.sentry.captureException(new Error('Workflow definition context validation failed'));
-    this.logger.error('Workflow definition context validation failed', {
+    this.logger.warn('Workflow definition context validation failed', {
       errors: validate.errors,
       errorData: validate.errors?.map(error => ({
         path: error.instancePath,
