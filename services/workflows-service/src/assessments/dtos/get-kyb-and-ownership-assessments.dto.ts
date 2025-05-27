@@ -1,29 +1,11 @@
+import { PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
+import z from 'zod';
 
 export class GetKybAndOwnershipAssessmentsDto {
-  @ApiProperty({
-    description: 'Page number for pagination',
-    type: Number,
-    required: false,
-    default: 1,
-  })
-  @Transform(({ value }) => (isNaN(Number(value)) ? undefined : Number(value)))
-  @IsNumber()
-  @IsOptional()
-  page = 1;
-
-  @ApiProperty({
-    description: 'Number of items per page',
-    type: Number,
-    required: false,
-    default: 20,
-  })
-  @Transform(({ value }) => (isNaN(Number(value)) ? undefined : Number(value)))
-  @IsNumber()
-  @IsOptional()
-  limit = 20;
+  @ApiProperty({ type: PageDto })
+  page!: PageDto;
 
   @ApiProperty({
     description: 'Filter by status',
@@ -54,3 +36,10 @@ export class GetKybAndOwnershipAssessmentsDto {
   @IsOptional()
   to?: string;
 }
+
+export const GetKybAndOwnershipAssessmentsSchema = z.object({
+  page: z.object({
+    number: z.coerce.number().int().positive(),
+    size: z.coerce.number().int().positive().max(100),
+  }),
+});

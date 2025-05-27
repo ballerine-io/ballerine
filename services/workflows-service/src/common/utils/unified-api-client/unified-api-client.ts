@@ -6,6 +6,7 @@ import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
+import { PageDto } from '@/common/dto';
 
 export type BusinessPayload = Pick<
   Business,
@@ -160,8 +161,8 @@ export class UnifiedApiClient {
       registrationNumber: string;
       companyName: string;
       country: string;
-      businessId: string;
       projectId: string;
+      businessId?: string;
     },
   ) {
     return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);

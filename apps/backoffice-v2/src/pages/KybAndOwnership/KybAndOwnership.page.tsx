@@ -20,8 +20,8 @@ import { CreateKybAndOwnershipAssessmentDialog } from './components/CreateKybAnd
 
 export const KybAndOwnership: FunctionComponent = () => {
   const {
-    businessReports,
-    isLoadingBusinessReports,
+    assessments,
+    isLoadingAssessments,
     search,
     onSearch,
     totalPages,
@@ -34,7 +34,6 @@ export const KybAndOwnership: FunctionComponent = () => {
     isLastPage,
     dates,
     onDatesChange,
-    createBusinessReport,
     onClearAllFilters,
     isClearAllButtonVisible,
     firstName,
@@ -58,26 +57,13 @@ export const KybAndOwnership: FunctionComponent = () => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger className={`flex items-center`}>
-                  <CreateKybAndOwnershipAssessmentDialog
-                    open={open}
-                    toggleOpen={toggleOpen}
-                    disabled={!createBusinessReport.enabled}
-                  >
-                    <Button
-                      variant="wp-primary"
-                      className="flex items-center gap-2 font-semibold"
-                      aria-disabled={!createBusinessReport.enabled}
-                    >
+                  <CreateKybAndOwnershipAssessmentDialog open={open} toggleOpen={toggleOpen}>
+                    <Button variant="wp-primary" className="flex items-center gap-2 font-semibold">
                       <Plus />
                       <span>Create a Case</span>
                     </Button>
                   </CreateKybAndOwnershipAssessmentDialog>
                 </TooltipTrigger>
-                {!createBusinessReport?.enabled && (
-                  <TooltipContent side={'left'} align={'start'}>
-                    {t('business_report_creation.is_disabled')}
-                  </TooltipContent>
-                )}
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -96,7 +82,7 @@ export const KybAndOwnership: FunctionComponent = () => {
           )}
         </div>
         <div className="flex items-center justify-between">
-          {!isLoadingBusinessReports && (
+          {!isLoadingAssessments && (
             <Badge
               variant="secondary"
               className="rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
@@ -106,21 +92,21 @@ export const KybAndOwnership: FunctionComponent = () => {
           )}
         </div>
         <div className="space-y-6">
-          {isLoadingBusinessReports && (
+          {isLoadingAssessments && (
             <div className={`flex h-full w-full items-center justify-center`}>
               <Loader2 className={`animate-spin d-[60px]`} />
             </div>
           )}
-          {!isLoadingBusinessReports && isNonEmptyArray(businessReports) && (
-            <KybAndOwnershipAssessmentsTable data={businessReports} />
+          {!isLoadingAssessments && isNonEmptyArray(assessments) && (
+            <KybAndOwnershipAssessmentsTable data={assessments} />
           )}
-          {!isLoadingBusinessReports &&
-            Array.isArray(businessReports) &&
-            !businessReports.length && <NoKybAndOwnershipAssessments />}
+          {!isLoadingAssessments && Array.isArray(assessments) && !assessments.length && (
+            <NoKybAndOwnershipAssessments />
+          )}
           <div className={`flex items-center gap-x-2`}>
             <div className={`flex h-full w-[12ch] items-center text-sm`}>
-              {!isLoadingBusinessReports && `Page ${page} of ${totalPages || 1}`}
-              {isLoadingBusinessReports && <Skeleton className={`h-5 w-full`} />}
+              {!isLoadingAssessments && `Page ${page} of ${totalPages || 1}`}
+              {isLoadingAssessments && <Skeleton className={`h-5 w-full`} />}
             </div>
             <UrlPagination
               page={page}

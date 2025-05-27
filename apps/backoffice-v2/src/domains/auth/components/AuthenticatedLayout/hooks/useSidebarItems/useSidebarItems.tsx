@@ -163,16 +163,16 @@ export const useSidebarItems = () => {
               },
             ]
           : []),
-        ...(customer?.config?.createIdentityVerification
-          ? [
-              {
-                text: 'Identity Verification',
-                icon: UserRoundSearchIcon,
-                key: 'nav-item-identity-verification',
-                href: `/${locale}/identity-verification`,
-              },
-            ]
-          : []),
+        // ...(customer?.config?.createIdentityVerification
+        //   ? [
+        //       {
+        //         text: 'Identity Verification',
+        //         icon: UserRoundSearchIcon,
+        //         key: 'nav-item-identity-verification',
+        //         href: `/${locale}/identity-verification`,
+        //       },
+        //     ]
+        //   : []),
         {
           text: 'Transaction Monitoring',
           icon: GoalIcon,

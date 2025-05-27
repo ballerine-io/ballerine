@@ -146,7 +146,11 @@ const CreateKybAndUboCheckDialogFormContent = ({
                       <FormLabel>Country</FormLabel>
                       <div className="bg-white">
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <SelectTrigger className="h-9 w-full">
                               <SelectValue placeholder="Select a country" />
                             </SelectTrigger>

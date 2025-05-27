@@ -6,8 +6,12 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import type { TProjectId } from '@/types';
 import { AssessmentsService } from './assessments.service';
 import { CreateAssessmentDto } from './dtos/create-assessment.dto';
-import { GetKybAndOwnershipAssessmentsDto } from './dtos/get-kyb-and-ownership-assessments.dto';
+import {
+  GetKybAndOwnershipAssessmentsDto,
+  GetKybAndOwnershipAssessmentsSchema,
+} from './dtos/get-kyb-and-ownership-assessments.dto';
 import type { UpdateableAssessmentStatus } from '@ballerine/common';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Assessments')
@@ -22,6 +26,7 @@ export class AssessmentsControllerExternal {
     description: 'Successfully retrieved KYB & Ownership assessments',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
+  @common.UsePipes(new ZodValidationPipe(GetKybAndOwnershipAssessmentsSchema, 'query'))
   getKybAndOwnershipAssessments(
     @common.Query() query: GetKybAndOwnershipAssessmentsDto,
     @CurrentProject() projectId: TProjectId,

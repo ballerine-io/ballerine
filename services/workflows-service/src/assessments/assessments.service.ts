@@ -12,8 +12,8 @@ export class AssessmentsService {
   ) {
     try {
       const queryParams = {
-        page: query.page,
-        limit: query.limit,
+        page: query.page.number,
+        limit: query.page.size,
       };
 
       const result = await new UnifiedApiClient().getAssessmentsByType(
@@ -45,11 +45,11 @@ export class AssessmentsService {
       ...payload
     }: {
       type: 'kyb_and_ownership';
-      businessId: string;
       registrationNumber: string;
       companyName: string;
       country: string;
       state?: string;
+      businessId?: string;
     },
     projectId: TProjectId,
   ) {

@@ -10,30 +10,12 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { IS_ALERT_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { getDemoStateErrorText } from '@/common/components/molecules/DemoAccessCards/getDemoStateErrorText';
 import { KybAndOwnershipAssessmentsSearchSchema } from '../../schemas';
 import { useKybAndOwnershipAssessmentsQuery } from '@/domains/assessments/hooks/queries/useKybAndOwnershipAssessmentsQuery/useKybAndOwnershipAssessmentsQuery';
 
 export const useKybAndOwnershipLogic = () => {
   const locale = useLocale();
   const { data: customer } = useCustomerQuery();
-
-  const demoError = customer?.config?.demoAccessDetails
-    ? getDemoStateErrorText({
-        reportsLeft: customer.config.demoAccessDetails.reportsLeft,
-        demoDaysLeft: customer.config.demoAccessDetails.demoDaysLeft,
-      })
-    : null;
-
-  const createBusinessReport = {
-    ...customer?.features?.createBusinessReport,
-    enabled: customer?.features?.createBusinessReport?.enabled && !demoError,
-  };
-
-  const createBusinessReportBatch = {
-    ...customer?.features?.createBusinessReportBatch,
-    enabled: customer?.features?.createBusinessReportBatch?.enabled && !demoError,
-  };
 
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
@@ -57,8 +39,7 @@ export const useKybAndOwnershipLogic = () => {
     to,
   };
 
-  const { data, isLoading: isLoadingBusinessReports } =
-    useKybAndOwnershipAssessmentsQuery(reportQuery);
+  const { data, isLoading: isLoadingAssessments } = useKybAndOwnershipAssessmentsQuery(reportQuery);
 
   const isClearAllButtonVisible = useMemo(
     () => !!(search !== '' || from || to),
@@ -134,10 +115,8 @@ export const useKybAndOwnershipLogic = () => {
   return {
     totalPages: data?.totalPages || 0,
     totalItems: Intl.NumberFormat(locale).format(data?.totalItems || 0),
-    createBusinessReport,
-    createBusinessReportBatch,
-    businessReports: data?.data || [],
-    isLoadingBusinessReports,
+    assessments: data?.data || [],
+    isLoadingAssessments,
     isClearAllButtonVisible,
     search,
     onSearch,
@@ -160,6 +139,5 @@ export const useKybAndOwnershipLogic = () => {
     avatarUrl,
     open,
     toggleOpen,
-    isDemoAccount: customer?.config?.isDemoAccount ?? false,
   };
 };

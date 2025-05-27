@@ -1,23 +1,16 @@
-import { UPDATEABLE_REPORT_STATUSES } from '@ballerine/common';
 import { IDataTableProps } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
 
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { TBusinessReports } from '@/domains/business-reports/fetchers';
+import { TKybAndOwnershipAssessment } from '@/domains/assessments/fetchers';
 
 export const useKybAndOwnershipAssessmentsTableLogic = () => {
   const locale = useLocale();
 
-  const Cell: IDataTableProps<TBusinessReports['data'][number]>['CellContentWrapper'] = ({
+  const Cell: IDataTableProps<TKybAndOwnershipAssessment>['CellContentWrapper'] = ({
     cell,
     children,
-  }) => {
-    return UPDATEABLE_REPORT_STATUSES.includes(cell.row.original.status) ? (
-      <Link to={`/${locale}/kyb-and-ownership/${cell.row.id}`}>{children}</Link>
-    ) : (
-      <div className="opacity-50">{children}</div>
-    );
-  };
+  }) => <Link to={`/${locale}/kyb-and-ownership/${cell.row.id}`}>{children}</Link>;
 
   return { Cell };
 };

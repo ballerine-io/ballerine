@@ -14,8 +14,10 @@ export const kybAndOwnershipAssessmentsQueryKey = createQueryKeys('kyb-and-owner
     queryFn: () => {
       const data = {
         ...params,
-        size: Number(page.size),
-        number: Number(page.number),
+        page: {
+          size: Number(page.size),
+          number: Number(page.number),
+        },
       };
 
       return fetchKybAndOwnershipAssessments(data);

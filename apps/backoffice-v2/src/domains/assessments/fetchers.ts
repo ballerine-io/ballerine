@@ -4,7 +4,7 @@ import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import qs from 'qs';
-import { ASSESSMENT_STATUSES } from '@ballerine/common';
+import { ASSESSMENT_STATUSES, ASSESSMENT_STATUSES_MAP } from '@ballerine/common';
 
 export const KybAndOwnershipAssessmentStatusSchema = z.enum([
   'pending',
@@ -16,7 +16,7 @@ export const KybAndOwnershipAssessmentStatusSchema = z.enum([
 export const KybAndOwnershipAssessmentSchema = z
   .object({
     id: z.string(),
-    status: z.enum(ASSESSMENT_STATUSES).catch('failed'),
+    status: z.enum(ASSESSMENT_STATUSES).catch(ASSESSMENT_STATUSES_MAP['in-progress']),
     type: z.literal('kyb_and_ownership'),
     createdAt: z.string(),
     input: z
@@ -28,8 +28,6 @@ export const KybAndOwnershipAssessmentSchema = z
       })
       .optional()
       .nullable(),
-    // findings: z.array(z.string()).optional(),
-    // riskLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
     companySanctions: z
       .object({
         createdAt: z.string().optional(),
@@ -153,7 +151,11 @@ export const createKybAndOwnershipAssessment = async (
     schema: CreateKybAndOwnershipAssessmentResponseSchema,
   });
 
-  return handleZodError(error, result);
+  if (error) {
+    return handleZodError(error, result);
+  }
+
+  return result;
 };
 
 export const IdentityVerificationStatuses = ['pending', 'verified', 'rejected'] as const;
@@ -198,7 +200,7 @@ export const fetchIdentityVerificationAssessments = async (
 
   const response = await apiClient({
     url: `/identity-verification/assessments?${queryParams}`,
-    method: 'GET',
+    method: Method.GET,
     schema: IdentityVerificationAssessmentsSchema,
     timeout: 30_000,
   });

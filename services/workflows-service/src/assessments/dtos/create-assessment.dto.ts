@@ -16,7 +16,8 @@ export class CreateAssessmentDto {
     example: '1234567890',
   })
   @IsString()
-  businessId!: string;
+  @IsOptional()
+  businessId?: string;
 
   @ApiProperty({
     description: 'Registration number of the company',
@@ -45,5 +46,5 @@ export class CreateAssessmentDto {
   })
   @IsString()
   @IsOptional()
-  state!: string;
+  state?: string;
 }

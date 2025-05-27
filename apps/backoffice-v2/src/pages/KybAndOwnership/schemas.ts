@@ -39,12 +39,7 @@ export const CreateKybAndOwnershipAssessmentDialogSchema = z
       .min(1, { message: 'Country is required' })
       .max(255),
     state: z.string().optional(),
-    businessId: z
-      .string({
-        required_error: 'Correlation ID is required',
-      })
-      .min(1, { message: 'Correlation ID is required' })
-      .max(255),
+    businessId: z.string().max(255).optional(),
   })
   .superRefine((val, ctx) => {
     if (val.country?.toLowerCase() === 'us' && !val.state) {

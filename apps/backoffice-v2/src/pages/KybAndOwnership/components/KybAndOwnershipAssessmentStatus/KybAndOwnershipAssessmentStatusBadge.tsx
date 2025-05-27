@@ -77,4 +77,4 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
   );
 };
 
-KybAndOwnershipAssessmentStatusBadge.displayName = 'KybAndUboChecksStatusBadge';
+KybAndOwnershipAssessmentStatusBadge.displayName = 'KybAndOwnershipAssessmentStatusBadge';
