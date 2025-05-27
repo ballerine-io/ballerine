@@ -7,7 +7,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 4 * * 1-4,0'  # 7:30 AM Israel time
+    - cron: '30 4 * * 0-5'  # 7:30 AM Israel time
 
 jobs:
   Start-Environment:
