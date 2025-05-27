@@ -19768,7 +19768,7 @@ packages:
   /builtins@5.1.0:
     resolution: {integrity: sha512-SW9lzGTLvWTP1AY8xeAMZimqDrIaSdLQUcVr9DMef51niJ022Ri87SwRRKYm4A6iHfkPaiVUu/Duw2Wc4J7kKg==}
     dependencies:
-      semver: 7.7.0
+      semver: 7.7.2
     dev: true
 
   /bundle-require@4.2.1(esbuild@0.17.19):
@@ -22659,7 +22659,7 @@ packages:
       eslint: '>=6.0.0'
     dependencies:
       eslint: 8.57.1
-      semver: 7.7.0
+      semver: 7.7.2
     dev: true
 
   /eslint-config-prettier@6.15.0(eslint@8.57.1):
@@ -23076,7 +23076,7 @@ packages:
       is-core-module: 2.16.1
       minimatch: 3.1.2
       resolve: 1.22.10
-      semver: 7.7.0
+      semver: 7.7.2
     dev: true
 
   /eslint-plugin-prefer-arrow@1.2.3(eslint@8.57.1):
@@ -26993,7 +26993,7 @@ packages:
   /jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
     optionalDependencies:
-      graceful-fs: 4.1.9
+      graceful-fs: 4.2.11
     dev: true
 
   /jsonfile@6.1.0:
