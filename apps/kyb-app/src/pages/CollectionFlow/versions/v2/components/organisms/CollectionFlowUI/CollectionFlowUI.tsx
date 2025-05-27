@@ -97,6 +97,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     ],
   );
 
+  console.log('metadata', metadata);
+
   useEffect(() => {
     const currentStep = getCollectionFlowState(context)?.steps?.find(
       step => step.stepName === page.stateName,
