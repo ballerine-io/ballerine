@@ -1,6 +1,7 @@
 import { parse } from 'csv-parse';
 import { z, ZodSchema } from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { ForbiddenException } from '@/errors';
 import fs from 'fs';
 
 export const parseCsv = async <TSchema extends ZodSchema>(
@@ -43,16 +44,22 @@ export const parseCsv = async <TSchema extends ZodSchema>(
           reject(err);
         }
 
+        let hadErrors = false;
         for (const record of records) {
           try {
             const validatedRecord = schema.parse(record);
             results.push(validatedRecord);
           } catch (error) {
-            logger.error('Validation error:', { error });
+            logger.error('Validation error:', { error, record });
+            hadErrors = true;
           }
         }
 
-        resolve(results);
+        if (hadErrors) {
+          reject(new ForbiddenException('Schema errors in CSV'));
+        } else {
+          resolve(results);
+        }
       },
     );
   });

@@ -12,10 +12,6 @@ import { useStack } from '../../../FieldList/providers/StackProvider';
 import { DEFAULT_CREATION_PARAMS, DEFAULT_UPDATE_PARAMS } from '../../defaults';
 import { IDocumentFieldParams } from '../../DocumentField';
 import { buildDocumentFormData } from '../../helpers/build-document-form-data';
-import {
-  checkIfDocumentInRevision,
-  checkIfDocumentRequested,
-} from './helpers/check-if-document-requested';
 import { createOrUpdateDocumentInList } from './helpers/create-or-update-document-in-list';
 import { getDocumentObjectFromDocumentsList } from './helpers/get-document-object-from-documents-list';
 import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
@@ -53,9 +49,6 @@ export const useDocumentUpload = (
           const documents = get(valuesRef.current, element.valueDestination);
           const document = getDocumentObjectFromDocumentsList(documents, element);
 
-          const isDocumentRequested = checkIfDocumentRequested(document);
-          const isDocumentInRevision = checkIfDocumentInRevision(document);
-          const isDocumentRequestedOrInRevision = isDocumentRequested || isDocumentInRevision;
           const documentUploadPayload = buildDocumentFormData(
             element,
             { businessId: metadata.businessId as string },
@@ -63,7 +56,7 @@ export const useDocumentUpload = (
             document,
           );
 
-          const result = isDocumentRequestedOrInRevision
+          const result = document?._document
             ? await updateDocument(documentUploadPayload)
             : await uploadDocument(documentUploadPayload);
 
@@ -92,9 +85,6 @@ export const useDocumentUpload = (
 
             const document = getDocumentObjectFromDocumentsList(documents, element);
 
-            const isDocumentRequested = checkIfDocumentRequested(document);
-            const isDocumentInRevision = checkIfDocumentInRevision(document);
-            const isDocumentRequestedOrInRevision = isDocumentRequested || isDocumentInRevision;
             const documentUploadPayload = buildDocumentFormData(
               element,
               { businessId: metadata.businessId as string },
@@ -102,7 +92,7 @@ export const useDocumentUpload = (
               document,
             );
 
-            const result = isDocumentRequestedOrInRevision
+            const result = document?._document
               ? await updateDocument(documentUploadPayload)
               : await uploadDocument(documentUploadPayload);
 

@@ -76,7 +76,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
       {workflow?.workflowDefinition?.config?.isDocumentTrackerEnabled && (
         <DocumentTracker workflowId={workflow?.id} />
       )}
-      {isDemoOnly && (
+      {isDemoOnly && !workflow?.workflowDefinition?.config?.disableVideoGuide && (
         <CaseVideoGuide
           title="Onboarding Introduction"
           description="Learn about Ballerine complete onboarding and underwriting capabilities"

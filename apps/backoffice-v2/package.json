@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.7.147",
+  "version": "0.7.155",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "type": "module",
@@ -52,12 +52,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.2.43",
-    "@ballerine/common": "0.9.99",
-    "@ballerine/workflow-browser-sdk": "0.6.122",
-    "@ballerine/workflow-node-sdk": "0.6.122",
-    "@ballerine/react-pdf-toolkit": "^1.2.114",
-    "@ballerine/ui": "0.7.147",
+    "@ballerine/blocks": "0.2.46",
+    "@ballerine/common": "0.9.106",
+    "@ballerine/workflow-browser-sdk": "0.6.129",
+    "@ballerine/workflow-node-sdk": "0.6.129",
+    "@ballerine/react-pdf-toolkit": "^1.2.119",
+    "@ballerine/ui": "0.7.154",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "0.8.2",
     "@hookform/resolvers": "^3.1.0",
@@ -144,11 +144,11 @@
     "tailwindcss-animate": "^1.0.5",
     "ts-pattern": "^5.0.8",
     "vite-plugin-terminal": "^1.1.0",
-    "zod": "^3.23.4"
+    "zod": "3.23.8"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.40",
-    "@ballerine/eslint-config-react": "^2.0.40",
+    "@ballerine/config": "^1.1.43",
+    "@ballerine/eslint-config-react": "^2.0.43",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",
