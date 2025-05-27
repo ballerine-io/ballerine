@@ -86,6 +86,8 @@ runs:
 
         scale_down_ingress_controllers
 
+        scale_namespace_deployments "argocd" ""
+
         for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
           scale_namespace_deployments "$ns" ""
         done

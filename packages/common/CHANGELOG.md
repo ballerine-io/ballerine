@@ -1,10 +1,16 @@
 # @ballerine/common
 
+## 0.9.106
+
+### Patch Changes
+
+- fix: extend url pattern to match semi-"broken" urls
+
 ## 0.9.105
 
 ### Patch Changes
 
-- version bump
+- bump
 
 ## 0.9.104
 
