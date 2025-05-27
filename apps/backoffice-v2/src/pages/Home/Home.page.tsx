@@ -40,9 +40,10 @@ export const Home: FunctionComponent = () => {
     ongoingCasesByRisk,
     approvedCasesByRisk,
 
-    totalActiveMerchants,
-    addedMerchantsCount,
-    removedMerchantsCount,
+    activeBusinessesCount,
+    activeWebsitesCount,
+    addedWebsitesCount,
+    removedWebsitesCount,
     riskLevelCounts,
     violationCounts,
 
@@ -97,8 +98,8 @@ export const Home: FunctionComponent = () => {
             setDate={() => {}}
             isMerchantMonitoringEnabled={true}
             isOngoingMonitoringEnabled={true}
-            addedMerchantsCount={13}
-            removedMerchantsCount={5}
+            addedWebsitesCount={13}
+            removedWebsitesCount={5}
           />
 
           <PortfolioRiskStatistics
@@ -138,12 +139,14 @@ export const Home: FunctionComponent = () => {
             <h3 className="text-xl font-medium">Portfolio Analytics</h3>
 
             <StaticMetricsSection
+              isMerchantMonitoringEnabled={isMerchantMonitoringEnabled}
               isOngoingMonitoringEnabled={isOngoingMonitoringEnabled}
               isCasesOnboardingEnabled={isCasesOnboardingEnabled}
               casesByStatus={casesByStatus}
               ongoingCasesByRisk={ongoingCasesByRisk}
               approvedCasesByRisk={approvedCasesByRisk}
-              totalActiveMerchants={totalActiveMerchants}
+              activeBusinessesCount={activeBusinessesCount}
+              activeWebsitesCount={activeWebsitesCount}
               statusConfig={statusConfig}
               ongoingRiskConfig={ongoingRiskConfig}
               approvedRiskConfig={approvedRiskConfig}
@@ -158,8 +161,8 @@ export const Home: FunctionComponent = () => {
               setDate={setMMDate}
               isMerchantMonitoringEnabled={isMerchantMonitoringEnabled}
               isOngoingMonitoringEnabled={isOngoingMonitoringEnabled}
-              addedMerchantsCount={addedMerchantsCount}
-              removedMerchantsCount={removedMerchantsCount}
+              addedWebsitesCount={addedWebsitesCount}
+              removedWebsitesCount={removedWebsitesCount}
             />
           </div>
 
