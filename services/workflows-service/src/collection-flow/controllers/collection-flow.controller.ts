@@ -1,4 +1,4 @@
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
+import { CollectionFlowService } from '@/collection-flow/services/collection-flow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
@@ -20,7 +20,7 @@ import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
-import { CollectionFlowStateService } from '../collection-flow-state.service';
+import { CollectionFlowStateService } from '../services/collection-flow-state.service';
 
 @UseWorkflowAuthGuard()
 @ApiExcludeController()

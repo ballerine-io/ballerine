@@ -21,11 +21,11 @@ import {
   UiDefinition,
   WorkflowRuntimeData,
 } from '@prisma/client';
-import { findEntityFieldsDefinition } from './helpers/find-entity-fields-definition';
-import { findDocumentDefinitionByTypeAndCategory } from './helpers/find-document-definition-by-type-and-category';
-import { findBusinessDocumentDefinitionByTypeAndCategory } from './helpers/find-business-document-definition';
-import { EntityType, TEntityType } from './enums';
-import { CollectionFlowMissingException } from './exceptions/collection-flow-missing.exception';
+import { findEntityFieldsDefinition } from '../helpers/find-entity-fields-definition';
+import { findDocumentDefinitionByTypeAndCategory } from '../helpers/find-document-definition-by-type-and-category';
+import { findBusinessDocumentDefinitionByTypeAndCategory } from '../helpers/find-business-document-definition';
+import { EntityType, TEntityType } from '../enums';
+import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 import { UpdateCollectionFlowStateDto } from '@/workflow/dtos/update-collection-flow-state.dto';
 import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';

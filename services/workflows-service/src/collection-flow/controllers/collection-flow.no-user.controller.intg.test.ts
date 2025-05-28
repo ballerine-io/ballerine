@@ -12,7 +12,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
+import { CollectionFlowService } from '@/collection-flow/services/collection-flow.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { CustomerRepository } from '@/customer/customer.repository';
@@ -46,7 +46,7 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { mockClsService } from '@/test/helpers/cls-service-helper';
 
-import { CollectionFlowStateService } from '../collection-flow-state.service';
+import { CollectionFlowStateService } from '../services/collection-flow-state.service';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;

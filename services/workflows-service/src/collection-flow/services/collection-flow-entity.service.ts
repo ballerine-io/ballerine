@@ -4,7 +4,7 @@ import { TProjectId } from '@/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { BusinessPosition } from '@prisma/client';
-import { EntityCreateDto } from './dto/create-entity-input.dto';
+import { EntityCreateDto } from '../dto/create-entity-input.dto';
 
 @Injectable()
 export class CollectionFlowEntityService {

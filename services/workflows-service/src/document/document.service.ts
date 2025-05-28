@@ -135,17 +135,56 @@ export class DocumentService {
       transaction,
     );
 
-    const documents = await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [
-      projectId,
-    ]);
+    return this.repository.findByIdWithFiles(
+      createdDocument.id,
+      [projectId],
+      {} as Prisma.DocumentFindFirstArgs,
+      transaction,
+    );
+  }
 
-    const createdAndFormattedDocument = documents.find(doc => createdDocument.id === doc.id);
-
-    if (!createdAndFormattedDocument) {
-      throw new BadRequestException(`Document with an id of "${createdDocument.id}" was not found`);
+  async checkDocumentUniqueness(
+    {
+      category,
+      type,
+      businessId,
+      endUserId,
+      version,
+    }: {
+      category: string;
+      type: string;
+      businessId?: string;
+      endUserId?: string;
+      version: number;
+    },
+    projectIds: TProjectId[],
+    transaction?: PrismaTransactionClient,
+  ) {
+    if ([businessId, endUserId].every(id => id === undefined)) {
+      throw new BadRequestException('Either business or end user id must be provided.');
     }
 
-    return createdAndFormattedDocument;
+    if (businessId && endUserId) {
+      throw new BadRequestException(
+        'Business and end user id cannot be provided at the same time.',
+      );
+    }
+
+    const document = await this.repository.findMany(
+      projectIds,
+      {
+        where: {
+          category,
+          type,
+          businessId,
+          endUserId,
+          version,
+        },
+      },
+      transaction,
+    );
+
+    return !(document.length > 0);
   }
 
   async getDocumentById(documentId: string, projectId: TProjectId) {
@@ -1313,7 +1352,17 @@ export class DocumentService {
           return curr;
         }
 
-        return (curr.version || 0) > (acc.version || 0) ? curr : acc;
+        // First compare by version
+        if ((curr.version || 0) > (acc.version || 0)) {
+          return curr;
+        }
+
+        // If versions are the same, compare by createdAt
+        if ((curr.version || 0) === (acc.version || 0)) {
+          return new Date(curr.createdAt) > new Date(acc.createdAt) ? curr : acc;
+        }
+
+        return acc;
       });
     });
   }
