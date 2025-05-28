@@ -1,13 +1,12 @@
 import { oneOf } from '@/common/decorators/one-of.decorator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateAssessmentDto {
   @ApiProperty({
     description: 'Type of assessment',
     example: 'kyb_and_ownership',
   })
-  @IsString()
   @oneOf(['kyb_and_ownership'])
   type!: 'kyb_and_ownership';
 
@@ -17,6 +16,7 @@ export class CreateAssessmentDto {
   })
   @IsString()
   @IsOptional()
+  @MinLength(1)
   businessId?: string;
 
   @ApiProperty({
