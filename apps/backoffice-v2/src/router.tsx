@@ -1,6 +1,8 @@
 import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
 import { RouteErrorWithProviders } from '@/common/components/atoms/RouteError/RouteErrorWithProviders';
 import { env } from '@/common/env/env';
+import { queryClient } from '@/lib/react-query/query-client';
+import { customerQueryKeys } from '@/domains/customer/query-keys';
 import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
 import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
 import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
@@ -28,6 +30,10 @@ import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import type { FunctionComponent } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { KybAndOwnership } from '@/pages/KybAndOwnership/KybAndOwnership.page';
+import { KybAndOwnershipAssessmentPage } from '@/pages/KybAndOwnershipAssessmentPage';
+import { IdentityVerification } from '@/pages/IdentityVerification/IdentityVerification.page';
+import { IdentityVerificationAssessmentPage } from '@/pages/IdentityVerificationAssessment/IdentityVerificationAssessment.page';
 
 const router = createBrowserRouter([
   {
@@ -101,6 +107,46 @@ const router = createBrowserRouter([
                   },
                 ],
               },
+              {
+                loader: async () => {
+                  await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+
+                  return true;
+                },
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/kyb-and-ownership',
+                    element: <KybAndOwnership />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/kyb-and-ownership/:assessmentId',
+                    element: <KybAndOwnershipAssessmentPage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              // {
+              //   loader: async () => {
+              //     await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+
+              //     return true;
+              //   },
+              //   errorElement: <RouteError />,
+              //   children: [
+              //     {
+              //       path: '/:locale/identity-verification',
+              //       element: <IdentityVerification />,
+              //       errorElement: <RouteError />,
+              //     },
+              //     {
+              //       path: '/:locale/identity-verification/:checkId',
+              //       element: <IdentityVerificationAssessmentPage />,
+              //       errorElement: <RouteError />,
+              //     },
+              //   ],
+              // },
               {
                 path: '/:locale/case-management',
                 element: <CaseManagement />,

@@ -55,21 +55,24 @@ export const useSidebarItems = () => {
     key: 'nav-item-businesses',
   };
 
+  const homeNavItem = {
+    text: 'Home',
+    icon: HomeIcon,
+    href: `/${locale}/home`,
+    key: 'nav-item-home',
+  };
+
+  const webPresenceNavItem = {
+    text: 'Web Presence',
+    icon: MonitorDotIcon,
+    href: `/${locale}/merchant-monitoring`,
+    key: 'nav-item-web-presence',
+  };
+
   const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
-        {
-          text: 'Home',
-          icon: HomeIcon,
-          href: `/${locale}/home`,
-          key: 'nav-item-home',
-        },
-        {
-          text: 'Web Presence',
-          icon: MonitorDotIcon,
-          href: `/${locale}/merchant-monitoring`,
-          key: 'nav-item-web-presence',
-        },
-        ,
+        homeNavItem,
+        webPresenceNavItem,
         ...(customer?.config?.isDemoKybEnabled
           ? [businessSection]
           : [
@@ -81,7 +84,7 @@ export const useSidebarItems = () => {
               },
             ]),
         {
-          text: 'KYB & UBOs',
+          text: 'KYB & Ownership',
           icon: BuildingIcon,
           premium: {
             caption: 'Verify businesses, activity, and ownership to stay compliant.',
@@ -91,7 +94,7 @@ export const useSidebarItems = () => {
               'Identify key stakeholders',
             ],
           },
-          key: 'nav-item-kyb-ubos',
+          key: 'nav-item-kyb-ownership',
         },
         {
           text: 'Identity Verification',
@@ -134,22 +137,8 @@ export const useSidebarItems = () => {
         },
       ]
     : [
-        {
-          text: 'Home',
-          icon: HomeIcon,
-          href: `/${locale}/home`,
-          key: 'nav-item-Home',
-        },
-        ...(customer?.config?.isMerchantMonitoringEnabled
-          ? [
-              {
-                text: 'Web Presence',
-                icon: MonitorDotIcon,
-                href: `/${locale}/merchant-monitoring`,
-                key: 'nav-item-merchant-monitoring',
-              },
-            ]
-          : []),
+        homeNavItem,
+        ...(customer?.config?.isMerchantMonitoringEnabled ? [webPresenceNavItem] : []),
         businessSection,
         {
           text: 'Individuals',
@@ -164,6 +153,26 @@ export const useSidebarItems = () => {
           ],
           key: 'nav-item-individuals',
         },
+        ...(customer?.config?.createKybAndOwnershipAssessment
+          ? [
+              {
+                text: 'KYB & Ownership',
+                icon: BuildingIcon,
+                href: `/${locale}/kyb-and-ownership`,
+                key: 'nav-item-kyb-and-ownership',
+              },
+            ]
+          : []),
+        // ...(customer?.config?.createIdentityVerification
+        //   ? [
+        //       {
+        //         text: 'Identity Verification',
+        //         icon: UserRoundSearchIcon,
+        //         key: 'nav-item-identity-verification',
+        //         href: `/${locale}/identity-verification`,
+        //       },
+        //     ]
+        //   : []),
         {
           text: 'Transaction Monitoring',
           icon: GoalIcon,
