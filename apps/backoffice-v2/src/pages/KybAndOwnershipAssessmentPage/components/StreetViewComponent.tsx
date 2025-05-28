@@ -1,5 +1,5 @@
 import { GoogleMap, Marker, StreetViewPanorama, useJsApiLoader } from '@react-google-maps/api';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { Card } from '@/common/components/atoms/Card/Card';
@@ -23,7 +23,7 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
   countryCode,
 }) => {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: env.VITE_GOOGLE_MAPS_API_KEY || '',
+    googleMapsApiKey: env.VITE_GOOGLE_MAPS_API_KEY ?? '',
     libraries: googleMapsLibraries,
   });
 
@@ -32,6 +32,101 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
     normalizeAddress(address, countryCode),
   );
   const [streetViewStatus, setStreetViewStatus] = useState<StreetViewStatus>('LOADING');
+  const [mapVisible, setMapVisible] = useState(false);
+  const scrollPositionRef = useRef<number>(0);
+
+  const checkStreetViewAvailability = useCallback(
+    (
+      service: google.maps.StreetViewService,
+      position: google.maps.LatLngLiteral,
+      radius: number,
+    ): Promise<google.maps.LatLngLiteral | null> => {
+      return new Promise(resolve => {
+        service.getPanorama(
+          {
+            location: position,
+            preference: google.maps.StreetViewPreference.NEAREST,
+            radius: radius,
+            source: google.maps.StreetViewSource.OUTDOOR,
+          },
+          (panoData, status) => {
+            console.log(`Street View status at ${radius}m:`, status);
+
+            if (status === google.maps.StreetViewStatus.OK && panoData?.location?.latLng) {
+              const panoLocation = panoData.location.latLng;
+              resolve({
+                lat: panoLocation.lat(),
+                lng: panoLocation.lng(),
+              });
+            } else {
+              resolve(null);
+            }
+          },
+        );
+      });
+    },
+    [],
+  );
+
+  const findNearestStreetViewPanorama = useCallback(
+    async (initialPosition: google.maps.LatLngLiteral) => {
+      const streetViewService = new google.maps.StreetViewService();
+
+      try {
+        const panoramaResult = await checkStreetViewAvailability(
+          streetViewService,
+          initialPosition,
+          500,
+        );
+
+        if (panoramaResult) {
+          // Store current scroll position before updating state
+          scrollPositionRef.current = window.scrollY;
+          setPosition(panoramaResult);
+          setStreetViewStatus('OK');
+          return;
+        }
+
+        const widerPanoramaResult = await checkStreetViewAvailability(
+          streetViewService,
+          initialPosition,
+          2000,
+        );
+        if (widerPanoramaResult) {
+          // Store current scroll position before updating state
+          scrollPositionRef.current = window.scrollY;
+          setPosition(widerPanoramaResult);
+          setStreetViewStatus('OK');
+          return;
+        }
+
+        setStreetViewStatus('NOT_AVAILABLE');
+      } catch (error) {
+        console.error('Error finding street view:', error);
+        setStreetViewStatus('ERROR');
+      }
+    },
+    [checkStreetViewAvailability],
+  );
+
+  // Memoize street view options to prevent unnecessary re-renders
+  const streetViewOptions = useMemo(
+    () => ({
+      enableCloseButton: false,
+      addressControl: true,
+      fullscreenControl: true,
+      panControl: true,
+      zoomControl: true,
+      motionTracking: false,
+      motionTrackingControl: false,
+      pov: { heading: 0, pitch: 0 },
+      zoom: 1,
+      scrollwheel: false,
+      disableDefaultUI: false,
+      clickToGo: true,
+    }),
+    [],
+  );
 
   useEffect(() => {
     if (!isLoaded || !address) return;
@@ -84,74 +179,8 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
       }
     };
 
-    const findNearestStreetViewPanorama = async (initialPosition: google.maps.LatLngLiteral) => {
-      const streetViewService = new google.maps.StreetViewService();
-
-      try {
-        const panoramaResult = await checkStreetViewAvailability(
-          streetViewService,
-          initialPosition,
-          500,
-        );
-
-        if (panoramaResult) {
-          setPosition(panoramaResult);
-          setStreetViewStatus('OK');
-          return;
-        }
-
-        const widerPanoramaResult = await checkStreetViewAvailability(
-          streetViewService,
-          initialPosition,
-          2000,
-        );
-
-        if (widerPanoramaResult) {
-          setPosition(widerPanoramaResult);
-          setStreetViewStatus('OK');
-          return;
-        }
-
-        setStreetViewStatus('NOT_AVAILABLE');
-      } catch (error) {
-        console.error('Error finding street view:', error);
-        setStreetViewStatus('ERROR');
-      }
-    };
-
-    const checkStreetViewAvailability = (
-      service: google.maps.StreetViewService,
-      position: google.maps.LatLngLiteral,
-      radius: number,
-    ): Promise<google.maps.LatLngLiteral | null> => {
-      return new Promise(resolve => {
-        service.getPanorama(
-          {
-            location: position,
-            preference: google.maps.StreetViewPreference.NEAREST,
-            radius: radius,
-            source: google.maps.StreetViewSource.OUTDOOR,
-          },
-          (panoData, status) => {
-            console.log(`Street View status at ${radius}m:`, status);
-
-            if (status === google.maps.StreetViewStatus.OK && panoData?.location?.latLng) {
-              const panoLocation = panoData.location.latLng;
-              resolve({
-                lat: panoLocation.lat(),
-                lng: panoLocation.lng(),
-              });
-            } else {
-              resolve(null);
-            }
-          },
-        );
-      });
-    };
-
     geocodeAddress();
-  }, [isLoaded, address, countryCode]);
-
+  }, [isLoaded, address, countryCode, findNearestStreetViewPanorama]);
   return (
     <Card>
       <CardContent className="p-6">
@@ -161,23 +190,12 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
 
             <div className="flex flex-col space-y-2 pr-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="font-medium">Country</div>
-                <div>{addressDetails.country}</div>
-
-                <div className="font-medium">State / Province / Region</div>
-                <div>{addressDetails.state}</div>
-
-                <div className="font-medium">City / Town</div>
-                <div>{addressDetails.city}</div>
-
-                <div className="font-medium">Street</div>
-                <div>{addressDetails.street}</div>
-
-                <div className="font-medium">Number</div>
-                <div>{addressDetails.number}</div>
-
-                <div className="font-medium">ZIP / Postal Code</div>
-                <div>{addressDetails.postalCode}</div>
+                <AddressDetailRow label="Country" value={addressDetails.country} />
+                <AddressDetailRow label="State / Province / Region" value={addressDetails.state} />
+                <AddressDetailRow label="City / Town" value={addressDetails.city} />
+                <AddressDetailRow label="Street" value={addressDetails.street} />
+                <AddressDetailRow label="Number" value={addressDetails.number} />
+                <AddressDetailRow label="ZIP / Postal Code" value={addressDetails.postalCode} />
               </div>
             </div>
           </div>
@@ -187,24 +205,26 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
               <div style={{ height: '300px', width: '100%' }}>
                 {streetViewStatus === 'OK' ? (
                   <GoogleMap
-                    mapContainerStyle={{ height: '100%', width: '100%' }}
+                    mapContainerStyle={{
+                      height: '100%',
+                      width: '100%',
+                      visibility: mapVisible ? 'visible' : 'hidden',
+                      position: 'relative',
+                    }}
                     center={position}
                     zoom={16}
                   >
                     <StreetViewPanorama
                       position={position}
                       visible={true}
-                      options={{
-                        enableCloseButton: false,
-                        addressControl: true,
-                        fullscreenControl: true,
-                        panControl: true,
-                        zoomControl: true,
-                        motionTracking: false,
-                        motionTrackingControl: false,
-                        pov: { heading: 0, pitch: 0 },
-                        zoom: 1,
+                      onLoad={() => {
+                        // HACK: Only make the map visible after load, so that google maps
+                        // cannot autofocus and cause the page to scroll
+                        setTimeout(() => {
+                          setMapVisible(true);
+                        }, 150);
                       }}
+                      options={streetViewOptions}
                     />
                   </GoogleMap>
                 ) : (
@@ -240,3 +260,12 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
     </Card>
   );
 };
+
+const AddressDetailRow = React.memo(
+  ({ label, value }: { label: string; value: string | undefined }) => (
+    <>
+      <div className="font-medium">{label}</div>
+      <div>{value}</div>
+    </>
+  ),
+);
