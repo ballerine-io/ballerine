@@ -3,13 +3,15 @@ import { PieChartCard } from '@/pages/Home/components/PieChartCard/PieChartCard'
 import { StatsCard } from '@/pages/Home/components/StatsCard/StatsCard';
 
 export const StaticMetricsSection = ({
+  isMerchantMonitoringEnabled,
   isOngoingMonitoringEnabled,
   isCasesOnboardingEnabled,
 
   casesByStatus,
   ongoingCasesByRisk,
   approvedCasesByRisk,
-  totalActiveMerchants,
+  activeBusinessesCount,
+  activeWebsitesCount,
 
   statusConfig,
   ongoingRiskConfig,
@@ -18,12 +20,14 @@ export const StaticMetricsSection = ({
   getRiskDefinition,
 }: Pick<
   ReturnType<typeof useHomeLogic>,
+  | 'isMerchantMonitoringEnabled'
   | 'isOngoingMonitoringEnabled'
   | 'isCasesOnboardingEnabled'
   | 'casesByStatus'
   | 'ongoingCasesByRisk'
   | 'approvedCasesByRisk'
-  | 'totalActiveMerchants'
+  | 'activeBusinessesCount'
+  | 'activeWebsitesCount'
   | 'statusConfig'
   | 'ongoingRiskConfig'
   | 'approvedRiskConfig'
@@ -32,12 +36,21 @@ export const StaticMetricsSection = ({
 >) => {
   return (
     <div className="grid grid-cols-4 gap-6 2xl:grid-cols-6">
-      {isOngoingMonitoringEnabled && (
+      {isMerchantMonitoringEnabled && (
         <StatsCard
-          value={totalActiveMerchants}
+          value={activeBusinessesCount}
           centered={true}
           title="Total Active Merchants"
-          description="Merchants currently subscribed to monitoring"
+          description="Number of merchants with active, non-terminated websites"
+        />
+      )}
+
+      {isOngoingMonitoringEnabled && (
+        <StatsCard
+          value={activeWebsitesCount}
+          centered={true}
+          title="Total Active Websites"
+          description="Number of websites currently subscribed to ongoing monitoring"
         />
       )}
 

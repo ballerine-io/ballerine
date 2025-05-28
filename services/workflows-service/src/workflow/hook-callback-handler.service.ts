@@ -182,7 +182,7 @@ export class HookCallbackHandlerService {
     return setPluginStatus({
       data,
       resultDestinationPath,
-      status: ProcessStatus.SUCCESS,
+      status: data?.error ? ProcessStatus.ERROR : ProcessStatus.SUCCESS,
       context: workflowRuntime.context,
     });
   }
