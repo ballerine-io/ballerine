@@ -32,7 +32,6 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
     normalizeAddress(address, countryCode),
   );
   const [streetViewStatus, setStreetViewStatus] = useState<StreetViewStatus>('LOADING');
-  const [mapVisible, setMapVisible] = useState(false);
   const scrollPositionRef = useRef<number>(0);
 
   const checkStreetViewAvailability = useCallback(
@@ -199,53 +198,11 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
 
           <div className="w-1/2">
             {isLoaded && position ? (
-              <div style={{ height: '300px', width: '100%' }}>
-                {streetViewStatus === 'OK' ? (
-                  <GoogleMap
-                    mapContainerStyle={{
-                      height: '100%',
-                      width: '100%',
-                      visibility: mapVisible ? 'visible' : 'hidden',
-                      position: 'relative',
-                    }}
-                    center={position}
-                    zoom={16}
-                  >
-                    <StreetViewPanorama
-                      position={position}
-                      visible={true}
-                      onLoad={() => {
-                        // HACK: Only make the map visible after load, so that google maps
-                        // cannot autofocus and cause the page to scroll
-                        setTimeout(() => {
-                          setMapVisible(true);
-                        }, 150);
-                      }}
-                      options={streetViewOptions}
-                    />
-                  </GoogleMap>
-                ) : (
-                  <GoogleMap
-                    mapContainerStyle={{ height: '100%', width: '100%' }}
-                    center={position}
-                    zoom={17}
-                  >
-                    <Marker position={position} />
-                    {streetViewStatus === 'NOT_AVAILABLE' && (
-                      <div className="absolute left-0 top-0 z-10 m-2 rounded bg-white/80 p-2 text-sm text-gray-700">
-                        Street View is not available at this location.
-                      </div>
-                    )}
-                    {streetViewStatus === 'LOADING' && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="rounded bg-white/80 p-4">
-                          <Loader2 className="h-6 w-6 animate-spin text-gray-700" />
-                        </div>
-                      </div>
-                    )}
-                  </GoogleMap>
-                )}
-              </div>
+              <PanoramaContainer
+                position={position}
+                streetViewOptions={streetViewOptions}
+                streetViewStatus={streetViewStatus}
+              />
             ) : (
               <div className="flex h-64 items-center justify-center rounded-md bg-gray-100">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
@@ -255,6 +212,74 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
         </div>
       </CardContent>
     </Card>
+  );
+};
+
+const PanoramaContainer: React.FC<{
+  position: google.maps.LatLngLiteral;
+  streetViewOptions: google.maps.StreetViewPanoramaOptions;
+  streetViewStatus: StreetViewStatus;
+}> = ({ position, streetViewOptions, streetViewStatus }) => {
+  const [mapVisible, setMapVisible] = useState(false);
+
+  if (!env.VITE_GOOGLE_MAPS_API_KEY) {
+    return (
+      <Card className="flex size-full items-center justify-center">
+        <CardContent className="p-6 text-center text-red-600">
+          <p>Google Maps API key is required to display address information.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div style={{ height: '300px', width: '100%' }}>
+      {streetViewStatus === 'OK' ? (
+        <GoogleMap
+          mapContainerStyle={{
+            height: '100%',
+            width: '100%',
+            visibility: mapVisible ? 'visible' : 'hidden',
+            position: 'relative',
+          }}
+          center={position}
+          zoom={16}
+        >
+          <StreetViewPanorama
+            position={position}
+            visible={true}
+            onLoad={() => {
+              // HACK: Only make the map visible after load, so that google maps
+              // cannot autofocus and cause the page to scroll
+              setTimeout(() => {
+                setMapVisible(true);
+              }, 150);
+            }}
+            options={streetViewOptions}
+          />
+        </GoogleMap>
+      ) : (
+        <GoogleMap
+          mapContainerStyle={{ height: '100%', width: '100%' }}
+          center={position}
+          zoom={17}
+        >
+          <Marker position={position} />
+          {streetViewStatus === 'NOT_AVAILABLE' && (
+            <div className="absolute left-0 top-0 z-10 m-2 rounded bg-white/80 p-2 text-sm text-gray-700">
+              Street View is not available at this location.
+            </div>
+          )}
+          {streetViewStatus === 'LOADING' && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded bg-white/80 p-4">
+                <Loader2 className="h-6 w-6 animate-spin text-gray-700" />
+              </div>
+            </div>
+          )}
+        </GoogleMap>
+      )}
+    </div>
   );
 };
 
