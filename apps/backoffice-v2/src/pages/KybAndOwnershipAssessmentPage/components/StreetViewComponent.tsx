@@ -80,7 +80,6 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
         );
 
         if (panoramaResult) {
-          // Store current scroll position before updating state
           scrollPositionRef.current = window.scrollY;
           setPosition(panoramaResult);
           setStreetViewStatus('OK');
@@ -93,7 +92,6 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
           2000,
         );
         if (widerPanoramaResult) {
-          // Store current scroll position before updating state
           scrollPositionRef.current = window.scrollY;
           setPosition(widerPanoramaResult);
           setStreetViewStatus('OK');
@@ -109,7 +107,6 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
     [checkStreetViewAvailability],
   );
 
-  // Memoize street view options to prevent unnecessary re-renders
   const streetViewOptions = useMemo(
     () => ({
       enableCloseButton: false,

@@ -22,7 +22,6 @@ export const useSectionData = ({
   registryInfoBlock,
 }: SectionDataProps): AssessmentPageSection[] => {
   return useMemo(() => {
-    // Extract registered address from registry data
     const registryData = assessment?.companyRegistryInformation?.output?.data;
     const registeredAddress = (() => {
       if (!registryData?.addresses?.length) return null;
