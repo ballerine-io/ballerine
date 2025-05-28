@@ -18,7 +18,6 @@ export const CustomerConfigSchema = z.object({
   // Monitoring Features
   isMerchantMonitoringEnabled: z.boolean().optional(),
   isOngoingMonitoringEnabled: z.boolean().optional(),
-  isOngoingMerchantMonitoringEnabled: z.boolean().optional(),
   ongoingWorkflowDefinitionId: z.string().optional(),
 
   // Limits & UI
