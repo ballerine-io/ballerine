@@ -16,14 +16,12 @@ import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { IFormElement, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../FileField';
-import { DEFAULT_DELETION_PARAMS } from './defaults';
 import { useDocumentLabelElement } from './hooks/useDocumentLabelElement';
 import { useDocumentState } from './hooks/useDocumentState';
+import { useDocumentFile } from '../../../DocumentsService';
+import { useDynamicForm } from '../../context';
+import { useDeleteDocument } from './hooks/useDeleteDocument';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
-import { getDocumentObjectFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-document-object-from-documents-list';
-import { getFileOrFileIdFromDocumentsList } from './hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
-import { removeDocumentFromListByTemplateId } from './hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
-import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
@@ -61,14 +59,21 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   useMountEvent(element);
   useUnmountEvent(element);
 
-  const { run: deleteDocument, isLoading: isDeletingDocument } = useFormHttp(
-    (element.params?.httpParams?.deleteDocument || DEFAULT_DELETION_PARAMS) as IHttpParams,
-  );
+  const { metadata } = useDynamicForm();
 
-  const { handleChange, isUploading: disabledWhileUploading } = useDocumentUpload(
-    element as IFormElement<'documentfield', IDocumentFieldParams>,
-    element.params || ({} as IDocumentFieldParams),
-  );
+  const {
+    file,
+    isLoading: isLoadingFile,
+    isFetching: isFetchingFile,
+    document,
+    removeFile,
+  } = useDocumentFile({
+    type: element.params?.template?.type!,
+    category: element.params?.template?.category!,
+    entityType: 'business',
+    entityId: metadata.businessId!,
+  });
+  const { deleteDocument, isDeletingDocument } = useDeleteDocument();
 
   const { params } = element;
   const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
@@ -77,34 +82,24 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   const { documentState, updateState } = useDocumentState(
     element as IFormElement<'documentfield', IDocumentFieldParams>,
   );
+  const { handleChange } = useDocumentUpload(
+    element as IFormElement<'documentfield', IDocumentFieldParams>,
+    element.params || ({} as IDocumentFieldParams),
+  );
+
+  useLayoutEffect(() => {
+    if (document) {
+      updateState(document);
+    }
+  }, [document, updateState]);
 
   const { stack } = useStack();
   const id = useElementId(element, stack);
-  const {
-    value: documentsList,
-    disabled,
-    onChange,
-    onBlur,
-    onFocus,
-  } = useField<Array<IDocumentFieldParams['template']> | undefined>(element, stack, documentState);
+  const { disabled, onChange, onBlur, onFocus } = useField<
+    Array<IDocumentFieldParams['template']> | undefined
+  >(element, stack, documentState);
 
   const task = useMemo(() => getTaskById(id), [getTaskById, id]);
-
-  const document = useMemo(() => {
-    return getDocumentObjectFromDocumentsList(
-      documentsList,
-      element as IFormElement<'documentfield', IDocumentFieldParams>,
-    );
-  }, [documentsList, element]);
-
-  const value = useMemo(
-    () =>
-      getFileOrFileIdFromDocumentsList(
-        documentsList,
-        element as IFormElement<'documentfield', IDocumentFieldParams>,
-      ),
-    [documentsList, element],
-  );
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -112,47 +107,26 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     inputRef.current?.click();
   }, [inputRef]);
 
-  const fileOrFileId = useMemo(() => {
-    if (value instanceof File) {
-      return value;
-    }
-
-    if (typeof value === 'string') {
-      return new File([], value);
-    }
-
-    return undefined;
-  }, [value]);
-
-  useLayoutEffect(() => {
-    updateState(typeof fileOrFileId === 'string' ? fileOrFileId : undefined, document);
-  }, [fileOrFileId, document, updateState]);
-
   const clearFileAndInput = useCallback(async () => {
-    if (!element.params?.template?.id) {
-      console.warn('Template id is migging in element', element);
-
-      return;
-    }
-
-    const updatedDocuments = removeDocumentFromListByTemplateId(
-      documentsList,
-      element.params?.template?.id as string,
-    );
-
-    const documentId = document?._document?.id;
-
-    if (typeof documentId === 'string') {
-      await deleteDocument({ ids: [documentId] });
-    }
-
-    onChange(updatedDocuments);
+    onChange([]);
     removeTask(id);
+
+    if (document) {
+      await deleteDocument(document.id);
+    }
+
+    removeFile();
 
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [documentsList, document, element, onChange, id, removeTask, value, deleteDocument]);
+  }, [document, removeFile]);
+
+  const isShouldDisableInput = useMemo(() => {
+    return disabled || isDeletingDocument || (task && isRunning) || isLoadingFile || isFetchingFile;
+  }, [disabled, isDeletingDocument, task, isRunning, isLoadingFile, isFetchingFile]);
+
+  console.log('Document field file', file);
 
   return (
     <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
@@ -160,8 +134,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
           {
-            'pointer-events-none opacity-50':
-              disabled || disabledWhileUploading || isDeletingDocument || (task && isRunning),
+            'pointer-events-none opacity-50': isShouldDisableInput,
           },
         )}
         onClick={focusInputOnContainerClick}
@@ -174,10 +147,8 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
           <Upload />
           <span className="select-none whitespace-nowrap text-base font-bold">{placeholder}</span>
         </div>
-        <span className="truncate text-sm">
-          {fileOrFileId ? fileOrFileId.name : 'No File Choosen'}
-        </span>
-        {fileOrFileId && (
+        <span className="truncate text-sm">{file ? file.name : 'No File Choosen'}</span>
+        {file && (
           <Button
             variant="ghost"
             size="icon"
@@ -197,7 +168,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
           type="file"
           placeholder={placeholder}
           accept={acceptFileFormats}
-          disabled={disabled || disabledWhileUploading}
+          disabled={isShouldDisableInput}
           onChange={handleChange}
           ref={inputRef}
           className="hidden"

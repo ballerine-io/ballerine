@@ -2,6 +2,7 @@ import { AnyObject } from '@/common';
 import { IValidationSchema, TDeepthLevelStack } from '../../../Validator';
 import { contextBuilders } from '../../context-builders';
 import { IFormElement } from '../../types';
+import { IDocument } from '../../../DocumentsService/types';
 
 export interface IContextBuildersMap {
   [key: string]: (context: AnyObject, metadata: AnyObject, stack: TDeepthLevelStack) => AnyObject;
@@ -9,6 +10,8 @@ export interface IContextBuildersMap {
 
 export const convertFormElementsToValidationSchema = (
   elements: Array<IFormElement<any>>,
+  documents: IDocument[],
+  metadata: AnyObject,
   schema: IValidationSchema[] = [],
 ): IValidationSchema[] => {
   const filteredElements = elements.filter(
@@ -24,6 +27,7 @@ export const convertFormElementsToValidationSchema = (
         valueDestination: element.valueDestination,
         metadata: {
           element,
+          documents,
         } as AnyObject,
         getThisContext: contextBuilders[element.element],
       } as IValidationSchema;
@@ -33,12 +37,16 @@ export const convertFormElementsToValidationSchema = (
       }
 
       if (element.children?.length) {
-        schemaElement.children = convertFormElementsToValidationSchema(element.children || []);
+        schemaElement.children = convertFormElementsToValidationSchema(
+          element.children || [],
+          documents,
+          schema,
+        );
       }
 
       schema.push(schemaElement);
     } else {
-      convertFormElementsToValidationSchema(element.children || [], schema);
+      convertFormElementsToValidationSchema(element.children || [], documents, schema);
     }
   }
 

@@ -257,7 +257,7 @@ describe('convertFormElementsToValidationSchema', () => {
   const cases = [case1, case2, case3, case4];
 
   test.each(cases)('should convert form elements to validation schema', (schema, output) => {
-    const validationSchema = convertFormElementsToValidationSchema(schema);
+    const validationSchema = convertFormElementsToValidationSchema(schema, [], {});
     expect(validationSchema).toEqual(output);
   });
 });

@@ -1,67 +1,64 @@
 import { AnyObject } from '@/common';
-import { IHttpParams } from '@/common/hooks/useHttp';
-import get from 'lodash/get';
-import set from 'lodash/set';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useDynamicForm } from '../../../../context';
-import { useElementId, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
-import { useStack } from '../../../FieldList/providers/StackProvider';
-import { DEFAULT_CREATION_PARAMS, DEFAULT_UPDATE_PARAMS } from '../../defaults';
 import { IDocumentFieldParams } from '../../DocumentField';
-import { buildDocumentFormData } from '../../helpers/build-document-form-data';
-import { createOrUpdateDocumentInList } from './helpers/create-or-update-document-in-list';
-import { getDocumentObjectFromDocumentsList } from './helpers/get-document-object-from-documents-list';
-import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
+import { useDocument, useDocumentFile } from '@/components/organisms/Form/DocumentsService';
+import { useElementId, useField } from '../../../../hooks/external';
+import { useStack } from '../../../FieldList';
+import { useCreateDocument } from '../useCreateDocument';
+import { useReuploadDocument } from '../useReuploadDocument';
 
 export const useDocumentUpload = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
   params: IDocumentFieldParams,
 ) => {
+  const { metadata } = useDynamicForm();
   const { uploadOn = 'change' } = params;
+  const { addTask, removeTask } = useTaskRunner();
   const { stack } = useStack();
   const id = useElementId(element, stack);
-  const { addTask, removeTask } = useTaskRunner();
-  const { metadata, values } = useDynamicForm();
-  const { run: uploadDocument, isLoading: isUploading } = useFormHttp(
-    (element.params?.httpParams?.createDocument || DEFAULT_CREATION_PARAMS) as IHttpParams,
-  );
-  const { run: updateDocument, isLoading: isUpdating } = useFormHttp(
-    (element.params?.httpParams?.updateDocument || DEFAULT_UPDATE_PARAMS) as IHttpParams,
-  );
-
   const { onChange } = useField(element, stack);
-
-  const valuesRef = useRef(values);
-
-  useEffect(() => {
-    valuesRef.current = values;
-  }, [values]);
+  const document = useDocument({
+    type: element.params?.template?.type!,
+    category: element.params?.template?.category!,
+    entityType: 'business',
+    entityId: metadata.businessId!,
+  });
+  const { file, setFile } = useDocumentFile({
+    type: element.params?.template?.type!,
+    category: element.params?.template?.category!,
+    entityType: 'business',
+    entityId: metadata.businessId!,
+  });
+  const { createDocument, isCreatingDocument } = useCreateDocument({
+    element,
+    entityType: 'business',
+    entityId: metadata.businessId!,
+  });
+  const { reuploadDocument, isReuploadingDocument } = useReuploadDocument({
+    element,
+    entityType: 'business',
+    entityId: metadata.businessId!,
+  });
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
 
+      const file = e.target?.files?.[0] as File;
+
+      setFile(file);
+
       if (uploadOn === 'change') {
         try {
-          const documents = get(valuesRef.current, element.valueDestination);
-          const document = getDocumentObjectFromDocumentsList(documents, element);
+          const result = document
+            ? await reuploadDocument(e.target?.files?.[0] as File)
+            : await createDocument(e.target?.files?.[0] as File);
 
-          const documentUploadPayload = buildDocumentFormData(
-            element,
-            { businessId: metadata.businessId as string },
-            e.target?.files?.[0] as File,
-            document,
-          );
-
-          const result = document?._document
-            ? await updateDocument(documentUploadPayload)
-            : await uploadDocument(documentUploadPayload);
-
-          const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
-          onChange(updatedDocuments);
+          onChange([]);
         } catch (error) {
           console.error('Failed to upload file.', error);
 
@@ -70,35 +67,13 @@ export const useDocumentUpload = (
       }
 
       if (uploadOn === 'submit') {
-        const documents = get(valuesRef.current, element.valueDestination);
-        const updatedDocuments = createOrUpdateDocumentInList(
-          documents,
-          element,
-          e.target?.files?.[0] as File,
-        );
-
-        onChange(updatedDocuments);
-
         const taskRun = async (context: AnyObject) => {
           try {
-            const documents = get(context, element.valueDestination);
-
-            const document = getDocumentObjectFromDocumentsList(documents, element);
-
-            const documentUploadPayload = buildDocumentFormData(
-              element,
-              { businessId: metadata.businessId as string },
-              e.target?.files?.[0] as File,
-              document,
-            );
-
-            const result = document?._document
-              ? await updateDocument(documentUploadPayload)
-              : await uploadDocument(documentUploadPayload);
-
-            const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
-
-            set(context, element.valueDestination, updatedDocuments);
+            if (document) {
+              await reuploadDocument(e.target?.files?.[0] as File);
+            } else {
+              await createDocument(e.target?.files?.[0] as File);
+            }
 
             return context;
           } catch (error) {
@@ -116,22 +91,11 @@ export const useDocumentUpload = (
         addTask(task);
       }
     },
-    [
-      uploadOn,
-      metadata,
-      addTask,
-      removeTask,
-      onChange,
-      uploadDocument,
-      id,
-      element,
-      valuesRef,
-      updateDocument,
-    ],
+    [uploadOn, metadata, addTask, removeTask, onChange, id, element, document],
   );
 
   return {
-    isUploading: isUploading || isUpdating,
+    isUploading: isCreatingDocument || isReuploadingDocument,
     handleChange,
   };
 };

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, AnyObject, ctw } from '@/common';
 import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';

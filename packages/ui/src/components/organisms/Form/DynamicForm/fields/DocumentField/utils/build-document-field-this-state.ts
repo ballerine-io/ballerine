@@ -1,11 +1,9 @@
 import { AnyObject } from '@/common';
-import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
-import get from 'lodash/get';
+import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { IFormElement } from '../../../types';
 import { IDocumentFieldParams } from '../DocumentField';
 import { IDocumentState } from '../hooks/useDocumentState';
-import { getDocumentObjectFromDocumentsList } from '../hooks/useDocumentUpload/helpers/get-document-object-from-documents-list';
-import { getFileOrFileIdFromDocumentsList } from '../hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
+import { IDocument } from '@/components/organisms/Form/DocumentsService/types';
 
 export const buildDocumentFieldThisState = (
   context: AnyObject,
@@ -14,14 +12,11 @@ export const buildDocumentFieldThisState = (
 ) => {
   const metadata = _metadata as unknown as {
     element: IFormElement<'documentfield', IDocumentFieldParams>;
+    documents: IDocument[];
   };
-  const documentsDestination = formatValueDestination(metadata.element.valueDestination, stack);
-  const documents = get(context, documentsDestination);
-  const fileOrFileId = getFileOrFileIdFromDocumentsList(documents, metadata.element);
 
   const elementContext: IDocumentState = {
-    document: getDocumentObjectFromDocumentsList(documents, metadata.element),
-    fileId: typeof fileOrFileId === 'string' ? fileOrFileId : undefined,
+    document: undefined,
     element: metadata.element,
   };
 
