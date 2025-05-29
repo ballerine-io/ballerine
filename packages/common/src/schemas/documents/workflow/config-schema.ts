@@ -86,6 +86,8 @@ export const WorkflowConfigSchema = Type.Object({
   isMerchantMonitoringEnabled: Type.Optional(Type.Boolean()),
   isOngoingMonitoringEnabled: Type.Optional(Type.Boolean()),
   isCollectionFlowPageRevisionEnabled: Type.Optional(Type.Boolean()),
+  disableVideoGuide: Type.Optional(Type.Boolean()),
+  disableAiSummary: Type.Optional(Type.Boolean()),
 });
 
 export type TWorkflowConfig = Static<typeof WorkflowConfigSchema>;

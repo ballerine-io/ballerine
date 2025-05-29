@@ -92,6 +92,33 @@ describe('TaskRunner', () => {
     expect(result.current.isRunning).toBe(false);
   });
 
+  it('should stop running tasks if an error is thrown', async () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <TaskRunner>{children}</TaskRunner>
+    );
+
+    const { result, rerender } = renderHook(() => useContext(TaskRunnerContext), { wrapper });
+
+    const mockTask1: ITask = {
+      id: '1',
+      element: {} as any,
+      run: vi.fn().mockRejectedValue(new Error('Error')),
+    };
+
+    const mockTask2: ITask = {
+      id: '2',
+      element: {} as any,
+      run: vi.fn(),
+    };
+
+    result.current.addTask(mockTask1);
+    result.current.addTask(mockTask2);
+
+    rerender();
+
+    expect(() => result.current.runTasks({})).rejects.toThrow('Error');
+  });
+
   it('should render children', () => {
     const { getByText } = render(
       <TaskRunner>

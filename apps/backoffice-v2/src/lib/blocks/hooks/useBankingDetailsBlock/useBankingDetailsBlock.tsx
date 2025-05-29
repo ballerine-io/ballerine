@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
   const isEmpty = useMemo(() => Object.keys(bankDetails ?? {}).length === 0, [bankDetails]);
@@ -12,15 +13,38 @@ export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'heading',
-            value: 'Banking details',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(userCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    id: 'header',
+                    type: 'heading',
+                    value: 'Banking details',
+                    props: {
+                      className: 'mt-0',
+                    },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
+            props: {
+              className: 'flex space-x-1 items-center mt-4',
+            },
           })
           .addCell({
             type: 'paragraph',
             value: 'Banking details are being collected or not provided.',
           })
-          .build()
-          .flat(1),
+          .buildFlat(),
       })
       .build();
   }, []);
@@ -37,12 +61,32 @@ export const useBankingDetailsBlock = ({ bankDetails, workflow }) => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'heading',
-            value: 'Banking details',
-          })
-          .addCell({
-            type: 'subheading',
-            value: 'User-Provided Data',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(userCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    id: 'header',
+                    type: 'heading',
+                    value: 'Banking details',
+                    props: {
+                      className: 'mt-0',
+                    },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
+            props: {
+              className: 'flex space-x-1 items-center mt-4',
+            },
           })
           .addCell({
             type: 'details',
