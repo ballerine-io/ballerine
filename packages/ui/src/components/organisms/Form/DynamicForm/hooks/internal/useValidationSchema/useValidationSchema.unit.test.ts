@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { convertFormElementsToValidationSchema } from '../../../helpers/convert-form-emenents-to-validation-schema';
+import { buildValidationSchemaFromFormElements } from '../../../helpers/build-validation-schema-from-form-elements';
 import { IFormElement } from '../../../types';
 import { useValidationSchema } from './useValidationSchema';
 
@@ -28,13 +28,13 @@ describe('useValidationSchema', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(convertFormElementsToValidationSchema).mockReturnValue(mockValidationSchema);
+    vi.mocked(buildValidationSchemaFromFormElements).mockReturnValue(mockValidationSchema);
   });
 
   test('should return validation schema', () => {
     const { result } = renderHook(() => useValidationSchema(mockElements));
 
-    expect(convertFormElementsToValidationSchema).toHaveBeenCalledWith(mockElements);
+    expect(buildValidationSchemaFromFormElements).toHaveBeenCalledWith(mockElements);
     expect(result.current).toEqual(mockValidationSchema);
   });
 
@@ -48,7 +48,7 @@ describe('useValidationSchema', () => {
     // Rerender with same props
     rerender(mockElements);
     expect(result.current).toBe(firstResult);
-    expect(convertFormElementsToValidationSchema).toHaveBeenCalledTimes(1);
+    expect(buildValidationSchemaFromFormElements).toHaveBeenCalledTimes(1);
   });
 
   test('should recalculate when elements change', () => {
@@ -75,13 +75,13 @@ describe('useValidationSchema', () => {
       },
     ];
 
-    vi.mocked(convertFormElementsToValidationSchema).mockReturnValue(newValidationSchema);
+    vi.mocked(buildValidationSchemaFromFormElements).mockReturnValue(newValidationSchema);
 
     // Rerender with different props
     rerender(newElements);
 
     expect(result.current).not.toBe(firstResult);
     expect(result.current).toEqual(newValidationSchema);
-    expect(convertFormElementsToValidationSchema).toHaveBeenCalledTimes(2);
+    expect(buildValidationSchemaFromFormElements).toHaveBeenCalledTimes(2);
   });
 });

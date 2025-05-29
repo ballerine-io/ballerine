@@ -65,7 +65,7 @@ export const validate = <
           const validate = getValidator(validator);
 
           try {
-            validate(value, validator as unknown as ICommonValidator);
+            validate(value, validator as unknown as ICommonValidator, context);
           } catch (exception) {
             const error = createValidationError({
               id,
