@@ -12,6 +12,7 @@ import {
   Body,
   BadRequestException,
   InternalServerErrorException,
+  Delete,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
@@ -167,5 +168,25 @@ export class CollectionFlowDocumentsController {
       workflowId: tokenScope.workflowRuntimeDataId,
       projectId: tokenScope.projectId,
     });
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Document deleted successfully',
+    type: CollectionFlowDocumentModel,
+  })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Deleting document with id is not allowed. Document version is not the latest version.',
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @Delete(':documentId')
+  async deleteDocument(
+    @TokenScope() tokenScope: ITokenScope,
+    @Param('documentId') documentId: string,
+  ) {
+    return this.collectionFlowDocumentsService.deleteDocument(documentId, tokenScope.projectId);
   }
 }

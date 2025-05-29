@@ -336,4 +336,50 @@ export class CollectionFlowDocumentsService {
 
     return serializedDocumentWithFiles;
   }
+
+  async deleteDocument(
+    documentId: string,
+    projectId: TProjectId,
+    transaction?: Prisma.TransactionClient,
+  ) {
+    const document = await this.documentService.getDocumentById(documentId, projectId);
+
+    if (!document) {
+      throw new NotFoundException(`Document with id ${documentId} not found`);
+    }
+
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+      transaction,
+    });
+
+    return beginTransactionIfNotExist(async transaction => {
+      const latestDocument = await this.getLatestDocumentVersion(
+        {
+          type: document.type,
+          category: document.category,
+          endUserId: document.endUserId!,
+          businessId: document.businessId!,
+        },
+        projectId,
+        transaction,
+      );
+
+      if (document.version < latestDocument?.version!) {
+        throw new ConflictException(
+          `Deleting document with id ${documentId} is not allowed. Document version ${document.version} is not the latest version. Latest version is ${latestDocument?.version}.`,
+        );
+      }
+
+      await this.documentService.deleteByIds(
+        [documentId],
+        [projectId],
+        {} as Prisma.DocumentDeleteManyArgs,
+        transaction,
+      );
+
+      return document;
+    });
+  }
 }
