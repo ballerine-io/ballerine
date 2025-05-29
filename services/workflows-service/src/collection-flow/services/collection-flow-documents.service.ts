@@ -53,7 +53,6 @@ export class CollectionFlowDocumentsService {
     const document = await this.documentRepository.findByIdWithFiles(documentId, projectIds);
 
     if (!document) {
-      this.appLogger.error(`Document with id ${documentId} not found`);
       throw new NotFoundException(`Document with id ${documentId} not found`);
     }
 
@@ -131,7 +130,6 @@ export class CollectionFlowDocumentsService {
       );
 
       if (!document) {
-        this.appLogger.error(`Failed to create document`);
         throw new InternalServerErrorException('Failed to create document');
       }
 
@@ -161,7 +159,6 @@ export class CollectionFlowDocumentsService {
       const document = await this.documentService.getDocumentById(documentId, projectId);
 
       if (!document) {
-        this.appLogger.error(`Document with id ${documentId} not found`);
         throw new NotFoundException(`Document with id ${documentId} not found`);
       }
 
@@ -177,11 +174,6 @@ export class CollectionFlowDocumentsService {
       );
 
       if (document.version + 1 <= latestDocument?.version!) {
-        this.appLogger.error(
-          `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
-            document.version + 1
-          } is not the latest version. Latest version is ${latestDocument?.version}.`,
-        );
         throw new ConflictException(
           `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
             document.version + 1
@@ -197,7 +189,6 @@ export class CollectionFlowDocumentsService {
       );
 
       if (!documentFiles?.length) {
-        this.appLogger.error(`Document with id ${documentId} has no files`);
         throw new InternalServerErrorException(`Document with id ${documentId} has no files`);
       }
 
@@ -231,7 +222,6 @@ export class CollectionFlowDocumentsService {
       );
 
       if (!newDocument) {
-        this.appLogger.error(`Failed to create new document`);
         throw new InternalServerErrorException('Failed to create new document');
       }
 
