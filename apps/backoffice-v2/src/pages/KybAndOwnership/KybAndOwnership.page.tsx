@@ -57,12 +57,19 @@ export const KybAndOwnership: FunctionComponent = () => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger className={`flex items-center`}>
-                  <CreateKybAndOwnershipAssessmentDialog open={open} toggleOpen={toggleOpen}>
-                    <Button variant="wp-primary" className="flex items-center gap-2 font-semibold">
-                      <Plus />
-                      <span>Create a Case</span>
-                    </Button>
-                  </CreateKybAndOwnershipAssessmentDialog>
+                  <CreateKybAndOwnershipAssessmentDialog
+                    open={open}
+                    toggleOpen={toggleOpen}
+                    trigger={
+                      <Button
+                        variant="wp-primary"
+                        className="flex items-center gap-2 font-semibold"
+                      >
+                        <Plus />
+                        <span>Create a Case</span>
+                      </Button>
+                    }
+                  />
                 </TooltipTrigger>
               </Tooltip>
             </TooltipProvider>

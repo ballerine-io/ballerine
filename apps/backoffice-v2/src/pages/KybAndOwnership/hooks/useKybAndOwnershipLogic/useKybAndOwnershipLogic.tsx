@@ -26,16 +26,22 @@ export const useKybAndOwnershipLogic = () => {
   );
 
   const open = isCreating ?? false;
-  const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
+  const toggleOpen = useCallback(
+    (value?: boolean) => setSearchParams({ isCreating: value }),
+    [setSearchParams],
+  );
 
-  const reportQuery = {
-    page: {
-      number: page,
-      size: pageSize,
-    },
-    from,
-    to,
-  };
+  const reportQuery = useMemo(
+    () => ({
+      page: {
+        number: page,
+        size: pageSize,
+      },
+      from,
+      to,
+    }),
+    [page, pageSize, from, to],
+  );
 
   const { data, isLoading: isLoadingAssessments } = useKybAndOwnershipAssessmentsQuery(reportQuery);
 

@@ -74,10 +74,15 @@ export const KybAndOwnershipAssessmentStatus = ({
       return;
     }
 
-    mutateUpdateAssessmentStatus({ assessmentId, status: dialogState.status });
-
-    closeDialog();
-    form.reset();
+    mutateUpdateAssessmentStatus(
+      { assessmentId, status: dialogState.status },
+      {
+        onSuccess: () => {
+          closeDialog();
+          form.reset();
+        },
+      },
+    );
   };
 
   const disabled = useMemo(

@@ -54,7 +54,9 @@ type CheckItem = {
  * - negative (red): Flagged, Issues - when risks or issues are confirmed
  */
 const getChecks = (assessment: any): CheckItem[] => {
-  if (!assessment) return [];
+  if (!assessment) {
+    return [];
+  }
 
   // Helper function to create a check with default fallback to neutral/unverified
   const createCheck = (
@@ -152,7 +154,7 @@ const getChecks = (assessment: any): CheckItem[] => {
   // 6. Registered Address check
   if (registryData?.addresses?.length) {
     const hasRegisteredAddress = registryData.addresses.some(
-      (addr: any) => addr.type.toLowerCase().includes('registered') && addr.fullAddress,
+      (addr: any) => addr.type?.toLowerCase().includes('registered') && addr.fullAddress,
     );
 
     checks.push(createCheck('Registered Address', hasRegisteredAddress, 'Extracted'));
