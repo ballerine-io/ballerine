@@ -98,6 +98,7 @@ export class CollectionFlowDocumentModel {
   })
   @Type(() => CollectionFlowFileModel)
   @IsArray()
+  @IsOptional()
   @ValidateNested({ each: true })
-  files!: CollectionFlowFileModel[];
+  files!: CollectionFlowFileModel[] | null;
 }

@@ -133,7 +133,7 @@ export class CollectionFlowDocumentsService {
         throw new InternalServerErrorException('Failed to create document');
       }
 
-      const serializedDocument = await this.serializeDocumentWithFiles(document);
+      const serializedDocument = await this.serializeDocument(document);
 
       return serializedDocument;
     });
