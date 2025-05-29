@@ -60,18 +60,31 @@ const fileUploadInterceptor = FileInterceptor('file', {
 export class CollectionFlowDocumentsController {
   constructor(protected readonly collectionFlowDocumentsService: CollectionFlowDocumentsService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Documents retrieved successfully',
+    type: CollectionFlowDocumentModel,
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
-  async getDocuments() {
-    return {
-      documents: [],
-    };
+  async getDocuments(@TokenScope() tokenScope: ITokenScope) {
+    return this.collectionFlowDocumentsService.getDocuments(tokenScope.workflowRuntimeDataId, [
+      tokenScope.projectId,
+    ]);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Document retrieved successfully',
+    type: CollectionFlowDocumentModel,
+  })
+  @ApiResponse({ status: 404, description: 'Document not found' })
   @Get(':documentId')
-  async getDocumentById(@Param('documentId') documentId: string) {
-    return {
-      documentId,
-    };
+  async getDocumentById(
+    @TokenScope() tokenScope: ITokenScope,
+    @Param('documentId') documentId: string,
+  ) {
+    return this.collectionFlowDocumentsService.getDocumentById(documentId, [tokenScope.projectId]);
   }
 
   @ApiConsumes('multipart/form-data')

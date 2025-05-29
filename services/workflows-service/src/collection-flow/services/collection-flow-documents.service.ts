@@ -32,28 +32,32 @@ export class CollectionFlowDocumentsService {
   ) {}
 
   async getDocuments(workflowId: string, projectIds: TProjectId[]) {
-    const allDocuments = await this.documentRepository.findMany(projectIds, {
+    const allDocuments = await this.documentRepository.findManyWithFiles(projectIds, {
       where: {
         workflowRuntimeDataId: workflowId,
-      },
-      include: {
-        files: true,
       },
     });
 
     const latestDocuments = this.documentService.getLatestDocumentVersions(allDocuments);
 
-    return latestDocuments;
+    return Promise.all(
+      latestDocuments.map(document =>
+        this.serializeDocumentWithFiles(
+          document as NonNullable<Awaited<ReturnType<typeof this.documentService.create>>>,
+        ),
+      ),
+    );
   }
 
   async getDocumentById(documentId: string, projectIds: TProjectId[]) {
-    const document = await this.documentRepository.findById(documentId, projectIds, {
-      include: {
-        files: true,
-      },
-    });
+    const document = await this.documentRepository.findByIdWithFiles(documentId, projectIds);
 
-    return document;
+    if (!document) {
+      this.appLogger.error(`Document with id ${documentId} not found`);
+      throw new NotFoundException(`Document with id ${documentId} not found`);
+    }
+
+    return this.serializeDocumentWithFiles(document);
   }
 
   async createDocument({
