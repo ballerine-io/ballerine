@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   Body,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
@@ -22,6 +23,8 @@ import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-fil
 import { CreateDocumentDto, CreateDocumentSchema } from '../dto/create-document.dto';
 import { FormDataValidationPipe } from '@/common/form-data-validation.pipe';
 import { CollectionFlowDocumentModel } from '../models/collection-flow-document.model';
+import { ReuploadDocumentDtoSchema } from '../dto/re-upload-document.dto';
+import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 const fileParsePipe = new ParseFilePipeBuilder()
   .addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE })
@@ -31,6 +34,15 @@ const fileParsePipe = new ParseFilePipeBuilder()
       if (error.includes('expected size')) {
         throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
       }
+
+      // Provide more detailed error message for file not found
+      if (error.includes('File is required') || error.includes('no file uploaded')) {
+        throw new BadRequestException(
+          'No file provided. Please ensure you are sending a file with the field name "file" in your multipart/form-data request.',
+        );
+      }
+
+      throw new InternalServerErrorException(`File validation error: ${error}`);
     },
   });
 
@@ -64,7 +76,7 @@ export class CollectionFlowDocumentsController {
 
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    schema: CreateDocumentSchema as any,
+    schema: CreateDocumentSchema as SchemaObject,
   })
   @ApiResponse({
     status: 201,
@@ -105,10 +117,42 @@ export class CollectionFlowDocumentsController {
     });
   }
 
-  @Put(':documentId')
-  async updateDocument(@Param('documentId') documentId: string) {
-    return {
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: ReuploadDocumentDtoSchema as SchemaObject,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Document re-uploaded successfully',
+    type: CollectionFlowDocumentModel,
+  })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Re-uploading document with id is not allowed. Expected new version is not the latest version.',
+  })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @UseInterceptors(fileUploadInterceptor, RemoveTempFileInterceptor)
+  @Put('reupload/:documentId')
+  async reuploadDocument(
+    @TokenScope() tokenScope: ITokenScope,
+    @Param('documentId') documentId: string,
+    @Body(new FormDataValidationPipe()) data: any,
+    @UploadedFile(fileParsePipe)
+    file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException(
+        'No file provided. Please ensure you are sending a file with the field name "file" in your multipart/form-data request.',
+      );
+    }
+
+    return this.collectionFlowDocumentsService.reuploadDocument({
       documentId,
-    };
+      file,
+      workflowId: tokenScope.workflowRuntimeDataId,
+      projectId: tokenScope.projectId,
+    });
   }
 }

@@ -1,7 +1,12 @@
 import { DocumentRepository } from '@/document/document.repository';
 import { DocumentService } from '@/document/document.service';
 import { TProjectId } from '@/types';
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { DocumentStatus, Prisma } from '@prisma/client';
 import { CreateDocumentDto } from '../dto/create-document.dto';
 import {
@@ -13,6 +18,8 @@ import { CollectionFlowDocumentModel } from '../models/collection-flow-document.
 import { CollectionFlowFileModel } from '../models/collection-flow-file.model';
 import { validate } from 'class-validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isObject } from '@ballerine/common';
+import { DocumentFileRepository } from '@/document-file/document-file.repository';
 
 @Injectable()
 export class CollectionFlowDocumentsService {
@@ -20,6 +27,7 @@ export class CollectionFlowDocumentsService {
     protected readonly prismaService: PrismaService,
     protected readonly documentRepository: DocumentRepository,
     protected readonly documentService: DocumentService,
+    protected readonly documentFileRepository: DocumentFileRepository,
     protected readonly appLogger: AppLoggerService,
   ) {}
 
@@ -126,6 +134,149 @@ export class CollectionFlowDocumentsService {
       const serializedDocument = await this.serializeDocumentWithFiles(document);
 
       return serializedDocument;
+    });
+  }
+
+  async reuploadDocument({
+    documentId,
+    file,
+    workflowId,
+    projectId,
+  }: {
+    documentId: string;
+    file: Express.Multer.File;
+    workflowId: string;
+    projectId: TProjectId;
+  }) {
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+    });
+
+    return beginTransactionIfNotExist(async transaction => {
+      const document = await this.documentService.getDocumentById(documentId, projectId);
+
+      if (!document) {
+        this.appLogger.error(`Document with id ${documentId} not found`);
+        throw new NotFoundException(`Document with id ${documentId} not found`);
+      }
+
+      const latestDocument = await this.getLatestDocumentVersion(
+        {
+          type: document.type,
+          category: document.category,
+          endUserId: document.endUserId!,
+          businessId: document.businessId!,
+        },
+        projectId,
+        transaction,
+      );
+
+      if (document.version + 1 <= latestDocument?.version!) {
+        this.appLogger.error(
+          `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
+            document.version + 1
+          } is not the latest version. Latest version is ${latestDocument?.version}.`,
+        );
+        throw new ConflictException(
+          `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
+            document.version + 1
+          } is not the latest version. Latest version is ${latestDocument?.version}.`,
+        );
+      }
+
+      const documentFiles = await this.documentFileRepository.findByDocumentId(
+        documentId,
+        [projectId],
+        {} as Prisma.DocumentFileFindManyArgs,
+        transaction,
+      );
+
+      if (!documentFiles?.length) {
+        this.appLogger.error(`Document with id ${documentId} has no files`);
+        throw new InternalServerErrorException(`Document with id ${documentId} has no files`);
+      }
+
+      const latestDocumentFile = documentFiles.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )[0];
+
+      const newDocument = await this.documentService.create(
+        {
+          type: document.type,
+          category: document.category,
+          issuingVersion: document.issuingVersion,
+          issuingCountry: document.issuingCountry,
+          version: document.version + 1,
+          status: DocumentStatus.provided,
+          properties: isObject(document.properties) ? document.properties : {},
+          metadata: {
+            type: latestDocumentFile!.type,
+            variant: latestDocumentFile!.variant,
+            page: latestDocumentFile!.page,
+          },
+          comment: undefined,
+          file,
+          projectId,
+          workflowRuntimeDataId: workflowId,
+          ...(document.businessId && { businessId: document.businessId }),
+          ...(document.endUserId && { endUserId: document.endUserId }),
+        },
+        {} as Prisma.DocumentCreateArgs,
+        transaction,
+      );
+
+      if (!newDocument) {
+        this.appLogger.error(`Failed to create new document`);
+        throw new InternalServerErrorException('Failed to create new document');
+      }
+
+      const serializedDocument = await this.serializeDocumentWithFiles(newDocument);
+
+      return serializedDocument;
+    });
+  }
+
+  private async getLatestDocumentVersion(
+    {
+      type,
+      category,
+      endUserId,
+      businessId,
+    }: {
+      type: string;
+      category: string;
+      endUserId: string;
+      businessId: string;
+    },
+    projectId: TProjectId,
+    transaction: Prisma.TransactionClient,
+  ) {
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+      transaction,
+    });
+
+    return beginTransactionIfNotExist(async transaction => {
+      const documents = await this.documentRepository.findMany(
+        [projectId],
+        {
+          where: {
+            type,
+            category,
+            businessId,
+            endUserId,
+          },
+        },
+        transaction,
+      );
+
+      const latestDocuments = this.documentService.getLatestDocumentVersions(documents);
+
+      const lastDocument = latestDocuments[0];
+
+      return lastDocument;
     });
   }
 

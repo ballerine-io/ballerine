@@ -48,6 +48,7 @@ import { DocumentModule } from '@/document/document.module';
 import { CollectionFlowStateService } from './services/collection-flow-state.service';
 import { CollectionFlowDocumentsController } from './controllers/collection-flow.documents.controller';
 import { CollectionFlowDocumentsService } from './services/collection-flow-documents.service';
+import { DocumentFileModule } from '@/document-file/document-file.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { CollectionFlowDocumentsService } from './services/collection-flow-docum
     // eslint-disable-next-line import/no-cycle
     forwardRef(() => WorkflowModule),
     DocumentModule,
+    DocumentFileModule,
   ],
   controllers: [
     CollectionFlowController,
