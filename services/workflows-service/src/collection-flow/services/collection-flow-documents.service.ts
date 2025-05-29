@@ -42,7 +42,7 @@ export class CollectionFlowDocumentsService {
 
     return Promise.all(
       latestDocuments.map(document =>
-        this.serializeDocumentWithFiles(
+        this.serializeDocument(
           document as NonNullable<Awaited<ReturnType<typeof this.documentService.create>>>,
         ),
       ),
@@ -274,7 +274,7 @@ export class CollectionFlowDocumentsService {
     });
   }
 
-  private async serializeDocumentWithFiles(
+  private async serializeDocument(
     document: NonNullable<Awaited<ReturnType<typeof this.documentService.create>>>,
   ): Promise<CollectionFlowDocumentModel> {
     const serializedDocument = new CollectionFlowDocumentModel();
@@ -287,7 +287,28 @@ export class CollectionFlowDocumentsService {
     serializedDocument.decision = document.decision;
     serializedDocument.decisionReason = document.decisionReason;
     serializedDocument.comment = document.comment;
-    serializedDocument.files = document.files.map(file => {
+
+    const errors = await validate(serializedDocument);
+
+    if (errors.length > 0) {
+      this.appLogger.error(
+        `Failed to serialize document. Errors: ${errors.map(error => error.toString()).join(', ')}`,
+      );
+
+      throw new InternalServerErrorException({
+        message: 'Failed to serialize document.',
+      });
+    }
+
+    return serializedDocument;
+  }
+
+  private async serializeDocumentWithFiles(
+    document: NonNullable<Awaited<ReturnType<typeof this.documentService.create>>>,
+  ): Promise<CollectionFlowDocumentModel> {
+    const serializedDocumentWithFiles = await this.serializeDocument(document);
+
+    serializedDocumentWithFiles.files = document.files.map(file => {
       const fileModel = new CollectionFlowFileModel();
       fileModel.id = file.id;
       fileModel.fileId = file.fileId;
@@ -299,7 +320,7 @@ export class CollectionFlowDocumentsService {
       return fileModel;
     });
 
-    const errors = await validate(serializedDocument);
+    const errors = await validate(serializedDocumentWithFiles);
 
     if (errors.length > 0) {
       this.appLogger.error(
@@ -313,6 +334,6 @@ export class CollectionFlowDocumentsService {
       });
     }
 
-    return serializedDocument;
+    return serializedDocumentWithFiles;
   }
 }
