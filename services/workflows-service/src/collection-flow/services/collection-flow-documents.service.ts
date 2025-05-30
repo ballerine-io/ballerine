@@ -42,7 +42,7 @@ export class CollectionFlowDocumentsService {
 
     return Promise.all(
       latestDocuments.map(document =>
-        this.serializeDocument(
+        this.serializeDocumentWithFiles(
           document as NonNullable<Awaited<ReturnType<typeof this.documentService.create>>>,
         ),
       ),
