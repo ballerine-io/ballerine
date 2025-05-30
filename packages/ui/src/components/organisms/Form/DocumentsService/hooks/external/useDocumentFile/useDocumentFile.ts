@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { IDocumentWithFiles, TDocumentEntityType } from '../../../types';
 import { useDocumentsService } from '../../internal/useDocumentsService';
 import { useDocument } from '../useDocument';
@@ -31,7 +31,7 @@ export const useDocumentFile = ({
   entityType,
   entityId,
 }: IUseDocumentFileParams) => {
-  const { isLoadingDocuments, files } = useDocumentsService();
+  const { files } = useDocumentsService();
   const document = useDocument({ type, category, entityType, entityId });
   const { documentWithFile, isLoading, isFetching } = useDocumentWithFile({ document });
 
@@ -42,16 +42,11 @@ export const useDocumentFile = ({
   }, [documentWithFile]);
 
   const file = useMemo(() => {
-    const fileInStorage = files.files[files.composeFileId({ type, category, entityId })];
+    const fileInStorage =
+      files.files[files.composeFileId({ type, category, entityId, entityType })];
 
     return documentFile || fileInStorage || null;
   }, [files, documentWithFile, type, category, entityId, documentFile]);
-
-  useEffect(() => {
-    if (documentFile) {
-      files.removeFile({ type, category, entityId });
-    }
-  }, [files.removeFile]);
 
   const setFile = useCallback(
     (file: File) => {
@@ -60,6 +55,7 @@ export const useDocumentFile = ({
           type,
           category,
           entityId,
+          entityType,
         },
         file,
       );
@@ -72,6 +68,7 @@ export const useDocumentFile = ({
       type,
       category,
       entityId,
+      entityType,
     });
   }, [files]);
 

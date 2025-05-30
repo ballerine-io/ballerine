@@ -1,8 +1,15 @@
 import { describe, expect, it, test } from 'vitest';
-import { ICommonValidator } from '../../types';
+import { ICommonValidator, IValidationSchema, TBaseValidators } from '../../types';
 import { formatValidator } from './format-validator';
 
 describe('formatValidator', () => {
+  const mockSchema: IValidationSchema<TBaseValidators, any> = {
+    id: 'test',
+    validators: [],
+    metadata: {},
+    getThisContext: () => ({}),
+  };
+
   describe('email format', () => {
     const params = {
       value: { format: 'email' },
@@ -10,28 +17,30 @@ describe('formatValidator', () => {
 
     it('should not throw error for valid email', () => {
       expect(() =>
-        formatValidator('test@example.com', params as ICommonValidator<any>),
+        formatValidator('test@example.com', params as ICommonValidator<any>, mockSchema),
       ).not.toThrow();
     });
 
     it('should return true for valid email', () => {
-      expect(formatValidator('test@example.com', params as ICommonValidator<any>)).toBe(true);
-    });
-
-    it('should throw error for invalid email', () => {
-      expect(() => formatValidator('invalid-email', params as ICommonValidator<any>)).toThrow(
-        'Invalid email format.',
+      expect(formatValidator('test@example.com', params as ICommonValidator<any>, mockSchema)).toBe(
+        true,
       );
     });
 
+    it('should throw error for invalid email', () => {
+      expect(() =>
+        formatValidator('invalid-email', params as ICommonValidator<any>, mockSchema),
+      ).toThrow('Invalid email format.');
+    });
+
     it('should throw error for empty string', () => {
-      expect(() => formatValidator('', params as ICommonValidator<any>)).toThrow(
+      expect(() => formatValidator('', params as ICommonValidator<any>, mockSchema)).toThrow(
         'Invalid email format.',
       );
     });
 
     it('should return true for non-string value', () => {
-      expect(formatValidator(123, params as ICommonValidator<any>)).toBe(true);
+      expect(formatValidator(123, params as ICommonValidator<any>, mockSchema)).toBe(true);
     });
   });
 
@@ -90,24 +99,28 @@ describe('formatValidator', () => {
       '358451234567', // Finland (alternative format, fixed)
       '972501234567', // Israel (valid)
     ])('should not throw error for valid phone number from country code %s', phoneNumber => {
-      expect(() => formatValidator(phoneNumber, params as ICommonValidator<any>)).not.toThrow();
+      expect(() =>
+        formatValidator(phoneNumber, params as ICommonValidator<any>, mockSchema),
+      ).not.toThrow();
     });
 
     it('should return true for valid phone number', () => {
-      expect(formatValidator('12025550145', params as ICommonValidator<any>)).toBe(true);
+      expect(formatValidator('12025550145', params as ICommonValidator<any>, mockSchema)).toBe(
+        true,
+      );
     });
 
     test.each(['invalid-phone', '123', '12345', 'abcdefghij', '123abc456', ''])(
       'should throw error for invalid phone number: %s',
       phoneNumber => {
-        expect(() => formatValidator(phoneNumber, params as ICommonValidator<any>)).toThrow(
-          'Invalid phone format.',
-        );
+        expect(() =>
+          formatValidator(phoneNumber, params as ICommonValidator<any>, mockSchema),
+        ).toThrow('Invalid phone format.');
       },
     );
 
     it('should return true for non-string value', () => {
-      expect(formatValidator(123, params as ICommonValidator<any>)).toBe(true);
+      expect(formatValidator(123, params as ICommonValidator<any>, mockSchema)).toBe(true);
     });
   });
 
@@ -117,7 +130,7 @@ describe('formatValidator', () => {
     };
 
     it('should throw error for unsupported format', () => {
-      expect(() => formatValidator('test', params as ICommonValidator<any>)).toThrow(
+      expect(() => formatValidator('test', params as ICommonValidator<any>, mockSchema)).toThrow(
         'Format validator unsupported is not supported.',
       );
     });

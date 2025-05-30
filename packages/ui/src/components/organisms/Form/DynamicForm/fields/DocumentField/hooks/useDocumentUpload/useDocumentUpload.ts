@@ -54,7 +54,7 @@ export const useDocumentUpload = (
 
       if (uploadOn === 'change') {
         try {
-          const result = document
+          document
             ? await reuploadDocument(e.target?.files?.[0] as File)
             : await createDocument(e.target?.files?.[0] as File);
 

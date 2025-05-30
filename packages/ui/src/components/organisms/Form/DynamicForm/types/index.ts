@@ -5,6 +5,7 @@ import {
   ICommonValidator,
   IValidationError,
   IValidationParams,
+  TBaseValidators,
   TValidators,
 } from '../../Validator';
 import { IEventsProviderProps } from '../providers/EventsProvider';
@@ -22,7 +23,7 @@ export interface IFormElement<TElements = string, TParams = object> {
   valueDestination: string;
   element: TElements;
   defaultValue?: unknown;
-  validate?: TValidators;
+  validate?: TValidators<TBaseValidators | 'document'>;
   disable?: IRule[];
   hidden?: IRule[];
   children?: IFormElement[];

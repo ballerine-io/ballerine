@@ -1,8 +1,6 @@
-import { fetchDocumentsByIds, UISchema } from '@/domains/collection-flow';
+import { UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { useEffect, useState } from 'react';
-import { getDocumentIdsFromContext } from './helpers/get-document-ids-from-context';
-import { mapDocumentRecordsToContextDocuments } from './helpers/map-document-records-to-context-documents';
 
 export const useCollectionFlowContext = (context: CollectionFlowContext, uiSchema: UISchema) => {
   const [documentsState, setDocumentsState] = useState({ isLoading: false, documentIds: [] });
@@ -13,17 +11,19 @@ export const useCollectionFlowContext = (context: CollectionFlowContext, uiSchem
       try {
         setDocumentsState({ isLoading: true, documentIds: [] });
 
-        const documentIds = getDocumentIdsFromContext(context, uiSchema);
+        // const documentIds = getDocumentIdsFromContext(context, uiSchema);
 
-        if (!documentIds?.length) {
-          setFinalContext(context);
+        // if (!documentIds?.length) {
+        //   setFinalContext(context);
 
-          return;
-        }
+        //   return;
+        // }
 
-        const documents = await fetchDocumentsByIds(documentIds);
+        // const documents = await fetchDocumentsByIds(documentIds);
 
-        setFinalContext(mapDocumentRecordsToContextDocuments(context, uiSchema, documents));
+        // setFinalContext(mapDocumentRecordsToContextDocuments(context, uiSchema, documents));
+
+        setFinalContext(context);
       } catch (error) {
         setDocumentsState({ isLoading: false, documentIds: [] });
         setFinalContext(context);

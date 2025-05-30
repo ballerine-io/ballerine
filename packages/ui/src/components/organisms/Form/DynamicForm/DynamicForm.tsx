@@ -1,7 +1,6 @@
 import { forwardRef, useImperativeHandle, useMemo } from 'react';
 
 import { Renderer, TRendererSchema } from '../../Renderer';
-import { ValidatorProvider } from '../Validator';
 import { DynamicFormContext, IDynamicFormContext } from './context';
 import { defaultValidationParams } from './defaults';
 import { useSubmit } from './hooks/external/useSubmit';
@@ -18,6 +17,11 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { HttpClientProvider } from './providers/HttpClientProvider';
 import { queryClient } from './utils/query-client';
 import { DocumentsService } from '../DocumentsService';
+import { ValidatorWrapper } from './providers/ValidatorWrapper';
+import { registerValidator } from '../Validator/utils/register-validator';
+import { documentValidator } from './validators/document';
+
+registerValidator('document', documentValidator);
 
 export const DynamicFormV2 = forwardRef(
   <TValues extends object>(
@@ -107,7 +111,7 @@ export const DynamicFormV2 = forwardRef(
             <TaskRunner>
               <EventsProvider onEvent={onEvent}>
                 <DynamicFormContext.Provider value={context}>
-                  <ValidatorProvider
+                  <ValidatorWrapper
                     schema={validationSchema}
                     value={valuesAndMetadata}
                     {...validationParams}
@@ -116,7 +120,7 @@ export const DynamicFormV2 = forwardRef(
                       elements={elements}
                       schema={context.elementsMap as unknown as TRendererSchema}
                     />
-                  </ValidatorProvider>
+                  </ValidatorWrapper>
                 </DynamicFormContext.Provider>
               </EventsProvider>
               <Toaster richColors />

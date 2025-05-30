@@ -1,5 +1,10 @@
 import { AnyObject } from '@/common';
-import { IValidationSchema, TDeepthLevelStack } from '../../../Validator';
+import {
+  IValidationSchema,
+  TBaseValidators,
+  TDeepthLevelStack,
+  TValidators,
+} from '../../../Validator';
 import { contextBuilders } from '../../context-builders';
 import { IFormElement } from '../../types';
 
@@ -9,11 +14,11 @@ export interface IContextBuildersMap {
 
 const getValueDestination = (element: IFormElement<any>, parent?: IFormElement<any>) => {
   if (parent?.element === 'entityfieldgroup' && element.element === 'documentfield') {
-    return parent.valueDestination;
+    return `${parent.valueDestination}[$0]`;
   }
 
   if (element.element === 'documentfield' && !parent) {
-    return 'metadata.businessId';
+    return 'entity.ballerineEntityId';
   }
 
   return element.valueDestination;
@@ -65,7 +70,7 @@ export const buildValidationSchemaFromFormElements = (
       } as IValidationSchema;
 
       if (element.validate) {
-        schemaElement.validators = element.validate;
+        schemaElement.validators = element.validate as TValidators<TBaseValidators, object>;
       }
 
       if (element.children?.length) {
