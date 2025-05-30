@@ -33,7 +33,9 @@ export const useDocumentFile = ({
 }: IUseDocumentFileParams) => {
   const { files } = useDocumentsService();
   const document = useDocument({ type, category, entityType, entityId });
-  const { documentWithFile, isLoading, isFetching } = useDocumentWithFile({ document });
+  const { documentWithFile, isLoading, isFetching } = useDocumentWithFile({
+    document,
+  });
 
   const documentFile = useMemo(() => {
     if (documentWithFile) {
@@ -45,7 +47,7 @@ export const useDocumentFile = ({
     const fileInStorage =
       files.files[files.composeFileId({ type, category, entityId, entityType })];
 
-    return documentFile || fileInStorage || null;
+    return fileInStorage || documentFile || null;
   }, [files, documentWithFile, type, category, entityId, documentFile]);
 
   const setFile = useCallback(

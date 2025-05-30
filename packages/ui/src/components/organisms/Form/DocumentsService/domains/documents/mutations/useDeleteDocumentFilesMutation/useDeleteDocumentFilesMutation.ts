@@ -5,12 +5,12 @@ import { queryClient } from '@/components/organisms/Form/DynamicForm/utils/query
 import { documentsQueryKeys } from '../../documents.query-keys';
 import { toast } from 'sonner';
 
-export const useDeleteDocumentMutation = () => {
+export const useDeleteDocumentFilesMutation = () => {
   const httpClient = useHttpClient();
 
   const deleteDocument = useCallback(
     async (documentId: string) => {
-      const request = await httpClient.delete(`/collection-flow/documents/${documentId}`);
+      const request = await httpClient.delete(`/collection-flow/documents/${documentId}/files`);
       return request.data;
     },
     [httpClient],
@@ -18,8 +18,9 @@ export const useDeleteDocumentMutation = () => {
 
   return useMutation({
     mutationFn: deleteDocument,
-    onSuccess: () => {
+    onSuccess: (_, documentId) => {
       queryClient.invalidateQueries({ queryKey: documentsQueryKeys.list().queryKey });
+      queryClient.invalidateQueries({ queryKey: documentsQueryKeys.item(documentId).queryKey });
     },
     onError: error => {
       console.error('Failed to delete document', error);

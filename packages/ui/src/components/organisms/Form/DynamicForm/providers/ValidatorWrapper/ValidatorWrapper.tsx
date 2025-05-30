@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDocumentsService } from '../../../DocumentsService/hooks/internal/useDocumentsService';
 import { IValidatorProviderProps, ValidatorProvider } from '../../../Validator/ValidatorProvider';
 import { IValidatorWrapperContext } from './types';
@@ -14,39 +14,29 @@ export const ValidatorWrapper = <TValue extends object>({
     return {
       ...value,
       _documents: documents,
-      _files: files.files,
-    } as TValue & IValidatorWrapperContext;
-  }, [value, documents, files.files]);
-
-  useEffect(() => {
-    // Manually injecting files in file storage so they can be used in validators context
-    documents.forEach(document => {
-      const documentFile = document.files?.[0];
-
-      if (!documentFile) {
-        files.removeFile({
+      _files: documents.reduce((acc, document) => {
+        const fileId = files.composeFileId({
           type: document.type,
           category: document.category,
           entityType: document.businessId ? 'business' : 'ubo',
           entityId: document.businessId ? document.businessId : document.endUserId!,
         });
-      } else {
-        const fileFromDocumentFile = new File([], documentFile.name, {
-          type: documentFile.mimeType,
-        });
 
-        files.setFile(
-          {
-            type: document.type,
-            category: document.category,
-            entityType: document.businessId ? 'business' : 'ubo',
-            entityId: document.businessId ? document.businessId : document.endUserId!,
-          },
-          fileFromDocumentFile,
-        );
-      }
-    });
-  }, [documents, files.setFile, files.removeFile]);
+        if (!document.files?.[0]) {
+          return acc;
+        }
+
+        return {
+          ...acc,
+          [fileId]: new File([], document.files?.[0]?.name!, {
+            type: document.files?.[0]?.mimeType,
+          }),
+        };
+      }, files.files),
+    } as TValue & IValidatorWrapperContext;
+  }, [value, documents, files.files]);
+
+  console.log('valueWithFilesAndDocuments', valueWithFilesAndDocuments);
 
   return (
     <ValidatorProvider value={valueWithFilesAndDocuments} {...rest}>

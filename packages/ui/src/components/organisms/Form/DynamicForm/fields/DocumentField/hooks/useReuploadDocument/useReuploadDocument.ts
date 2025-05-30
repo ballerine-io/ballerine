@@ -37,6 +37,11 @@ export const useReuploadDocument = ({
       await mutateAsync({
         documentFile: file,
         documentId: document.id,
+        metadata: {
+          documentType: element.params?.documentType!,
+          documentVariant: element.params?.documentVariant!,
+          pageIndex: element.params?.pageIndex! || 1,
+        },
       });
     },
     [document, mutateAsync],

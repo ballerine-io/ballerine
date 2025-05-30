@@ -10,7 +10,7 @@ import { formatDocumentId } from '../../utils/format-document-id';
 const isValueAnEntity = (value: unknown): value is IEntity => {
   if (typeof value !== 'object' || value === null) return false;
 
-  return '__id' in value && 'ballerineEntityId' in value;
+  return '__id' in value || 'ballerineEntityId' in value;
 };
 
 const isValueBusinessId = (value: unknown): value is string => {

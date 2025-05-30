@@ -14,5 +14,7 @@ export const useValidationSchema = (elements: Array<IFormElement<any, any>>) => 
     [elements, documents, metadata],
   );
 
+  console.log(validationSchema);
+
   return validationSchema;
 };

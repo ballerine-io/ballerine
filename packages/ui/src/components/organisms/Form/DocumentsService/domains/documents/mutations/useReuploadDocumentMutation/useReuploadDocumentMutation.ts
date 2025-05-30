@@ -10,13 +10,28 @@ export const useReuploadDocumentMutation = () => {
   const httpClient = useHttpClient();
 
   const reuploadDocument = useCallback(
-    async ({ documentId, documentFile }: { documentId: string; documentFile: File }) => {
+    async ({
+      documentId,
+      documentFile,
+      metadata,
+    }: {
+      documentId: string;
+      documentFile: File;
+      metadata: {
+        documentType: string;
+        documentVariant: string;
+        pageIndex: number;
+      };
+    }) => {
       const formData = new FormData();
 
       formData.append('file', documentFile);
+      formData.append('documentType', metadata.documentType);
+      formData.append('documentVariant', metadata.documentVariant);
+      formData.append('page', metadata.pageIndex.toString());
 
-      const request = await httpClient.post<IDocumentWithFiles>(
-        `/collection-flow/documents/${documentId}/reupload`,
+      const request = await httpClient.put<IDocumentWithFiles>(
+        `/collection-flow/documents/${documentId}`,
         formData,
       );
 
@@ -27,8 +42,9 @@ export const useReuploadDocumentMutation = () => {
 
   return useMutation({
     mutationFn: reuploadDocument,
-    onSuccess: () => {
+    onSuccess: (_, { documentId }) => {
       queryClient.invalidateQueries({ queryKey: documentsQueryKeys.list().queryKey });
+      queryClient.invalidateQueries({ queryKey: documentsQueryKeys.item(documentId).queryKey });
     },
     onError: error => {
       console.error('Failed to reupload document', error);

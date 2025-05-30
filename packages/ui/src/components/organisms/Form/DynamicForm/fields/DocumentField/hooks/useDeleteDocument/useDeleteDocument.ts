@@ -1,10 +1,10 @@
-import { useDeleteDocumentMutation } from '@/components/organisms/Form/DocumentsService';
+import { useDeleteDocumentFilesMutation } from '@/components/organisms/Form/DocumentsService';
 import { useCallback } from 'react';
 
-export const useDeleteDocument = () => {
-  const { mutateAsync, isPending: isDeletingDocument } = useDeleteDocumentMutation();
+export const useDeleteDocumentFiles = () => {
+  const { mutateAsync, isPending: isDeletingDocumentFiles } = useDeleteDocumentFilesMutation();
 
-  const deleteDocument = useCallback(
+  const deleteDocumentFiles = useCallback(
     async (documentId: string) => {
       await mutateAsync(documentId);
     },
@@ -12,7 +12,7 @@ export const useDeleteDocument = () => {
   );
 
   return {
-    deleteDocument,
-    isDeletingDocument,
+    deleteDocumentFiles,
+    isDeletingDocumentFiles,
   };
 };

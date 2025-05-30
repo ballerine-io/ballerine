@@ -1,45 +1,27 @@
-//@ts-nocheck
-import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, AnyObject, ctw } from '@/common';
-import { IHttpParams } from '@/common/hooks/useHttp';
+import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, ctw } from '@/common';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
-import { formatValueDestination } from '@/components/organisms/Form/Validator';
 import { createTestId } from '@/components/organisms/Renderer/utils/create-test-id';
-import { set } from 'lodash';
-import get from 'lodash/get';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { useElementId, useField } from '../../../../hooks/external';
-import { useMountEvent } from '../../../../hooks/internal/useMountEvent';
-import { useUnmountEvent } from '../../../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../../../layouts/FieldDescription';
 import { FieldErrors } from '../../../../layouts/FieldErrors';
 import { FieldLayout } from '../../../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
-import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement, TDynamicFormElement } from '../../../../types';
-import { getDocumentObjectFromDocumentsList, IDocumentFieldParams } from '../../../DocumentField';
-import { buildDocumentFormData } from '../../../DocumentField/helpers/build-document-form-data';
+import { IDocumentFieldParams } from '../../../DocumentField';
 import { useDocumentLabelElement } from '../../../DocumentField/hooks/useDocumentLabelElement';
 import { useDocumentState } from '../../../DocumentField/hooks/useDocumentState/useDocumentState';
-import {
-  checkIfDocumentInRevision,
-  checkIfDocumentRequested,
-} from '../../../DocumentField/hooks/useDocumentUpload/helpers/check-if-document-requested';
-import { createOrUpdateDocumentInList } from '../../../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-document-in-list';
-import { getFileOrFileIdFromDocumentsList } from '../../../DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
-import { removeDocumentFromListByTemplateId } from '../../../DocumentField/hooks/useDocumentUpload/helpers/remove-document-from-list-by-template-id';
 import { useStack } from '../../../FieldList';
 import { TEntityFieldGroupType } from '../../EntityFieldGroup';
 import { useEntityField } from '../../providers/EntityFieldProvider';
-import {
-  DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS,
-  DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS,
-  DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_UPDATE_PARAMS,
-} from './defaults';
-import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
+import { useCreateDocument } from '../../../DocumentField/hooks/useCreateDocument';
+import { useDeleteDocumentFiles } from '../../../DocumentField/hooks/useDeleteDocument';
+import { useReuploadDocument } from '../../../DocumentField/hooks/useReuploadDocument';
+import { useDocumentFile } from '@/components/organisms/Form/DocumentsService';
 
 export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
   type: TEntityFieldGroupType;
@@ -48,18 +30,12 @@ export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
 export const EntityFieldGroupDocument: TDynamicFormElement<
   'documentfield',
   IEntityFieldGroupDocumentParams
-> = ({ element: _element }) => {
-  const { uploadOn = 'change' } = _element.params || {};
+> = ({ element }) => {
+  const { uploadOn = 'change' } = element.params || {};
   const { values } = useDynamicForm();
   const { stack } = useStack();
-  const element = useMemo(
-    () => ({
-      ..._element,
-      valueDestination: formatValueDestination(_element.valueDestination, stack),
-    }),
-    [_element, stack],
-  );
-  const { isSyncing, entityId } = useEntityField();
+
+  const { isSyncing, entityId, tempEntityId } = useEntityField();
   const { addTask, removeTask } = useTaskRunner();
   const id = useElementId(element, stack);
 
@@ -73,66 +49,45 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     element as IFormElement<'documentfield', IDocumentFieldParams>,
   );
 
-  const { run: createDocument, isLoading: isCreatingDocument } = useFormHttp(
-    (element.params?.httpParams?.createDocument as IHttpParams) ||
-      DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS,
-  );
+  const { createDocument, isCreatingDocument } = useCreateDocument({
+    element,
+    entityId: entityId || tempEntityId,
+    entityType: 'ubo',
+  });
 
-  const { run: updateDocument, isLoading: isUpdatingDocument } = useFormHttp(
-    (element.params?.httpParams?.updateDocument as IHttpParams) ||
-      DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_UPDATE_PARAMS,
-  );
+  const { reuploadDocument, isReuploadingDocument } = useReuploadDocument({
+    element,
+    entityId: entityId || tempEntityId,
+    entityType: 'ubo',
+  });
 
-  const { run: deleteDocument, isLoading: isDeletingDocument } = useFormHttp(
-    (element.params?.httpParams?.deleteDocument as IHttpParams) ||
-      DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_REMOVAL_PARAMS,
-  );
+  const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();
 
-  useMountEvent(element);
-  useUnmountEvent(element);
+  const {
+    file,
+    isLoading: isLoadingFile,
+    isFetching: isFetchingFile,
+    document,
+    setFile,
+    removeFile,
+  } = useDocumentFile({
+    type: element.params?.template?.type!,
+    category: element.params?.template?.category!,
+    entityType: 'ubo',
+    entityId: entityId || tempEntityId,
+  });
 
   const { params } = element;
   const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
     params || {};
 
-  const {
-    value: documentsList,
-    disabled,
-    onChange,
-    onBlur,
-    onFocus,
-  } = useField<Array<IDocumentFieldParams['template']> | undefined>(element, stack);
-  const value = useMemo(
-    () =>
-      getFileOrFileIdFromDocumentsList(
-        documentsList,
-        element as IFormElement<'documentfield', IDocumentFieldParams>,
-      ),
-    [documentsList, element],
-  );
-
-  const document = useMemo(() => {
-    return getDocumentObjectFromDocumentsList(
-      documentsList,
-      element as IFormElement<'documentfield', IDocumentFieldParams>,
-    );
-  }, [documentsList, element]);
-
-  const file = useMemo(() => {
-    if (value instanceof File) {
-      return value;
-    }
-
-    if (typeof value === 'string') {
-      return new File([], value);
-    }
-
-    return undefined;
-  }, [value]);
+  const { value, disabled, onChange, onBlur, onFocus } = useField(element, stack);
 
   useLayoutEffect(() => {
-    updateState(typeof file === 'string' ? file : undefined, document);
-  }, [file, document, updateState]);
+    if (document) {
+      updateState(document);
+    }
+  }, [document, updateState]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const focusInputOnContainerClick = useCallback(() => {
@@ -146,114 +101,34 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
       return;
     }
 
-    const fileIdOrFile = getFileOrFileIdFromDocumentsList(documentsList, element);
-
-    if (typeof fileIdOrFile === 'string') {
-      await deleteDocument({
-        ids: [fileIdOrFile],
-      });
+    if (document) {
+      await deleteDocumentFiles(document.id);
     }
-
-    const updatedDocuments = removeDocumentFromListByTemplateId(
-      documentsList,
-      element.params?.template?.id as string,
-    );
-
-    onChange(updatedDocuments);
+    onChange(value);
 
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [documentsList, element, deleteDocument, onChange]);
+
+    removeFile();
+  }, [value, element, document, deleteDocumentFiles, onChange, removeFile]);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
 
-      const documents = get(valuesRef.current, element.valueDestination);
-      const document = getDocumentObjectFromDocumentsList(documents, element);
+      setFile(e.target?.files?.[0] as File);
 
-      const isDocumentRequestedOrInRevision =
-        checkIfDocumentRequested(document) || checkIfDocumentInRevision(document);
-
-      if (isDocumentRequestedOrInRevision) {
-        if (uploadOn === 'change') {
-          try {
-            const documents = get(valuesRef.current, element.valueDestination);
-            const document = getDocumentObjectFromDocumentsList(documents, element);
-
-            const documentUploadPayload = buildDocumentFormData(
-              element,
-              { entityId: entityId as string },
-              e.target?.files?.[0] as File,
-              document,
-            );
-
-            const result = isDocumentRequestedOrInRevision
-              ? await updateDocument(documentUploadPayload)
-              : await createDocument(documentUploadPayload);
-
-            const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
-            onChange(updatedDocuments);
-          } catch (error) {
-            console.error('Failed to upload file.', error);
+      if (uploadOn === 'change' && entityId) {
+        try {
+          if (document) {
+            await reuploadDocument(e.target?.files?.[0] as File);
           }
+
+          onChange(value);
+        } catch (error) {
+          console.error('Failed to upload file.', error);
         }
-
-        if (uploadOn === 'submit') {
-          const documents = get(valuesRef.current, element.valueDestination);
-          const updatedDocuments = createOrUpdateDocumentInList(
-            documents,
-            element,
-            e.target?.files?.[0] as File,
-          );
-
-          onChange(updatedDocuments);
-
-          const taskRun = async (context: AnyObject) => {
-            try {
-              const documents = get(context, element.valueDestination);
-
-              const document = getDocumentObjectFromDocumentsList(documents, element);
-
-              const documentUploadPayload = buildDocumentFormData(
-                element,
-                { entityId: entityId as string },
-                e.target?.files?.[0] as File,
-                document,
-              );
-
-              const result = isDocumentRequestedOrInRevision
-                ? await updateDocument(documentUploadPayload)
-                : await createDocument(documentUploadPayload);
-
-              const updatedDocuments = createOrUpdateDocumentInList(documents, element, result);
-
-              set(context, element.valueDestination, updatedDocuments);
-
-              return context;
-            } catch (error) {
-              console.error('Failed to upload file.', error, element);
-
-              throw error;
-            }
-          };
-
-          const task: ITask = {
-            id,
-            element,
-            run: taskRun,
-          };
-          addTask(task);
-        }
-      } else {
-        const documents = get(valuesRef.current, element.valueDestination);
-        const updatedDocuments = createOrUpdateDocumentInList(
-          documents,
-          element,
-          e.target?.files?.[0] as File,
-        );
-        onChange(updatedDocuments);
       }
     },
     [
@@ -263,12 +138,34 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
       onChange,
       id,
       element,
-      valuesRef,
-      updateDocument,
-      entityId,
+      document,
+      reuploadDocument,
       createDocument,
+      setFile,
+      value,
+      entityId,
     ],
   );
+
+  const isShouldDisable = useMemo(() => {
+    return (
+      disabled ||
+      isDeletingDocumentFiles ||
+      isSyncing ||
+      isReuploadingDocument ||
+      isCreatingDocument ||
+      isLoadingFile ||
+      isFetchingFile
+    );
+  }, [
+    disabled,
+    isDeletingDocumentFiles,
+    isSyncing,
+    isReuploadingDocument,
+    isCreatingDocument,
+    isLoadingFile,
+    isFetchingFile,
+  ]);
 
   return (
     <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
@@ -276,12 +173,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
           {
-            'pointer-events-none opacity-50':
-              disabled ||
-              isDeletingDocument ||
-              isSyncing ||
-              isUpdatingDocument ||
-              isCreatingDocument,
+            'pointer-events-none opacity-50': isShouldDisable,
           },
         )}
         onClick={focusInputOnContainerClick}
@@ -312,7 +204,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
           type="file"
           placeholder={placeholder}
           accept={acceptFileFormats}
-          disabled={disabled}
+          disabled={isShouldDisable}
           onChange={handleChange}
           onBlur={onBlur}
           onFocus={onFocus}

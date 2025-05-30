@@ -49,7 +49,7 @@ export const buildValidationSchemaFromFormElements = (
       if (element.children?.length) {
         schemaElement.children = buildValidationSchemaFromFormElements(
           element.children || [],
-          schema,
+          [],
           element,
         );
       }
@@ -76,17 +76,16 @@ export const buildValidationSchemaFromFormElements = (
       if (element.children?.length) {
         schemaElement.children = buildValidationSchemaFromFormElements(
           element.children || [],
-          schema,
+          [],
+          element,
         );
       }
 
       schema.push(schemaElement);
     } else {
-      buildValidationSchemaFromFormElements(element.children || [], schema);
+      buildValidationSchemaFromFormElements(element.children || [], schema, parent);
     }
   }
-
-  console.log(schema);
 
   return schema;
 };

@@ -20,7 +20,7 @@ import { useDocumentLabelElement } from './hooks/useDocumentLabelElement';
 import { useDocumentState } from './hooks/useDocumentState';
 import { useDocumentFile } from '../../../DocumentsService';
 import { useDynamicForm } from '../../context';
-import { useDeleteDocument } from './hooks/useDeleteDocument';
+import { useDeleteDocumentFiles } from './hooks/useDeleteDocument';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
@@ -73,7 +73,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     entityType: 'business',
     entityId: metadata.businessId!,
   });
-  const { deleteDocument, isDeletingDocument } = useDeleteDocument();
+  const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();
 
   const { params } = element;
   const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
@@ -112,7 +112,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     removeTask(id);
 
     if (document) {
-      await deleteDocument(document.id);
+      await deleteDocumentFiles(document.id);
     }
 
     removeFile();
@@ -123,10 +123,10 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   }, [document, removeFile]);
 
   const isShouldDisableInput = useMemo(() => {
-    return disabled || isDeletingDocument || (task && isRunning) || isLoadingFile || isFetchingFile;
-  }, [disabled, isDeletingDocument, task, isRunning, isLoadingFile, isFetchingFile]);
-
-  console.log('Document field file', file);
+    return (
+      disabled || isDeletingDocumentFiles || (task && isRunning) || isLoadingFile || isFetchingFile
+    );
+  }, [disabled, isDeletingDocumentFiles, task, isRunning, isLoadingFile, isFetchingFile]);
 
   return (
     <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>

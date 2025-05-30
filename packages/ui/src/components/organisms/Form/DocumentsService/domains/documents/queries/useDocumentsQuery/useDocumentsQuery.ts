@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { IDocument } from '../../../../types';
 import { documentsQueryKeys } from '../../documents.query-keys';
 
-export const useDocumentsQuery = () => {
+export const useDocumentsQuery = (excludeFiles = true) => {
   const httpClient = useHttpClient();
 
   const fetchDocuments = useCallback(async () => {
@@ -13,8 +13,13 @@ export const useDocumentsQuery = () => {
     return request.data;
   }, [httpClient]);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: documentsQueryKeys.list().queryKey,
     queryFn: fetchDocuments,
   });
+
+  return {
+    ...query,
+    data: excludeFiles ? query.data?.map(document => ({ ...document, files: [] })) : query.data,
+  };
 };
