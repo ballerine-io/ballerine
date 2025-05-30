@@ -124,14 +124,13 @@ export class DocumentService {
       transaction,
     );
 
-    await this.documentFileService.create(
+    await this.createDocumentFile(
+      createdDocument.id,
       {
-        documentId: createdDocument.id,
-        fileId: uploadedFile.id,
-        projectId,
-        ...metadata,
+        file,
+        metadata,
       },
-      undefined,
+      projectId,
       transaction,
     );
 
@@ -139,6 +138,38 @@ export class DocumentService {
       createdDocument.id,
       [projectId],
       {} as Prisma.DocumentFindFirstArgs,
+      transaction,
+    );
+  }
+
+  async createDocumentFile(
+    documentId: string,
+    {
+      file,
+      metadata,
+    }: {
+      file: Express.Multer.File;
+      metadata: Omit<
+        Static<typeof CreateDocumentFileSchema>,
+        'documentId' | 'fileId' | 'projectId'
+      >;
+    },
+    projectId: TProjectId,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, documentId, {
+      ...file,
+      mimetype: file.mimetype || '',
+    });
+
+    return await this.documentFileService.create(
+      {
+        documentId,
+        fileId: uploadedFile.id,
+        projectId,
+        ...metadata,
+      },
+      undefined,
       transaction,
     );
   }

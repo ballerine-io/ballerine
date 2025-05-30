@@ -98,15 +98,15 @@ export class CollectionFlowEntityService {
         },
       });
 
-      await transaction.endUser.delete({
-        where: {
-          id: entityId,
-        },
-      });
-
       await transaction.document.deleteMany({
         where: {
           endUserId: entityId,
+        },
+      });
+
+      await transaction.endUser.delete({
+        where: {
+          id: entityId,
         },
       });
     });

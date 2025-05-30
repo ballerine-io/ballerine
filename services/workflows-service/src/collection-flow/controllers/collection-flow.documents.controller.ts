@@ -26,6 +26,7 @@ import { FormDataValidationPipe } from '@/common/form-data-validation.pipe';
 import { CollectionFlowDocumentModel } from '../models/collection-flow-document.model';
 import { ReuploadDocumentDtoSchema } from '../dto/re-upload-document.dto';
 import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { ReuploadDocumentDto } from '../dto/reupload-document.dto';
 
 const fileParsePipe = new ParseFilePipeBuilder()
   .addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE })
@@ -148,11 +149,11 @@ export class CollectionFlowDocumentsController {
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @UseInterceptors(fileUploadInterceptor, RemoveTempFileInterceptor)
-  @Put('reupload/:documentId')
+  @Put(':documentId')
   async reuploadDocument(
     @TokenScope() tokenScope: ITokenScope,
     @Param('documentId') documentId: string,
-    @Body(new FormDataValidationPipe()) data: any,
+    @Body(new FormDataValidationPipe()) data: ReuploadDocumentDto,
     @UploadedFile(fileParsePipe)
     file: Express.Multer.File,
   ) {
@@ -165,6 +166,11 @@ export class CollectionFlowDocumentsController {
     return this.collectionFlowDocumentsService.reuploadDocument({
       documentId,
       file,
+      metadata: {
+        type: data.documentType,
+        variant: data.documentVariant,
+        page: data.page,
+      },
       workflowId: tokenScope.workflowRuntimeDataId,
       projectId: tokenScope.projectId,
     });
@@ -188,5 +194,16 @@ export class CollectionFlowDocumentsController {
     @Param('documentId') documentId: string,
   ) {
     return this.collectionFlowDocumentsService.deleteDocument(documentId, tokenScope.projectId);
+  }
+
+  @Delete(':documentId/files')
+  async deleteDocumentFiles(
+    @TokenScope() tokenScope: ITokenScope,
+    @Param('documentId') documentId: string,
+  ) {
+    return this.collectionFlowDocumentsService.deleteDocumentFiles(
+      documentId,
+      tokenScope.projectId,
+    );
   }
 }
