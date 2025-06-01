@@ -31,6 +31,7 @@ describe('CollectionFlow', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: undefined as unknown as UISchema | null,
       isLoading: false,
+      error: null,
     } as ReturnType<typeof useUISchemasQuery>);
     vi.mocked(getCollectionFlowVersion).mockReturnValue(() => <div>Mock Flow Component</div>);
   });
@@ -39,6 +40,7 @@ describe('CollectionFlow', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: undefined as unknown as UISchema | null,
       isLoading: true,
+      error: null,
     } as ReturnType<typeof useUISchemasQuery>);
 
     render(<CollectionFlow />);
@@ -50,6 +52,7 @@ describe('CollectionFlow', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: { version: 999 } as UISchema,
       isLoading: false,
+      error: null,
     } as ReturnType<typeof useUISchemasQuery>);
     vi.mocked(getCollectionFlowVersion).mockReturnValue(undefined);
 
@@ -65,6 +68,7 @@ describe('CollectionFlow', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: { version: 2 } as UISchema,
       isLoading: false,
+      error: null,
     } as ReturnType<typeof useUISchemasQuery>);
 
     render(<CollectionFlow />);
@@ -76,6 +80,7 @@ describe('CollectionFlow', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: { version: 2 } as UISchema,
       isLoading: false,
+      error: null,
     } as ReturnType<typeof useUISchemasQuery>);
 
     render(<CollectionFlow />);
