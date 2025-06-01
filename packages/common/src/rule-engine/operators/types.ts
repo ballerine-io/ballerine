@@ -8,6 +8,7 @@ import {
   IdvCheckSchema,
   UboMismatchSchema,
   AmlCheckV2Schema,
+  BankAccountVerificationSchema,
 } from '@/rule-engine/operators/schemas';
 
 import { OPERATION, OPERATOR } from './enums';
@@ -25,6 +26,8 @@ export type LastYearsParams = z.infer<typeof LastYearsSchema>;
 export type AmlCheckParams = z.infer<typeof AmlCheckSchema>;
 
 export type AmlCheckV2Params = z.infer<typeof AmlCheckV2Schema>;
+
+export type BankAccountVerificationParams = z.infer<typeof BankAccountVerificationSchema>;
 
 export type IdvCheckParams = z.infer<typeof IdvCheckSchema>;
 
