@@ -64,6 +64,19 @@ export class KycService {
   }) {
     const EMAIL_API_URL = this.configService.get('EMAIL_API_URL');
     const EMAIL_API_TOKEN = this.configService.get('EMAIL_API_TOKEN');
+
+    if (!EMAIL_API_URL) {
+      this.logger.error('No EMAIL_API_URL defined');
+
+      throw new InternalServerErrorException('No EMAIL_API_URL defined');
+    }
+
+    if (!EMAIL_API_TOKEN) {
+      this.logger.error('No EMAIL_API_TOKEN defined');
+
+      throw new InternalServerErrorException('No EMAIL_API_TOKEN defined');
+    }
+
     const payload = {
       from: {
         email: 'no-reply@ballerine.com',
@@ -88,18 +101,6 @@ export class KycService {
         ? 'd-2c6ae291d9df4f4a8770d6a4e272d803'
         : 'd-61c568cfa5b145b5916ff89790fe2065',
     };
-
-    if (!EMAIL_API_URL) {
-      this.logger.error('No EMAIL_API_URL defined');
-
-      throw new InternalServerErrorException('No EMAIL_API_URL defined');
-    }
-
-    if (!EMAIL_API_TOKEN) {
-      this.logger.error('No EMAIL_API_TOKEN defined');
-
-      throw new InternalServerErrorException('No EMAIL_API_TOKEN defined');
-    }
 
     const emailResponse = await this.axiosClient.post(EMAIL_API_URL, payload, {
       headers: {
@@ -130,6 +131,12 @@ export class KycService {
     revisionReason: string | undefined;
     projectId: TProjectId;
   }) {
+    const APP_API_URL = this.configService.get('APP_API_URL');
+
+    if (!APP_API_URL) {
+      throw new InternalServerErrorException('APP_API_URL is not defined');
+    }
+
     const endUser = await this.endUserService.getById(
       endUserId,
       {
@@ -149,18 +156,16 @@ export class KycService {
       throw new BadRequestException('End-user email is required');
     }
 
+    if (!isType(z.object({ additionalInfo: z.object({ companyName: z.string() }) }))(endUser)) {
+      throw new BadRequestException('End-user company name is required');
+    }
+
     const customer = await this.customerService.getByProjectId(projectId, {
       select: {
         name: true,
         displayName: true,
       },
     });
-
-    const APP_API_URL = this.configService.get('APP_API_URL');
-
-    if (!APP_API_URL) {
-      throw new InternalServerErrorException('APP_API_URL is not defined');
-    }
 
     const callbackUrl = `${APP_API_URL}/api/v1/external/workflows/${workflowRuntimeDataId}/hook/NO_OP?processName=kyc-unified-api`;
     const {
@@ -184,10 +189,6 @@ export class KycService {
       dateOfBirth: endUser.dateOfBirth?.toISOString().split('T')[0] ?? undefined,
       projectId,
     });
-
-    if (!isType(z.object({ additionalInfo: z.object({ companyName: z.string() }) }))(endUser)) {
-      throw new BadRequestException('End-user company name is required');
-    }
 
     await this.sendIndividualVerificationEmail({
       firstName: endUser.firstName,

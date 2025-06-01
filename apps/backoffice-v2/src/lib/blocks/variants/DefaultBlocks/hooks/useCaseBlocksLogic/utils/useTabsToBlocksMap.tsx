@@ -260,7 +260,7 @@ export const useTabsToBlocksMap = ({
           return mutateInitiateIndividualVerificationAndSendEmail({
             endUserId: childWorkflow?.context?.entity?.data?.ballerineEntityId,
             ongoingMonitoring: false,
-            withAml: false,
+            withAml: true,
             workflowRuntimeDataId: childWorkflow?.id,
             vendor: 'veriff',
             language: childWorkflow?.workflowDefinition?.config?.language ?? 'en',
@@ -363,7 +363,7 @@ export const useTabsToBlocksMap = ({
           return mutateInitiateIndividualVerificationAndSendEmail({
             endUserId: director.id,
             ongoingMonitoring: false,
-            withAml: false,
+            withAml: true,
             workflowRuntimeDataId: workflow?.id,
             vendor: 'veriff',
             language: workflow?.workflowDefinition?.config?.language ?? 'en',
