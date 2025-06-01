@@ -186,6 +186,36 @@ describe('formatIndividualVerification #unit', () => {
         endUserId: 'cm9vhp2nn000wphf4xaocp9v1',
         matchStatus: 'possible_match',
       };
+      const document = {
+        type: {
+          value: 'DRIVERS_LICENSE',
+        },
+        number: {
+          value: '3390227',
+          sources: ['VIZ'],
+          confidenceCategory: 'high',
+        },
+        country: {
+          value: 'IL',
+        },
+        validFrom: {
+          value: '2025-03-11',
+          sources: ['VIZ'],
+          confidenceCategory: 'high',
+        },
+        firstIssue: null,
+        validUntil: {
+          value: '2027-03-11',
+          sources: ['VIZ'],
+          confidenceCategory: 'high',
+        },
+        placeOfIssue: null,
+        licenseNumber: null,
+        processNumber: null,
+        residencePermitType: null,
+        city: null,
+        issueNumber: null,
+      };
 
       // Act
       const formattedIndividualVerification = formatIndividualVerification({
@@ -195,6 +225,7 @@ describe('formatIndividualVerification #unit', () => {
         person,
         insights,
         aml,
+        document,
       });
 
       // Assert
