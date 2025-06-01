@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { toast } from 'sonner';
 import { t } from 'i18next';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -143,6 +144,7 @@ export const useTabsToBlocksMap = ({
   const { mutate: mutateInitiateIndividualVerificationAndSendEmail } =
     useInitiateIndividualVerificationAndSendEmailMutation();
 
+  const { onEditCollectionFlow } = useEditCollectionFlow();
   const getInitiateKycEvent = (nextEvents: string[]) => {
     if (nextEvents?.includes('start')) {
       return 'start';
@@ -288,6 +290,7 @@ export const useTabsToBlocksMap = ({
               ids,
               workflowId: childWorkflow?.id,
             }),
+        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
         reasons:
           childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
             ({ enum: enum_ }) => !!enum_,
@@ -299,6 +302,10 @@ export const useTabsToBlocksMap = ({
           !initiateSanctionsScreeningEvent,
           !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
           !caseState.actionButtonsEnabled,
+        ].some(Boolean),
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
         ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
@@ -376,11 +383,16 @@ export const useTabsToBlocksMap = ({
         onReuploadNeeded:
           ({ reason, ids }: { reason: string; ids: string[] }) =>
           () => {},
+        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
         reasons: [],
         isReuploadNeededDisabled: true,
         isApproveDisabled: true,
         isInitiateKycDisabled: [!workflow?.id, !caseState.actionButtonsEnabled].some(Boolean),
         isInitiateSanctionsScreeningDisabled: true,
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+        ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
     [],

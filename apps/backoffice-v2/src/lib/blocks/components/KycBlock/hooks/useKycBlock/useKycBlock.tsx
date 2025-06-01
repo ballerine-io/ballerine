@@ -20,7 +20,7 @@ import {
 } from '@ballerine/ui';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { PlayCircle, Send } from 'lucide-react';
+import { PlayCircle, Send, Pencil } from 'lucide-react';
 import { ExtendedJson } from '@/common/types';
 import { Select } from '@/common/components/atoms/Select/Select';
 import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
@@ -64,6 +64,7 @@ export const useKycBlock = ({
   onInitiateSanctionsScreening,
   onApprove,
   onReuploadNeeded,
+  onEdit,
   documents: passedDocuments,
   kycSession,
   aml,
@@ -76,12 +77,14 @@ export const useKycBlock = ({
   isInitiateSanctionsScreeningDisabled,
   isApproveDisabled,
   isReuploadNeededDisabled,
+  isEditDisabled,
   reasons,
 }: {
   onInitiateKyc: () => void;
   onInitiateSanctionsScreening: () => void;
   onApprove: ({ ids }: { ids: string[] }) => () => void;
   onReuploadNeeded: ({ reason, ids }: { reason: string; ids: string[] }) => () => void;
+  onEdit: () => void;
   documents: TDocument[];
   kycSession: Record<
     string,
@@ -127,6 +130,7 @@ export const useKycBlock = ({
   isInitiateSanctionsScreeningDisabled: boolean;
   isApproveDisabled: boolean;
   isReuploadNeededDisabled: boolean;
+  isEditDisabled: boolean;
   reasons: string[];
 }) => {
   const noReasons = !reasons?.length;
@@ -525,6 +529,16 @@ export const useKycBlock = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem className={`h-6 w-full`} asChild>
+                  <Button
+                    variant={'ghost'}
+                    className="justify-start text-xs leading-tight aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                    onClick={onEdit}
+                    disabled={isEditDisabled}
+                  >
+                    <Pencil size={16} className="me-2" /> Edit
+                  </Button>
+                </DropdownMenuItem>
                 <DropdownMenuItem className={`h-6 w-full`} asChild>
                   <Button
                     variant={'ghost'}
