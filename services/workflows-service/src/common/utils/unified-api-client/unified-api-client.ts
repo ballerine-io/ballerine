@@ -16,7 +16,6 @@ import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
-import { PageDto } from '@/common/dto';
 import { isType } from '@ballerine/common';
 import z from 'zod';
 
@@ -250,9 +249,9 @@ export class UnifiedApiClient {
   }
 
   public async getLatestAssessmentsByWorkflowRuntimeDataId({
-                                                             workflowRuntimeDataId,
-                                                             projectId,
-                                                           }: {
+    workflowRuntimeDataId,
+    projectId,
+  }: {
     workflowRuntimeDataId: string;
     projectId: string;
   }) {
