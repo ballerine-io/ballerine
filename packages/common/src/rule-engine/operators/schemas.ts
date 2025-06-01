@@ -73,6 +73,10 @@ export const AmlCheckSchema = z
 
 export const AmlCheckV2Schema = BaseOperationsValueSchema;
 
+export const BankAccountVerificationSchema = z.object({
+  operator: z.literal(OPERATION.BANK_ACCOUNT_VERIFICATION),
+});
+
 export const IdvCheckSchema = z.object({
   childWorkflowName: z.string(),
 });
