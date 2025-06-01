@@ -4,8 +4,8 @@ import { buildValidationSchemaFromFormElements } from '../../../helpers/build-va
 import { IFormElement } from '../../../types';
 import { useValidationSchema } from './useValidationSchema';
 
-vi.mock('../../../helpers/convert-form-emenents-to-validation-schema', () => ({
-  convertFormElementsToValidationSchema: vi.fn(),
+vi.mock('../../../helpers/build-validation-schema-from-form-elements', () => ({
+  buildValidationSchemaFromFormElements: vi.fn(),
 }));
 
 describe('useValidationSchema', () => {
@@ -34,7 +34,7 @@ describe('useValidationSchema', () => {
   test('should return validation schema', () => {
     const { result } = renderHook(() => useValidationSchema(mockElements));
 
-    expect(buildValidationSchemaFromFormElements).toHaveBeenCalledWith(mockElements);
+    expect(buildValidationSchemaFromFormElements).toHaveBeenCalledWith(mockElements, [], undefined);
     expect(result.current).toEqual(mockValidationSchema);
   });
 
