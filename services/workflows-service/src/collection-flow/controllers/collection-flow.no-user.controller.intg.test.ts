@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Project, WorkflowRuntimeDataToken } from '@prisma/client';
 import { noop } from 'lodash';
 import request from 'supertest';
+import { ClsModule } from 'nestjs-cls';
 
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
@@ -42,7 +43,12 @@ import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { AnalyticsService } from '@/common/analytics-logger/analytics.service';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { mockClsService } from '@/test/helpers/cls-service-helper';
+
 import { CollectionFlowStateService } from '../collection-flow-state.service';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -96,8 +102,13 @@ describe('CollectionFlowSignupController', () => {
         CustomerRepository,
         EndUserRepository,
         WorkflowLogService,
+        WorkflowRuntimeDataActorService,
+        AssessmentsService,
+        UnifiedApiClient,
+        mockClsService(),
         { provide: CollectionFlowStateService, useValue: noop },
       ],
+      imports: [ClsModule],
     }).compile();
 
     app = module.createNestApplication();

@@ -8,7 +8,6 @@ import { Container } from '@/lib/blocks/components/Container/Container';
 import { DataTableCell } from '@/lib/blocks/components/DataTableCell/DataTableCell';
 import { Details } from '@/lib/blocks/components/Details/Details';
 import { DialogCell } from '@/lib/blocks/components/DialogCell/DialogCell';
-import { FaceComparison } from '@/lib/blocks/components/FaceComparison/FaceComparison';
 import { Heading } from '@/lib/blocks/components/Heading/Heading';
 import { ImageCell } from '@/lib/blocks/components/ImageCell/ImageCell';
 import { MapCell } from '@/lib/blocks/components/MapCell/MapCell';
@@ -23,6 +22,7 @@ import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
 import { EditableDetailsV2Cell } from '../components/EditableDetailsV2Cell/EditableDetailsV2Cell';
+import { NoDataCell } from '../components/NoDataCell/NoDataCell';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
 
@@ -42,7 +42,6 @@ export const cells: CellsMap = {
   container: Container,
   callToActionLegacy: CallToActionLegacy,
   callToAction: CallToAction,
-  faceComparison: FaceComparison,
   details: Details,
   nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
@@ -58,4 +57,5 @@ export const cells: CellsMap = {
   readOnlyDetails: ReadOnlyDetailsCell,
   image: ImageCell,
   editableDetails: EditableDetailsV2Cell,
+  noData: NoDataCell,
 };

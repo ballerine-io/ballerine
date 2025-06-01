@@ -40,12 +40,18 @@ import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { PutWorkflowExtensionSchema, WorkflowExtensionSchema } from './schemas/extensions.schemas';
 import { type Static, Type } from '@sinclair/typebox';
-import { DefaultContextSchema, defaultContextSchema, isObject } from '@ballerine/common';
+import {
+  buildCollectionFlowUrl,
+  DefaultContextSchema,
+  defaultContextSchema,
+  isObject,
+} from '@ballerine/common';
 import { WorkflowRunSchema } from './schemas/workflow-run';
 import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
 import { type PartialDeep } from 'type-fest';
+import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -55,9 +61,10 @@ export class WorkflowControllerExternal {
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    private readonly workflowTokenService: WorkflowTokenService,
-    private readonly workflowDefinitionService: WorkflowDefinitionService,
-    private readonly prismaService: PrismaService,
+    protected readonly workflowTokenService: WorkflowTokenService,
+    protected readonly workflowDefinitionService: WorkflowDefinitionService,
+    protected readonly prismaService: PrismaService,
+    protected readonly collectionFlowStateService: CollectionFlowStateService,
   ) {}
 
   // GET /workflows
@@ -401,18 +408,21 @@ export class WorkflowControllerExternal {
   async createCollectionFlowUrl(
     @common.Body() { workflowRuntimeDataId }: CreateCollectionFlowUrlDto,
   ) {
-    const result = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
+    const workflow = await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(
       workflowRuntimeDataId,
     );
 
-    if (!result) {
+    if (!workflow) {
       throw new NotFoundException(
         `No WorkflowRuntimeDataId was found for ${JSON.stringify(workflowRuntimeDataId)}`,
       );
     }
 
     return {
-      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${result.token}`,
+      collectionFlowUrl: buildCollectionFlowUrl(env.COLLECTION_FLOW_URL, {
+        workflowId: workflowRuntimeDataId,
+        token: workflow.token,
+      }),
     };
   }
 

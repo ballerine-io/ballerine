@@ -172,15 +172,49 @@ export const MatchReasonCode = {
 } as const;
 
 export const URL_PATTERN =
-  /^(https?:\/\/)?((([\da-z]([\da-z-]*[\da-z])*)\.)+[a-z]{2,}|((25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})\.){3}(25[0-5]|2[0-4]\d|1\d{2}|\d{1,2})|localhost)(:\d{1,5})?(\/[\w!$%&'()*+,.:;=@~-]*)*(\?([\w!$%&'()*+,.:;=@~-]+=[\w!$%&'()*+,.:;=@~-]*(&[\w!$%&'()*+,.:;=@~-]+=[\w!$%&'()*+,.:;=@~-]*)*)?)?(#[\w!$%&'()*+,.:;=@~-]*)?$/i;
+  /^(?:https?:\/\/)?(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00A1-\uFFFF][a-z0-9\u00A1-\uFFFF_-]{0,62})?[a-z0-9\u00A1-\uFFFF]\.)+(?:[a-z\u00A1-\uFFFF]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+
+export const CHECKS_STATUSES = ['in-progress', 'failed', 'completed'] as const;
+
+export type ChecksStatus = (typeof CHECKS_STATUSES)[number];
+
+export const CHECKS_STATUSES_MAP = Object.fromEntries(
+  CHECKS_STATUSES.map(status => [status, status]),
+) as { [K in ChecksStatus]: K };
+
+export const ASSESSMENT_STATUSES = [
+  'in-progress',
+  'pending-review',
+  'under-review',
+  'approved',
+  'rejected',
+] as const;
+
+export type AssessmentStatus = (typeof ASSESSMENT_STATUSES)[number];
+
+export const ASSESSMENT_STATUSES_MAP = Object.fromEntries(
+  ASSESSMENT_STATUSES.map(status => [status, status]),
+) as { [K in AssessmentStatus]: K };
+
+export const UPDATEABLE_ASSESSMENT_STATUSES = [
+  ASSESSMENT_STATUSES_MAP['pending-review'],
+  ASSESSMENT_STATUSES_MAP['under-review'],
+  ASSESSMENT_STATUSES_MAP['approved'],
+  ASSESSMENT_STATUSES_MAP['rejected'],
+] as const;
+
+export type UpdateableAssessmentStatus = (typeof UPDATEABLE_ASSESSMENT_STATUSES)[number];
 
 export const MERCHANT_REPORT_STATUSES = [
   'in-progress',
   'quality-control',
   'pending-review',
   'under-review',
-  'completed',
   'failed',
+  'completed',
+  'cleared',
+  'conditionally-approved',
+  'terminated',
 ] as const;
 
 export type MerchantReportStatus = (typeof MERCHANT_REPORT_STATUSES)[number];
@@ -190,6 +224,9 @@ export const MERCHANT_REPORT_STATUSES_MAP = Object.fromEntries(
 ) as { [K in MerchantReportStatus]: K };
 
 export type UpdateableReportStatus =
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['cleared']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['conditionally-approved']
+  | (typeof MERCHANT_REPORT_STATUSES_MAP)['terminated']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['completed']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['pending-review']
   | (typeof MERCHANT_REPORT_STATUSES_MAP)['under-review'];
@@ -197,7 +234,10 @@ export type UpdateableReportStatus =
 export const UPDATEABLE_REPORT_STATUSES = [
   MERCHANT_REPORT_STATUSES_MAP['pending-review'],
   MERCHANT_REPORT_STATUSES_MAP['under-review'],
-  MERCHANT_REPORT_STATUSES_MAP.completed,
+  MERCHANT_REPORT_STATUSES_MAP['completed'],
+  MERCHANT_REPORT_STATUSES_MAP['cleared'],
+  MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'],
+  MERCHANT_REPORT_STATUSES_MAP['terminated'],
 ] as const;
 
 export const MERCHANT_REPORT_TYPES = ['MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T1'] as const;
@@ -231,3 +271,31 @@ export type RiskIndicatorRiskLevel = (typeof RISK_INDICATOR_RISK_LEVELS)[number]
 export const RISK_INDICATOR_RISK_LEVELS_MAP = Object.fromEntries(
   RISK_INDICATOR_RISK_LEVELS.map(level => [level, level]),
 ) as { [K in RiskIndicatorRiskLevel]: K };
+
+export const SUPPORTED_FILE_EXT_REGEX = /\.(jpg|jpeg|svg|png|pdf|gif|txt|csv|xlsx|xls)$/;
+
+// Extract file extensions from regex
+export const SUPPORTED_FILE_EXT_ENUM = {
+  JPG: 'jpg',
+  JPEG: 'jpeg',
+  SVG: 'svg',
+  PNG: 'png',
+  PDF: 'pdf',
+  GIF: 'gif',
+  TXT: 'txt',
+  CSV: 'csv',
+  XLSX: 'xlsx',
+  XLS: 'xls',
+} as const;
+
+// validate file exts in enum against regex
+Object.entries(SUPPORTED_FILE_EXT_ENUM).forEach(([key, value]) => {
+  if (!SUPPORTED_FILE_EXT_REGEX.test(`.${value}`)) {
+    throw new Error(`Invalid file extension: .${value}`);
+  }
+});
+
+export type SupportedFileExt =
+  (typeof SUPPORTED_FILE_EXT_ENUM)[keyof typeof SUPPORTED_FILE_EXT_ENUM];
+
+export const BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE = 'BAVCommercial-Standard' as const;

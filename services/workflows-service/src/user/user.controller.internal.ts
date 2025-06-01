@@ -12,7 +12,6 @@ import { UserStatus } from '@prisma/client';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
-@swagger.ApiExcludeController()
 export class UserControllerInternal {
   constructor(protected readonly userService: UserService) {}
 
@@ -70,10 +69,10 @@ export class UserControllerInternal {
   @UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse()
   async create(
-    @common.Body() userCreatInfo: UserCreateDto,
+    @common.Body() userCreateInfo: UserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { projectIds, ...userInfo } = userCreatInfo;
+    const { projectIds, ...userInfo } = userCreateInfo;
 
     return this.userService.create(
       {

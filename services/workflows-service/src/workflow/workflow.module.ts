@@ -5,6 +5,7 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 // eslint-disable-next-line import/no-cycle
 import { BusinessModule } from '@/business/business.module';
+// eslint-disable-next-line import/no-cycle
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -23,7 +24,9 @@ import { ProjectModule } from '@/project/project.module';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { StorageService } from '@/storage/storage.service';
+// eslint-disable-next-line import/no-cycle
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+// eslint-disable-next-line import/no-cycle
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UserRepository } from '@/user/user.repository';
 import { UserService } from '@/user/user.service';
@@ -46,12 +49,23 @@ import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
 import { FileModule } from '@/providers/file/file.module';
 import { FileRepository } from '@/storage/storage.repository';
-import { WorkflowLogService } from './workflow-log.service';
-import { WorkflowLogRepository } from './workflow-log.repository';
-import { WorkflowLogController } from './workflow-log.controller';
+import { WorkflowLogService } from '@/workflow/workflow-log.service';
+import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
+import { WorkflowLogController } from '@/workflow/workflow-log.controller';
+import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+// eslint-disable-next-line import/no-cycle
+import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
+import { AssessmentsModule } from '@/assessments/assessments.module';
+import { AssessmentsService } from '@/assessments/assessments.service';
 
 @Module({
-  controllers: [WorkflowControllerExternal, WorkflowControllerInternal, WorkflowLogController],
+  controllers: [
+    WorkflowControllerExternal,
+    WorkflowControllerInternal,
+    WorkflowLogController,
+    WorkflowCollectionFlowController,
+  ],
   imports: [
     ACLModule,
     forwardRef(() => AuthModule),
@@ -67,6 +81,8 @@ import { WorkflowLogController } from './workflow-log.controller';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    forwardRef(() => CollectionFlowModule),
+    AssessmentsModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -100,6 +116,8 @@ import { WorkflowLogController } from './workflow-log.controller';
     SentryService,
     WorkflowLogService,
     WorkflowLogRepository,
+    WorkflowRuntimeDataActorService,
+    AssessmentsService,
   ],
   exports: [
     WorkflowService,
@@ -115,6 +133,7 @@ import { WorkflowLogController } from './workflow-log.controller';
     WorkflowTokenService,
     WorkflowLogService,
     WorkflowLogRepository,
+    WorkflowRuntimeDataActorService,
   ],
 })
 export class WorkflowModule {}

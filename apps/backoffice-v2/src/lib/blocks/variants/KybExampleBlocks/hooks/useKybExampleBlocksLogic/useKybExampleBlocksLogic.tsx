@@ -17,6 +17,7 @@ import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocum
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { buildCollectionFlowUrl, StateTag } from '@ballerine/common';
 import { ExternalLink, Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
@@ -29,7 +30,6 @@ import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutatio
 import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
-import { StateTag } from '@ballerine/common';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -112,6 +112,7 @@ export const useKybExampleBlocksLogic = () => {
     isEditDisabled: [
       !caseState.actionButtonsEnabled,
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
     onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
@@ -206,16 +207,19 @@ export const useKybExampleBlocksLogic = () => {
           });
         }
 
-        window.open(
-          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-          '_blank',
-        );
+        const url = buildCollectionFlowUrl(workflow?.context?.metadata?.collectionFlowUrl, {
+          workflowId: workflow?.id,
+          token: workflow?.context?.metadata?.token,
+        });
+
+        window.open(url, '_blank');
       },
     [
       mutateReviseDocumentById,
       mutateRevisionTaskById,
-      workflow?.context?.metadata?.collectionFlowUrl,
+      workflow?.id,
       workflow?.context?.metadata?.token,
+      workflow?.context?.metadata?.collectionFlowUrl,
       workflow?.workflowDefinition?.config?.isDocumentsV2,
     ],
   );

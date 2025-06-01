@@ -4,13 +4,17 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
+  CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
+  setCollectionFlowStatus,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
+import { cloneDeep } from 'lodash';
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
+import { useGlobalUIState } from '../../providers/GlobalUIState';
 import { RevisionBlock } from './components/shared/RevisionBlock';
 import { usePluginsSubscribe } from './components/utility/PluginsRunner';
 import { usePlugins } from './components/utility/PluginsRunner/hooks/external/usePlugins';
@@ -21,7 +25,7 @@ import { useFinalSubmission } from './hooks/useFinalSubmission/useFinalSubmissio
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { useRevisionFields } from './hooks/useRevisionFields';
 import { formElementsExtends } from './ui-elemenets.extends';
-import { useGlobalUIState } from '../../providers/GlobalUIState';
+import { useCommonHttpParams } from './hooks/useCommonHttpParams/useCommonHttpParams';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   page: UIPage<'v2'>;
@@ -49,6 +53,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const { handleEvent } = usePluginsHandler();
   const { sync, syncStateless, setIsSyncing } = useAppSync();
   const appMetadata = useAppMetadata();
+  const commonHttpParams = useCommonHttpParams();
   const { pluginStatuses } = usePlugins();
   const revisionFields = useRevisionFields(pages, context);
   const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
@@ -128,8 +133,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
           setIsSyncing(true);
 
           const collectionFlowState = getCollectionFlowState(values);
-
-          // Completing all steps on last step before submission
           if (collectionFlowState) {
             collectionFlowState.steps = steps?.map(step => ({
               ...step,
@@ -139,8 +142,25 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
           stateApi.setContext(values);
 
-          await syncStateless(values);
-          await handleFinalSubmission();
+          // Create a separate object for syncing with last step as inProgress
+          const syncValues = cloneDeep(values);
+
+          if (
+            syncValues.collectionFlow?.state?.steps &&
+            syncValues.collectionFlow.state.steps.length >= 1
+          ) {
+            const lastIndex = syncValues.collectionFlow.state.steps.length - 1;
+
+            syncValues.collectionFlow.state.steps[lastIndex] = {
+              ...syncValues.collectionFlow.state.steps[lastIndex]!,
+              state: CollectionFlowStepStatesEnum.inProgress,
+            };
+          }
+
+          await syncStateless(syncValues);
+
+          // Use original values for final submission
+          await handleFinalSubmission(values);
         } catch (error) {
           toast.error('Failed to submit form.');
           console.error(error);
@@ -175,6 +195,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
             state: CollectionFlowStepStatesEnum.completed,
           });
         }
+
+        setCollectionFlowStatus(values, CollectionFlowStatusesEnum.inprogress);
 
         stateApi.setContext(values);
 
@@ -211,6 +233,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         validationParams={validationParams}
         metadata={metadata}
         ref={formRef}
+        httpParams={commonHttpParams}
       />
     </div>
   );

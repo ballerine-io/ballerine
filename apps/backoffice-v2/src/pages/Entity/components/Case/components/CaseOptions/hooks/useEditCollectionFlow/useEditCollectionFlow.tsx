@@ -1,13 +1,15 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useUpdateWorkflowByIdMutation } from '@/domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
-import { useCallback, useMemo } from 'react';
-import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEditCaseStateMutation';
-import { updateStateForEditing } from './helpers/update-state-for-editing';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
+import { buildCollectionFlowUrl } from '@ballerine/common';
 import { t } from 'i18next';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { getCollectionFlowLinkFromWorkflow } from '../useCopyCollectionFlowLink/helpers/get-collection-flow-link-from-workflow';
+import { updateStateForEditing } from './helpers/update-state-for-editing';
+import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEditCaseStateMutation';
+import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
+import { useCollectionFlowStateQuery } from '@/domains/collection-flow/hooks/queries/useCollectionFlowStateQuery/useCollectionFlowStateQuery';
+import { useUpdateCollectionFlowStateMutation } from '@/domains/collection-flow/hooks/mutations/useUpdateCollectionFlowStateMutation/useUpdateCollectionFlowStateMutation';
 
 export const useEditCollectionFlow = () => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
@@ -34,36 +36,56 @@ export const useEditCollectionFlow = () => {
     tags,
     config: workflowConfig,
   });
+  const { data: collectionFlowState } = useCollectionFlowStateQuery(workflow?.id || '');
+  const { mutateAsync: updateCollectionFlowState } = useUpdateCollectionFlowStateMutation();
 
   const onEditCollectionFlow = useCallback(
     ({ steps }: { steps: Parameters<typeof updateStateForEditing>[0]['steps'] }) =>
       async () => {
-        const updatedWorkflowContext = updateStateForEditing({
-          workflowContext: workflow?.context || ({} as TWorkflowById['context']),
-          steps,
-        });
+        if (!collectionFlowState || !collectionFlowState.state) {
+          toast.error('Something went wrong. Please try again later.');
+
+          return;
+        }
 
         try {
-          // Updating case state first to avoid unnecessary context update in case this step fails
+          // Updating case state first to avoid unnecessary collection flow state update in case this step fails
           await editCaseState({ workflowId: workflow?.id || '' });
         } catch (error) {
           toast.error(t('toast:edit_collection_flow_state_transition.error'));
           throw new Error('Failed move to edit collection flow. State missing.');
         }
 
-        await updateWorkflowById({
-          context: updatedWorkflowContext,
-          action: 'edit_collection_flow',
+        const updatedCollectionFlowState = updateStateForEditing({
+          collectionFlowState: collectionFlowState.state,
+          steps,
+        });
+
+        await updateCollectionFlowState({
+          workflowId: workflow?.id || '',
+          state: updatedCollectionFlowState,
+          action: 'step_request',
         });
 
         try {
-          window.open(getCollectionFlowLinkFromWorkflow(workflow as TWorkflowById), '_blank');
+          const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
+            ?.collectionFlowUrl;
+
+          if (!collectionFlowBaseUrl) {
+            throw new Error('Collection flow URL is missing.');
+          }
+
+          const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
+            workflowId: workflow?.id,
+          });
+
+          window.open(url, '_blank');
         } catch (error) {
           toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
           throw new Error('Failed to open collection flow in new tab.');
         }
       },
-    [updateWorkflowById, editCaseState, workflow],
+    [updateWorkflowById, editCaseState, workflow, collectionFlowState, updateCollectionFlowState],
   );
 
   const isLoading = useMemo(

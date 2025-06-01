@@ -4,6 +4,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@ballerine/common';
 import { useMemo } from 'react';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useEntityAdditionalInfoBlock = ({
   entity,
@@ -41,16 +42,26 @@ export const useEntityAdditionalInfoBlock = ({
             type: 'container',
             value: createBlocksTyped()
               .addBlock()
+              .addCell(userCreatedIconCell)
               .addCell({
-                type: 'heading',
-                value: `Additional ${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'heading',
+                    value: `Additional ${valueOrNA(titleCase(entity?.type ?? ''))} Information`,
+                    props: { className: 'mt-0' },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
               })
-              .addCell({
-                type: 'subheading',
-                value: 'User-Provided Data',
-              })
-              .build()
-              .flat(1),
+              .buildFlat(),
+            props: {
+              className: 'flex space-x-1 items-center mt-4',
+            },
           })
           .addCell({
             id: 'entity-details',

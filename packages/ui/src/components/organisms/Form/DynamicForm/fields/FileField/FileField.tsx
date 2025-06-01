@@ -1,11 +1,10 @@
-import { ctw } from '@/common';
-import { IHttpParams, useHttp } from '@/common/hooks/useHttp';
+import { ALLOWED_DOCUMENT_FILE_EXTENSIONS, ctw } from '@/common';
+import { IHttpParams } from '@/common/hooks/useHttp';
 import { Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
 import { createTestId } from '@/components/organisms/Renderer';
 import { Upload, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useRef } from 'react';
-import { useDynamicForm } from '../../context';
 import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
@@ -16,6 +15,7 @@ import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { ICommonFieldParams, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { useFileUpload } from './hooks/useFileUpload';
+import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
 
 export interface IFileFieldParams extends ICommonFieldParams {
   uploadOn?: 'change' | 'submit';
@@ -30,15 +30,14 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 
-  const { metadata } = useDynamicForm();
-  const { placeholder = 'Choose file', acceptFileFormats = undefined } = element.params || {};
+  const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
+    element.params || {};
   const { handleChange, isUploading: disabledWhileUploading } = useFileUpload(
     element,
     element.params!,
   );
-  const { run: deleteDocument, isLoading: isDeletingDocument } = useHttp(
-    (element.params?.httpParams?.deleteDocument || {}) as IHttpParams,
-    metadata,
+  const { run: deleteDocument, isLoading: isDeletingDocument } = useFormHttp(
+    element.params?.httpParams?.deleteDocument || ({} as IHttpParams),
   );
 
   const { stack } = useStack();

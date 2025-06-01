@@ -61,6 +61,7 @@ import {
   isObject,
   ProcessStatus,
   setCollectionFlowStatus,
+  TWorkflowHelpers,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -117,8 +118,9 @@ import { entitiesUpdate } from './utils/entities-update';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { PartialDeep } from 'type-fest';
-import { WorkflowAssignee } from './workflow-runtime-list-item.model';
-import { WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
+import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
+import { formatIndividualVerification } from '@/common/utils/idv';
+import { AssessmentsService } from '@/assessments/assessments.service';
 
 type TEntityId = string;
 
@@ -163,6 +165,7 @@ export class WorkflowService {
     private readonly secretsManagerFactory: SecretsManagerFactory,
     private readonly storageService: StorageService,
     private readonly workflowLogService: WorkflowLogService,
+    private readonly assessmentsService: AssessmentsService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -250,13 +253,13 @@ export class WorkflowService {
   async getWorkflowByIdWithRelations(id: string, projectIds: TProjectIds) {
     const workflow = await this.workflowRuntimeDataRepository.findByIdWithRelations(id, projectIds);
 
-    return this.formatWorkflow(workflow);
+    return await this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(
+  private async formatWorkflow(
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
-  ): TWorkflowWithRelations {
+  ): Promise<TWorkflowWithRelations> {
     const getEntity = (workflow: TWorkflowWithRelations) => {
       if ('endUser' in workflow && !!workflow?.endUser) {
         return {
@@ -299,10 +302,55 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
+    let assessments:
+      | Awaited<
+          ReturnType<typeof this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId>
+        >
+      | undefined;
+
+    if (workflow.workflowType === 'parent') {
+      try {
+        assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
+          workflowRuntimeDataId: workflow.id,
+          projectId: workflow.projectId,
+        });
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          assessments = [];
+        }
+
+        if (!(error instanceof NotFoundException)) {
+          throw error;
+        }
+      }
+    }
+
+    const individualVerificationsChecks = assessments?.flatMap(
+      assessment => assessment.individualVerificationsChecks,
+    );
 
     return {
       ...workflow,
-      endUsers: workflow.endUsers ?? [],
+      endUsers:
+        workflow.endUsers?.map(endUser => {
+          const endUserIndividualVerificationsChecks = individualVerificationsChecks?.find(
+            individualVerificationsCheck => individualVerificationsCheck.endUserId === endUser.id,
+          );
+
+          return {
+            ...endUser,
+            individualVerificationsChecks: endUserIndividualVerificationsChecks
+              ? {
+                  kyc_session_1: {
+                    vendor: endUserIndividualVerificationsChecks.input.vendor,
+                    result: formatIndividualVerification(
+                      endUserIndividualVerificationsChecks.output,
+                    ),
+                  },
+                }
+              : undefined,
+          };
+        }) ?? [],
       context: {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
@@ -344,8 +392,10 @@ export class WorkflowService {
       // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
-      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow),
+      childWorkflows: await Promise.all(
+        workflow.childWorkflowsRuntimeData?.map(
+          async childWorkflow => await this.formatWorkflow(childWorkflow),
+        ) ?? [],
       ),
     };
   }
@@ -1973,8 +2023,7 @@ export class WorkflowService {
       return;
     }
 
-    this.sentry.captureException(new Error('Workflow definition context validation failed'));
-    this.logger.error('Workflow definition context validation failed', {
+    this.logger.warn('Workflow definition context validation failed', {
       errors: validate.errors,
       errorData: validate.errors?.map(error => ({
         path: error.instancePath,
@@ -2047,9 +2096,15 @@ export class WorkflowService {
           state: workflowRuntimeData.state,
         },
         extensions: workflowDefinition.extensions,
+        helpers: {
+          getEndUserById: async (endUserId: string) => {
+            return await this.endUserService.getById(endUserId, {}, projectIds);
+          },
+        },
         invokeRiskRulesAction: async (
           context: object,
           ruleStoreServiceOptions: TFindAllRulesOptions,
+          helpers: TWorkflowHelpers,
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
@@ -2057,7 +2112,7 @@ export class WorkflowService {
             rules.map(async rule => {
               try {
                 return {
-                  result: await this.ruleEngineService.run(rule.ruleSet, context),
+                  result: await this.ruleEngineService.run(rule.ruleSet, context, helpers),
                   ...rule,
                 } as const;
               } catch (ex) {
@@ -2186,8 +2241,8 @@ export class WorkflowService {
             metadata: {
               token: token,
               customerName: customer.displayName,
-              collectionFlowUrl: env.COLLECTION_FLOW_URL!,
               customerNormalizedName: customer.name,
+              collectionFlowUrl: env.COLLECTION_FLOW_URL ?? '',
             },
           };
         },
@@ -2250,6 +2305,7 @@ export class WorkflowService {
 
       try {
         const logs = (service as any).getLogs?.();
+
         if (logs && Array.isArray(logs) && logs.length > 0) {
           await this.workflowLogService.processWorkflowRunnerLogs(
             workflowRuntimeData.id,
@@ -2674,7 +2730,13 @@ export class WorkflowService {
       transaction,
     );
     const document = runtimeData?.context?.documents?.find(
-      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+      (document: DefaultContextSchema['documents'][number]) => {
+        if (document?._document?.id) {
+          return document._document?.id === documentId;
+        }
+
+        return document.id === documentId;
+      },
     );
 
     return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);

@@ -1,10 +1,24 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { env } from '@/env';
-import { Logger } from '@nestjs/common';
+import {
+  Logger,
+  Injectable,
+  ServiceUnavailableException,
+  UnauthorizedException,
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+  HttpException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Business, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
+import { UpdateableAssessmentStatus } from '@ballerine/common';
+import { PageDto } from '@/common/dto';
+import { isType } from '@ballerine/common';
+import z from 'zod';
 
 export type BusinessPayload = Pick<
   Business,
@@ -25,6 +39,64 @@ export type TOcrImages = Array<
     }
 >;
 
+export const axiosNoResponseErrorToHttpException = (code: AxiosError['code']) => {
+  if (code === 'ECONNREFUSED') {
+    return new ServiceUnavailableException('Service is currently unavailable');
+  }
+
+  if (code === 'ETIMEDOUT') {
+    return new ServiceUnavailableException('Request timed out');
+  }
+
+  if (code === 'ENOTFOUND') {
+    return new ServiceUnavailableException('Service not found');
+  }
+
+  return new ServiceUnavailableException('Network error occurred');
+};
+
+export const axiosErrorToHttpException = (error: AxiosError) => {
+  if (!error.response) {
+    return axiosNoResponseErrorToHttpException(error.code);
+  }
+
+  const checkIsResponseDataWithMessage = isType(
+    z.object({
+      response: z.object({
+        data: z.object({
+          message: z.string(),
+        }),
+      }),
+    }),
+  );
+  const isResponseDataWithMessage = checkIsResponseDataWithMessage(error);
+  const message = isResponseDataWithMessage ? error.response.data.message : error.message;
+  const status = error.response.status;
+
+  if (status === 400) {
+    return new BadRequestException(message);
+  }
+
+  if (status === 401) {
+    return new UnauthorizedException(message);
+  }
+
+  if (status === 403) {
+    return new ForbiddenException(message);
+  }
+
+  if (status === 404) {
+    return new NotFoundException(message);
+  }
+
+  if (status === 500) {
+    return new InternalServerErrorException(message);
+  }
+
+  return new HttpException(message, status);
+};
+
+@Injectable()
 export class UnifiedApiClient {
   private readonly axiosInstance: AxiosInstance;
   private readonly logger = new Logger(UnifiedApiClient.name);
@@ -131,5 +203,71 @@ export class UnifiedApiClient {
       entity2: { value: payload.entity2 },
       includeAnalysis: payload.includeAnalysis,
     });
+  }
+
+  public async getAssessmentsByType(
+    assessmentType: 'kyb_and_ownership',
+    projectId: string,
+    queryParams: {
+      page: number;
+      limit: number;
+    },
+  ) {
+    return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
+      params: {
+        ...queryParams,
+        projectId,
+      },
+    });
+  }
+
+  public async getAssessmentById(id: string, projectId: string) {
+    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
+  }
+
+  public async createAssessment(
+    assessmentType: 'kyb_and_ownership',
+    payload: {
+      registrationNumber: string;
+      companyName: string;
+      country: string;
+      projectId: string;
+      businessId?: string;
+    },
+  ) {
+    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+  }
+
+  public async updateAssessmentStatus(
+    id: string,
+    status: UpdateableAssessmentStatus,
+    projectId: string,
+  ) {
+    return await this.axiosInstance.put(`/assessments/${id}/status`, {
+      status,
+      projectId,
+    });
+  }
+
+  public async getLatestAssessmentsByWorkflowRuntimeDataId({
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    try {
+      const response = await this.axiosInstance.get<Array<Record<string, any>>>(
+        `/assessments/latest-by-workflow-runtime-data-id/${workflowRuntimeDataId}?projectId=${projectId}`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        throw axiosErrorToHttpException(error);
+      }
+
+      throw error;
+    }
   }
 }

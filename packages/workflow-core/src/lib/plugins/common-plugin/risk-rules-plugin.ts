@@ -11,6 +11,7 @@ export class RiskRulePlugin {
   action: RiskRulesPluginParams['action'];
   successAction: RiskRulesPluginParams['successAction'];
   errorAction: RiskRulesPluginParams['errorAction'];
+  helpers: RiskRulesPluginParams['helpers'];
 
   constructor(pluginParams: RiskRulesPluginParams) {
     this.name = pluginParams.name;
@@ -19,6 +20,7 @@ export class RiskRulePlugin {
     this.action = pluginParams.action;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
+    this.helpers = pluginParams.helpers;
   }
 
   async invoke(context: TContext) {
@@ -28,7 +30,7 @@ export class RiskRulePlugin {
         name: this.name,
       });
 
-      const rulesetResult = await this.action(context, this.rulesSource);
+      const rulesetResult = await this.action(context, this.rulesSource, this.helpers);
 
       const { riskScore, rulesResults } = this.calculateRiskScore(
         rulesetResult.filter(ruleResult => ruleResult.result.every(r => r.status === 'PASSED')),

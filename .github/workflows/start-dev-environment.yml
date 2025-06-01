@@ -1,0 +1,69 @@
+name: Testing - Start Dev Environment
+
+permissions:
+    id-token: write
+    contents: read
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 4 * * 0-5'  # 7:30 AM Israel time
+
+jobs:
+  Start-Environment:
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Twingate
+        uses: twingate/github-action@v1
+        with:
+          service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
+
+      - name: Execute EKS Start Action
+        uses: ./.github/actions/start-dev
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-role: ${{ secrets.AWS_ASSUME_ROLE }}
+          eks-cluster: ${{ secrets.EKS_CLUSTER_NAME }}
+          environment-name: 'dev'
+
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [Start-Environment]
+    if: ${{ needs.Start-Environment.result == 'success' }}
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Dev environment has been started successfully. All services have been scaled up."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
+
+  on-failure:
+    runs-on: ubuntu-latest
+    needs: [Start-Environment]
+    if: failure()
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Failed to start dev environment. Please check the workflow logs for details."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}

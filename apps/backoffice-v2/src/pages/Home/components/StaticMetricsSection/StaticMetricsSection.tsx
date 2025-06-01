@@ -3,13 +3,15 @@ import { PieChartCard } from '@/pages/Home/components/PieChartCard/PieChartCard'
 import { StatsCard } from '@/pages/Home/components/StatsCard/StatsCard';
 
 export const StaticMetricsSection = ({
+  isMerchantMonitoringEnabled,
   isOngoingMonitoringEnabled,
   isCasesOnboardingEnabled,
 
   casesByStatus,
   ongoingCasesByRisk,
   approvedCasesByRisk,
-  totalActiveMerchants,
+  activeBusinessesCount,
+  activeWebsitesCount,
 
   statusConfig,
   ongoingRiskConfig,
@@ -18,12 +20,14 @@ export const StaticMetricsSection = ({
   getRiskDefinition,
 }: Pick<
   ReturnType<typeof useHomeLogic>,
+  | 'isMerchantMonitoringEnabled'
   | 'isOngoingMonitoringEnabled'
   | 'isCasesOnboardingEnabled'
   | 'casesByStatus'
   | 'ongoingCasesByRisk'
   | 'approvedCasesByRisk'
-  | 'totalActiveMerchants'
+  | 'activeBusinessesCount'
+  | 'activeWebsitesCount'
   | 'statusConfig'
   | 'ongoingRiskConfig'
   | 'approvedRiskConfig'
@@ -32,19 +36,28 @@ export const StaticMetricsSection = ({
 >) => {
   return (
     <div className="grid grid-cols-4 gap-6 2xl:grid-cols-6">
-      {isOngoingMonitoringEnabled && (
+      {isMerchantMonitoringEnabled && (
         <StatsCard
-          count={totalActiveMerchants}
+          value={activeBusinessesCount}
           centered={true}
           title="Total Active Merchants"
-          description="Merchants currently subscribed to monitoring"
+          description="Number of merchants with active, non-terminated websites"
+        />
+      )}
+
+      {isOngoingMonitoringEnabled && (
+        <StatsCard
+          value={activeWebsitesCount}
+          centered={true}
+          title="Total Active Websites"
+          description="Number of websites currently subscribed to ongoing monitoring"
         />
       )}
 
       {isCasesOnboardingEnabled && (
         <>
           <PieChartCard
-            title="Active (ongoing) Cases By Status"
+            title="KYB Cases by Status"
             data={casesByStatus}
             getDefinition={getStatusDefinition}
             nameKey="status"
@@ -52,7 +65,7 @@ export const StaticMetricsSection = ({
           />
 
           <PieChartCard
-            title="Active (ongoing) Cases By Risk Level"
+            title="Active KYB Cases by Risk Level"
             data={ongoingCasesByRisk}
             getDefinition={getRiskDefinition}
             nameKey="riskLevel"
@@ -60,7 +73,7 @@ export const StaticMetricsSection = ({
           />
 
           <PieChartCard
-            title="Approved (done) Cases By Risk Level"
+            title="Approved KYB Cases by Risk Level"
             data={approvedCasesByRisk}
             getDefinition={getRiskDefinition}
             nameKey="riskLevel"

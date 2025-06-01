@@ -5,7 +5,6 @@ import { TAssignee } from '../../../../common/components/atoms/AssignDropdown/As
 import { Actions } from './Case.Actions';
 import { Content } from './Case.Content';
 import { Documents } from './Case.Documents';
-import { FaceMatch } from './Case.FaceMatch';
 import { Info } from './Case.Info';
 
 export interface IItemProps {
@@ -33,7 +32,6 @@ export interface IActionsProps {
 export interface ICaseChildren {
   Actions: typeof Actions;
   Content: typeof Content;
-  FaceMatch: typeof FaceMatch;
   Info: typeof Info;
   Documents: typeof Documents;
 }
@@ -52,10 +50,4 @@ export interface IDocumentsProps {
   isDocumentEditable?: boolean;
   hideOpenExternalButton?: boolean;
   wrapperClassName?: string;
-}
-
-export interface IFaceMatchProps extends ComponentProps<'div'> {
-  faceAUrl: string;
-  faceBUrl: string;
-  isLoading?: boolean;
 }

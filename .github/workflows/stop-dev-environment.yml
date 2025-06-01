@@ -1,0 +1,69 @@
+name: Testing - Stop Dev Environment
+
+permissions:
+    id-token: write
+    contents: read
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 21 * * *'  # 12:00 AM Israel time
+
+jobs:
+  Stop-Environment:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure Twingate
+        uses: twingate/github-action@v1
+        with:
+          service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
+
+      - name: Execute EKS Stop Action
+        uses: ./.github/actions/stop-dev
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-role: ${{ secrets.AWS_ASSUME_ROLE }}
+          eks-cluster: ${{ secrets.EKS_CLUSTER_NAME }}
+          environment-name: 'dev'
+
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [Stop-Environment]
+    if: ${{ needs.Stop-Environment.result == 'success' }}
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Dev environment has been stopped successfully. All services have been scaled down."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
+
+  on-failure:
+    runs-on: ubuntu-latest
+    needs: [Stop-Environment]
+    if: failure()
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Failed to stop dev environment. Please check the workflow logs for details."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}

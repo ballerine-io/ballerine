@@ -107,6 +107,7 @@
   },
   "business_report_status_update": {
     "success": "Merchant check status updated successfully.",
+    "unexpected_error": "Something went wrong while updating the status of the report.",
     "error": "Error occurred while updating merchant check status."
   },
   "note_created": {
@@ -131,11 +132,13 @@
   },
   "step_request": {
     "success": "Step request sent successfully.",
-    "error": "Error occurred while sending step request.\n\n{{errorMessage}}"
+    "error": "Error occurred while sending step request.\n\n{{errorMessage}}",
+    "error_unknown": "Something went wrong. Please try again later."
   },
   "step_cancel": {
     "success": "Step request cancelled successfully.",
-    "error": "Error occurred while cancelling step request.\n\n{{errorMessage}}"
+    "error": "Error occurred while cancelling step request.\n\n{{errorMessage}}",
+    "error_unknown": "Something went wrong. Please try again later."
   },
   "edit_collection_flow": {
     "success": "Collection flow's edit mode enabled successfully.",
@@ -148,5 +151,14 @@
   },
   "edit_collection_flow_state_transition": {
     "error": "Error occurred while transitioning to edit collection flow."
+  },
+  "kyb_and_ownership_assessment_creation": {
+    "success": "KYB & Ownership assessment created successfully.",
+    "error": "Error occurred while creating KYB & Ownership assessment."
+  },
+  "assessment_status_update": {
+    "success": "Assessment status updated successfully.",
+    "unexpected_error": "Something went wrong while updating the status of the assessment.",
+    "error": "Error occurred while updating assessment status."
   }
 }

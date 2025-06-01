@@ -15,7 +15,7 @@ import './i18n';
 import './index.css';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { initializeMonitoring } from '@/initialize-monitoring/initialize-monitoring';
+import { initializeMonitoring } from '@/sentry/initialize-monitoring';
 
 initializeMonitoring();
 
@@ -27,26 +27,13 @@ export const TOAST_DURATION_IN_MS = 1000 * 3;
 
 const rootElement = document.getElementById('root');
 
-/// Avoid race conditions when using the mock server.
-const prepare = async () => {
-  if (env.VITE_MOCK_SERVER) {
-    const { worker } = await import('./lib/mock-service-worker/browser');
+if (rootElement && !rootElement?.innerHTML) {
+  const root = createRoot(rootElement);
 
-    return worker.start();
-  }
-
-  return Promise.resolve();
-};
-
-void prepare().then(() => {
-  if (rootElement && !rootElement?.innerHTML) {
-    const root = createRoot(rootElement);
-
-    root.render(
-      <StrictMode>
-        <Router />
-        <Toaster position={'top-right'} duration={TOAST_DURATION_IN_MS} visibleToasts={5} />
-      </StrictMode>,
-    );
-  }
-});
+  root.render(
+    <StrictMode>
+      <Router />
+      <Toaster position={'top-right'} duration={TOAST_DURATION_IN_MS} visibleToasts={5} />
+    </StrictMode>,
+  );
+}

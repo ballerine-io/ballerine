@@ -64,6 +64,7 @@ import { titleCase } from 'string-ts';
 import { StateTag, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -233,6 +234,7 @@ export const useDefaultBlocksLogic = () => {
     isEditDisabled: [
       !caseState.actionButtonsEnabled,
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
     onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
   });
@@ -630,6 +632,7 @@ export const useDefaultBlocksLogic = () => {
 
   const aiSummaryBlock = useAISummaryBlock({
     isDemoAccount: customer?.config?.isDemoAccount ?? false,
+    isEnabled: !workflow?.workflowDefinition?.config?.disableAiSummary,
   });
 
   const allBlocks = useMemo(() => {

@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { ConfigService } from '@nestjs/config';
-import { WorkflowLogService } from './workflow-log.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -58,6 +57,12 @@ class FakeUiDefinitionService extends BaseFakeRepository {
 }
 
 class FakeWorkflowLogService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+class FakeAssessmentsService extends BaseFakeRepository {
   constructor() {
     super(Object);
   }
@@ -122,6 +127,7 @@ describe('WorkflowService', () => {
   let fakeHttpService;
   let testingModule: TestingModule;
   let workflowLogService;
+  let assessmentsService;
 
   const configService = {
     WEBHOOK_URL: 'https://example.com',
@@ -155,7 +161,7 @@ describe('WorkflowService', () => {
     workflowTokenService = new FakeEntityRepo();
     uiDefinitionService = new FakeUiDefinitionService();
     workflowLogService = new FakeWorkflowLogService();
-
+    assessmentsService = new FakeAssessmentsService();
     fakeHttpService = {
       requests: [],
 
@@ -219,6 +225,7 @@ describe('WorkflowService', () => {
       {} as any,
       {} as any,
       workflowLogService,
+      assessmentsService,
     );
   });
 

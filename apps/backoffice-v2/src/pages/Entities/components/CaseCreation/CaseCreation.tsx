@@ -22,6 +22,7 @@ export const CaseCreation = withCaseCreation(() => {
     workflowDefinition,
     workflowDefinitionName,
     isLoading,
+    isDemoKybEnabled,
   } = useCaseCreationLogic();
 
   return (
@@ -32,7 +33,7 @@ export const CaseCreation = withCaseCreation(() => {
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
-                disabled={isDemoAccount}
+                disabled={isDemoAccount && !isDemoKybEnabled}
                 className="flex w-full items-center justify-start gap-2 font-semibold disabled:!pointer-events-auto"
                 onClick={() => setOpen(true)}
               >

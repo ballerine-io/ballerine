@@ -101,14 +101,6 @@ export type TDirectorsCallToActionCell = {
   };
 };
 
-export type TFaceComparisonCell = {
-  type: 'faceComparison';
-  value: {
-    faceAUrl: string;
-    faceBUrl: string;
-  };
-};
-
 export type TDetailsCell = {
   type: 'details';
   id: string;
@@ -266,6 +258,18 @@ export type TEditableDetailsV2Cell = {
   props: Omit<ComponentProps<typeof EditableDetailsV2>, 'fields'>;
 };
 
+export type TNoDataCell = {
+  type: 'noData';
+  value: {
+    title: string;
+    description: string;
+    icon: JSX.Element;
+  };
+  props: {
+    className?: string;
+  };
+};
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -276,7 +280,6 @@ export type TCell =
   | TCallToActionLegacyCell
   | TCallToActionCell
   | TDirectorsCallToActionCell
-  | TFaceComparisonCell
   | TDetailsCell
   | TNestedDetailsCell
   | TMultiDocumentsCell
@@ -290,4 +293,5 @@ export type TCell =
   | TPDFViewerCell
   | TReadOnlyDetailsCell
   | TImageCell
-  | TEditableDetailsV2Cell;
+  | TEditableDetailsV2Cell
+  | TNoDataCell;
