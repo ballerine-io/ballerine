@@ -46,6 +46,11 @@ export const RuleSchema = z.discriminatedUnion('operator', [
     value: AmlCheckV2Schema,
   }),
   z.object({
+    key: z.string(),
+    operator: z.literal(OPERATION.BANK_ACCOUNT_VERIFICATION),
+    value: z.undefined(),
+  }),
+  z.object({
     key: z.string().optional(),
     operator: z.literal(OPERATION.IDV_CHECK),
     value: IdvCheckSchema,
