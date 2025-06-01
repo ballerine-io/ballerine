@@ -23,6 +23,7 @@ export {
 export { AML_CHECK_V2 } from './aml-v2-check';
 export { COMPANY_SANCTIONS_CATEGORIES } from './company-sanctions-by-category';
 export { IDV_CHECK } from './idv-check';
+export { BANK_ACCOUNT_VERIFICATION } from './bank-account-verification';
 
 export const OPERATORS_WITHOUT_PATH_COMPARISON = [
   OPERATION.AML_CHECK,
@@ -31,6 +32,7 @@ export const OPERATORS_WITHOUT_PATH_COMPARISON = [
   OPERATION.LAST_YEAR,
   OPERATION.IDV_CHECK,
   OPERATION.COMPANY_SANCTIONS_CATEGORIES,
+  OPERATION.BANK_ACCOUNT_VERIFICATION,
 ] as const;
 
 export const OPERATORS_WITH_THRESHOLD = [OPERATION.FUZZY_MATCH_SCORE_LT] as const;
