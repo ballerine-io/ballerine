@@ -6,10 +6,11 @@ import { BankAccountVerificationParams } from './types';
 
 type BankAccountRule = {
   ruleId: string;
-  ruleName?: string;
-  ruleText?: string;
   ruleScore: number;
 };
+
+// These rules are required in order to pass the bank account verification check
+const requiredRules = ['CMM1069', 'CMM1048', 'CMM1052'];
 
 export class BankAccountVerification extends BaseOperator<
   any,
@@ -79,9 +80,7 @@ export class BankAccountVerification extends BaseOperator<
       throw new ValidationFailedError('Extract value', 'parsing failed', rulesResult.error);
     }
 
-    const rules = rulesResult.data.filter(rule =>
-      ['CMM1069', 'CMM1048', 'CMM1052'].includes(rule.ruleId),
-    );
+    const rules = rulesResult.data.filter(rule => requiredRules.includes(rule.ruleId));
 
     if (rules.length < 3) {
       throw new ValidationFailedError('Extract value', 'less than 3 rules');
