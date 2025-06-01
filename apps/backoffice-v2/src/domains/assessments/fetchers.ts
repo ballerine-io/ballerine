@@ -6,13 +6,6 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import qs from 'qs';
 import { ASSESSMENT_STATUSES, ASSESSMENT_STATUSES_MAP } from '@ballerine/common';
 
-export const KybAndOwnershipAssessmentStatusSchema = z.enum([
-  'pending',
-  'approved',
-  'rejected',
-  'in-progress',
-]);
-
 export const KybAndOwnershipAssessmentSchema = z
   .object({
     id: z.string(),
@@ -96,11 +89,7 @@ export const fetchKybAndOwnershipAssessment = async (id: string) => {
     timeout: 30_000,
   });
 
-  if (error) {
-    return handleZodError(error, result);
-  }
-
-  return KybAndOwnershipAssessmentSchema.parse(result);
+  return handleZodError(error, result);
 };
 
 export const fetchKybAndOwnershipAssessments = async (
@@ -115,11 +104,7 @@ export const fetchKybAndOwnershipAssessments = async (
     timeout: 30_000,
   });
 
-  if (error) {
-    return handleZodError(error, result);
-  }
-
-  return KybAndOwnershipAssessmentsSchema.parse(result);
+  return handleZodError(error, result);
 };
 
 const CreateKybAndOwnershipAssessmentSchema = z.object({
@@ -151,11 +136,7 @@ export const createKybAndOwnershipAssessment = async (
     schema: CreateKybAndOwnershipAssessmentResponseSchema,
   });
 
-  if (error) {
-    return handleZodError(error, result);
-  }
-
-  return result;
+  return handleZodError(error, result);
 };
 
 export const IdentityVerificationStatuses = ['pending', 'verified', 'rejected'] as const;
