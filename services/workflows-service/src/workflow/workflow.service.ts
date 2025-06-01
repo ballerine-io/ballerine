@@ -138,6 +138,48 @@ const getAvatarUrl = (website: string | undefined | null) =>
     ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
     : null;
 
+const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
+  const record: Record<string, T> = {};
+  const errors: { key: string; error: unknown }[] = [];
+  const promisesEntries = Object.entries(promises);
+  const results = await Promise.all(
+    promisesEntries.map(([key, promise]) =>
+      promise
+        .then(data => {
+          return { key, status: 'fulfilled' as const, data };
+        })
+        .catch((error: unknown) => {
+          return { key, status: 'rejected' as const, error };
+        }),
+    ),
+  );
+  const fulfilledResults = results.filter(
+    (res): res is { key: string; status: 'fulfilled'; data: T } => res.status === 'fulfilled',
+  );
+  const rejectedResults = results.filter(
+    (res): res is { key: string; status: 'rejected'; error: unknown } => res.status === 'rejected',
+  );
+
+  for (const rejectedResult of rejectedResults) {
+    errors.push({ key: rejectedResult.key, error: rejectedResult.error });
+  }
+
+  if (errors.length > 0) {
+    throw new AggregateError(
+      errors.map(({ key, error }) =>
+        Object.assign(new Error(`Promise for "${key}" failed: ${error}`), { key, original: error }),
+      ),
+      'One or more promises failed',
+    );
+  }
+
+  for (const fulfilledResult of fulfilledResults) {
+    record[fulfilledResult.key] = fulfilledResult.data;
+  }
+
+  return record;
+};
+
 @Injectable()
 export class WorkflowService {
   constructor(
@@ -256,6 +298,31 @@ export class WorkflowService {
     return await this.formatWorkflow(workflow);
   }
 
+  private async getIndividualVerificationsChecksWithFallback({
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    try {
+      const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId(
+        {
+          workflowRuntimeDataId,
+          projectId,
+        },
+      );
+
+      return assessments?.flatMap(assessment => assessment.individualVerificationsChecks) ?? [];
+    } catch (error) {
+      if (!(error instanceof NotFoundException)) {
+        throw error;
+      }
+
+      return [];
+    }
+  }
+
   private async formatWorkflow(
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
@@ -302,32 +369,34 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
-    let assessments:
-      | Awaited<
-          ReturnType<typeof this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId>
-        >
+    let individualVerificationsChecks:
+      | Awaited<ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>>
       | undefined;
 
     if (workflow.workflowType === 'parent') {
-      try {
-        assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
-          workflowRuntimeDataId: workflow.id,
-          projectId: workflow.projectId,
-        });
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          assessments = [];
-        }
+      const workflowIds = [
+        workflow.id,
+        ...(workflow.childWorkflowsRuntimeData?.map(childWorkflow => childWorkflow.id) ?? []),
+      ];
+      const workflowIdsToIndividualVerificationsChecks: Record<
+        string,
+        ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>
+      > = {};
 
-        if (!(error instanceof NotFoundException)) {
-          throw error;
-        }
+      for (const workflowId of workflowIds) {
+        workflowIdsToIndividualVerificationsChecks[workflowId] =
+          this.getIndividualVerificationsChecksWithFallback({
+            workflowRuntimeDataId: workflowId,
+            projectId: workflow.projectId,
+          });
       }
-    }
 
-    const individualVerificationsChecks = assessments?.flatMap(
-      assessment => assessment.individualVerificationsChecks,
-    );
+      const individualVerificationsChecksPromises = await handlePromiseAll(
+        workflowIdsToIndividualVerificationsChecks,
+      );
+
+      individualVerificationsChecks = Object.values(individualVerificationsChecksPromises).flat();
+    }
 
     return {
       ...workflow,
@@ -341,11 +410,14 @@ export class WorkflowService {
             ...endUser,
             individualVerificationsChecks: endUserIndividualVerificationsChecks
               ? {
-                  kyc_session_1: {
-                    vendor: endUserIndividualVerificationsChecks.input.vendor,
-                    result: formatIndividualVerification(
-                      endUserIndividualVerificationsChecks.output,
-                    ),
+                  status: endUserIndividualVerificationsChecks.status,
+                  data: {
+                    kyc_session_1: {
+                      vendor: endUserIndividualVerificationsChecks.input.vendor,
+                      result: endUserIndividualVerificationsChecks.output
+                        ? formatIndividualVerification(endUserIndividualVerificationsChecks.output)
+                        : null,
+                    },
                   },
                 }
               : undefined,
