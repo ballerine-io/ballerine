@@ -100,6 +100,5 @@ export const generateGranularRevisionFields = ({
     }
   }
 
-  console.log('revisionFields', revisionFields);
   return revisionFields;
 };
