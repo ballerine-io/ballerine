@@ -1,8 +1,10 @@
-import { ValidationFailedError } from '../errors';
+import { z } from 'zod';
+
 import { OPERATION } from './enums';
 import { BaseOperator } from './helpers';
-import { z } from 'zod';
+import { ValidationFailedError } from '../errors';
 import { BankAccountVerificationParams } from './types';
+import { BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE } from '../../consts';
 
 type BankAccountRule = {
   ruleId: string;
@@ -63,7 +65,7 @@ export class BankAccountVerification extends BaseOperator<
       throw new ValidationFailedError('Extract value', 'parsing failed', result.error);
     }
 
-    if (result.data.requestType !== 'BAVCommercial-Standard') {
+    if (result.data.requestType !== BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE) {
       return [];
     }
 

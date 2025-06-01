@@ -1,4 +1,9 @@
-import { OPERATION, OPERATOR, RuleSet } from '@ballerine/common';
+import {
+  BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
+  OPERATION,
+  OPERATOR,
+  RuleSet,
+} from '@ballerine/common';
 
 import { helpers } from './data-helper';
 import { createRuleEngine } from '../rule-engine';
@@ -42,7 +47,7 @@ describe('Bank account verification operator', () => {
           bankAccountVerification: {
             data: {
               responseHeader: {
-                requestType: 'BAVCommercial-Standard',
+                requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
               },
               clientResponsePayload: {
                 decisionElements: [
@@ -74,7 +79,7 @@ describe('Bank account verification operator', () => {
           bankAccountVerification: {
             data: {
               responseHeader: {
-                requestType: 'BAVCommercial-Standard',
+                requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
               },
               clientResponsePayload: {
                 decisionElements: [
@@ -106,7 +111,7 @@ describe('Bank account verification operator', () => {
           bankAccountVerification: {
             data: {
               responseHeader: {
-                requestType: 'BAVCommercial-Standard',
+                requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
               },
               clientResponsePayload: {
                 decisionElements: [
@@ -139,7 +144,7 @@ describe('Bank account verification operator', () => {
             bankAccountVerification: {
               data: {
                 responseHeader: {
-                  requestType: 'BAVCommercial-Standard',
+                  requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
                 },
                 clientResponsePayload: {
                   decisionElements: [
@@ -179,7 +184,7 @@ describe('Bank account verification operator', () => {
             bankAccountVerification: {
               data: {
                 responseHeader: {
-                  requestType: 'BAVCommercial-Standard',
+                  requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
                 },
                 clientResponsePayload: {
                   decisionElements: [
