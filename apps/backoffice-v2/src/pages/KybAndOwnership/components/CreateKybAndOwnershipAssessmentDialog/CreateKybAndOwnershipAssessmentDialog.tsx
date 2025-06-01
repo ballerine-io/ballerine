@@ -27,12 +27,12 @@ type CreateKybAndOwnershipAssessmentDialogProps = {
   open: boolean;
   toggleOpen: (val?: boolean) => void;
   disabled?: boolean;
-  children: React.ReactNode;
+  trigger: React.ReactNode;
 };
 
 export const CreateKybAndOwnershipAssessmentDialog = ({
   disabled,
-  children,
+  trigger,
   open,
   toggleOpen: toggleOpenProps,
 }: CreateKybAndOwnershipAssessmentDialogProps) => {
@@ -42,7 +42,7 @@ export const CreateKybAndOwnershipAssessmentDialog = ({
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
       <DialogTrigger disabled={disabled} asChild>
-        {children}
+        {trigger}
       </DialogTrigger>
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">

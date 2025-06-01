@@ -21,8 +21,8 @@ declare module '@tanstack/react-table' {
 const columnHelper = createColumnHelper<TKybAndOwnershipAssessment>();
 
 export const useColumns = () => {
-  return useMemo(() => {
-    const columns = [
+  return useMemo(
+    () => [
       columnHelper.accessor('input.companyName', {
         cell: info => {
           const companyName = info.getValue();
@@ -100,16 +100,7 @@ export const useColumns = () => {
         },
         header: 'Status',
       }),
-    ];
-
-    return columns.filter(column => {
-      const meta = column.meta;
-
-      if (meta?.conditional) {
-        return meta.showColumn;
-      }
-
-      return true;
-    });
-  }, []);
+    ],
+    [],
+  );
 };

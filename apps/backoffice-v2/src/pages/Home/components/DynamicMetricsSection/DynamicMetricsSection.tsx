@@ -15,15 +15,15 @@ export const DynamicMetricsSection = ({
   isMerchantMonitoringEnabled,
   isOngoingMonitoringEnabled,
 
-  addedMerchantsCount,
-  removedMerchantsCount,
+  addedWebsitesCount,
+  removedWebsitesCount,
 }: Pick<
   ReturnType<typeof useHomeLogic>,
   | 'locale'
   | 'isMerchantMonitoringEnabled'
   | 'isOngoingMonitoringEnabled'
-  | 'addedMerchantsCount'
-  | 'removedMerchantsCount'
+  | 'addedWebsitesCount'
+  | 'removedWebsitesCount'
 > & {
   from: ReturnType<typeof useHomeLogic>['mmFrom'];
   to: ReturnType<typeof useHomeLogic>['mmTo'];
@@ -61,17 +61,17 @@ export const DynamicMetricsSection = ({
               from: from ?? undefined,
               to: to ?? undefined,
             })}`}
-            value={addedMerchantsCount}
-            title="New Merchants"
-            description="Merchants added within the selected time range"
+            value={addedWebsitesCount}
+            title="New Websites"
+            description="Number of new websites added during the selected time range"
           />
         )}
 
         {isOngoingMonitoringEnabled && (
           <StatsCard
-            value={removedMerchantsCount}
-            title="Merchants Removed"
-            description="Merchants removed from monitoring within the selected time range"
+            value={removedWebsitesCount}
+            title="Websites Removed"
+            description="Number of websites removed from ongoing monitoring during the selected time range"
           />
         )}
       </div>
