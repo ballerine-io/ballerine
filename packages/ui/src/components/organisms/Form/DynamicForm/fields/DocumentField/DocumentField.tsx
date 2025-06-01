@@ -16,12 +16,12 @@ import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { IFormElement, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../FileField';
-import { useDocumentLabelElement } from './hooks/useDocumentLabelElement';
 import { useDocumentState } from './hooks/useDocumentState';
 import { useDocumentFile } from '../../../DocumentsService';
 import { useDynamicForm } from '../../context';
 import { useDeleteDocumentFiles } from './hooks/useDeleteDocument';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
+import { useDynamicDocumentDefinition } from './hooks/useDynamicDocumentDefinition';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
@@ -55,9 +55,9 @@ export interface IDocumentFieldParams extends Omit<IFileFieldParams, 'httpParams
 
 export const DOCUMENT_FIELD_TYPE = 'documentfield';
 
-export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element }) => {
-  useMountEvent(element);
-  useUnmountEvent(element);
+export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element: _element }) => {
+  useMountEvent(_element);
+  useUnmountEvent(_element);
 
   const { metadata } = useDynamicForm();
 
@@ -68,11 +68,17 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     document,
     removeFile,
   } = useDocumentFile({
-    type: element.params?.template?.type!,
-    category: element.params?.template?.category!,
+    type: _element.params?.template?.type!,
+    category: _element.params?.template?.category!,
     entityType: 'business',
     entityId: metadata.businessId!,
   });
+
+  const element = useDynamicDocumentDefinition({
+    element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
+    document: document ?? undefined,
+  });
+
   const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();
 
   const { params } = element;
@@ -129,7 +135,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   }, [disabled, isDeletingDocumentFiles, task, isRunning, isLoadingFile, isFetchingFile]);
 
   return (
-    <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
+    <FieldLayout element={element} elementState={documentState}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',

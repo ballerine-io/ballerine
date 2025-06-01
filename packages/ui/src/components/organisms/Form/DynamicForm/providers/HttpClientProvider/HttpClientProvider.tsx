@@ -15,6 +15,7 @@ export const HttpClientProvider = ({ httpParams, children, metadata }: IHttpClie
   const httpClient = useMemo(() => {
     const axiosClient = axios.create({
       baseURL: formatString('{_app.apiUrl}', metadata || {}),
+      withCredentials: true,
     });
 
     axiosClient.interceptors.request.use(config => {

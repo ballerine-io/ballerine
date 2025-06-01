@@ -9,7 +9,7 @@ interface IDocumentServiceProps {
 
 export const DocumentsService = ({ children }: IDocumentServiceProps) => {
   const { files, setFile, removeFile, composeFileId } = useFiles();
-  const { data: documents, isFetching: isFetchingDocuments } = useDocumentsQuery();
+  const { data: documents, isFetching: isFetchingDocuments } = useDocumentsQuery(false);
 
   const context = useMemo(
     () => ({

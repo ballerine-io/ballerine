@@ -36,8 +36,6 @@ export const ValidatorWrapper = <TValue extends object>({
     } as TValue & IValidatorWrapperContext;
   }, [value, documents, files.files]);
 
-  console.log('valueWithFilesAndDocuments', valueWithFilesAndDocuments);
-
   return (
     <ValidatorProvider value={valueWithFilesAndDocuments} {...rest}>
       {children}

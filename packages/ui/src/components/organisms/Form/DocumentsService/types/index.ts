@@ -16,6 +16,7 @@ export interface IDocument {
   endUserId: string | null;
   category: string;
   type: string;
+  status: string;
   version: number;
   decision: string | null;
   decisionReason: string | null;

@@ -28,7 +28,7 @@ export const usePriorityFields = (element: IFormElement<string, any>) => {
   }, [priorityField]);
 
   const isShouldDisablePriorityField = useMemo(() => {
-    if (!priorityFields?.length) {
+    if (priorityFields === undefined) {
       return false;
     }
 

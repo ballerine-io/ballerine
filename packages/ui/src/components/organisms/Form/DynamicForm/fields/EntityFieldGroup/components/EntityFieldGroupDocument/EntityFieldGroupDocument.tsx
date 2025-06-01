@@ -13,7 +13,6 @@ import { FieldPriorityReason } from '../../../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { IFormElement, TDynamicFormElement } from '../../../../types';
 import { IDocumentFieldParams } from '../../../DocumentField';
-import { useDocumentLabelElement } from '../../../DocumentField/hooks/useDocumentLabelElement';
 import { useDocumentState } from '../../../DocumentField/hooks/useDocumentState/useDocumentState';
 import { useStack } from '../../../FieldList';
 import { TEntityFieldGroupType } from '../../EntityFieldGroup';
@@ -22,6 +21,7 @@ import { useCreateDocument } from '../../../DocumentField/hooks/useCreateDocumen
 import { useDeleteDocumentFiles } from '../../../DocumentField/hooks/useDeleteDocument';
 import { useReuploadDocument } from '../../../DocumentField/hooks/useReuploadDocument';
 import { useDocumentFile } from '@/components/organisms/Form/DocumentsService';
+import { useDynamicDocumentDefinition } from '../../../DocumentField/hooks/useDynamicDocumentDefinition';
 
 export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
   type: TEntityFieldGroupType;
@@ -30,14 +30,14 @@ export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
 export const EntityFieldGroupDocument: TDynamicFormElement<
   'documentfield',
   IEntityFieldGroupDocumentParams
-> = ({ element }) => {
-  const { uploadOn = 'change' } = element.params || {};
+> = ({ element: _element }) => {
+  const { uploadOn = 'change' } = _element.params || {};
   const { values } = useDynamicForm();
   const { stack } = useStack();
 
   const { isSyncing, entityId, tempEntityId } = useEntityField();
   const { addTask, removeTask } = useTaskRunner();
-  const id = useElementId(element, stack);
+  const id = useElementId(_element, stack);
 
   const valuesRef = useRef(values);
 
@@ -46,17 +46,17 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   }, [values]);
 
   const { documentState, updateState } = useDocumentState(
-    element as IFormElement<'documentfield', IDocumentFieldParams>,
+    _element as IFormElement<'documentfield', IDocumentFieldParams>,
   );
 
   const { createDocument, isCreatingDocument } = useCreateDocument({
-    element,
+    element: _element,
     entityId: entityId || tempEntityId,
     entityType: 'ubo',
   });
 
   const { reuploadDocument, isReuploadingDocument } = useReuploadDocument({
-    element,
+    element: _element,
     entityId: entityId || tempEntityId,
     entityType: 'ubo',
   });
@@ -71,10 +71,15 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     setFile,
     removeFile,
   } = useDocumentFile({
-    type: element.params?.template?.type!,
-    category: element.params?.template?.category!,
+    type: _element.params?.template?.type!,
+    category: _element.params?.template?.category!,
     entityType: 'ubo',
     entityId: entityId || tempEntityId,
+  });
+
+  const element = useDynamicDocumentDefinition({
+    element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
+    document: document ?? undefined,
   });
 
   const { params } = element;
@@ -168,7 +173,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   ]);
 
   return (
-    <FieldLayout element={useDocumentLabelElement(element)} elementState={documentState}>
+    <FieldLayout element={element} elementState={documentState}>
       <div
         className={ctw(
           'relative flex h-[56px] flex-row items-center gap-3 rounded-[16px] border bg-white px-4',
