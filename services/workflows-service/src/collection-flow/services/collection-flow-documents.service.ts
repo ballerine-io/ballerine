@@ -236,6 +236,19 @@ export class CollectionFlowDocumentsService {
           transaction,
         );
 
+        await this.documentService.updateById(
+          documentId,
+          [projectId],
+          {
+            status: DocumentStatus.provided,
+            decision: null,
+            decisionReason: null,
+            comment: null,
+          },
+          {} as Prisma.DocumentUpdateManyArgs,
+          transaction,
+        );
+
         const updatedDocument = await this.documentRepository.findByIdWithFiles(
           documentId,
           [projectId],
@@ -308,6 +321,7 @@ export class CollectionFlowDocumentsService {
     serializedDocument.type = document.type;
     serializedDocument.version = document.version;
     serializedDocument.decision = document.decision;
+    serializedDocument.status = document.status;
     serializedDocument.decisionReason = document.decisionReason;
     serializedDocument.comment = document.comment;
 

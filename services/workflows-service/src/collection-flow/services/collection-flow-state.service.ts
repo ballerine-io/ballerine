@@ -1,7 +1,7 @@
 import { IUIDefinitionPage } from '@/common/ui-definition-parse-utils/types';
 import { DocumentService } from '@/document/document.service';
 import { NotFoundException } from '@/errors';
-import { AnyRecord, TProjectIds } from '@/types';
+import { AnyRecord, PrismaTransactionClient, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
@@ -31,6 +31,11 @@ import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Type } from '@sinclair/typebox';
 import isEqual from 'lodash/isEqual';
+import {
+  beginTransactionIfNotExistCurry,
+  defaultPrismaTransactionOptions,
+} from '@/prisma/prisma.util';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class CollectionFlowStateService {
@@ -41,9 +46,14 @@ export class CollectionFlowStateService {
     @Inject(forwardRef(() => WorkflowService))
     protected readonly workflowService: WorkflowService,
     protected readonly appLogger: AppLoggerService,
+    protected readonly prismaService: PrismaService,
   ) {}
 
-  async getCollectionFlowState(workflowId: string, projectIds: TProjectIds) {
+  async getCollectionFlowState(
+    workflowId: string,
+    projectIds: TProjectIds,
+    transaction?: PrismaTransactionClient,
+  ) {
     const workflowRuntimeData = (await this.workflowService.getWorkflowRuntimeDataById(
       workflowId,
       {
@@ -54,6 +64,7 @@ export class CollectionFlowStateService {
         },
       },
       projectIds,
+      transaction,
     )) as WorkflowRuntimeData & {
       childWorkflowsRuntimeData: WorkflowRuntimeData[];
     };
@@ -230,6 +241,7 @@ export class CollectionFlowStateService {
       [
         CollectionFlowStatusesEnum.failed,
         CollectionFlowStatusesEnum.rejected,
+        CollectionFlowStatusesEnum.revision,
         CollectionFlowStatusesEnum.approved,
       ].includes(collectionFlowState.status)
     ) {
@@ -316,55 +328,67 @@ export class CollectionFlowStateService {
     workflowId: string,
     newState: UpdateCollectionFlowStateDto,
     projectIds: TProjectIds,
+    transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    const workflow = await this.workflowService.getWorkflowRuntimeDataById(
-      workflowId,
-      {
-        select: {
-          context: true,
-          workflowDefinitionId: true,
-        },
-      },
-      projectIds,
-    );
+    const beginTransaction = beginTransactionIfNotExistCurry({
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+      transaction,
+    });
 
-    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-      workflow.workflowDefinitionId,
-      'collection_flow',
-      projectIds,
-    );
-
-    if (!uiDefinition) {
-      throw new NotFoundException('Collection flow UI definition not found.');
-    }
-
-    const collectionFlowState = getCollectionFlowState(workflow.context);
-
-    if (!collectionFlowState) {
-      throw new NotFoundException('Collection flow state not found.');
-    }
-
-    // Ensuring steps are valid and following structure of uiDefinition
-    this.validateCollectionFlowSteps(newState, uiDefinition);
-
-    // Ensuring current step is valid and exists in uiDefinition
-    this.validateCollectionFlowCurrentStep(newState, uiDefinition);
-
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowId,
-      {
-        context: {
-          ...workflow.context,
-          collectionFlow: {
-            ...workflow.context.collectionFlow,
-            state: newState,
+    return beginTransaction(async transaction => {
+      const workflow = await this.workflowService.getWorkflowRuntimeDataById(
+        workflowId,
+        {
+          select: {
+            context: true,
+            workflowDefinitionId: true,
           },
         },
-      },
-      projectIds![0]!,
-    );
+        projectIds,
+      );
 
-    return this.getCollectionFlowState(workflowId, projectIds);
+      const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+        workflow.workflowDefinitionId,
+        'collection_flow',
+        projectIds,
+      );
+
+      if (!uiDefinition) {
+        throw new NotFoundException('Collection flow UI definition not found.');
+      }
+
+      const collectionFlowState = getCollectionFlowState(workflow.context);
+
+      if (!collectionFlowState) {
+        throw new NotFoundException('Collection flow state not found.');
+      }
+
+      // Ensuring steps are valid and following structure of uiDefinition
+      this.validateCollectionFlowSteps(newState, uiDefinition);
+
+      // Ensuring current step is valid and exists in uiDefinition
+      this.validateCollectionFlowCurrentStep(newState, uiDefinition);
+
+      await this.workflowService.updateWorkflowRuntimeData(
+        workflowId,
+        {
+          context: {
+            ...workflow.context,
+            collectionFlow: {
+              ...workflow.context.collectionFlow,
+              state: newState,
+            },
+          },
+        },
+        projectIds![0]!,
+        transaction,
+      );
+
+      const resolvedState = await this.getCollectionFlowState(workflowId, projectIds, transaction);
+
+      return resolvedState;
+    });
   }
 
   private validateCollectionFlowSteps(

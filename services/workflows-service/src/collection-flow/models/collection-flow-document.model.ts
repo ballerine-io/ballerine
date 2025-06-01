@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DocumentDecision } from '@prisma/client';
+import { DocumentDecision, DocumentStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CollectionFlowFileModel } from './collection-flow-file.model';
@@ -70,6 +70,15 @@ export class CollectionFlowDocumentModel {
   @IsEnum(DocumentDecision)
   @IsOptional()
   decision!: DocumentDecision | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+    description: 'Document status',
+  })
+  @Type(() => String)
+  @IsString()
+  status!: DocumentStatus | null;
 
   @ApiProperty({
     required: false,

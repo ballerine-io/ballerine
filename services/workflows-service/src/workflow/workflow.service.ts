@@ -36,6 +36,7 @@ import type {
   InputJsonValue,
   IObjectWithId,
   PrismaTransaction,
+  PrismaTransactionClient,
   TProjectId,
   TProjectIds,
 } from '@/types';
@@ -230,8 +231,9 @@ export class WorkflowService {
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
     projectIds: TProjectIds,
+    transaction?: PrismaTransactionClient,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds, transaction);
   }
 
   async getWorkflowRuntimeDataByIdAndLockUnscoped({
