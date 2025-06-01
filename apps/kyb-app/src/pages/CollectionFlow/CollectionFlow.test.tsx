@@ -23,17 +23,26 @@ vi.mock('@/common/components/molecules/LoadingScreen', () => ({
 
 describe('CollectionFlow', () => {
   beforeEach(() => {
-    vi.mocked(useLanguageParam).mockReturnValue({
+    const mockUseLanguageParamResult = {
       language: 'en',
       setLanguage: vi.fn(),
-    } satisfies ReturnType<typeof useLanguageParam>);
-    vi.mocked(useUISchemasQuery).mockReturnValue({
+    } satisfies ReturnType<typeof useLanguageParam>;
+
+    const mockUISchemasQueryResult = {
       // @ts-expect-error
       data: undefined,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>);
-    vi.mocked(getCollectionFlowVersion).mockReturnValue(() => <div>Mock Flow Component</div>);
+    } satisfies ReturnType<typeof useUISchemasQuery>;
+
+    const mockGetCollectionFlowVersionResult = () => <div>Mock Flow Component</div>;
+
+    vi.mocked(useLanguageParam).mockReturnValue(mockUseLanguageParamResult);
+    vi.mocked(useUISchemasQuery).mockReturnValue(
+      // @ts-expect-error
+      mockUISchemasQueryResult,
+    );
+    vi.mocked(getCollectionFlowVersion).mockReturnValue(mockGetCollectionFlowVersionResult);
   });
 
   it('renders loading screen when schema is loading', () => {
