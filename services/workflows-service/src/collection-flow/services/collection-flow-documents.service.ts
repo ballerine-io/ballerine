@@ -181,11 +181,11 @@ export class CollectionFlowDocumentsService {
       );
 
       if (document.decision === DocumentDecision.revisions) {
-        if (document.version + 1 <= latestDocument?.version!) {
+        if (latestDocument && document.version + 1 <= latestDocument.version) {
           throw new ConflictException(
             `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
               document.version + 1
-            } is not the latest version. Latest version is ${latestDocument?.version}.`,
+            } is not the latest version. Latest version is ${latestDocument.version}.`,
           );
         }
 
@@ -354,6 +354,7 @@ export class CollectionFlowDocumentsService {
       fileModel.mimeType = file.file.mimeType;
       fileModel.uri = file.file.uri;
       fileModel.createdAt = file.file.createdAt;
+
       return fileModel;
     });
 
@@ -403,7 +404,7 @@ export class CollectionFlowDocumentsService {
         transaction,
       );
 
-      if (document.version < latestDocument?.version!) {
+      if (latestDocument && document.version < latestDocument.version) {
         throw new ConflictException(
           `Deleting document with id ${documentId} is not allowed. Document version ${document.version} is not the latest version. Latest version is ${latestDocument?.version}.`,
         );

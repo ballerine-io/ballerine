@@ -644,12 +644,12 @@ export class DocumentService {
   }
 
   private async peristDocumentsDesicions(
-    documents: {
+    documents: Array<{
       id: string;
       decision: DocumentDecision | null;
       decisionReason: string | null;
       comment: string | null;
-    }[],
+    }>,
     projectIds: TProjectId[] = [],
     transaction?: PrismaTransactionClient,
   ) {

@@ -16,6 +16,7 @@ export class FormDataValidationPipe implements PipeTransform {
       }
 
       const val = value[key];
+
       if (typeof val === 'string') {
         try {
           acc[key] = JSON.parse(val) as any;
@@ -25,6 +26,7 @@ export class FormDataValidationPipe implements PipeTransform {
       } else {
         acc[key] = val as any;
       }
+
       return acc;
     }, {} as Record<string, any>);
 
@@ -41,8 +43,15 @@ export class FormDataValidationPipe implements PipeTransform {
     return object;
   }
 
-  private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Number, Array, Object];
+  private toValidate(metatype: abstract new (...args: any[]) => any): boolean {
+    const types: Array<abstract new (...args: any[]) => any> = [
+      String,
+      Boolean,
+      Number,
+      Array,
+      Object,
+    ];
+
     return !types.includes(metatype);
   }
 }
