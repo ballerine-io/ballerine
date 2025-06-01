@@ -31,6 +31,7 @@ export const EndUserSchema = z.object({
               entity: z.record(z.string(), z.any()),
               decision: z.record(z.string(), z.any()),
               aml: z.record(z.string(), z.any()).optional(),
+              document: z.record(z.string(), z.any()),
             })
             .nullable(),
         }),

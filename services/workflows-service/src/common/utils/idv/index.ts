@@ -193,9 +193,10 @@ export const formatIndividualVerification = ({
   reason,
   decisionScore,
   aml,
+  document,
 }: Pick<
   TIndividualVerificationData,
-  'person' | 'insights' | 'decision' | 'reason' | 'decisionScore' | 'aml'
+  'person' | 'insights' | 'decision' | 'reason' | 'decisionScore' | 'aml' | 'document'
 >) => {
   const decision = formatIndividualVerificationDecision({
     insights,
@@ -221,5 +222,14 @@ export const formatIndividualVerification = ({
     },
     decision,
     aml,
+    document: {
+      type: document.type?.value,
+      validFrom: document.validFrom?.value,
+      validUntil: document.validUntil?.value,
+      firstIssue: document.firstIssue?.value,
+      country: document.country?.value,
+      city: document.city?.value,
+      issueNumber: document.issueNumber?.value,
+    },
   };
 };

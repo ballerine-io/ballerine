@@ -24,11 +24,11 @@ export const validateOrderBy = (value: unknown, validColumns: readonly string[])
 };
 
 export class PageDto {
-  @ApiProperty({ name: 'page[number]', example: 1 })
+  @ApiProperty({ name: 'page[number]', example: 1, default: 1 })
   @Transform(({ value }) => parseInt(value, 10))
   number!: number;
 
-  @ApiProperty({ name: 'page[size]', example: 20 })
+  @ApiProperty({ name: 'page[size]', example: 20, default: 20 })
   @Transform(({ value }) => parseInt(value, 10))
   size!: number;
 }

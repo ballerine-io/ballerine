@@ -4,21 +4,18 @@ import { CustomerService } from '@/customer/customer.service';
 import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import {
-  AnyRecord,
-  EndUserActiveMonitoringsSchema,
-  isType,
-  ProcessStatus,
-} from '@ballerine/common';
+import { AnyRecord, EndUserActiveMonitoringsSchema, ProcessStatus } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
 import { get, isObject, set } from 'lodash';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 import { SentryService } from '@/sentry/sentry.service';
-import { handleIndividualVerificationDocuments } from '@/common/utils/idv';
-import { formatIndividualVerification } from '@/common/utils/idv';
-import { TIndividualVerificationData } from '@/common/utils/idv';
+import {
+  formatIndividualVerification,
+  handleIndividualVerificationDocuments,
+  TIndividualVerificationData,
+} from '@/common/utils/idv';
 
 const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
@@ -161,7 +158,7 @@ export class HookCallbackHandlerService {
     return setPluginStatus({
       data,
       resultDestinationPath,
-      status: ProcessStatus.SUCCESS,
+      status: data?.error ? ProcessStatus.ERROR : ProcessStatus.SUCCESS,
       context: workflowRuntime.context,
     });
   }

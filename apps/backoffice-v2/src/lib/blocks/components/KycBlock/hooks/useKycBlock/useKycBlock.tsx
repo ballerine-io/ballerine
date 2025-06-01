@@ -9,7 +9,6 @@ import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import {
   Badge,
   Button,
@@ -28,6 +27,7 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
+import { systemCreatedIconCell, userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -178,18 +178,12 @@ export const useKycBlock = ({
           props: {
             className: ctw({
               'text-success': kycSession[key]?.result?.decision?.status === 'approved',
-              'text-destructive': kycSession[key]?.result?.decision?.status === 'rejected',
+              'text-destructive': kycSession[key]?.result?.decision?.status === 'declined',
               'font-bold':
                 kycSession[key]?.result?.decision?.status === 'approved' ||
-                kycSession[key]?.result?.decision?.status === 'rejected',
+                kycSession[key]?.result?.decision?.status === 'declined',
             }),
           },
-        },
-        {
-          label: 'Issues',
-          value: kycSession[key]?.decision?.riskLabels?.length
-            ? kycSession[key]?.decision?.riskLabels?.join(', ')
-            : 'none',
         },
         ...(isObject(kycSession[key])
           ? [
@@ -254,8 +248,7 @@ export const useKycBlock = ({
             type: 'readOnlyDetails',
             value: Object.entries({
               ...kycSession[key]?.result?.entity?.data,
-              ...omitPropsFromObject(kycSession[key]?.result?.documents?.[0]?.properties, 'issuer'),
-              issuer: kycSession[key]?.result?.documents?.[0]?.issuer?.country,
+              ...kycSession[key]?.result?.document,
             })?.map(([label, value]) => ({
               label,
               value: value as ExtendedJson,
@@ -604,10 +597,14 @@ export const useKycBlock = ({
                   type: 'container',
                   value: createBlocksTyped()
                     .addBlock()
+                    .addCell(userCreatedIconCell)
                     .addCell({
                       id: 'header',
                       type: 'heading',
                       value: 'Details',
+                      props: {
+                        className: 'mt-0 p-0',
+                      },
                     })
                     .addCell({
                       type: 'readOnlyDetails',
@@ -635,6 +632,7 @@ export const useKycBlock = ({
                   value: documentExtractedData.length
                     ? createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           id: 'header',
                           type: 'heading',
@@ -645,6 +643,7 @@ export const useKycBlock = ({
                         .flat(1)
                     : createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           type: 'heading',
                           value: 'Document Extracted Data',
@@ -663,6 +662,7 @@ export const useKycBlock = ({
                   value: decision.length
                     ? createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           id: 'header',
                           type: 'heading',
@@ -709,6 +709,7 @@ export const useKycBlock = ({
                         .buildFlat()
                     : createBlocksTyped()
                         .addBlock()
+                        .addCell(systemCreatedIconCell)
                         .addCell({
                           type: 'heading',
                           value: 'Document Verification Results',
