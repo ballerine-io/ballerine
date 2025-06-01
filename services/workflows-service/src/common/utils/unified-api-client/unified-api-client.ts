@@ -250,9 +250,9 @@ export class UnifiedApiClient {
   }
 
   public async getLatestAssessmentsByWorkflowRuntimeDataId({
-                                                             workflowRuntimeDataId,
-                                                             projectId,
-                                                           }: {
+    workflowRuntimeDataId,
+    projectId,
+  }: {
     workflowRuntimeDataId: string;
     projectId: string;
   }) {
