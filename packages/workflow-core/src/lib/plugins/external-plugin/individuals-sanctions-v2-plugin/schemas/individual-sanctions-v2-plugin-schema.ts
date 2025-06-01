@@ -51,4 +51,5 @@ export const IndividualsSanctionsV2PluginPayloadSchema = z.object({
     .min(1)
     // TODO: proabably can be kept undefined and let the parent class handle it, for now keeping our old path as default
     .default('pluginsOutput.kyc_session.kyc_session_1.result.aml'),
+  saveContext: z.boolean().optional(),
 });

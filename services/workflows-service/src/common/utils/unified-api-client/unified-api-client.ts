@@ -16,7 +16,6 @@ import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
-import { PageDto } from '@/common/dto';
 import { isType } from '@ballerine/common';
 import z from 'zod';
 
@@ -269,5 +268,50 @@ export class UnifiedApiClient {
 
       throw error;
     }
+  }
+
+  public async runIndividualVerification({
+    clientId,
+    endUserId,
+    workflowRuntimeDataId,
+    sessionId,
+    vendor,
+    withAml,
+    ongoingMonitoring,
+    callbackUrl,
+    firstName,
+    lastName,
+    dateOfBirth,
+    projectId,
+  }: {
+    clientId: string;
+    endUserId: string;
+    workflowRuntimeDataId: string;
+    sessionId: string | undefined;
+    vendor: 'veriff';
+    withAml: boolean;
+    ongoingMonitoring: boolean;
+    callbackUrl: string;
+
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string;
+    projectId: string;
+  }) {
+    return await this.axiosInstance.post(`/individual-verification-sessions`, {
+      clientId,
+      endUserId: `${endUserId}__${sessionId ?? ''}`,
+      workflowRuntimeDataId,
+      vendor,
+      withAml,
+      ongoingMonitoring,
+      callbackUrl,
+
+      firstName,
+      lastName,
+      dateOfBirth,
+
+      projectId,
+    });
   }
 }
