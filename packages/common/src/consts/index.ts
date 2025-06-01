@@ -297,3 +297,5 @@ Object.entries(SUPPORTED_FILE_EXT_ENUM).forEach(([key, value]) => {
 
 export type SupportedFileExt =
   (typeof SUPPORTED_FILE_EXT_ENUM)[keyof typeof SUPPORTED_FILE_EXT_ENUM];
+
+export const BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE = 'BAVCommercial-Standard' as const;
