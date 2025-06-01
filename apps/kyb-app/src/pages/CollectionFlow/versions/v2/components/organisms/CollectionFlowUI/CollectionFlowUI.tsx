@@ -53,7 +53,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const appMetadata = useAppMetadata();
   const commonHttpParams = useCommonHttpParams();
   const { pluginStatuses } = usePlugins();
-  const revisionFields = useRevisionFields(pages, context);
+  const { revisionFields, isLoadingRevisionFields } = useRevisionFields(pages, context);
   const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
     useFinalSubmission(context, state);
   const validationParams: IDynamicFormValidationParams = useMemo(
@@ -215,6 +215,14 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       context,
     ],
   );
+
+  if (isLoadingRevisionFields) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

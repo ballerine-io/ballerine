@@ -29,7 +29,7 @@ describe('generateFieldsForRevision', () => {
     } as unknown as CollectionFlowContext;
 
     // Act
-    const result = generateFieldsForRevision(mockPages, mockContext);
+    const result = generateFieldsForRevision(mockPages, mockContext, []);
 
     // Assert
     expect(result).toBeUndefined();
@@ -56,7 +56,7 @@ describe('generateFieldsForRevision', () => {
     } as unknown as CollectionFlowContext;
 
     // Act
-    const result = generateFieldsForRevision(mockPages, mockContext);
+    const result = generateFieldsForRevision(mockPages, mockContext, []);
 
     // Assert
     expect(result).toEqual([
@@ -119,6 +119,7 @@ describe('generateFieldsForRevision', () => {
     const result = generateFieldsForRevision(
       pagesWithDocumentsInRevision,
       contextWithDocumentsInRevision as unknown as CollectionFlowContext,
+      [],
     );
 
     // Assert
@@ -183,6 +184,7 @@ describe('generateFieldsForRevision', () => {
     const result = generateFieldsForRevision(
       pagesWithRequestedDocuments,
       mockContext as unknown as CollectionFlowContext,
+      [],
     );
 
     // Assert
@@ -230,6 +232,7 @@ describe('generateFieldsForRevision', () => {
     const result = generateFieldsForRevision(
       pagesWithDocumentsInRevision,
       mockContext as unknown as CollectionFlowContext,
+      [],
     );
 
     // Assert

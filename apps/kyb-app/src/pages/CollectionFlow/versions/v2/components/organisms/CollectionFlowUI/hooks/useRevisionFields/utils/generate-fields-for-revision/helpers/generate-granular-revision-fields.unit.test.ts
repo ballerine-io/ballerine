@@ -32,12 +32,20 @@ describe('generateGranularRevisionFields', () => {
   ] as Array<IFormElement<TBaseFields, any>>;
 
   it('should return empty array when no revision fields found', () => {
-    const result = generateGranularRevisionFields(mockContext, []);
+    const result = generateGranularRevisionFields({
+      context: mockContext,
+      documents: [],
+      elements: [],
+    });
     expect(result).toEqual([]);
   });
 
   it('should generate revision fields for document elements', () => {
-    const result = generateGranularRevisionFields(mockContext, mockElements);
+    const result = generateGranularRevisionFields({
+      context: mockContext,
+      documents: [],
+      elements: mockElements,
+    });
 
     expect(result).toEqual([
       {
@@ -92,7 +100,11 @@ describe('generateGranularRevisionFields', () => {
       },
     ] as Array<IFormElement<TBaseFields, any>>;
 
-    const result = generateGranularRevisionFields(nestedContext, mockedElements);
+    const result = generateGranularRevisionFields({
+      context: nestedContext,
+      documents: [],
+      elements: mockedElements,
+    });
 
     expect(result).toEqual([
       {
