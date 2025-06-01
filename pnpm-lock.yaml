@@ -76,7 +76,7 @@ importers:
         specifier: 0.2.46
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.106
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
         specifier: ^1.2.119
@@ -85,10 +85,10 @@ importers:
         specifier: 0.7.154
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -101,7 +101,7 @@ importers:
         version: 3.10.0(react-hook-form@7.56.1(react@18.3.1))
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
-        version: 1.3.4(@tanstack/query-core@4.36.1)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.3.4(@tanstack/query-core@5.79.0)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@radix-ui/react-aspect-ratio':
         specifier: ^1.0.3
         version: 1.1.4(@types/react-dom@18.3.6(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -521,17 +521,17 @@ importers:
         specifier: 0.2.46
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.106
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.7.154
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
-        version: 1.3.4(@tanstack/query-core@4.36.1)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.3.4(@tanstack/query-core@5.79.0)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@radix-ui/react-icons':
         specifier: ^1.3.0
         version: 1.3.2(react@18.3.1)
@@ -775,7 +775,7 @@ importers:
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
-        version: 1.3.4(@tanstack/query-core@4.36.1)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.3.4(@tanstack/query-core@5.79.0)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@radix-ui/react-avatar':
         specifier: ^1.0.3
         version: 1.1.7(@types/react-dom@18.3.6(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1006,10 +1006,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.106
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1754,6 +1754,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.11.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1)
+      '@lukemorales/query-key-factory':
+        specifier: ^1.3.4
+        version: 1.3.4(@tanstack/query-core@5.79.0)(@tanstack/react-query@5.79.0(react@18.3.1))
       '@mui/material':
         specifier: ^5.14.2
         version: 5.17.1(@emotion/react@11.14.0(@types/react@18.3.20)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1811,6 +1814,9 @@ importers:
       '@rjsf/validator-ajv8':
         specifier: ^5.9.0
         version: 5.24.9(@rjsf/utils@5.24.9(react@18.3.1))
+      '@tanstack/react-query':
+        specifier: ^5.79.0
+        version: 5.79.0(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.9.2
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2041,7 +2047,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.106
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2231,7 +2237,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.106
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2358,10 +2364,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.106
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2500,7 +2506,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2745,13 +2751,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.106
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.129
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -3103,7 +3109,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)(typescript@5.8.3))(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3)))(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.106
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -8434,6 +8440,7 @@ packages:
   '@swc/core@1.11.22':
     resolution: {integrity: sha512-mjPYbqq8XjwqSE0hEPT9CzaJDyxql97LgK4iyvYlwVSQhdN1uK0DBG4eP9PxYzCS2MUGAXB34WFLegdUj5HGpg==}
     engines: {node: '>=10'}
+    deprecated: It has a bug. See https://github.com/swc-project/swc/issues/10413
     peerDependencies:
       '@swc/helpers': '>=0.5.17'
     peerDependenciesMeta:
@@ -8472,6 +8479,9 @@ packages:
   '@tanstack/query-core@4.36.1':
     resolution: {integrity: sha512-DJSilV5+ytBP1FbFcEJovv4rnnm/CokuVvrBEtW/Va9DvuJ3HksbXUJEpI0aV1KtuL4ZoO9AVE6PyNLzF7tLeA==}
 
+  '@tanstack/query-core@5.79.0':
+    resolution: {integrity: sha512-s+epTqqLM0/TbJzMAK7OEhZIzh63P9sWz5HEFc5XHL4FvKQXQkcjI8F3nee+H/xVVn7mrP610nVXwOytTSYd0w==}
+
   '@tanstack/react-query-devtools@4.22.0':
     resolution: {integrity: sha512-YeYFBnfqvb+ZlA0IiJqiHNNSzepNhI1p2o9i8NlhQli9+Zrn230M47OBaBUs8qr3DD1dC2zGB1Dis50Ktz8gAA==}
     peerDependencies:
@@ -8490,6 +8500,11 @@ packages:
         optional: true
       react-native:
         optional: true
+
+  '@tanstack/react-query@5.79.0':
+    resolution: {integrity: sha512-DjC4JIYZnYzxaTzbg3osOU63VNLP67dOrWet2cZvXgmgwAXNxfS52AMq86M5++ILuzW+BqTUEVMTjhrZ7/XBuA==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tanstack/react-table@8.21.3':
     resolution: {integrity: sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==}
@@ -21826,7 +21841,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21843,7 +21858,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.1.6)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21877,7 +21892,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21894,7 +21909,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.1.6)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -23189,10 +23204,15 @@ snapshots:
 
   '@lukeed/csprng@1.1.0': {}
 
-  '@lukemorales/query-key-factory@1.3.4(@tanstack/query-core@4.36.1)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@lukemorales/query-key-factory@1.3.4(@tanstack/query-core@5.79.0)(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@tanstack/query-core': 4.36.1
+      '@tanstack/query-core': 5.79.0
       '@tanstack/react-query': 4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
+  '@lukemorales/query-key-factory@1.3.4(@tanstack/query-core@5.79.0)(@tanstack/react-query@5.79.0(react@18.3.1))':
+    dependencies:
+      '@tanstack/query-core': 5.79.0
+      '@tanstack/react-query': 5.79.0(react@18.3.1)
 
   '@manypkg/find-root@1.1.0':
     dependencies:
@@ -26807,6 +26827,8 @@ snapshots:
 
   '@tanstack/query-core@4.36.1': {}
 
+  '@tanstack/query-core@5.79.0': {}
+
   '@tanstack/react-query-devtools@4.22.0(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/match-sorter-utils': 8.19.4
@@ -26823,6 +26845,11 @@ snapshots:
       use-sync-external-store: 1.5.0(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
+
+  '@tanstack/react-query@5.79.0(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.79.0
+      react: 18.3.1
 
   '@tanstack/react-table@8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -30496,18 +30523,18 @@ snapshots:
       ts-node: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@20.5.1)(typescript@5.8.3)
       typescript: 5.8.3
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5):
     dependencies:
       '@types/node': 18.17.19
-      cosmiconfig: 9.0.0(typescript@4.9.5)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 4.9.5
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6):
     dependencies:
       '@types/node': 18.17.19
-      cosmiconfig: 9.0.0(typescript@5.1.6)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 5.1.6
     optional: true
@@ -30520,18 +30547,18 @@ snapshots:
       typescript: 5.8.3
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5):
     dependencies:
       '@types/node': 22.15.2
-      cosmiconfig: 9.0.0(typescript@4.9.5)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 4.9.5
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6):
     dependencies:
       '@types/node': 22.15.2
-      cosmiconfig: 9.0.0(typescript@5.1.6)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 5.1.6
     optional: true
