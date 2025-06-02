@@ -70,7 +70,6 @@ import { DocumentFileModule } from '@/document-file/document-file.module';
   ],
   controllers: [
     CollectionFlowController,
-    // CollectionFlowFilesController,
     CollectionFlowNoUserController,
     CollectionFlowBusinessController,
     CollectionFlowEndUserController,
