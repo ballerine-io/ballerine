@@ -7,26 +7,22 @@ export const CustomerSubscriptionSchema = z.object({ subscriptions: z.array(Subs
 export type TCustomerSubscription = z.infer<typeof CustomerSubscriptionSchema>;
 
 export const CustomerConfigSchema = z.object({
-  // Demo Settings
-  isDemoAccount: z.boolean().optional(),
   isDemoKybEnabled: z.boolean().optional(),
   isDemoKybUsEnabled: z.boolean().optional(),
   isDemo: z.boolean().optional(),
   expiresAt: z.number().optional(),
   showFullAccessPopup: z.boolean().optional(),
-
-  // Monitoring Features
-  isMerchantMonitoringEnabled: z.boolean().optional(),
-  isOngoingMonitoringEnabled: z.boolean().optional(),
   ongoingWorkflowDefinitionId: z.string().optional(),
-
-  // Limits & UI
-  maxBusinessReports: z.number().optional(),
-  hideCreateMerchantMonitoringButton: z.boolean().optional(),
-
-  // Quality & API
-  withQualityControl: z.boolean().optional(),
-  disableBusinessSyncToUnifiedApi: z.boolean().nullish(),
+  hideCreateMerchantMonitoringButton: z.boolean().default(true).optional(),
+  isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
+  isOngoingMonitoringEnabled: z.boolean().default(false).optional(),
+  isCasesOnboardingEnabled: z.boolean().default(false).optional(),
+  maxBusinessReports: z.number().default(10).optional(),
+  withQualityControl: z.boolean().default(true).optional(),
+  disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
+  isDemoAccount: z.boolean().default(false).optional(),
+  createKybAndOwnershipAssessment: z.boolean().default(false).optional(),
+  createIdentityVerification: z.boolean().default(false).optional(),
 });
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;

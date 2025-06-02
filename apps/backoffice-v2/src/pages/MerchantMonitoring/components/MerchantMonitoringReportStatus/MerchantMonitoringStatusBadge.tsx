@@ -40,6 +40,12 @@ export const statusToData = {
     title: 'Terminated',
     text: 'Merchant reviewed and confirmed non-compliant or high risk',
   },
+  // TODO: remove
+  completed: {
+    variant: 'success',
+    title: 'Completed',
+    text: 'Merchant review has been completed',
+  },
 } as const;
 
 export const MerchantMonitoringStatusBadge = ({
@@ -50,6 +56,8 @@ export const MerchantMonitoringStatusBadge = ({
   status: keyof typeof statusToData;
   disabled?: boolean;
 }) => {
+  const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+
   // TODO: Can be removed when we get rid of records that have this status
   if ((status as string) === MERCHANT_REPORT_STATUSES_MAP['completed']) {
     status = MERCHANT_REPORT_STATUSES_MAP['conditionally-approved'];
@@ -60,6 +68,7 @@ export const MerchantMonitoringStatusBadge = ({
       new Error(`MerchantMonitoringStatusBadge: status "${status}" not found in statusToData.`),
       { componentName: 'MerchantMonitoringStatusBadge' },
     );
+
     return null;
   }
 
@@ -67,8 +76,6 @@ export const MerchantMonitoringStatusBadge = ({
     MERCHANT_REPORT_STATUSES_MAP['in-progress'],
     MERCHANT_REPORT_STATUSES_MAP['quality-control'],
   ].includes(status);
-
-  const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
 
   return (
     <Badge
