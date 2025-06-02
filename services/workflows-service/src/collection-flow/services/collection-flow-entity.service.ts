@@ -92,6 +92,12 @@ export class CollectionFlowEntityService {
 
   async deleteEntity(entityId: string) {
     return await this.prismaService.$transaction(async transaction => {
+      await transaction.workflowRuntimeData.deleteMany({
+        where: {
+          endUserId: entityId,
+        },
+      });
+
       await transaction.endUsersOnBusinesses.deleteMany({
         where: {
           endUserId: entityId,
