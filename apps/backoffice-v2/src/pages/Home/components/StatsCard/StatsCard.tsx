@@ -44,7 +44,7 @@ export const StatsCard: FunctionComponent<StatsCardProps> = ({
       <CardContent
         className={ctw(
           'h-full space-y-2 pt-6',
-          centered && 'flex min-h-60 flex-col items-center justify-between',
+          centered && 'min-h-60 flex flex-col items-center justify-between',
         )}
       >
         <CardHeader
