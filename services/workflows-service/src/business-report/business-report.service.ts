@@ -156,6 +156,17 @@ export class BusinessReportService {
       filePath: merchantSheet.path,
       schema: BusinessReportRequestSchema,
       logger: this.logger,
+      cast: (value, context) => {
+        const headerToSchemaKeyMap: Record<string, string> = {
+          'Website URL': 'websiteUrl',
+          'Company Name/Registered Merchant Name (Optional)': 'merchantName',
+          'Merchant ID (Optional)': 'correlationId',
+        };
+
+        if (!context.header || !headerToSchemaKeyMap[value]) return value;
+
+        return headerToSchemaKeyMap[value];
+      },
     });
 
     const businessReportsCount = await this.count({ customerId });
