@@ -11,10 +11,8 @@ export const DynamicMetricsSection = ({
   from,
   to,
   setDate,
-
   isMerchantMonitoringEnabled,
   isOngoingMonitoringEnabled,
-
   addedWebsitesCount,
   removedWebsitesCount,
 }: Pick<

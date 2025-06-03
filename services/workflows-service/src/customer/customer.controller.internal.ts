@@ -11,9 +11,9 @@ import { CustomerModel } from '@/customer/customer.model';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { TCustomerWithFeatures } from '@/customer/types';
+import { CustomerConfigSchema, CustomerFeaturesSchema } from '@/customer/schemas/zod-schemas';
 import { PrismaService } from '@/prisma/prisma.service';
 import { InputJsonValue, type TProjectIds } from '@/types';
-import { ConfigSchema } from '@/workflow/schemas/zod-schemas';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { CustomerUpdateDto } from './dtos/customer-update';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
@@ -30,6 +30,22 @@ export class CustomerControllerInternal {
   @UseGuards(AdminAuthGuard)
   async list() {
     return await this.service.list({ include: { projects: true } });
+  }
+
+  @common.Get(':id')
+  @UseGuards(AdminAuthGuard)
+  @swagger.ApiOkResponse({ type: CustomerModel })
+  @swagger.ApiForbiddenResponse()
+  async getById(@common.Param('id') id: string) {
+    const customer = await this.service.getById(id, {
+      include: { projects: true },
+    });
+
+    if (!customer) {
+      throw new NotFoundException(`Customer with ID ${id} not found`);
+    }
+
+    return customer;
   }
 
   @common.Get()
@@ -64,7 +80,7 @@ export class CustomerControllerInternal {
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
     const { projectName, config, ...customer } = customerCreateModel;
 
-    const parsedConfig = ConfigSchema.parse(config);
+    const parsedConfig = CustomerConfigSchema.parse(config);
 
     if (projectName) {
       (customer as Prisma.CustomerCreateInput).projects = {
@@ -116,7 +132,7 @@ export class CustomerControllerInternal {
   @swagger.ApiCreatedResponse({ type: [CustomerUpdateDto] })
   @swagger.ApiForbiddenResponse()
   async edit(@common.Param('id') id: string, @common.Body() payload: CustomerUpdateDto) {
-    const { config, ...customer } = payload;
+    const { config, features, ...customer } = payload;
 
     const existingCustomer = await this.service.getById(id);
 
@@ -126,7 +142,12 @@ export class CustomerControllerInternal {
 
     return this.service.updateById(id, {
       data: cleanUndefinedValues({
-        ...(config && { config: merge(existingCustomer.config, ConfigSchema.parse(config)) }),
+        ...(config && {
+          config: merge(existingCustomer.config, CustomerConfigSchema.parse(config)),
+        }),
+        ...(features && {
+          features: merge(existingCustomer.features || {}, CustomerFeaturesSchema.parse(features)),
+        }),
         ...customer,
       }),
     });
