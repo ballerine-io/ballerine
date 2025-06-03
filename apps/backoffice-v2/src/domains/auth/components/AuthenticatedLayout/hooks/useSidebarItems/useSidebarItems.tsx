@@ -42,28 +42,49 @@ export const useSidebarItems = () => {
     [filterId, pathname],
   );
 
+  const businessSection = {
+    text: 'Businesses',
+    icon: BuildingIcon,
+    children:
+      businessesFilters?.map(({ id, name }) => ({
+        filterId: id,
+        text: name,
+        key: `nav-item-${id}`,
+        href: `/${locale}/case-management/entities?filterId=${id}`,
+      })) ?? [],
+    key: 'nav-item-businesses',
+  };
+
+  const homeNavItem = {
+    text: 'Home',
+    icon: HomeIcon,
+    href: `/${locale}/home`,
+    key: 'nav-item-home',
+  };
+
+  const webPresenceNavItem = {
+    text: 'Web Presence',
+    icon: MonitorDotIcon,
+    href: `/${locale}/merchant-monitoring`,
+    key: 'nav-item-web-presence',
+  };
+
   const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
+        homeNavItem,
+        webPresenceNavItem,
+        ...(customer?.config?.isDemoKybEnabled
+          ? [businessSection]
+          : [
+              {
+                text: 'Full Onboarding (Example)',
+                icon: LayersIcon,
+                href: `/${locale}/case-management/entities`,
+                key: 'nav-item-full-onboarding',
+              },
+            ]),
         {
-          text: 'Home',
-          icon: HomeIcon,
-          href: `/${locale}/home`,
-          key: 'nav-item-home',
-        },
-        {
-          text: 'Web Presence',
-          icon: MonitorDotIcon,
-          href: `/${locale}/merchant-monitoring`,
-          key: 'nav-item-web-presence',
-        },
-        {
-          text: 'Full Onboarding (Example)',
-          icon: LayersIcon,
-          href: `/${locale}/case-management/entities`,
-          key: 'nav-item-full-onboarding',
-        },
-        {
-          text: 'KYB & UBOs',
+          text: 'KYB & Ownership',
           icon: BuildingIcon,
           premium: {
             caption: 'Verify businesses, activity, and ownership to stay compliant.',
@@ -73,7 +94,7 @@ export const useSidebarItems = () => {
               'Identify key stakeholders',
             ],
           },
-          key: 'nav-item-kyb-ubos',
+          key: 'nav-item-kyb-ownership',
         },
         {
           text: 'Identity Verification',
@@ -116,34 +137,9 @@ export const useSidebarItems = () => {
         },
       ]
     : [
-        {
-          text: 'Home',
-          icon: HomeIcon,
-          href: `/${locale}/home`,
-          key: 'nav-item-Home',
-        },
-        ...(customer?.config?.isMerchantMonitoringEnabled
-          ? [
-              {
-                text: 'Web Presence',
-                icon: MonitorDotIcon,
-                href: `/${locale}/merchant-monitoring`,
-                key: 'nav-item-merchant-monitoring',
-              },
-            ]
-          : []),
-        {
-          text: 'Businesses',
-          icon: BuildingIcon,
-          children:
-            businessesFilters?.map(({ id, name }) => ({
-              filterId: id,
-              text: name,
-              key: `nav-item-${id}`,
-              href: `/${locale}/case-management/entities?filterId=${id}`,
-            })) ?? [],
-          key: 'nav-item-businesses',
-        },
+        homeNavItem,
+        ...(customer?.config?.isMerchantMonitoringEnabled ? [webPresenceNavItem] : []),
+        businessSection,
         {
           text: 'Individuals',
           icon: UsersIcon,
@@ -157,6 +153,26 @@ export const useSidebarItems = () => {
           ],
           key: 'nav-item-individuals',
         },
+        ...(customer?.config?.createKybAndOwnershipAssessment
+          ? [
+              {
+                text: 'KYB & Ownership',
+                icon: BuildingIcon,
+                href: `/${locale}/kyb-and-ownership`,
+                key: 'nav-item-kyb-and-ownership',
+              },
+            ]
+          : []),
+        // ...(customer?.config?.createIdentityVerification
+        //   ? [
+        //       {
+        //         text: 'Identity Verification',
+        //         icon: UserRoundSearchIcon,
+        //         key: 'nav-item-identity-verification',
+        //         href: `/${locale}/identity-verification`,
+        //       },
+        //     ]
+        //   : []),
         {
           text: 'Transaction Monitoring',
           icon: GoalIcon,

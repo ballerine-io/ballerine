@@ -4,8 +4,10 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
+  CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
+  setCollectionFlowStatus,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
@@ -23,6 +25,7 @@ import { useFinalSubmission } from './hooks/useFinalSubmission/useFinalSubmissio
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { useRevisionFields } from './hooks/useRevisionFields';
 import { formElementsExtends } from './ui-elemenets.extends';
+import { useCommonHttpParams } from './hooks/useCommonHttpParams/useCommonHttpParams';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   page: UIPage<'v2'>;
@@ -50,6 +53,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const { handleEvent } = usePluginsHandler();
   const { sync, syncStateless, setIsSyncing } = useAppSync();
   const appMetadata = useAppMetadata();
+  const commonHttpParams = useCommonHttpParams();
   const { pluginStatuses } = usePlugins();
   const revisionFields = useRevisionFields(pages, context);
   const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
@@ -192,6 +196,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
           });
         }
 
+        setCollectionFlowStatus(values, CollectionFlowStatusesEnum.inprogress);
+
         stateApi.setContext(values);
 
         await sync(values);
@@ -227,6 +233,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         validationParams={validationParams}
         metadata={metadata}
         ref={formRef}
+        httpParams={commonHttpParams}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import { UiDefinitionControllerInternal } from '@/ui-definition/ui-definition.co
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+// eslint-disable-next-line import/no-cycle
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { forwardRef, Module } from '@nestjs/common';
 

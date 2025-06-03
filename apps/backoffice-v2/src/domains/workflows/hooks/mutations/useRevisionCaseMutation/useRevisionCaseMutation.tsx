@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { fetchWorkflowEvent } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
+import { collectionFlowQueryKeys } from '@/domains/collection-flow/query-keys';
 
 export const useRevisionCaseMutation = ({
   onSelectNextCase,
@@ -23,6 +24,7 @@ export const useRevisionCaseMutation = ({
     onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
+      void queryClient.invalidateQueries(collectionFlowQueryKeys._def);
 
       toast.success(t(`toast:ask_revision_case.success`));
 

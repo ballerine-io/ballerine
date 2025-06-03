@@ -5,6 +5,7 @@ import * as errors from '../errors';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { CreateDemoWorkflowDefinitionDto } from '@/workflow-defintion/dtos/create-demo-workflow-definition-dto';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { CreateDemoWorkflowDefinitionEuDto } from './dtos/create-demo-workflow-eu-definition-dto';
 
 @ApiExcludeController()
 @common.Controller('internal/workflow-definition')
@@ -20,6 +21,26 @@ export class WorkflowControllerInternal {
       customerId: data.customerId,
       userId: data.userId,
       workflowOverrides: data.workflowOverrides,
+    });
+  }
+
+  @common.Post('/create-demo-eu')
+  @swagger.ApiOkResponse()
+  @common.UseGuards(AdminAuthGuard)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createDemoWorkflowEu(@common.Body() data: CreateDemoWorkflowDefinitionEuDto) {
+    return await this.service.createDemoWorkflowDefinitionEu({
+      customerId: data.customerId,
+    });
+  }
+
+  @common.Post('/create-demo-us')
+  @swagger.ApiOkResponse()
+  @common.UseGuards(AdminAuthGuard)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createDemoWorkflowUs(@common.Body() data: CreateDemoWorkflowDefinitionEuDto) {
+    return await this.service.createDemoWorkflowDefinitionUs({
+      customerId: data.customerId,
     });
   }
 }

@@ -1,21 +1,19 @@
-import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
-import { getCollectionFlowState } from '@ballerine/common';
+import { useCollectionFlowStateQuery } from '@/domains/collection-flow/hooks/queries/useCollectionFlowStateQuery/useCollectionFlowStateQuery';
 
 interface IUseCollectionFlowStepsParams {
-  workflowContext: TWorkflowById['context'];
+  workflowId: string;
 }
 
-export const useCollectionFlowSteps = ({ workflowContext }: IUseCollectionFlowStepsParams) => {
+export const useCollectionFlowSteps = ({ workflowId }: IUseCollectionFlowStepsParams) => {
+  const { data: collectionFlowState, isLoading } = useCollectionFlowStateQuery(workflowId);
+
   const steps = useMemo(() => {
-    const collectionFlowState = getCollectionFlowState(workflowContext);
+    return collectionFlowState?.state?.steps || [];
+  }, [collectionFlowState]);
 
-    if (!collectionFlowState?.steps?.length) {
-      return [];
-    }
-
-    return collectionFlowState.steps;
-  }, [workflowContext]);
-
-  return steps;
+  return {
+    steps,
+    isLoading,
+  };
 };

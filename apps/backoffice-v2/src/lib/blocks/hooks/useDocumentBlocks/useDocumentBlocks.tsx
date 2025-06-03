@@ -26,10 +26,12 @@ import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback } from 'react';
-import { titleCase } from 'string-ts';
+import { capitalize, titleCase } from 'string-ts';
 import { useDocuments } from './hooks/useDocuments';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { ExtractCellProps } from '@ballerine/blocks';
+import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -445,105 +447,314 @@ export const useDocumentBlocks = ({
         return [title, formattedValue];
       });
 
+      // TODO: temporary mocks
+      //   {
+      //   category: 'proof_of_bank_ownership',
+      //   type: 'bank_letter',
+      //   issuer: { country: 'ZZ' },
+      //   issuingVersion: 1,
+      //   version: 1,
+      //   propertiesSchema: Type.Object({
+      //     accountHolderName: Type.Optional(Type.String()),
+      //     accountNumber: Type.Optional(Type.String()),
+      //     bankName: Type.Optional(Type.String()),
+      //     issueDate: OptionalTypePastDate,
+      //     branchInformation: Type.Optional(Type.String()),
+      //   }),
+      // },
+      // {
+      //   category: 'proof_of_bank_ownership',
+      //   type: 'voided_check',
+      //   issuer: { country: 'ZZ' },
+      //   issuingVersion: 1,
+      //   version: 1,
+      //   propertiesSchema: Type.Object({
+      //     accountHolderName: Type.Optional(Type.String()),
+      //     accountNumber: Type.Optional(Type.String()),
+      //     routingNumber: Type.Optional(Type.String()),
+      //     bankName: Type.Optional(Type.String()),
+      //     checkDate: OptionalTypePastDate,
+      //   }),
+      // },
+      const shouldShowMockChecks =
+        category === 'proof_of_bank_ownership' &&
+        (docType === 'bank_letter' || docType === 'voided_check');
+
+      const inconsistencyCheck =
+        docType === 'voided_check'
+          ? {
+              status: 'clear',
+              warnings: [],
+            }
+          : {
+              status: 'failed',
+              warnings: ['Company Name mismatch between document and application'],
+            };
+
+      const inconsistencyCheckCell = createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'container',
+          props: { className: 'px-3' },
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'container',
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell(systemCreatedIconCell)
+                .addCell({
+                  type: 'heading',
+                  value: 'Inconsistency Check',
+                  props: { className: 'mt-0' },
+                })
+                .buildFlat(),
+              props: {
+                className: 'flex space-x-1 items-center',
+              },
+            })
+            .addCell({
+              type: 'container',
+              props: {
+                className: 'mt-6 font-medium space-y-10',
+              },
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell({
+                  type: 'node',
+                  value: (
+                    <div>
+                      <p>Status</p>
+                      <p
+                        className={ctw(
+                          inconsistencyCheck.status === 'failed'
+                            ? 'text-destructive'
+                            : 'text-green-600',
+                        )}
+                      >
+                        {capitalize(inconsistencyCheck.status)}
+                      </p>
+                    </div>
+                  ),
+                })
+                .addCell({
+                  type: 'node',
+                  value: (
+                    <div className="space-y-2">
+                      <p>Warnings</p>
+
+                      {inconsistencyCheck.warnings.map(warning => (
+                        <div key={warning} className="w-full">
+                          <div className="inline-flex rounded-lg bg-orange-100 px-3 py-1 text-warning">
+                            {warning}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ),
+                })
+                .buildFlat(),
+            })
+            .addCell({
+              type: 'node',
+              value: <Separator className="my-4 h-[1.5px]" />,
+            })
+            .buildFlat(),
+        })
+        .cellAt(0, 0);
+
+      const documentAuthenticity =
+        docType === 'voided_check'
+          ? {
+              status: 'clear',
+              warnings: [],
+            }
+          : {
+              status: 'failed',
+              warnings: ['Account holder name was edited', 'Content was modified using editor'],
+            };
+
+      const documentAuthenticityCell = createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'container',
+          props: { className: 'px-3' },
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'container',
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell(systemCreatedIconCell)
+                .addCell({
+                  type: 'heading',
+                  value: 'Document Authenticity',
+                  props: { className: 'mt-0' },
+                })
+                .buildFlat(),
+              props: {
+                className: 'flex space-x-1 items-center',
+              },
+            })
+            .addCell({
+              type: 'container',
+              props: {
+                className: 'mt-6 font-medium space-y-10',
+              },
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell({
+                  type: 'node',
+                  value: (
+                    <div>
+                      <p>Status</p>
+                      <p
+                        className={ctw(
+                          documentAuthenticity.status === 'failed'
+                            ? 'text-destructive'
+                            : 'text-green-600',
+                        )}
+                      >
+                        {capitalize(documentAuthenticity.status)}
+                      </p>
+                    </div>
+                  ),
+                })
+                .addCell({
+                  type: 'node',
+                  value: (
+                    <>
+                      {documentAuthenticity.warnings &&
+                        documentAuthenticity.warnings.length > 0 && (
+                          <div className="space-y-2">
+                            <p>Warnings</p>
+
+                            {documentAuthenticity.warnings.map(warning => (
+                              <div key={warning} className="w-full">
+                                <div className="inline-flex rounded-lg bg-orange-100 px-3 py-1 text-warning">
+                                  {warning}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </>
+                  ),
+                })
+                .buildFlat(),
+            })
+            .buildFlat(),
+        })
+        .cellAt(0, 0);
+
       const detailsCell = createBlocksTyped()
         .addBlock()
         .addCell({
           type: 'container',
-          value: createBlocksTyped()
-            .addBlock()
-            .addCell({
-              id: 'decision',
-              type: 'details',
-              value: {
-                id,
-                title: `${category} - ${docType}`,
-                data: documentEntries?.map(
-                  ([
-                    title,
-                    {
-                      type,
-                      format,
-                      pattern,
-                      isEditable = true,
-                      dropdownOptions,
-                      value,
-                      formatMinimum,
-                      formatMaximum,
-                      default: defaultValue,
-                    },
-                  ]) => {
-                    const getFieldValue = () => {
-                      if (typeof value !== 'undefined') {
-                        return value;
-                      }
-
-                      if (ocrResult?.parsedData?.[title]) {
-                        const isOcrValueString = typeof ocrResult.parsedData[title] === 'string';
-
-                        if (isOcrValueString && ocrResult.parsedData[title].length > 0) {
-                          return ocrResult.parsedData[title];
-                        }
-
-                        if (!isOcrValueString) {
-                          return ocrResult.parsedData[title];
-                        }
-                      }
-
-                      if (
-                        typeof properties?.[title] === 'undefined' &&
-                        typeof defaultValue !== 'undefined'
-                      ) {
-                        return defaultValue;
-                      }
-
-                      if (typeof properties?.[title] === 'undefined' && type === 'boolean') {
-                        return false;
-                      }
-
-                      if (typeof properties?.[title] === 'undefined') {
-                        return '';
-                      }
-
-                      return properties?.[title];
-                    };
-                    const fieldValue = getFieldValue();
-                    const isEditableDecision = isDoneWithRevision || !decision?.status;
-                    const isIndividual = checkIsIndividual(workflow);
-                    const isEditableCategory =
-                      (title === 'category' && isIndividual) || title !== 'category';
-                    const isEditableField = [
-                      isEditableDecision,
-                      isEditable,
-                      caseState.writeEnabled,
-                      isEditableCategory,
-                    ].every(Boolean);
-
-                    return {
+          value: (() => {
+            const builder = createBlocksTyped()
+              .addBlock()
+              .addCell({
+                id: 'decision',
+                type: 'details',
+                value: {
+                  id,
+                  title: `${category} - ${docType}`,
+                  data: documentEntries?.map(
+                    ([
                       title,
-                      value: fieldValue,
-                      type,
-                      format,
-                      pattern,
-                      isEditable: isEditableField,
-                      dropdownOptions,
-                      minimum: formatMinimum,
-                      maximum: formatMaximum,
-                    };
-                  },
-                ),
-              },
-              props: {
-                config: {
-                  sort: { predefinedOrder: ['category', 'type'] },
+                      {
+                        type,
+                        format,
+                        pattern,
+                        isEditable = true,
+                        dropdownOptions,
+                        value,
+                        formatMinimum,
+                        formatMaximum,
+                        default: defaultValue,
+                      },
+                    ]) => {
+                      const getFieldValue = () => {
+                        if (typeof value !== 'undefined') {
+                          return value;
+                        }
+
+                        if (ocrResult?.parsedData?.[title]) {
+                          const isOcrValueString = typeof ocrResult.parsedData[title] === 'string';
+
+                          if (isOcrValueString && ocrResult.parsedData[title].length > 0) {
+                            return ocrResult.parsedData[title];
+                          }
+
+                          if (!isOcrValueString) {
+                            return ocrResult.parsedData[title];
+                          }
+                        }
+
+                        if (
+                          typeof properties?.[title] === 'undefined' &&
+                          typeof defaultValue !== 'undefined'
+                        ) {
+                          return defaultValue;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined' && type === 'boolean') {
+                          return false;
+                        }
+
+                        if (typeof properties?.[title] === 'undefined') {
+                          return '';
+                        }
+
+                        return properties?.[title];
+                      };
+                      const fieldValue = getFieldValue();
+                      const isEditableDecision = isDoneWithRevision || !decision?.status;
+                      const isIndividual = checkIsIndividual(workflow);
+                      const isEditableCategory =
+                        (title === 'category' && isIndividual) || title !== 'category';
+                      const isEditableField = [
+                        isEditableDecision,
+                        isEditable,
+                        caseState.writeEnabled,
+                        isEditableCategory,
+                      ].every(Boolean);
+
+                      return {
+                        title,
+                        value: fieldValue,
+                        type,
+                        format,
+                        pattern,
+                        isEditable: isEditableField,
+                        dropdownOptions,
+                        minimum: formatMinimum,
+                        maximum: formatMaximum,
+                      };
+                    },
+                  ),
                 },
-              },
-              workflowId: workflow?.id,
-              isSaveDisabled: isLoadingOCRDocument,
-              documents: documents?.map(({ details: _details, ...document }) => document),
-              isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
-            })
-            .addCell(decisionCell)
-            .buildFlat(),
+                props: {
+                  config: {
+                    sort: { predefinedOrder: ['category', 'type'] },
+                  },
+                },
+                workflowId: workflow?.id,
+                isSaveDisabled: isLoadingOCRDocument,
+                documents: documents?.map(({ details: _details, ...document }) => document),
+                isDocumentsV2: !!workflow?.workflowDefinition?.config?.isDocumentsV2,
+              });
+
+            if (shouldShowMockChecks) {
+              builder.addCell(inconsistencyCheckCell);
+              builder.addCell(documentAuthenticityCell);
+            }
+
+            builder.addCell(decisionCell);
+
+            return builder.buildFlat();
+          })(),
         })
         .cellAt(0, 0);
 

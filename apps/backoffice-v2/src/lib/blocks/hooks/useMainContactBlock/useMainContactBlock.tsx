@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { getPhoneNumberFormatter } from '@/common/utils/get-phone-number-formatter/get-phone-number-formatter';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { userCreatedIconCell } from '@/lib/blocks/utils/constants';
 
 export const useMainContactBlock = ({ mainContact, workflow }) => {
   return useMemo(() => {
@@ -15,12 +16,32 @@ export const useMainContactBlock = ({ mainContact, workflow }) => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            type: 'heading',
-            value: 'Main Contact',
-          })
-          .addCell({
-            type: 'subheading',
-            value: 'User-Provided Data',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(userCreatedIconCell)
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    id: 'header',
+                    type: 'heading',
+                    value: 'Main Contact',
+                    props: {
+                      className: 'mt-0',
+                    },
+                  })
+                  .addCell({
+                    type: 'subheading',
+                    value: 'User-Provided Data',
+                  })
+                  .buildFlat(),
+              })
+              .buildFlat(),
+            props: {
+              className: 'flex space-x-1 items-center mt-4',
+            },
           })
           .addCell({
             type: 'details',

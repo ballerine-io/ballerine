@@ -1,22 +1,23 @@
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import {
+  isObject,
+  OperationHelpers,
+  OPERATOR,
+  OperatorNotFoundError,
+  OPERATORS_WITH_THRESHOLD,
   Rule,
   RuleResult,
   RuleResultSet,
-  RuleSet,
-  OperatorNotFoundError,
-  OperationHelpers,
-  OPERATOR,
   RuleSchema,
+  RuleSet,
+  TWorkflowHelpers,
   ValidationFailedError,
-  isObject,
-  OPERATORS_WITH_THRESHOLD,
 } from '@ballerine/common';
-import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 export const validateRule = async (
   rule: Rule,
   data: any,
-  options: { unifiedApiClient: UnifiedApiClient },
+  { helpers, unifiedApiClient }: { helpers: TWorkflowHelpers; unifiedApiClient: UnifiedApiClient },
 ): Promise<RuleResult> => {
   const validateRuleResult = RuleSchema.safeParse(rule);
 
@@ -32,13 +33,18 @@ export const validateRule = async (
     throw new OperatorNotFoundError(rule.operator);
   }
 
-  const { value, comparisonValue } = extractValuesForComparison(operator, data, validRule);
+  const { value, comparisonValue } = await extractValuesForComparison(
+    operator,
+    data,
+    validRule,
+    helpers,
+  );
 
   const thresholdValue = getThresholdIfRequired(validRule);
 
   try {
     const result = await operator.execute(value, comparisonValue, {
-      unifiedApiClient: options.unifiedApiClient,
+      unifiedApiClient,
       threshold: thresholdValue ?? 0,
     });
 
@@ -52,8 +58,18 @@ export const validateRule = async (
   }
 };
 
-const extractValuesForComparison = (operator: any, data: any, rule: Rule) => {
-  const extractedValue = operator.extractValue(data, rule);
+const extractValuesForComparison = async (
+  operator: any,
+  data: any,
+  rule: Rule,
+  helpers: TWorkflowHelpers,
+) => {
+  const extractedValueBeforeAwait = operator.extractValue(data, rule, { helpers });
+
+  const extractedValue =
+    extractedValueBeforeAwait instanceof Promise
+      ? await extractedValueBeforeAwait
+      : extractedValueBeforeAwait;
 
   const isPathComparison =
     isObject(extractedValue) && 'value' in extractedValue && 'comparisonValue' in extractedValue;
@@ -72,13 +88,14 @@ const getThresholdIfRequired = (rule: Rule) => {
 export const runRuleSet = (
   ruleSet: RuleSet,
   data: any,
-  options: { unifiedApiClient: UnifiedApiClient },
+  options: { helpers: TWorkflowHelpers; unifiedApiClient: UnifiedApiClient },
 ): Promise<RuleResultSet> => {
   return Promise.all(
     ruleSet.rules.map(async rule => {
       if ('rules' in rule) {
         // RuleSet
         const nestedResults = await runRuleSet(rule, data, {
+          helpers: options.helpers,
           unifiedApiClient: options.unifiedApiClient,
         });
 
@@ -97,7 +114,10 @@ export const runRuleSet = (
         // Rule
         try {
           return {
-            ...(await validateRule(rule, data, { unifiedApiClient: options.unifiedApiClient })),
+            ...(await validateRule(rule, data, {
+              helpers: options.helpers,
+              unifiedApiClient: options.unifiedApiClient,
+            })),
             rule,
           };
         } catch (error) {
@@ -130,8 +150,8 @@ export const createRuleEngine = (
 
   const unifiedApiClient = options?.unifiedApiClient || new UnifiedApiClient();
 
-  const run = async (data: object): Promise<RuleResultSet> => {
-    return await runRuleSet(ruleSets, data, { unifiedApiClient });
+  const run = async (data: object, helpers: TWorkflowHelpers): Promise<RuleResultSet> => {
+    return await runRuleSet(ruleSets, data, { helpers, unifiedApiClient });
   };
 
   return { run };

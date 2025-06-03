@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/headless-example",
   "private": true,
-  "version": "0.3.117",
+  "version": "0.3.131",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -34,8 +34,8 @@
     "vite": "^4.5.3"
   },
   "dependencies": {
-    "@ballerine/common": "0.9.95",
-    "@ballerine/workflow-browser-sdk": "0.6.118",
+    "@ballerine/common": "0.9.109",
+    "@ballerine/workflow-browser-sdk": "0.6.132",
     "@felte/reporter-svelte": "^1.1.5",
     "@felte/validator-zod": "^1.0.13",
     "@fontsource/inter": "^4.5.15",
@@ -46,6 +46,6 @@
     "tailwind-merge": "^1.8.1",
     "vite-tsconfig-paths": "^4.0.7",
     "xstate": "4.37.1",
-    "zod": "^3.22.3"
+    "zod": "3.23.8"
   }
 }

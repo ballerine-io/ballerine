@@ -176,6 +176,7 @@ export const useHomeLogic = () => {
     avatarUrl,
     locale,
 
+    shouldShowDashboardV1: !!customer?.features?.mockDashboardV1,
     isMerchantMonitoringEnabled,
     isOngoingMonitoringEnabled,
     isCasesOnboardingEnabled,
@@ -196,9 +197,10 @@ export const useHomeLogic = () => {
     ongoingCasesByRisk: currentStats?.ongoingCasesByRisk ?? [],
     approvedCasesByRisk: currentStats?.approvedCasesByRisk ?? [],
 
-    totalActiveMerchants: metrics?.totalActiveMerchants ?? 0,
-    addedMerchantsCount: metrics?.addedMerchantsCount ?? 0,
-    removedMerchantsCount: metrics?.removedMerchantsCount ?? 0,
+    activeBusinessesCount: metrics?.activeBusinessesCount ?? 0,
+    activeWebsitesCount: metrics?.activeWebsitesCount ?? 0,
+    addedWebsitesCount: metrics?.addedWebsitesCount ?? 0,
+    removedWebsitesCount: metrics?.removedWebsitesCount ?? 0,
     riskLevelCounts:
       metrics?.riskLevelCounts ?? ({} as NonNullable<typeof metrics>['riskLevelCounts']),
     violationCounts: metrics?.violationCounts ?? [],

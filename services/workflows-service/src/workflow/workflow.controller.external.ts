@@ -51,6 +51,7 @@ import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
 import { type PartialDeep } from 'type-fest';
+import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()
@@ -60,9 +61,10 @@ export class WorkflowControllerExternal {
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    private readonly workflowTokenService: WorkflowTokenService,
-    private readonly workflowDefinitionService: WorkflowDefinitionService,
-    private readonly prismaService: PrismaService,
+    protected readonly workflowTokenService: WorkflowTokenService,
+    protected readonly workflowDefinitionService: WorkflowDefinitionService,
+    protected readonly prismaService: PrismaService,
+    protected readonly collectionFlowStateService: CollectionFlowStateService,
   ) {}
 
   // GET /workflows

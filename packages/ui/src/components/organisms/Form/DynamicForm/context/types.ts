@@ -5,6 +5,7 @@ import {
   IDynamicFormValidationParams,
   IPriorityField,
   IPriorityFieldParams,
+  TCommonHttpParams,
   TElementsMap,
 } from '../types';
 
@@ -24,4 +25,5 @@ export interface IDynamicFormContext<TValues extends object> {
   validationParams: IDynamicFormValidationParams;
   priorityFields?: IPriorityField[];
   priorityFieldsParams?: IPriorityFieldParams;
+  httpParams?: TCommonHttpParams;
 }

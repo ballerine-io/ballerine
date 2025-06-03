@@ -5,6 +5,8 @@ import { Business, Customer } from '@prisma/client';
 import { TSchema } from '@sinclair/typebox';
 import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
+import { UpdateableAssessmentStatus } from '@ballerine/common';
+import { PageDto } from '@/common/dto';
 
 export type BusinessPayload = Pick<
   Business,
@@ -130,6 +132,50 @@ export class UnifiedApiClient {
       entity1: { value: payload.entity1 },
       entity2: { value: payload.entity2 },
       includeAnalysis: payload.includeAnalysis,
+    });
+  }
+
+  public async getAssessmentsByType(
+    assessmentType: 'kyb_and_ownership',
+    projectId: string,
+    queryParams: {
+      page: number;
+      limit: number;
+    },
+  ) {
+    return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
+      params: {
+        ...queryParams,
+        projectId,
+      },
+    });
+  }
+
+  public async getAssessmentById(id: string, projectId: string) {
+    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
+  }
+
+  public async createAssessment(
+    assessmentType: 'kyb_and_ownership',
+    payload: {
+      registrationNumber: string;
+      companyName: string;
+      country: string;
+      projectId: string;
+      businessId?: string;
+    },
+  ) {
+    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+  }
+
+  public async updateAssessmentStatus(
+    id: string,
+    status: UpdateableAssessmentStatus,
+    projectId: string,
+  ) {
+    return await this.axiosInstance.put(`/assessments/${id}/status`, {
+      status,
+      projectId,
     });
   }
 }

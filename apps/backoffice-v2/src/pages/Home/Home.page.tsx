@@ -3,9 +3,12 @@ import { FunctionComponent } from 'react';
 import { FullScreenLoader } from '@/common/components/molecules/FullScreenLoader/FullScreenLoader';
 import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapper/DemoAccessWrapper';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
+import { CurrentPortfolioStatus } from './components/CurrentPortfolioStatus/CurrentPortfolioStatus';
 import { DynamicMetricsSection } from './components/DynamicMetricsSection/DynamicMetricsSection';
 import { OnboardingCasesRiskAnalytics } from './components/OnboardingCasesRiskAnalytics/OnboardingCasesRiskAnalytics';
+import { OperationalOverviewSection } from './components/OperationalOverviewSection/OperationalOverviewSection';
 import { PortfolioRiskStatistics } from './components/PortfolioRiskStatistics/PortfolioRiskStatistics';
+import { RiskAndAlertsOverviewSection } from './components/RiskAndAlertsOverviewSection/RiskAndAlertsOverviewSection';
 import { StaticMetricsSection } from './components/StaticMetricsSection/StaticMetricsSection';
 import { WelcomeSvg } from './components/WelcomeSvg/WelcomeSvg';
 
@@ -16,6 +19,7 @@ export const Home: FunctionComponent = () => {
     avatarUrl,
     locale,
 
+    shouldShowDashboardV1,
     isMerchantMonitoringEnabled,
     isOngoingMonitoringEnabled,
     isCasesOnboardingEnabled,
@@ -36,9 +40,10 @@ export const Home: FunctionComponent = () => {
     ongoingCasesByRisk,
     approvedCasesByRisk,
 
-    totalActiveMerchants,
-    addedMerchantsCount,
-    removedMerchantsCount,
+    activeBusinessesCount,
+    activeWebsitesCount,
+    addedWebsitesCount,
+    removedWebsitesCount,
     riskLevelCounts,
     violationCounts,
 
@@ -68,6 +73,56 @@ export const Home: FunctionComponent = () => {
     );
   }
 
+  if (shouldShowDashboardV1) {
+    return (
+      <div className={`space-y-10 p-10`}>
+        <div className="space-y-4">
+          <h1 className="text-3xl font-semibold">Analytics Dashboard</h1>
+          <p className="">
+            Get an overview of your portfolio&apos;s activity, risk levels, monitoring alerts, and
+            case analytics.
+          </p>
+        </div>
+
+        <div className="flex flex-col space-y-8">
+          <CurrentPortfolioStatus />
+
+          <OperationalOverviewSection from={mmFrom} to={mmTo} setDate={() => {}} />
+
+          <RiskAndAlertsOverviewSection />
+
+          <DynamicMetricsSection
+            locale={locale}
+            from={mmFrom}
+            to={mmTo}
+            setDate={() => {}}
+            isMerchantMonitoringEnabled={true}
+            isOngoingMonitoringEnabled={true}
+            addedWebsitesCount={13}
+            removedWebsitesCount={5}
+          />
+
+          <PortfolioRiskStatistics
+            from={mmFrom}
+            to={mmTo}
+            riskLevelCounts={{ low: 10, medium: 30, high: 25, critical: 15 }}
+            violationCounts={[
+              { name: 'Drop Shipping', id: 'drop-shipping', count: 15 },
+              { name: 'IP Rights Infringement', id: 'ip-rights-infringement', count: 12 },
+              {
+                name: 'Pharmaceuticals/Prescription Drugs',
+                id: 'pharmaceuticals-prescription-drugs',
+                count: 10,
+              },
+              { name: 'Gambling', id: 'gambling', count: 8 },
+              { name: 'Marijuana', id: 'marijuana', count: 4 },
+            ]}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DemoAccessWrapper firstName={firstName} fullName={fullName} avatarUrl={avatarUrl}>
       <div className={`space-y-10 p-10 pt-0`}>
@@ -84,12 +139,14 @@ export const Home: FunctionComponent = () => {
             <h3 className="text-xl font-medium">Portfolio Analytics</h3>
 
             <StaticMetricsSection
+              isMerchantMonitoringEnabled={isMerchantMonitoringEnabled}
               isOngoingMonitoringEnabled={isOngoingMonitoringEnabled}
               isCasesOnboardingEnabled={isCasesOnboardingEnabled}
               casesByStatus={casesByStatus}
               ongoingCasesByRisk={ongoingCasesByRisk}
               approvedCasesByRisk={approvedCasesByRisk}
-              totalActiveMerchants={totalActiveMerchants}
+              activeBusinessesCount={activeBusinessesCount}
+              activeWebsitesCount={activeWebsitesCount}
               statusConfig={statusConfig}
               ongoingRiskConfig={ongoingRiskConfig}
               approvedRiskConfig={approvedRiskConfig}
@@ -104,8 +161,8 @@ export const Home: FunctionComponent = () => {
               setDate={setMMDate}
               isMerchantMonitoringEnabled={isMerchantMonitoringEnabled}
               isOngoingMonitoringEnabled={isOngoingMonitoringEnabled}
-              addedMerchantsCount={addedMerchantsCount}
-              removedMerchantsCount={removedMerchantsCount}
+              addedWebsitesCount={addedWebsitesCount}
+              removedWebsitesCount={removedWebsitesCount}
             />
           </div>
 

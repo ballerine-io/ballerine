@@ -42,41 +42,18 @@ export class BusinessService {
     })(async tx => {
       const business = await this.repository.create(args, tx);
 
-      const businessPayload = (await this.repository.findByIdUnscoped(
-        business.id,
-        {
-          select: {
-            id: true,
-            correlationId: true,
-            companyName: true,
-            metadata: true,
-            createdAt: true,
-            updatedAt: true,
-            project: {
-              select: {
-                customer: {
-                  select: {
-                    id: true,
-                    config: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        tx,
-      )) as unknown as BusinessPayload;
-
-      if (env.SYNC_UNIFIED_API) {
-        await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
-      }
+      await this.syncBusiness(business, tx);
 
       return business;
     });
   }
 
-  async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
-    return (await this.repository.findMany(args, projectIds)) as Array<
+  async list(
+    args: Parameters<BusinessRepository['findMany']>[0],
+    projectIds: TProjectIds,
+    transaction?: PrismaTransaction,
+  ) {
+    return (await this.repository.findMany(args, projectIds, transaction)) as Array<
       Business & {
         metadata?: {
           featureConfig?: TCustomerWithFeatures['features'];
@@ -117,38 +94,43 @@ export class BusinessService {
     })(async tx => {
       const business = await this.repository.updateById(id, args, tx);
 
-      const businessPayload = (await this.repository.findByIdUnscoped(
-        business.id,
-        {
-          select: {
-            id: true,
-            correlationId: true,
-            companyName: true,
-            metadata: true,
-            createdAt: true,
-            updatedAt: true,
-            project: {
-              select: {
-                customer: {
-                  select: {
-                    id: true,
-                    config: true,
-                  },
+      await this.syncBusiness(business, tx);
+
+      return business;
+    });
+  }
+
+  private syncBusiness = async (business: { id: string }, tx: PrismaTransaction) => {
+    if (!env.SYNC_UNIFIED_API) {
+      return;
+    }
+
+    const businessPayload = (await this.repository.findByIdUnscoped(
+      business.id,
+      {
+        select: {
+          id: true,
+          correlationId: true,
+          companyName: true,
+          metadata: true,
+          createdAt: true,
+          updatedAt: true,
+          project: {
+            select: {
+              customer: {
+                select: {
+                  id: true,
+                  config: true,
                 },
               },
             },
           },
         },
-        tx,
-      )) as unknown as BusinessPayload;
-
-      if (env.SYNC_UNIFIED_API) {
-        await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
-      }
-
-      return business;
-    });
-  }
+      },
+      tx,
+    )) as unknown as BusinessPayload;
+    await retry(() => this.unifiedApiClient.createOrUpdateBusiness(businessPayload));
+  };
 
   async fetchCompanyInformation({
     registrationNumber,

@@ -53,6 +53,11 @@ export class CustomerUpdateDto {
   @IsOptional()
   config?: Record<string, unknown>;
 
+  @ApiProperty({ required: false, type: 'object' })
+  @IsObject()
+  @IsOptional()
+  features?: Record<string, unknown>;
+
   @ApiProperty({
     type: String,
     description: 'Customer ID in HubSpot CRM',

@@ -1,6 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RuleEngineService } from './rule-engine.service';
 import { RuleSet } from '@ballerine/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { helpers } from './core/test/data-helper';
+import { RuleEngineService } from './rule-engine.service';
 
 describe('RuleEngineService', () => {
   let service: RuleEngineService;
@@ -37,7 +38,7 @@ describe('RuleEngineService', () => {
       array: ['THIS IS AN OWNERSHIP COMPANY'],
     };
 
-    const result = await service.run(rules, formData);
+    const result = await service.run(rules, formData, helpers);
 
     result.forEach(r => {
       expect(r.status).toEqual('PASSED');

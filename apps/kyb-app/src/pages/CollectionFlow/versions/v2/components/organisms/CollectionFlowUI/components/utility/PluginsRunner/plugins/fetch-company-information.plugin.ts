@@ -9,6 +9,7 @@ import {
   FetchCompanyInformationResultSchema,
 } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import merge from 'lodash/merge';
 
 export const FETCH_COMPANY_INFORMATION_PLUGIN_NAME = 'fetch_company_information';
 
@@ -63,8 +64,11 @@ export const fetchCompanyInformationPlugin = async (
     }
 
     const existingData = get(context, output, {});
+    const mergeResult = merge(existingData, validatedResult.data);
 
-    return set(context, output, { ...existingData, ...validatedResult.data });
+    const result = set(context, output, mergeResult);
+
+    return result;
   } catch (error) {
     console.error('Failed to fetch company information.', error);
 

@@ -8,6 +8,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FocusEvent, useCallback, useMemo } from 'react';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 export interface DatePickerChangeEvent {
   target: {
@@ -59,17 +62,17 @@ export const DatePickerInput = ({
 
   const serializeValue = useCallback(
     (value: Dayjs): string => {
-      const date = value.format(outputValueFormat);
-
-      if (!dayjs(date).isValid()) {
+      if (!dayjs(value).isValid()) {
         console.warn(
           `Invalid outputValueFormat: "${outputValueFormat}" provided. iso will be used.`,
         );
 
-        return value.toISOString();
+        return value.startOf('day').utc().format();
       }
 
-      return date;
+      return outputValueFormat
+        ? value.format(outputValueFormat)
+        : value.startOf('day').utc().format();
     },
     [outputValueFormat],
   );

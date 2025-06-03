@@ -52,6 +52,7 @@ import { NoteModule } from '@/note/note.module';
 import { MerchantMonitoringModule } from './merchant-monitoring/merchant-monitoring.module';
 import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
 import { QueueModule } from '@/common/queue/queue.module';
+import { AssessmentsModule } from './assessments/assessments.module';
 
 @Module({
   controllers: [SwaggerController],
@@ -116,6 +117,7 @@ import { QueueModule } from '@/common/queue/queue.module';
     NotionModule,
     SecretsManagerModule,
     QueueModule,
+    AssessmentsModule,
   ],
   providers: [
     {
