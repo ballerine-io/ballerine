@@ -239,7 +239,6 @@ const schema: Array<IFormElement<any, any>> = [
 
 export const InputsShowcaseComponent = () => {
   const [context, setContext] = useState<AnyObject>({});
-  console.log('context', context);
 
   return (
     <div className="flex h-screen w-full flex-row flex-nowrap gap-4">
