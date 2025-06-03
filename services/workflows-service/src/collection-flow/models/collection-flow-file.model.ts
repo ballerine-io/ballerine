@@ -6,7 +6,7 @@ export class CollectionFlowFileModel {
   @ApiProperty({
     required: true,
     type: String,
-    description: 'File ID',
+    description: 'Unique identifier for this file record',
   })
   @Type(() => String)
   @IsString()
@@ -15,7 +15,7 @@ export class CollectionFlowFileModel {
   @ApiProperty({
     required: true,
     type: String,
-    description: 'File ID',
+    description: 'Reference to the actual file ID in storage',
   })
   @Type(() => String)
   @IsString()
@@ -41,7 +41,7 @@ export class CollectionFlowFileModel {
   name!: string | null;
 
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
     description: 'File type',
   })
