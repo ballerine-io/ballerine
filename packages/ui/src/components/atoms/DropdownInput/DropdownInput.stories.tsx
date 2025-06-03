@@ -39,40 +39,13 @@ export const Default = {
   render: DefaultComponent,
 };
 
-const SearchableComponent = () => {
-  const [value, setValue] = useState('');
-
-  return (
-    <DropdownInput
-      name="select"
-      placeholdersParams={{
-        placeholder: 'Select item',
-      }}
-      searchable
-      value={value}
-      options={storyOptions}
-      onChange={setValue}
-    />
-  );
-};
-
-export const Searchable = {
-  render: SearchableComponent,
-};
-
 export const Disabled = {
   render: () => <DropdownInput name="disabled-input" options={[]} disabled onChange={() => {}} />,
 };
 
 export const AutoOpenOnFocus = {
   render: () => (
-    <DropdownInput
-      name="disabled-input"
-      searchable
-      options={storyOptions}
-      openOnFocus
-      onChange={() => {}}
-    />
+    <DropdownInput name="disabled-input" options={storyOptions} openOnFocus onChange={() => {}} />
   ),
 };
 
