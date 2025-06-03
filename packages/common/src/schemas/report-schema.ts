@@ -47,6 +47,7 @@ export const RiskIndicatorSchema = z
     riskLevel: z.enum(RISK_INDICATOR_RISK_LEVELS).nullish(),
     pricingViolationExamples: z.array(z.string()).nullish(),
     pageContext: z.string().nullish().optional(),
+    status: z.enum(['detected', 'missing', 'unverified']).nullish().optional(),
   })
   .passthrough();
 

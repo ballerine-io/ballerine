@@ -510,10 +510,12 @@ export const WebsiteCredibility: FunctionComponent<{
                   >
                     <div className="flex-1 flex items-center w-full ml-10">
                       <div className="flex items-center space-x-3 w-3/5">
-                        {indicator.id === NO_VIOLATION_DETECTED_RISK_INDICATOR_ID ? (
+                        {indicator.status === 'detected' ? (
                           <ShieldCheck className="w-5 h-5 text-green-500" />
-                        ) : (
+                        ) : indicator.status === 'missing' ? (
                           <ShieldAlert className="w-5 h-5 text-red-500" />
+                        ) : (
+                          <InfoIcon className="w-5 h-5 text-gray-500" />
                         )}
 
                         <h3 className="text-base font-medium text-gray-900">
@@ -521,11 +523,9 @@ export const WebsiteCredibility: FunctionComponent<{
                         </h3>
                       </div>
 
-                      <span className="text-sm">
-                        {indicator.id === NO_VIOLATION_DETECTED_RISK_INDICATOR_ID
-                          ? 'Detected'
-                          : 'Missing'}
-                      </span>
+                      {indicator.status && (
+                        <span className="text-sm">{capitalize(indicator.status)}</span>
+                      )}
 
                       <div className="ml-auto text-sm font-medium">
                         {indicator.sourceUrl ? (
