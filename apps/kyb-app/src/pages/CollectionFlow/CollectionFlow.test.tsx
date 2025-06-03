@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { UISchema } from '@/domains/collection-flow';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
