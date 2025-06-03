@@ -52,12 +52,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.2.46",
     "@ballerine/react-pdf-toolkit": "^1.2.121",
     "@ballerine/ui": "0.7.158",
-    "@ballerine/common": "0.9.108",
+    "@ballerine/blocks": "0.2.47",
+    "@ballerine/common": "0.9.109",
     "@ballerine/workflow-browser-sdk": "0.6.131",
-    "@ballerine/workflow-node-sdk": "0.6.131",
+    "@ballerine/workflow-node-sdk": "0.6.132",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "0.8.2",
     "@hookform/resolvers": "^3.1.0",
@@ -147,8 +147,8 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.1.43",
-    "@ballerine/eslint-config-react": "^2.0.43",
+    "@ballerine/config": "^1.1.44",
+    "@ballerine/eslint-config-react": "^2.0.44",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",

@@ -13,6 +13,10 @@
 
 - Updated dependencies
   - @ballerine/ui@0.7.156
+- bump
+- Updated dependencies
+  - @ballerine/config@1.1.44
+  - @ballerine/ui@0.7.158
 
 ## 1.2.119
 

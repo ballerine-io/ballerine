@@ -8,6 +8,14 @@
 - Updated dependencies
   - @ballerine/ui@0.7.158
   - @ballerine/react-pdf-toolkit@1.2.121
+- bump
+- Updated dependencies
+  - @ballerine/blocks@0.2.47
+  - @ballerine/common@0.9.109
+  - @ballerine/react-pdf-toolkit@1.2.120
+  - @ballerine/ui@0.7.158
+  - @ballerine/workflow-browser-sdk@0.6.132
+  - @ballerine/workflow-node-sdk@0.6.132
 
 ## 0.7.157
 

@@ -1,4 +1,4 @@
-websiteUrl,countryCode,lineOfBusiness,parentCompanyName,merchantName,correlationId
-https://www.ballerine.com,,,,,
-https://www.google.com,US,Search Engine,Alphabet Inc.,Google,1
-https://www.bbc.com,GB,Journalism,BBC Inc.,BBC,2
+Website URL,Company Name/Registered Merchant Name (Optional),Merchant ID (Optional)
+https://www.ballerine.com,,
+https://www.google.com,Google LLC,aa11
+https://www.apple.com,Apple Inc.,bb22
