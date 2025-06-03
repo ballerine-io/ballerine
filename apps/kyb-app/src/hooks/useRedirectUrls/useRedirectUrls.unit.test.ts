@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { UIOptions, UISchema } from '@/domains/collection-flow';
 import { renderHook } from '@testing-library/react';
@@ -20,7 +19,7 @@ vi.mock('../useLanguage', () => ({
   useLanguage: vi.fn().mockReturnValue('en'),
 }));
 
-describe.skip('useRedirectUrls', () => {
+describe('useRedirectUrls', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -37,13 +36,13 @@ describe.skip('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: null,
       isLoading: false,
       error: null,
-    });
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
   });
 
   it('should return null when no redirectUrls are available', () => {
@@ -82,7 +81,7 @@ describe.skip('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: {
@@ -127,7 +126,7 @@ describe.skip('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: {
@@ -144,7 +143,7 @@ describe.skip('useRedirectUrls', () => {
       } as unknown as UISchema,
       isLoading: false,
       error: null,
-    });
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());
@@ -169,7 +168,7 @@ describe.skip('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());
