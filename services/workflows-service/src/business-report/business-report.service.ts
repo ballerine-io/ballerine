@@ -135,6 +135,12 @@ export class BusinessReportService {
     );
   }
 
+  private csvHeaderToSchemaKeyMap: Record<string, string> = {
+    'Website URL': 'websiteUrl',
+    'Company Name/Registered Merchant Name (Optional)': 'merchantName',
+    'Merchant ID (Optional)': 'correlationId',
+  };
+
   async processBatchFile({
     type,
     projectId,
@@ -152,22 +158,16 @@ export class BusinessReportService {
     workflowVersion: MerchantReportVersion;
     merchantSheet: Express.Multer.File;
   }) {
-    const headerToSchemaKeyMap: Record<string, string> = {
-      'Website URL': 'websiteUrl',
-      'Company Name/Registered Merchant Name (Optional)': 'merchantName',
-      'Merchant ID (Optional)': 'correlationId',
-    };
-
     const businessReportsRequests = await parseCsv({
       filePath: merchantSheet.path,
       schema: BusinessReportRequestSchema,
       logger: this.logger,
       cast: (value, context) => {
-        if (!context.header || !headerToSchemaKeyMap[value]) {
+        if (!context.header || !this.csvHeaderToSchemaKeyMap[value]) {
           return value;
         }
 
-        return headerToSchemaKeyMap[value];
+        return this.csvHeaderToSchemaKeyMap[value];
       },
     });
 
