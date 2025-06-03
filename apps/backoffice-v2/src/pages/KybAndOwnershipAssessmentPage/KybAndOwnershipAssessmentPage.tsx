@@ -3,7 +3,6 @@ import { ChevronLeft } from 'lucide-react';
 import { useRef } from 'react';
 
 import { Button, ContentTooltip, Skeleton, TextWithNAFallback } from '@ballerine/ui';
-
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { SectionObserver } from '@/common/components/organisms/SectionObserver/SectionObserver';
 import { useKybAndOwnershipAssessmentPageLogic } from './hooks/useKybAndOwnershipAssessmentPageLogic';
