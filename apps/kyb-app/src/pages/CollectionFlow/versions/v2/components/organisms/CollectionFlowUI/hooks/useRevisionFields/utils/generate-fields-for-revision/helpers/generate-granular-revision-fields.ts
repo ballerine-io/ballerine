@@ -72,7 +72,9 @@ export const generateGranularRevisionFields = ({
         .join(' - ');
 
       revisionFields.push({
-        id: formatId(element.id, stack),
+        id: document.endUserId
+          ? formatId(`${element.id}-${document.endUserId}-*`, [])
+          : formatId(element.id, stack),
         reason: priorityFieldComment,
       });
     }
