@@ -135,6 +135,12 @@ export class BusinessReportService {
     );
   }
 
+  private csvHeaderToSchemaKeyMap: Record<string, string> = {
+    'Website URL': 'websiteUrl',
+    'Company Name/Registered Merchant Name (Optional)': 'merchantName',
+    'Merchant ID (Optional)': 'correlationId',
+  };
+
   async processBatchFile({
     type,
     projectId,
@@ -156,6 +162,13 @@ export class BusinessReportService {
       filePath: merchantSheet.path,
       schema: BusinessReportRequestSchema,
       logger: this.logger,
+      cast: (value, context) => {
+        if (!context.header || !this.csvHeaderToSchemaKeyMap[value]) {
+          return value;
+        }
+
+        return this.csvHeaderToSchemaKeyMap[value];
+      },
     });
 
     const businessReportsCount = await this.count({ customerId });
