@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { UISchema } from '@/domains/collection-flow';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
@@ -23,24 +22,26 @@ vi.mock('@/common/components/molecules/LoadingScreen', () => ({
   LoadingScreen: () => <div>Loading Screen</div>,
 }));
 
-describe.skip('CollectionFlow', () => {
+describe('CollectionFlow', () => {
   beforeEach(() => {
     vi.mocked(useLanguageParam).mockReturnValue({
       language: 'en',
       setLanguage: vi.fn(),
-    } as ReturnType<typeof useLanguageParam>);
+    } as unknown as ReturnType<typeof useLanguageParam>);
     vi.mocked(useUISchemasQuery).mockReturnValue({
-      data: undefined as unknown as UISchema | null,
+      data: null,
       isLoading: false,
-    } as ReturnType<typeof useUISchemasQuery>);
+      error: null,
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
     vi.mocked(getCollectionFlowVersion).mockReturnValue(() => <div>Mock Flow Component</div>);
   });
 
   it('renders loading screen when schema is loading', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
-      data: undefined as unknown as UISchema | null,
+      data: null,
       isLoading: true,
-    } as ReturnType<typeof useUISchemasQuery>);
+      error: null,
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
     render(<CollectionFlow />);
 
@@ -48,10 +49,20 @@ describe.skip('CollectionFlow', () => {
   });
 
   it('renders error message when no version is found', () => {
+    const mockSchema = {
+      id: 'test-id',
+      config: {},
+      uiSchema: { elements: [], theme: {} },
+      definition: { definitionType: 'test', definition: {}, extensions: {} },
+      version: 999,
+      metadata: { businessId: 'test' },
+    } as unknown as UISchema;
+
     vi.mocked(useUISchemasQuery).mockReturnValue({
-      data: { version: 999 } as UISchema,
+      data: mockSchema,
       isLoading: false,
-    } as ReturnType<typeof useUISchemasQuery>);
+      error: null,
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
     vi.mocked(getCollectionFlowVersion).mockReturnValue(undefined);
 
     render(<CollectionFlow />);
@@ -64,9 +75,10 @@ describe.skip('CollectionFlow', () => {
 
   it('renders collection flow component when version is found', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
-      data: { version: 2 } as UISchema,
+      data: { version: 2 } as unknown as UISchema,
       isLoading: false,
-    } as ReturnType<typeof useUISchemasQuery>);
+      error: null,
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
     render(<CollectionFlow />);
 
@@ -77,7 +89,8 @@ describe.skip('CollectionFlow', () => {
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: { version: 2 } as UISchema,
       isLoading: false,
-    } as ReturnType<typeof useUISchemasQuery>);
+      error: null,
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
     render(<CollectionFlow />);
 
