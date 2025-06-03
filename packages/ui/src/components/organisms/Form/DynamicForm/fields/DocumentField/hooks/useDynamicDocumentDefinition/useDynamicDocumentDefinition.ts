@@ -64,7 +64,7 @@ export const useDynamicDocumentDefinition = ({
       disable: documentDisabledRules,
       validate: documentValidationRules,
     };
-  }, [element, documentHiddenRules, documentDisabledRules, documentValidationRules]);
+  }, [element, documentHiddenRules, documentDisabledRules, documentValidationRules, document]);
 
   return elementDefinition as IFormElement<'documentfield', IDocumentFieldParams>;
 };
