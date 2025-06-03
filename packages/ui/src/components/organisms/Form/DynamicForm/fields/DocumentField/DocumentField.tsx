@@ -77,6 +77,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   const element = useDynamicDocumentDefinition({
     element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
     document: document ?? undefined,
+    entityId: undefined,
   });
 
   const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();

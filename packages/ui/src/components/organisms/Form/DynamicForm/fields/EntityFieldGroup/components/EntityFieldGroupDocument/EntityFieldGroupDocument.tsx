@@ -80,6 +80,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   const element = useDynamicDocumentDefinition({
     element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
     document: document ?? undefined,
+    entityId: entityId ?? undefined,
   });
 
   const { params } = element;

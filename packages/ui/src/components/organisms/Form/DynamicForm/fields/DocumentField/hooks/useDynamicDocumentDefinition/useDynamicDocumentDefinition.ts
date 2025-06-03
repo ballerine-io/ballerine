@@ -8,9 +8,11 @@ import { ICommonValidator } from '@/components/organisms/Form/Validator';
 export const useDynamicDocumentDefinition = ({
   element,
   document,
+  entityId,
 }: {
   element: IFormElement<'documentfield', IDocumentFieldParams>;
   document: IDocument | undefined;
+  entityId: string | undefined;
 }) => {
   const isRevisionOrRequested = useMemo(() => {
     return document?.decision === 'revisions' || document?.status === 'requested';
@@ -56,6 +58,7 @@ export const useDynamicDocumentDefinition = ({
   const elementDefinition = useMemo(() => {
     return {
       ...element,
+      id: entityId ? `${element.id}-${entityId}` : element.id,
       params: {
         ...element.params,
         label: documentLabel,
@@ -64,7 +67,14 @@ export const useDynamicDocumentDefinition = ({
       disable: documentDisabledRules,
       validate: documentValidationRules,
     };
-  }, [element, documentHiddenRules, documentDisabledRules, documentValidationRules, document]);
+  }, [
+    element,
+    documentHiddenRules,
+    documentDisabledRules,
+    documentValidationRules,
+    document,
+    entityId,
+  ]);
 
   return elementDefinition as IFormElement<'documentfield', IDocumentFieldParams>;
 };
