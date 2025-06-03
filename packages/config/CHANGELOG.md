@@ -1,5 +1,11 @@
 # @ballerine/config
 
+## 1.1.44
+
+### Patch Changes
+
+- bump
+
 ## 1.1.43
 
 ### Patch Changes

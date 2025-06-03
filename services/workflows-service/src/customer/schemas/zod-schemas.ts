@@ -6,7 +6,12 @@ export const CustomerSubscriptionSchema = z.object({ subscriptions: z.array(Subs
 
 export type TCustomerSubscription = z.infer<typeof CustomerSubscriptionSchema>;
 
-const CustomerConfigSchema = z.object({
+export const CustomerConfigSchema = z.object({
+  isDemoKybEnabled: z.boolean().optional(),
+  isDemoKybUsEnabled: z.boolean().optional(),
+  isDemo: z.boolean().optional(),
+  expiresAt: z.number().optional(),
+  showFullAccessPopup: z.boolean().optional(),
   ongoingWorkflowDefinitionId: z.string().optional(),
   hideCreateMerchantMonitoringButton: z.boolean().default(true).optional(),
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
@@ -21,6 +26,59 @@ const CustomerConfigSchema = z.object({
 });
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
+
+export const CustomerFeaturesSchema = z.object({
+  // OCR Features
+  isDocumentOcrEnabled: z.boolean().optional(),
+
+  // Dashboard Features
+  mockDashboardV1: z.boolean().optional(),
+
+  // Report Features
+  enableWebPresenceReportExport: z.boolean().optional(),
+  createBusinessReport: z
+    .object({
+      enabled: z.boolean(),
+      options: z
+        .object({
+          type: z.string(),
+          version: z.string(),
+        })
+        .optional(),
+    })
+    .optional(),
+  createBusinessReportBatch: z
+    .object({
+      enabled: z.boolean(),
+      options: z
+        .object({
+          type: z.string(),
+          version: z.string(),
+        })
+        .optional(),
+    })
+    .optional(),
+
+  // Monitoring Features
+  ONGOING_MERCHANT_REPORT: z
+    .object({
+      name: z.string(),
+      enabled: z.boolean(),
+      options: z
+        .object({
+          reportType: z.string().optional(),
+          runByDefault: z.boolean().optional(),
+          scheduleType: z.string().optional(),
+          intervalInDays: z.number().optional(),
+          proxyViaCountry: z.string().optional(),
+          workflowVersion: z.string().optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+});
+
+export type TCustomerFeatures = z.infer<typeof CustomerFeaturesSchema>;
 
 export const AccessDetailsSchema = z
   .object({

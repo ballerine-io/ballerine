@@ -44,7 +44,7 @@ export const WelcomeModal = () => {
         </DialogHeader>
         <div className="px-6">
           <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-            <Skeleton className="size-full absolute inset-0" />
+            <Skeleton className="absolute inset-0 size-full" />
             <iframe
               src="https://www.loom.com/embed/c80a7403d3b4483ab64f1a38b616fb63?sid=cfae9630-2144-4b37-9169-21bbcc360a5f"
               frameBorder="0"
