@@ -5,4 +5,3 @@ export * from './domains/documents/mutations/useDeleteDocumentFilesMutation';
 export * from './domains/documents/mutations/useCreateDocumentMutation';
 export * from './domains/documents/queries/useDocumentsQuery';
 export * from './domains/documents/queries/useDocumentWithFilesQuery';
-export * from './domains/documents/queries/useDocumentWithFilesQuery';
