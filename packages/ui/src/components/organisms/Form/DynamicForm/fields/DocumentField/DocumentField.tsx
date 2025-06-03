@@ -126,7 +126,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [document, removeFile]);
+  }, [document, removeFile, deleteDocumentFiles, onChange, removeTask, id]);
 
   const isShouldDisableInput = useMemo(() => {
     return (
