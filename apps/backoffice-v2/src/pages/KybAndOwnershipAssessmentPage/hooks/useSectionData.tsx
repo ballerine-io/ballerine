@@ -23,7 +23,7 @@ export const useSectionData = ({
 }: SectionDataProps): AssessmentPageSection[] => {
   return useMemo(() => {
     const registryData = assessment?.companyRegistryInformation?.output?.data;
-    const registeredAddress = (() => {
+    const getRegisteredAddress = () => {
       if (!registryData?.addresses?.length) return null;
 
       const registeredAddressObj = registryData.addresses.find((addr: any) => {
@@ -35,7 +35,9 @@ export const useSectionData = ({
       });
 
       return registeredAddressObj?.fullAddress || null;
-    })();
+    };
+
+    const registeredAddress = getRegisteredAddress();
 
     return [
       {
