@@ -174,7 +174,12 @@ export const WebsiteCredibility: FunctionComponent<{
         ...websiteStructureRiskIndicators,
         ...trafficRiskIndicators,
       ].filter(indicator => indicator.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID),
-    [],
+    [
+      websiteReputationRiskIndicators,
+      pricingRiskIndicators,
+      websiteStructureRiskIndicators,
+      trafficRiskIndicators,
+    ],
   );
 
   return (
