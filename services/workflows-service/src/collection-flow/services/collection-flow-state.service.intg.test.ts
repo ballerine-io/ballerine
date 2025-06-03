@@ -12,6 +12,7 @@ import {
   CollectionFlowStepStatesEnum,
   TCollectionFlowState,
 } from '@ballerine/common';
+import { PrismaService } from '@/prisma/prisma.service';
 
 const deps: Provider[] = [
   {
@@ -41,7 +42,7 @@ describe('CollectionFlowStateService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [...deps, CollectionFlowStateService],
+      providers: [...deps, PrismaService, CollectionFlowStateService],
       imports: [],
     }).compile();
 
