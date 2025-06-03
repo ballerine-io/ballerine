@@ -10,13 +10,11 @@ import React, {
   useState,
 } from 'react';
 
-import { ctw } from '@/common';
 import {
   Button,
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   Popover,
   PopoverContent,
@@ -55,14 +53,12 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
   value,
   placeholdersParams = {},
   notFoundText,
-  searchable = false,
   disabled,
   testId,
   onChange,
   onBlur,
   onFocus,
   props,
-  textInputClassName,
 }) => {
   const { placeholder = '', searchPlaceholder = '' } = placeholdersParams;
   const [open, setOpen] = useState(false);
@@ -128,14 +124,6 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
         className={clsx('p-2', props?.content?.className)}
       >
         <Command className="w-full">
-          {searchable ? (
-            <CommandInput
-              onBlur={onBlur}
-              onFocus={onFocus}
-              placeholder={searchPlaceholder}
-              className={ctw('placeholder:text-muted-foreground h-9', textInputClassName)}
-            />
-          ) : null}
           <CommandEmpty>{notFoundText || ''}</CommandEmpty>
           <ScrollArea orientation="both" className={clsx({ 'h-[200px]': options.length > 6 })}>
             <CommandGroup>

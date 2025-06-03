@@ -1,5 +1,5 @@
 import { WithTestId } from '@/common';
-import { DropdownInput, DropdownOption } from '@/components/molecules';
+import { ISearchableDropdownOption, SearchableDropdown } from '@/components/atoms';
 import { TOneOfItem } from '@/components/organisms/DynamicForm/types/one-of';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback, useMemo } from 'react';
@@ -14,7 +14,7 @@ export const SelectField = ({
   testId,
   onBlur,
 }: WithTestId<FieldProps<string>>) => {
-  const options = useMemo((): DropdownOption[] => {
+  const options = useMemo((): ISearchableDropdownOption[] => {
     if (Array.isArray(schema.enum)) {
       return schema.enum.map((value, index) => {
         return {
@@ -31,7 +31,7 @@ export const SelectField = ({
         label: item.title as string,
         value: item.const as string,
       };
-    }) as DropdownOption[];
+    }) as ISearchableDropdownOption[];
   }, [schema.oneOf, schema.enumNames, schema.enum]);
 
   const handleBlur = useCallback(() => {
@@ -40,9 +40,8 @@ export const SelectField = ({
   }, [id, onBlur, formData]);
 
   return (
-    <DropdownInput
-      placeholdersParams={{ placeholder: uiSchema?.['ui:placeholder'] }}
-      searchable
+    <SearchableDropdown
+      placeholder={uiSchema?.['ui:placeholder']}
       // @ts-ignore
       name={id}
       options={options}

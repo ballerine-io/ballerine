@@ -17,7 +17,6 @@ export interface DropdownInputProps {
   placeholdersParams?: PlaceholdersParams;
   options: DropdownOption[];
   notFoundText?: string;
-  searchable?: boolean;
   disabled?: boolean;
   openOnFocus?: boolean;
   onChange: (value: string, inputName: string) => void;
@@ -33,5 +32,4 @@ export interface DropdownInputProps {
     };
   };
   testId?: string;
-  textInputClassName?: string;
 }
