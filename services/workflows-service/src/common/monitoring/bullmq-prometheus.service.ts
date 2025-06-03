@@ -37,7 +37,12 @@ export class BullMQPrometheusService implements OnModuleInit {
         service: 'ballerine-workflows-service',
       };
 
-      const metrics = await this.queues[0].exportPrometheusMetrics(globalVariables);
+      const queue = this.queues[0];
+      if (!queue) {
+        return '# No BullMQ queues available for metrics';
+      }
+
+      const metrics = await queue.exportPrometheusMetrics(globalVariables);
       return metrics;
     } catch (error) {
       this.logger.error('Failed to export BullMQ Prometheus metrics', { error });
