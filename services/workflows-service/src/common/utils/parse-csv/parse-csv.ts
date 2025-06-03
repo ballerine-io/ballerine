@@ -37,7 +37,7 @@ export const parseCsv = async <TSchema extends ZodSchema>(
             return undefined;
           }
 
-          return cast?.(value, context) || value;
+          return cast?.(value, context) ?? value;
         },
       },
       (err, records) => {
