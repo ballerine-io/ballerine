@@ -6,6 +6,10 @@ export const useDeleteDocumentFiles = () => {
 
   const deleteDocumentFiles = useCallback(
     async (documentId: string) => {
+      if (!documentId || typeof documentId !== 'string') {
+        throw new Error('Document ID is required');
+      }
+
       await mutateAsync(documentId);
     },
     [mutateAsync],
