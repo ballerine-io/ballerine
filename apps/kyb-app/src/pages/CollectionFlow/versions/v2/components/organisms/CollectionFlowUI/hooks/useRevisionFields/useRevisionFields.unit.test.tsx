@@ -4,7 +4,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { useRevisionFields } from './useRevisionFields';
 import { generateFieldsForRevision } from './utils/generate-fields-for-revision';
-import { QueryClient, QueryClientProvider, UseQueryResult } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDocumentsQuery } from '@/hooks/useDocumentsQuery';
 import { IDocument } from '@ballerine/ui';
 
@@ -55,7 +55,7 @@ describe('useRevisionFields', () => {
     vi.mocked(useDocumentsQuery).mockReturnValue({
       data: documents,
       isLoading: false,
-    } as unknown as UseQueryResult<IDocument[], unknown>);
+    } as unknown as ReturnType<typeof useDocumentsQuery>);
 
     // Act
     renderHook(() => useRevisionFields(mockPages, mockContext), { wrapper });
