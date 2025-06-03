@@ -1,4 +1,4 @@
-import { parse } from 'csv-parse';
+import { CastingContext, parse } from 'csv-parse';
 import { z, ZodSchema } from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { ForbiddenException } from '@/errors';
@@ -9,9 +9,10 @@ export const parseCsv = async <TSchema extends ZodSchema>(
     schema: TSchema;
     logger: AppLoggerService;
     ignoreEmptyProperties?: boolean;
+    cast?: (value: string, context: CastingContext) => string | undefined;
   } & ({ file: Express.Multer.File } | { filePath: string }),
 ): Promise<Array<z.output<TSchema>>> => {
-  const { schema, logger, ignoreEmptyProperties = true } = processEntity;
+  const { schema, logger, ignoreEmptyProperties = true, cast } = processEntity;
   let fileContent: Buffer;
 
   if ('file' in processEntity) {
@@ -31,12 +32,12 @@ export const parseCsv = async <TSchema extends ZodSchema>(
         trim: true,
         skip_records_with_empty_values: true,
         skip_records_with_error: true,
-        cast: value => {
+        cast: (value, context) => {
           if (value === '' && ignoreEmptyProperties) {
             return undefined;
           }
 
-          return value;
+          return cast?.(value, context) ?? value;
         },
       },
       (err, records) => {
