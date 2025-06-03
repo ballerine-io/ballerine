@@ -9,7 +9,8 @@ import { AuthService } from '../auth.service';
 @Injectable()
 export class MagicLinkStrategy
   extends PassportStrategy(Strategy, 'magic-link')
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(protected readonly authService: AuthService) {
     super({
       secretOrKey: env.MAGIC_LINK_AUTH_JWT_SECRET,
