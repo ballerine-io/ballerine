@@ -61,6 +61,7 @@ import {
   isObject,
   ProcessStatus,
   setCollectionFlowStatus,
+  TWorkflowHelpers,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -1972,8 +1973,7 @@ export class WorkflowService {
       return;
     }
 
-    this.sentry.captureException(new Error('Workflow definition context validation failed'));
-    this.logger.error('Workflow definition context validation failed', {
+    this.logger.warn('Workflow definition context validation failed', {
       errors: validate.errors,
       errorData: validate.errors?.map(error => ({
         path: error.instancePath,
@@ -2046,9 +2046,15 @@ export class WorkflowService {
           state: workflowRuntimeData.state,
         },
         extensions: workflowDefinition.extensions,
+        helpers: {
+          getEndUserById: async (endUserId: string) => {
+            return await this.endUserService.getById(endUserId, {}, projectIds);
+          },
+        },
         invokeRiskRulesAction: async (
           context: object,
           ruleStoreServiceOptions: TFindAllRulesOptions,
+          helpers: TWorkflowHelpers,
         ) => {
           const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
 
@@ -2056,7 +2062,7 @@ export class WorkflowService {
             rules.map(async rule => {
               try {
                 return {
-                  result: await this.ruleEngineService.run(rule.ruleSet, context),
+                  result: await this.ruleEngineService.run(rule.ruleSet, context, helpers),
                   ...rule,
                 } as const;
               } catch (ex) {
@@ -2674,7 +2680,13 @@ export class WorkflowService {
       transaction,
     );
     const document = runtimeData?.context?.documents?.find(
-      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+      (document: DefaultContextSchema['documents'][number]) => {
+        if (document?._document?.id) {
+          return document._document?.id === documentId;
+        }
+
+        return document.id === documentId;
+      },
     );
 
     return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);

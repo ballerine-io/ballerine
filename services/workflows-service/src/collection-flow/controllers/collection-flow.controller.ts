@@ -15,11 +15,12 @@ import {
 import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
+import { AnyRecord, CollectionFlowStatusesEnum, TCollectionFlowState } from '@ballerine/common';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
+import { CollectionFlowStateService } from '../collection-flow-state.service';
 
 @UseWorkflowAuthGuard()
 @ApiExcludeController()
@@ -31,6 +32,7 @@ export class CollectionFlowController {
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly collectionFlowService: CollectionFlowService,
     protected readonly endUserService: EndUserService,
+    protected readonly collectionFlowStateService: CollectionFlowStateService,
   ) {}
 
   @common.Get('/customer')
@@ -211,6 +213,12 @@ export class CollectionFlowController {
             };
           },
         ) || [],
+      );
+
+      await this.collectionFlowStateService.updateCollectionFlowState(
+        tokenScope.workflowRuntimeDataId,
+        (body.context.collectionFlow as AnyRecord).state as TCollectionFlowState,
+        [tokenScope.projectId],
       );
 
       await this.workflowService.event(

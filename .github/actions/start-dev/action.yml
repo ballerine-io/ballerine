@@ -64,11 +64,48 @@ runs:
           done < list_deployments.txt
         }
 
+        scale_namespace_statefulsets() {
+          local namespace=$1
+          local default_replicas=$2
+          local exclude_statefulsets=$3
+          local specific_scales=$4
+          echo "Processing statefulsets in namespace: $namespace"
+          kubectl get statefulset -n $namespace | awk 'NR > 1 {print $1}' > list_statefulsets.txt
+          while read STATEFULSET_NAME; do
+            if [[ " $exclude_statefulsets " == *" $STATEFULSET_NAME "* ]]; then
+              echo "Skipping excluded statefulset: $STATEFULSET_NAME"
+              continue
+            fi
+            replicas=$default_replicas
+            for scale in $specific_scales; do
+              if [[ $scale == "$STATEFULSET_NAME:"* ]]; then
+                replicas=${scale#*:}
+                break
+              fi
+            done
+            kubectl scale statefulset "$STATEFULSET_NAME" --replicas=$replicas --namespace="$namespace"
+            echo "Scaled statefulset $STATEFULSET_NAME to $replicas replicas in namespace $namespace"
+          done < list_statefulsets.txt
+        }
+
+        scale_ingress_controllers() {          
+          kubectl scale deployment aws-load-balancer-controller --replicas=1 -n kube-system
+          kubectl scale deployment ext-ngnix-controller-controller --replicas=1 -n kube-system
+          kubectl scale deployment int-ngnix-controller-controller --replicas=1 -n kube-system
+          kubectl scale deployment nginx-ingress-preview-controller --replicas=1 -n kube-system
+        }
+
         scale_namespace_deployments "appsmith" "1" "" ""
 
         scale_namespace_deployments "default" "1" "twingate-eks-connector-2" "unified-api:3 unified-worker:2 wf-service:3"
 
-        scale_namespace_deployments "monitoring" "1" "loki-v3-gateway" "loki-v3-query-frontend:2"
+        scale_namespace_deployments "monitoring" "1" "" "loki-v3-query-frontend:2"
+
+        scale_namespace_statefulsets "monitoring" "1" "" "mimir-ingester:3 mimir-store-gateway-zone-a:1 mimir-store-gateway-zone-b:1 mimir-store-gateway-zone-c:1"
+
+        scale_ingress_controllers
+
+        scale_namespace_deployments "argocd" "1" "" "argocd-applicationset-controller:2 argocd-repo-server:2 argocd-server:3"
 
         for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
           scale_namespace_deployments "$ns" "1" "" ""

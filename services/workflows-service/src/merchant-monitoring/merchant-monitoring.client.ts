@@ -34,9 +34,10 @@ const MetricsResponseSchema = z.object({
       count: z.number(),
     }),
   ),
-  totalActiveMerchants: z.number(),
-  addedMerchantsCount: z.number(),
-  removedMerchantsCount: z.number(),
+  activeBusinessesCount: z.number(),
+  activeWebsitesCount: z.number(),
+  addedWebsitesCount: z.number(),
+  removedWebsitesCount: z.number(),
 });
 
 @Injectable()
@@ -65,6 +66,7 @@ export class MerchantMonitoringClient {
     withQualityControl,
     workflowRuntimeDataId,
     requestedByUserId,
+    projectId,
   }: {
     websiteUrl: string;
     countryCode?: CountryCode;
@@ -77,6 +79,7 @@ export class MerchantMonitoringClient {
     withQualityControl?: boolean;
     workflowRuntimeDataId?: string;
     requestedByUserId?: string;
+    projectId: string;
   }) {
     const response = await this.axios.post(`merchants/analysis`, {
       websiteUrl,
@@ -92,6 +95,7 @@ export class MerchantMonitoringClient {
       metadata: {
         ...(workflowRuntimeDataId && { workflowRuntimeDataId }),
         requestedByUserId,
+        projectId,
       },
       customerId,
     });

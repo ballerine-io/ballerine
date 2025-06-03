@@ -1,4 +1,3 @@
-import { useHttp } from '@/common/hooks/useHttp';
 import { isAxiosError } from 'axios';
 import jsonata from 'jsonata';
 import { useCallback } from 'react';
@@ -9,6 +8,7 @@ import { IFormElement } from '../../../../types';
 import { useStack } from '../../../FieldList';
 import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { IEntity } from '../../types';
+import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
 
 export interface IUseFieldListProps {
   element: IFormElement<string, IEntityFieldGroupParams>;
@@ -17,12 +17,9 @@ export interface IUseFieldListProps {
 export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {
   const { stack } = useStack();
   const { onChange, value } = useField<IEntity[] | undefined>(element, stack);
-  const { metadata, values } = useDynamicForm();
+  const { values } = useDynamicForm();
 
-  const { run: deleteEntity, isLoading } = useHttp(
-    element.params!.httpParams?.deleteEntity,
-    metadata,
-  );
+  const { run: deleteEntity, isLoading } = useFormHttp(element.params!.httpParams?.deleteEntity);
 
   const addItem = useCallback(async () => {
     let initialValue = {

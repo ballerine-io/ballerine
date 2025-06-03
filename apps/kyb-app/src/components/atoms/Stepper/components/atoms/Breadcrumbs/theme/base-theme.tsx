@@ -52,7 +52,7 @@ export const baseBreadcrumbTheme: BreadcrumbTheme = {
   },
   edit: {
     inner: {
-      className: ctw('w-full', 'h-full bg-[#4A90E2]'),
+      className: ctw('w-full', 'h-full', 'bg-var(--stepper-breadcrumbs-edit-inner-bg-color)'),
       icon: <Pencil size={8} />,
     },
     outer: {

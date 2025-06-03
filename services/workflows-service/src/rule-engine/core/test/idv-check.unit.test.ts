@@ -7,6 +7,7 @@ import {
   ValidationFailedError,
 } from '@ballerine/common';
 import { createRuleEngine } from '../rule-engine';
+import { helpers } from './data-helper';
 
 describe('IDV_CHECK operator', () => {
   it('should pass when decision status is declined', async () => {
@@ -40,7 +41,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -78,7 +79,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -116,7 +117,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -164,7 +165,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -202,7 +203,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -239,7 +240,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);
@@ -266,7 +267,7 @@ describe('IDV_CHECK operator', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSet).run(mockData, helpers);
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(1);

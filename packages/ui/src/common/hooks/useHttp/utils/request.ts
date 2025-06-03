@@ -1,6 +1,6 @@
 import { AnyObject } from '@/common/types';
 import { formatString } from '@/components/organisms/Form/DynamicForm/utils/format-string';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { IHttpParams } from '../types';
 import { formatHeaders } from './format-headers';
 
@@ -19,12 +19,14 @@ export const request = async (
   const formattedHeaders = formatHeaders(headers, metadata);
 
   try {
-    const config = {
+    const config: AxiosRequestConfig = {
       url: formattedUrl,
       method,
       headers: formattedHeaders,
       data,
       timeout,
+      withCredentials: true,
+      params: request.params,
     };
 
     const response = await axios(config);

@@ -6,8 +6,8 @@ permissions:
 
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: '0 5 * * 1-4,0'  # 7:00 AM Israel time
+  schedule:
+    - cron: '30 4 * * 0-5'  # 7:30 AM Israel time
 
 jobs:
   Start-Environment:
@@ -31,3 +31,39 @@ jobs:
           aws-role: ${{ secrets.AWS_ASSUME_ROLE }}
           eks-cluster: ${{ secrets.EKS_CLUSTER_NAME }}
           environment-name: 'dev'
+
+  send-to-slack:
+    runs-on: ubuntu-latest
+    needs: [Start-Environment]
+    if: ${{ needs.Start-Environment.result == 'success' }}
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Dev environment has been started successfully. All services have been scaled up."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
+
+  on-failure:
+    runs-on: ubuntu-latest
+    needs: [Start-Environment]
+    if: failure()
+    environment: dev
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Send alert to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
+          slack-message: "Failed to start dev environment. Please check the workflow logs for details."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}

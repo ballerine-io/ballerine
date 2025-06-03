@@ -1,3 +1,4 @@
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import {
   DataValueNotFoundError,
   OPERATION,
@@ -7,9 +8,8 @@ import {
   RuleSet,
 } from '@ballerine/common';
 import z from 'zod';
-import { amlContext, context, ubosMismatchContext } from './data-helper';
 import { createRuleEngine, runRuleSet } from '../rule-engine';
-import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { amlContext, context, helpers, ubosMismatchContext } from './data-helper';
 
 const mockData = {
   country: 'US',
@@ -18,7 +18,10 @@ const mockData = {
   createdAt: new Date().toISOString(),
 };
 
-const unifiedApiClient = new UnifiedApiClient();
+const options = {
+  unifiedApiClient: new UnifiedApiClient(),
+  helpers,
+};
 
 describe('Rule Engine', () => {
   it('should validate a simple rule set', async () => {
@@ -62,7 +65,10 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(
+      mockData,
+      helpers,
+    );
 
     expect(validationResults).toBeDefined();
     expect(validationResults).toHaveLength(2);
@@ -85,7 +91,10 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(
+      mockData,
+      helpers,
+    );
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).message).toBe(
       'Field nonexistent is missing or null',
@@ -108,7 +117,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const result = await createRuleEngine(ruleSetExample).run(mockData);
+    const result = await createRuleEngine(ruleSetExample).run(mockData, helpers);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]?.message).toMatch(
@@ -129,7 +138,10 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(
+      mockData,
+      helpers,
+    );
     expect(validationResults[0]!.status).toBe('FAILED');
     expect((validationResults[0] as RuleResult).error).toBe(undefined);
   });
@@ -147,7 +159,10 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(
+      mockData,
+      helpers,
+    );
     expect(validationResults[0]).toMatchInlineSnapshot(`
       {
         "error": undefined,
@@ -176,7 +191,10 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(mockData);
+    const validationResults: RuleResultSet = await createRuleEngine(ruleSetExample).run(
+      mockData,
+      helpers,
+    );
     expect(validationResults[0]?.message).toMatchInlineSnapshot(`
       "Validation failed for 'rule', message: parsing failed, error: {
         "issues": [
@@ -209,7 +227,7 @@ describe('Rule Engine', () => {
       ],
     };
 
-    const result = await createRuleEngine(ruleSetExample).run(mockData);
+    const result = await createRuleEngine(ruleSetExample).run(mockData, helpers);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchInlineSnapshot(`
@@ -250,7 +268,7 @@ describe('Rule Engine', () => {
         .split('T')[0] as string;
     }
 
-    let result = await engine.run(context);
+    let result = await engine.run(context, helpers);
 
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
@@ -273,7 +291,7 @@ describe('Rule Engine', () => {
     // @ts-ignore
     context2.pluginsOutput.businessInformation.data[0].establishDate = '2020-01-01';
 
-    result = await engine.run(context2 as any);
+    result = await engine.run(context2 as any, helpers);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchInlineSnapshot(`
@@ -317,7 +335,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    let result = await engine.run(context1);
+    let result = await engine.run(context1, helpers);
     expect(result).toBeDefined();
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('PASSED');
@@ -333,7 +351,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    result = await engine.run(context2);
+    result = await engine.run(context2, helpers);
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('PASSED');
 
@@ -348,7 +366,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    result = await engine.run(context3);
+    result = await engine.run(context3, helpers);
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('PASSED');
 
@@ -363,7 +381,7 @@ describe('Rule Engine', () => {
       },
     };
 
-    result = await engine.run(context4);
+    result = await engine.run(context4, helpers);
     expect(result).toHaveLength(1);
     expect(result[0]?.status).toBe('FAILED');
   });
@@ -384,7 +402,7 @@ describe('Rule Engine', () => {
       };
 
       const engine = createRuleEngine(ruleSetExample);
-      let result = await engine.run(context);
+      let result = await engine.run(context, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -397,7 +415,7 @@ describe('Rule Engine', () => {
 
       context2.pluginsOutput.businessInformation.data[0].shares = [];
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
@@ -406,7 +424,7 @@ describe('Rule Engine', () => {
 
       context2.pluginsOutput.businessInformation.data[0].shares = {};
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]?.status).toMatchInlineSnapshot(`"FAILED"`);
@@ -415,7 +433,7 @@ describe('Rule Engine', () => {
 
       context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]?.status).toMatchInlineSnapshot(`"PASSED"`);
@@ -443,7 +461,7 @@ describe('Rule Engine', () => {
 
       const engine = createRuleEngine(ruleSetExample);
 
-      let result = await engine.run(context2 as any);
+      let result = await engine.run(context2 as any, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -452,7 +470,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = { item: 1 };
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -461,7 +479,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.pluginsOutput.businessInformation.data[0].shares = {};
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -485,7 +503,7 @@ describe('Rule Engine', () => {
       };
 
       const engine = createRuleEngine(ruleSetExample);
-      let result = await engine.run(context);
+      let result = await engine.run(context, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -507,7 +525,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.pluginsOutput.companySanctions.data = [];
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -540,7 +558,7 @@ describe('Rule Engine', () => {
       };
 
       const engine = createRuleEngine(ruleSetExample);
-      let result = await engine.run(context);
+      let result = await engine.run(context, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -567,7 +585,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.entity.data.country = 'CA';
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -606,21 +624,15 @@ describe('Rule Engine', () => {
 
       const data = { country: 'US' };
 
-      let validationResults = await runRuleSet(ruleSetExample, data, {
-        unifiedApiClient,
-      });
+      let validationResults = await runRuleSet(ruleSetExample, data, options);
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.country = 'Ca';
-      validationResults = await runRuleSet(ruleSetExample, data, {
-        unifiedApiClient,
-      });
+      validationResults = await runRuleSet(ruleSetExample, data, options);
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.country = 'GB';
-      validationResults = await runRuleSet(ruleSetExample, data, {
-        unifiedApiClient,
-      });
+      validationResults = await runRuleSet(ruleSetExample, data, options);
       expect(validationResults[0]!.status).toBe('FAILED');
     });
 
@@ -639,21 +651,15 @@ describe('Rule Engine', () => {
 
       const data = { countries: ['US'] };
 
-      let validationResults = await runRuleSet(ruleSetExample, data, {
-        unifiedApiClient,
-      });
+      let validationResults = await runRuleSet(ruleSetExample, data, options);
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.countries = ['Ca'];
-      validationResults = await runRuleSet(ruleSetExample, data, {
-        unifiedApiClient,
-      });
+      validationResults = await runRuleSet(ruleSetExample, data, options);
       expect(validationResults[0]!.status).toBe('PASSED');
 
       data.countries = ['GB'];
-      validationResults = await runRuleSet(ruleSetExample, data, {
-        unifiedApiClient,
-      });
+      validationResults = await runRuleSet(ruleSetExample, data, options);
       expect(validationResults[0]!.status).toBe('FAILED');
     });
   });
@@ -673,7 +679,7 @@ describe('Rule Engine', () => {
       };
 
       const engine = createRuleEngine(ruleSetExample);
-      let result = await engine.run(context);
+      let result = await engine.run(context, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -700,7 +706,7 @@ describe('Rule Engine', () => {
       // @ts-ignore
       context2.entity.data.country = 'CA';
 
-      result = await engine.run(context2 as any);
+      result = await engine.run(context2 as any, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -756,7 +762,7 @@ describe('Rule Engine', () => {
             hits: [],
           };
 
-        const result = await engine.run(amlContextHasData);
+        const result = await engine.run(amlContextHasData, helpers);
 
         expect(result).toBeDefined();
         expect(result[0]).toMatchInlineSnapshot(`
@@ -799,7 +805,7 @@ describe('Rule Engine', () => {
         };
 
         const engine = createRuleEngine(warningRule);
-        const result = await engine.run(amlContextHasData);
+        const result = await engine.run(amlContextHasData, helpers);
 
         expect(result).toBeDefined();
         expect(result).toHaveLength(1);
@@ -859,7 +865,7 @@ describe('Rule Engine', () => {
         };
 
       const engine = createRuleEngine(fitnessProbityRule);
-      const result = await engine.run(amlContextHasData);
+      const result = await engine.run(amlContextHasData, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -918,7 +924,7 @@ describe('Rule Engine', () => {
         };
 
       let engine = createRuleEngine(warningRule);
-      let result = await engine.run(amlContext2);
+      let result = await engine.run(amlContext2, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -954,7 +960,7 @@ describe('Rule Engine', () => {
       };
 
       engine = createRuleEngine(adverseMediaRule);
-      result = await engine.run(amlContext2);
+      result = await engine.run(amlContext2, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -990,7 +996,7 @@ describe('Rule Engine', () => {
       };
 
       engine = createRuleEngine(fitnessProbityRule);
-      result = await engine.run(amlContext2);
+      result = await engine.run(amlContext2, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -1026,7 +1032,7 @@ describe('Rule Engine', () => {
       };
 
       engine = createRuleEngine(pepRule);
-      result = await engine.run(amlContext2);
+      result = await engine.run(amlContext2, helpers);
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
@@ -1063,7 +1069,7 @@ describe('Rule Engine', () => {
       };
 
       const engine = createRuleEngine(ruleSetExample);
-      const result = await engine.run(context);
+      const result = await engine.run(context, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -1094,7 +1100,7 @@ describe('Rule Engine', () => {
       };
 
       const engine = createRuleEngine(ruleSetExample);
-      const result = await engine.run(context);
+      const result = await engine.run(context, helpers);
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchInlineSnapshot(`
@@ -1177,7 +1183,7 @@ describe('Rule Engine', () => {
 
     it('should extact-match happy flow', async () => {
       const engine = createRuleEngine(ruleSet);
-      const result = await engine.run(ubosMismatchContext);
+      const result = await engine.run(ubosMismatchContext, helpers);
       expectResult(result, 'FAILED');
     });
 
@@ -1195,7 +1201,7 @@ describe('Rule Engine', () => {
       ];
 
       for (const modifiedContext of modifiedContexts) {
-        const result = await engine.run(modifiedContext);
+        const result = await engine.run(modifiedContext, helpers);
         expectResult(result, 'FAILED');
       }
     });
@@ -1204,13 +1210,14 @@ describe('Rule Engine', () => {
       const engine = createRuleEngine(ruleSet);
       const result = await engine.run(
         adjustContext([createRegistryUbo('John Doe')], [createCollectionUbo('john', 'doe')]),
+        helpers,
       );
       expectResult(result, 'FAILED');
     });
 
     it('should fail when UBOs are empty', async () => {
       const engine = createRuleEngine(ruleSet);
-      const result = await engine.run(adjustContext([], []));
+      const result = await engine.run(adjustContext([], []), helpers);
       expectResult(result, 'FAILED');
     });
 
@@ -1221,7 +1228,7 @@ describe('Rule Engine', () => {
       );
 
       const engine = createRuleEngine(ruleSet);
-      const result = await engine.run(modifiedContext);
+      const result = await engine.run(modifiedContext, helpers);
       expectResult(result, 'PASSED');
     });
 
@@ -1236,7 +1243,7 @@ describe('Rule Engine', () => {
       );
 
       const engine = createRuleEngine(ruleSet);
-      const result = await engine.run(modifiedContext);
+      const result = await engine.run(modifiedContext, helpers);
       expectResult(result, 'PASSED');
     });
   });

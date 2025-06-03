@@ -1,13 +1,9 @@
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { CollectionFlowStepStatesEnum, getCollectionFlowState } from '@ballerine/common';
+import { CollectionFlowStepStatesEnum } from '@ballerine/common';
 import { stepStatusToIcon } from '../../../constants';
+import { TCollectionFlowStateStep } from '@/domains/collection-flow/schemas';
 
-export const getCollectionFlowStatus = (
-  workflowContext: TWorkflowById['context'],
-  stepName: string,
-) => {
-  const collectionFlowState = getCollectionFlowState(workflowContext);
-  const stepItem = collectionFlowState?.steps?.find(s => s.stepName === stepName);
+export const getCollectionFlowStatus = (steps: TCollectionFlowStateStep[], stepName: string) => {
+  const stepItem = steps?.find(s => s.stepName === stepName);
 
   if (!stepItem) {
     return stepStatusToIcon[CollectionFlowStepStatesEnum.idle];
