@@ -80,6 +80,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@react-google-maps/api": "^2.20.6",
     "@react-pdf/renderer": "^3.1.14",
     "@rjsf/utils": "^5.9.0",
     "@sentry/react": "^7.77.0",
