@@ -5,6 +5,8 @@ import { z } from 'zod';
 export const ConfigSchema = z
   .object({
     isInitiateSanctionsScreeningEnabled: z.boolean().optional(),
+    isInitiateKycEnabled: z.boolean().optional(),
+    isKycEndUserEditEnabled: z.boolean().optional(),
     isDocumentsV2: z.boolean().optional(),
     isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
