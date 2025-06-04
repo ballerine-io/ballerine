@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.7.160
+
+### Patch Changes
+
+- Redesigned website structure section
+- Updated dependencies
+  - @ballerine/common@0.9.111
+
 ## 0.7.159
 
 ### Patch Changes
