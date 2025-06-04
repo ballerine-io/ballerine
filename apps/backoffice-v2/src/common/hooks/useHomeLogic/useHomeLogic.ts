@@ -69,12 +69,17 @@ export const useHomeLogic = () => {
 
     const toSet: Partial<z.infer<typeof HomeSearchSchema>> = {};
 
-    if (!mmFrom && !mmTo && isMerchantMonitoringEnabled) {
+    if (!mmFrom && !mmTo && isMerchantMonitoringEnabled && !customer?.config?.demoAccessDetails) {
       toSet.mmFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.mmTo = dayjs().format('YYYY-MM-DD');
     }
 
-    if (!casesFrom && !casesTo && isCasesOnboardingEnabled) {
+    if (
+      !casesFrom &&
+      !casesTo &&
+      isCasesOnboardingEnabled &&
+      !customer?.config?.demoAccessDetails
+    ) {
       toSet.casesFrom = dayjs().subtract(1, 'month').format('YYYY-MM-DD');
       toSet.casesTo = dayjs().format('YYYY-MM-DD');
     }
@@ -106,8 +111,8 @@ export const useHomeLogic = () => {
   const getStatusDefinition = (status: string) => {
     return (
       STATUS_DEFINITION[status.toLowerCase() as keyof typeof STATUS_DEFINITION] ?? {
-        color: '#65afff',
-        text: 'Unknown',
+        color: '#65AFFF',
+        text: titleCase(status),
       }
     );
   };
@@ -116,7 +121,7 @@ export const useHomeLogic = () => {
     return (
       RISK_LEVEL_DEFINITION[risk.toLowerCase() as keyof typeof RISK_LEVEL_DEFINITION] ?? {
         color: '#65afff',
-        text: 'Unknown',
+        text: titleCase(risk),
       }
     );
   };
@@ -171,6 +176,7 @@ export const useHomeLogic = () => {
     avatarUrl,
     locale,
 
+    shouldShowDashboardV1: !!customer?.features?.mockDashboardV1,
     isMerchantMonitoringEnabled,
     isOngoingMonitoringEnabled,
     isCasesOnboardingEnabled,
@@ -191,9 +197,10 @@ export const useHomeLogic = () => {
     ongoingCasesByRisk: currentStats?.ongoingCasesByRisk ?? [],
     approvedCasesByRisk: currentStats?.approvedCasesByRisk ?? [],
 
-    totalActiveMerchants: metrics?.totalActiveMerchants ?? 0,
-    addedMerchantsCount: metrics?.addedMerchantsCount ?? 0,
-    removedMerchantsCount: metrics?.removedMerchantsCount ?? 0,
+    activeBusinessesCount: metrics?.activeBusinessesCount ?? 0,
+    activeWebsitesCount: metrics?.activeWebsitesCount ?? 0,
+    addedWebsitesCount: metrics?.addedWebsitesCount ?? 0,
+    removedWebsitesCount: metrics?.removedWebsitesCount ?? 0,
     riskLevelCounts:
       metrics?.riskLevelCounts ?? ({} as NonNullable<typeof metrics>['riskLevelCounts']),
     violationCounts: metrics?.violationCounts ?? [],

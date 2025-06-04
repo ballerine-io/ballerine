@@ -44,6 +44,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
     | 'deboardingReasonOptions'
     | 'generatePDF'
     | 'isGeneratingPDF'
+    | 'enableWebPresenceReportExport'
   >
 > = ({
   isDropdownOpen,
@@ -51,6 +52,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
   isDeboardModalOpen,
   setIsDeboardModalOpen,
   isDemoAccount,
+  enableWebPresenceReportExport,
   businessReport,
   turnOngoingMonitoringOn,
   form,
@@ -100,7 +102,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
           }}
         >
           <DropdownMenuItem
-            disabled={isDemoAccount}
+            disabled={isDemoAccount || !enableWebPresenceReportExport}
             className={'w-full p-0 data-[disabled]:!opacity-100'}
             onClick={async () => {
               await generatePDF();
@@ -108,7 +110,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
             }}
           >
             <Button
-              disabled={isDemoAccount}
+              disabled={isDemoAccount || !enableWebPresenceReportExport}
               variant={'ghost'}
               className="flex w-full items-center justify-start gap-x-2"
             >

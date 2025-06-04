@@ -1,9 +1,9 @@
 import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
-import ky, { HTTPError } from 'ky';
+import ky, { HTTPError, Options } from 'ky';
 import { isExceptionWillBeHandled } from './helpers';
 
-export const request = ky.create({
+export const instance = ky.create({
   prefixUrl:
     (globalThis as any).env?.VITE_API_URL ??
     (import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`),
@@ -16,18 +16,8 @@ export const request = ky.create({
   timeout: 30_000,
   hooks: {
     beforeRequest: [
-      async request => {
+      request => {
         request.headers.set('Authorization', `Bearer ${getAccessToken()}`);
-
-        const url = new URL(request.url);
-
-        const workflowId = new URLSearchParams(window.location.search).get('workflowId');
-
-        if (workflowId) {
-          url.searchParams.append('workflowId', workflowId);
-
-          return new Request(url.toString(), request);
-        }
       },
     ],
     beforeError: [
@@ -79,3 +69,36 @@ export const request = ky.create({
     ],
   },
 });
+
+const addWorkflowId = (options?: Options) => {
+  const workflowId = new URLSearchParams(window.location.search).get('workflowId');
+
+  if (!workflowId) {
+    return options;
+  }
+
+  if (!options?.searchParams) {
+    return {
+      ...options,
+      searchParams: { workflowId },
+    };
+  }
+
+  const searchParams =
+    typeof options.searchParams === 'string' || options.searchParams instanceof URLSearchParams
+      ? Object.fromEntries(new URLSearchParams(options.searchParams))
+      : options.searchParams;
+
+  return {
+    ...options,
+    searchParams: { ...searchParams, workflowId },
+  };
+};
+
+export const request = {
+  get: (url: string, options?: Options) => instance.get(url, addWorkflowId(options)),
+  post: (url: string, options?: Options) => instance.post(url, addWorkflowId(options)),
+  put: (url: string, options?: Options) => instance.put(url, addWorkflowId(options)),
+  patch: (url: string, options?: Options) => instance.patch(url, addWorkflowId(options)),
+  delete: (url: string, options?: Options) => instance.delete(url, addWorkflowId(options)),
+};

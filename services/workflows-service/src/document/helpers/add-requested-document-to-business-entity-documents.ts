@@ -4,6 +4,7 @@ import { Document, UiDefinition } from '@prisma/client';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { findDocumentDefinitionByTypeAndCategory } from './find-document-definition-by-type-and-category';
+import { BadRequestException } from '@nestjs/common';
 
 export const addRequestedDocumentToBusinessEntityDocuments = (
   context: AnyRecord,
@@ -33,7 +34,9 @@ export const addRequestedDocumentToBusinessEntityDocuments = (
   );
 
   if (!documentDefintion) {
-    return;
+    throw new BadRequestException(
+      `Document created but definition with type ${createdDocument.type} and category ${createdDocument.category} not found`,
+    );
   }
 
   const documentTemplate: IDocumentTemplate = {

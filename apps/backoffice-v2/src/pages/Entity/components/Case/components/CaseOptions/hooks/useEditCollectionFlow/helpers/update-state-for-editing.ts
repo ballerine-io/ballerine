@@ -1,23 +1,26 @@
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import {
-  CollectionFlowStatusesEnum,
-  CollectionFlowStepStatesEnum,
-  getCollectionFlowState,
-} from '@ballerine/common';
+import { TCollectionFlowState } from '@/domains/collection-flow/schemas';
+import { CollectionFlowStatusesEnum, CollectionFlowStepStatesEnum } from '@ballerine/common';
 
-export const updateStateForEditing = (workflowContext: TWorkflowById['context']) => {
-  workflowContext = structuredClone(workflowContext);
-  const collectionFlowState = getCollectionFlowState(workflowContext);
+export const updateStateForEditing = ({
+  collectionFlowState,
+  steps,
+}: {
+  collectionFlowState: TCollectionFlowState;
+  steps: 'all' | string[];
+}) => {
+  const collectionFlowStateClone = structuredClone(collectionFlowState);
 
-  if (!collectionFlowState) {
-    throw new Error('Collection flow state not found');
-  }
+  collectionFlowStateClone.status = CollectionFlowStatusesEnum.edit;
+  collectionFlowStateClone.steps = collectionFlowState?.steps?.map(step => {
+    if (steps === 'all' || steps.includes(step.stepName)) {
+      return {
+        ...step,
+        state: CollectionFlowStepStatesEnum.edit,
+      };
+    }
 
-  collectionFlowState.status = CollectionFlowStatusesEnum.edit;
-  collectionFlowState.steps = collectionFlowState.steps?.map(step => ({
-    ...step,
-    state: CollectionFlowStepStatesEnum.edit,
-  }));
+    return step;
+  });
 
-  return workflowContext;
+  return collectionFlowStateClone;
 };

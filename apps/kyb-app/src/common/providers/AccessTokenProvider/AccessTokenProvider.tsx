@@ -1,11 +1,11 @@
+import { useWorkflowId } from '@/common/hooks/useWorkflowId';
 import { getAccessToken } from '@/helpers/get-access-token.helper';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import { useWorkflowIdQuery } from '@/hooks/useWorkflowIdQuery';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AccessTokenIsMissingError } from '../../errors/access-token-is-missing';
 import { AccessTokenContext } from './context';
-import { useWorkflowId } from '@/common/hooks/useWorkflowId';
-import { useWorkflowIdQuery } from '@/hooks/useWorkflowIdQuery';
-import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 interface IAccessTokenProviderProps {
   children: React.ReactNode;
@@ -43,7 +43,10 @@ export const AccessTokenProvider = ({ children }: IAccessTokenProviderProps) => 
       const previousToken = searchParams.get('token');
 
       if (previousToken !== accessToken) {
-        setSearchParams({ ...searchParams, token: accessToken });
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('token', accessToken);
+
+        setSearchParams(newParams);
       }
     }
   }, [

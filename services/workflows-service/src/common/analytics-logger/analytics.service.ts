@@ -22,6 +22,7 @@ type AnalyticsEvents = {
   [EventNamesMap.CUSTOMER_CREATED]: { isDemoAccount: boolean; maxBusinessReports: number };
   [EventNamesMap.USER_CREATED]: { email: string; fullName: string };
   [EventNamesMap.BUSINESS_REPORT_REQUESTED]: {
+    projectId: string;
     reportType: string;
     businessId: string;
     customerId: string;

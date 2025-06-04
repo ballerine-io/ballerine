@@ -9,8 +9,8 @@ import {
   TDocumentStatus,
 } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { CollectionFlowConfig, CollectionFlowContext } from './flow-context.types';
 import { z } from 'zod';
+import { CollectionFlowConfig, CollectionFlowContext } from './flow-context.types';
 
 export * from './ui-schema.types';
 
@@ -166,7 +166,7 @@ export const UpdateEndUserPluginDataSchema = z.object({
 
 export type TUpdateEndUserPluginData = z.infer<typeof UpdateEndUserPluginDataSchema>;
 
-export const FetchCompanyInformationPluginDataSchena = z
+export const FetchCompanyInformationPluginDataSchema = z
   .object({
     registrationNumber: z.string().min(1),
     countryCode: z.string().min(2),
@@ -179,7 +179,7 @@ export const FetchCompanyInformationPluginDataSchena = z
   }));
 
 export type TFetchCompanyInformationPluginData = z.infer<
-  typeof FetchCompanyInformationPluginDataSchena
+  typeof FetchCompanyInformationPluginDataSchema
 >;
 
 export const FetchCompanyInformationResultSchema = z

@@ -33,9 +33,19 @@ export class CollectionFlowEntityService {
         );
       }
 
+      const { additionalInfo, dateOfBirth, gender, ...entityRest } = entity;
+      const {
+        gender: genderAdditionalInfo,
+        dateOfBirth: additionalDateOfBirth,
+        ...additionalInfoRest
+      } = additionalInfo ?? {};
+
       const endUser = await this.endUserService.create({
         data: {
-          ...entity,
+          ...entityRest,
+          additionalInfo: additionalInfoRest,
+          gender: gender?.toLowerCase() ?? genderAdditionalInfo?.toLowerCase(),
+          dateOfBirth: dateOfBirth ?? additionalDateOfBirth,
           projectId,
         },
       });
@@ -55,12 +65,22 @@ export class CollectionFlowEntityService {
 
   async updateEntity(entityId: string, entity: EntityCreateDto) {
     return await this.prismaService.$transaction(async transaction => {
+      const { additionalInfo, dateOfBirth, gender, ...entityRest } = entity;
+      const {
+        gender: genderAdditionalInfo,
+        dateOfBirth: additionalDateOfBirth,
+        ...additionalInfoRest
+      } = additionalInfo ?? {};
+
       const endUser = await transaction.endUser.update({
         where: {
           id: entityId,
         },
         data: {
-          ...entity,
+          ...entityRest,
+          additionalInfo: additionalInfoRest,
+          gender: gender?.toLowerCase() ?? genderAdditionalInfo?.toLowerCase(),
+          dateOfBirth: dateOfBirth ?? additionalDateOfBirth,
         },
       });
 

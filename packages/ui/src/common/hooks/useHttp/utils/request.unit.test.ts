@@ -45,6 +45,7 @@ describe('request', () => {
       headers: { Authorization: 'Bearer 12345' },
       data: undefined,
       timeout: 5000,
+      withCredentials: true,
     });
     expect(result).toEqual({ result: 'success' });
   });
@@ -70,6 +71,7 @@ describe('request', () => {
       headers: {},
       data: { foo: 'bar' },
       timeout: 5000,
+      withCredentials: true,
     });
     expect(result).toEqual({ result: 'success' });
   });

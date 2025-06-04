@@ -71,6 +71,8 @@ export const ConfigSchema = z
     isDemoAccount: z.boolean().optional(),
     withQualityControl: z.boolean().optional(),
     disableBusinessSyncToUnifiedApi: z.boolean().optional(),
+    disableVideoGuide: z.boolean().optional(),
+    disableAiSummary: z.boolean().optional(),
     uiOptions: z
       .object({
         redirectUrls: z
@@ -83,6 +85,7 @@ export const ConfigSchema = z
       .optional(),
     editableContext: z
       .object({
+        entityInfo: z.boolean().optional(),
         kyc: z
           .object({
             entity: z.boolean().optional(),
@@ -104,16 +107,3 @@ export const ConfigSchema = z
   .optional();
 
 export type WorkflowConfig = z.infer<typeof ConfigSchema>;
-
-export const CustomerConfigSchema = z.object({
-  ongoingWorkflowDefinitionId: z.string().optional(),
-  hideCreateMerchantMonitoringButton: z.boolean().optional(),
-  isExample: z.boolean().optional(),
-  isMerchantMonitoringEnabled: z.boolean().optional(),
-  isOngoingMonitoringEnabled: z.boolean().optional(),
-  isCasesOnboardingEnabled: z.boolean().optional(),
-  isDemo: z.boolean().optional(),
-  maxBusinessReports: z.number().optional(),
-});
-
-export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;

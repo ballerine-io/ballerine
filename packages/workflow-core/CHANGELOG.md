@@ -1,10 +1,143 @@
 # @ballerine/workflow-core
 
-## 0.6.115
+## 0.6.133
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.110
+
+## 0.6.132
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.109
+
+## 0.6.131
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.108
+
+## 0.6.130
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.107
+
+## 0.6.129
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.106
+
+## 0.6.128
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.105
+
+## 0.6.127
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.104
+
+## 0.6.126
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.103
+
+## 0.6.125
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.102
+
+## 0.6.124
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.101
+
+## 0.6.123
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.100
+
+## 0.6.122
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.99
+
+## 0.6.121
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.98
+
+## 0.6.120
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.97
+
+## 0.6.119
+
+### Patch Changes
+
+- Updated dependencies [fed1494bf4a7dde81915d4593765e7d89104c164]
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.9.96
+
+## 0.6.118
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.95
+
+## 0.6.117
 
 ### Patch Changes
 
 - version bump
+- Updated dependencies
+  - @ballerine/common@0.9.94
+
+## 0.6.116
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.93
+
+## 0.6.115
+
+### Patch Changes
+
 - Updated dependencies
   - @ballerine/common@0.9.92
 
