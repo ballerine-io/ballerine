@@ -15,7 +15,7 @@ import {
 } from 'recharts';
 import { capitalize } from 'string-ts';
 
-import { ctw, NO_VIOLATION_DETECTED_RISK_INDICATOR_ID } from '@/common';
+import { ctw } from '@/common';
 import {
   Accordion,
   AccordionContent,
@@ -167,13 +167,12 @@ export const WebsiteCredibility: FunctionComponent<{
   );
 
   const aggregatedRiskIndicators = useMemo(
-    () =>
-      [
-        ...websiteReputationRiskIndicators,
-        ...pricingRiskIndicators,
-        ...websiteStructureRiskIndicators,
-        ...trafficRiskIndicators,
-      ].filter(indicator => indicator.id !== NO_VIOLATION_DETECTED_RISK_INDICATOR_ID),
+    () => [
+      ...websiteReputationRiskIndicators,
+      ...pricingRiskIndicators,
+      ...websiteStructureRiskIndicators,
+      ...trafficRiskIndicators,
+    ],
     [
       websiteReputationRiskIndicators,
       pricingRiskIndicators,
