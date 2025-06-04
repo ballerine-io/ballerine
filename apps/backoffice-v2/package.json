@@ -115,7 +115,7 @@
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.1.1",
-    "jspdf": "^2.5.2",
+    "jspdf": "^3.0.0",
     "jspdf-autotable": "^3.8.4",
     "libphonenumber-js": "^1.10.49",
     "lodash-es": "^4.17.21",
