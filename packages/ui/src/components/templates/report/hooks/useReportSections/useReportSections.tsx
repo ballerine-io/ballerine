@@ -1,4 +1,4 @@
-import { ReportSchema } from '@ballerine/common';
+import { MERCHANT_REPORT_TYPES_MAP, ReportSchema } from '@ballerine/common';
 import {
   BuildingIcon,
   FactoryIcon,
@@ -22,6 +22,7 @@ import {
   WebsitesCompany,
 } from '@/components';
 import { CreditCard } from 'lucide-react';
+import dayjs from 'dayjs';
 
 type BusinessReportSection = {
   id: string;
@@ -50,6 +51,7 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
     mcc,
     mccDescription,
     trafficSources,
+    visitorsCountries,
     monthlyVisits,
     pagesPerVisit,
     timeOnSite,
@@ -144,12 +146,23 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
           Component: (
             <WebsiteCredibility
               trafficData={{
-                trafficSources: trafficSources,
-                monthlyVisits: monthlyVisits,
-                pagesPerVisit: pagesPerVisit,
-                timeOnSite: timeOnSite,
-                bounceRate: bounceRate,
+                visitorsCountries,
+                trafficSources,
+                monthlyVisits,
+                pagesPerVisit,
+                timeOnSite,
+                bounceRate,
               }}
+              visitorsCountriesDateRange={
+                dayjs()
+                  .subtract(
+                    report.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1 ? 6 : 1,
+                    'month',
+                  )
+                  .format('MMM YYYY') +
+                ' - ' +
+                dayjs().format('MMM YYYY')
+              }
               websiteReputationRiskIndicators={websiteReputationRiskIndicators ?? []}
               pricingRiskIndicators={pricingRiskIndicators ?? []}
               websiteStructureRiskIndicators={websiteStructureRiskIndicators ?? []}

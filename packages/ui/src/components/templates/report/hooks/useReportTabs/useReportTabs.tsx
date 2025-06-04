@@ -12,8 +12,9 @@ import {
   WebsitesCompany,
 } from '@/components';
 import { z } from 'zod';
-import { ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
+import { MERCHANT_REPORT_TYPES_MAP, ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
 import { getUniqueRiskIndicators } from '@/common';
+import dayjs from 'dayjs';
 
 type UseReportTabsProps = {
   report: z.infer<typeof ReportSchema>;
@@ -124,12 +125,23 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
       content: (
         <WebsiteCredibility
           trafficData={{
+            visitorsCountries: report.data?.visitorsCountries,
             trafficSources: report.data?.trafficSources,
             monthlyVisits: report.data?.monthlyVisits,
             pagesPerVisit: report.data?.pagesPerVisit,
             timeOnSite: report.data?.timeOnSite,
             bounceRate: report.data?.bounceRate,
           }}
+          visitorsCountriesDateRange={
+            dayjs()
+              .subtract(
+                report.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1 ? 6 : 1,
+                'month',
+              )
+              .format('MMM YYYY') +
+            ' - ' +
+            dayjs().format('MMM YYYY')
+          }
           websiteReputationRiskIndicators={report.data?.websiteReputationRiskIndicators ?? []}
           pricingRiskIndicators={report.data?.pricingRiskIndicators ?? []}
           websiteStructureRiskIndicators={report.data?.websiteStructureRiskIndicators ?? []}
