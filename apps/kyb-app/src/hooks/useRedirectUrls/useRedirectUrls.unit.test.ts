@@ -36,13 +36,13 @@ describe('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: null,
       isLoading: false,
       error: null,
-    });
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
   });
 
   it('should return null when no redirectUrls are available', () => {
@@ -81,7 +81,7 @@ describe('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: {
@@ -126,7 +126,7 @@ describe('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     vi.mocked(useUISchemasQuery).mockReturnValue({
       data: {
@@ -143,7 +143,7 @@ describe('useRedirectUrls', () => {
       } as unknown as UISchema,
       isLoading: false,
       error: null,
-    });
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());
@@ -168,7 +168,7 @@ describe('useRedirectUrls', () => {
       } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
       payload: {} as any,
       isPluginLoading: false,
-    });
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());

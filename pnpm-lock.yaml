@@ -73,22 +73,22 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.46
+        specifier: 0.2.47
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.110
         version: link:../../packages/common
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.119
+        specifier: ^1.2.122
         version: link:../../packages/react-pdf-toolkit
       '@ballerine/ui':
-        specifier: 0.7.154
+        specifier: 0.7.159
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -156,6 +156,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.2.4(@types/react-dom@18.3.6(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@react-google-maps/api':
+        specifier: ^2.20.6
+        version: 2.20.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-pdf/renderer':
         specifier: ^3.1.14
         version: 3.4.5(react@18.3.1)
@@ -353,10 +356,10 @@ importers:
         version: 3.23.8
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.43
+        specifier: ^2.0.44
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -518,16 +521,16 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.46
+        specifier: 0.2.47
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.110
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.7.154
+        specifier: 0.7.159
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -660,10 +663,10 @@ importers:
         version: 3.23.8
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.43
+        specifier: ^2.0.44
         version: link:../../packages/eslint-config-react
       '@jest/globals':
         specifier: ^29.7.0
@@ -768,10 +771,10 @@ importers:
   apps/workflows-dashboard:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.109
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: ^0.7.154
+        specifier: ^0.7.158
         version: link:../../packages/ui
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -913,10 +916,10 @@ importers:
         version: 3.23.8
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.43
+        specifier: ^2.0.44
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1006,10 +1009,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.110
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1103,7 +1106,7 @@ importers:
   examples/report-generation-example:
     dependencies:
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.119
+        specifier: ^1.2.120
         version: link:../../packages/react-pdf-toolkit
       react:
         specifier: ^18.2.0
@@ -1146,7 +1149,7 @@ importers:
   packages/blocks:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.109
         version: link:../common
     devDependencies:
       '@babel/core':
@@ -1162,10 +1165,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../eslint-config
       '@rollup/plugin-babel':
         specifier: 5.3.1
@@ -1355,10 +1358,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1507,7 +1510,7 @@ importers:
   packages/eslint-config-react:
     dependencies:
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../eslint-config
       eslint-plugin-react:
         specifier: ^7.33.2
@@ -1519,10 +1522,10 @@ importers:
   packages/react-pdf-toolkit:
     dependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.7.154
+        specifier: 0.7.159
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1641,10 +1644,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1746,7 +1749,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.110
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -1906,10 +1909,10 @@ importers:
         version: 3.23.8
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.43
+        specifier: ^2.0.44
         version: link:../eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2041,7 +2044,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.110
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -2087,10 +2090,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2231,7 +2234,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.110
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2358,10 +2361,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.110
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2377,10 +2380,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2500,7 +2503,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2519,10 +2522,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2668,7 +2671,7 @@ importers:
         version: 9.3.0(@swc/core@1.11.22(@swc/helpers@0.5.17))
       '@nestjs/schematics':
         specifier: ^9.0.0
-        version: 9.2.0(chokidar@3.5.3)(typescript@4.9.5)
+        version: 9.2.0(chokidar@3.6.0)(typescript@4.9.5)
       '@nestjs/testing':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
@@ -2745,13 +2748,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.105
+        specifier: 0.9.110
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.128
+        specifier: 0.6.133
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2935,10 +2938,10 @@ importers:
         version: 3.23.8
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -3103,7 +3106,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)(typescript@5.8.3))(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3)))(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))
       '@ballerine/common':
-        specifier: ^0.9.105
+        specifier: ^0.9.110
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -3116,10 +3119,10 @@ importers:
         version: 0.14.7
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.43
+        specifier: ^1.1.44
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
@@ -5693,6 +5696,12 @@ packages:
   '@formkit/auto-animate@0.8.2':
     resolution: {integrity: sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ==}
 
+  '@googlemaps/js-api-loader@1.16.8':
+    resolution: {integrity: sha512-CROqqwfKotdO6EBjZO/gQGVTbeDps5V7Mt9+8+5Q+jTg5CRMi3Ii/L9PmV3USROrt2uWxtGzJHORmByxyo9pSQ==}
+
+  '@googlemaps/markerclusterer@2.5.3':
+    resolution: {integrity: sha512-x7lX0R5yYOoiNectr10wLgCBasNcXFHiADIBdmn7jQllF2B5ENQw5XtZK+hIw4xnV0Df0xhN4LN98XqA5jaiOw==}
+
   '@hapi/hoek@9.3.0':
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
 
@@ -7362,6 +7371,18 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
+  '@react-google-maps/api@2.20.6':
+    resolution: {integrity: sha512-frxkSHWbd36ayyxrEVopSCDSgJUT1tVKXvQld2IyzU3UnDuqqNA3AZE4/fCdqQb2/zBQx3nrWnZB1wBXDcrjcw==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19
+      react-dom: ^16.8 || ^17 || ^18 || ^19
+
+  '@react-google-maps/infobox@2.20.0':
+    resolution: {integrity: sha512-03PJHjohhaVLkX6+NHhlr8CIlvUxWaXhryqDjyaZ8iIqqix/nV8GFdz9O3m5OsjtxtNho09F/15j14yV0nuyLQ==}
+
+  '@react-google-maps/marker-clusterer@2.20.0':
+    resolution: {integrity: sha512-tieX9Va5w1yP88vMgfH1pHTacDQ9TgDTjox3tLlisKDXRQWdjw+QeVVghhf5XqqIxXHgPdcGwBvKY6UP+SIvLw==}
+
   '@react-pdf/fns@2.2.1':
     resolution: {integrity: sha512-s78aDg0vDYaijU5lLOCsUD+qinQbfOvcNeaoX9AiE7+kZzzCo6B/nX+l48cmt9OosJmvZvE9DWR9cLhrhOi2pA==}
 
@@ -9025,6 +9046,9 @@ packages:
 
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
+
+  '@types/google.maps@3.58.1':
+    resolution: {integrity: sha512-X9QTSvGJ0nCfMzYOnaVs/k6/4L+7F5uCS+4iUmkLEls6J9S/Phv+m/i3mDeyc49ZBgwab3EFO1HEoBY7k98EGQ==}
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -14077,6 +14101,9 @@ packages:
   jws@3.2.2:
     resolution: {integrity: sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==}
 
+  kdbush@4.0.2:
+    resolution: {integrity: sha512-WbCVYJ27Sz8zi9Q7Q0xHC+05iwkm3Znipc2XTlrnJbsHMYktW4hPhXUE8Ys1engBrvffoSCqbil1JQAa7clRpA==}
+
   keygrip@1.1.0:
     resolution: {integrity: sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==}
     engines: {node: '>= 0.6'}
@@ -17169,6 +17196,9 @@ packages:
     resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
     engines: {node: '>=6.4.0 <13 || >=14'}
     deprecated: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+
+  supercluster@8.0.1:
+    resolution: {integrity: sha512-IiOea5kJ9iqzD2t7QJq/cREyLHTtSmUT6gQsweojg9WH2sYJqZK9SswTu6jrscO6D1G5v5vYZ9ru/eq85lXeZQ==}
 
   superjson@1.13.3:
     resolution: {integrity: sha512-mJiVjfd2vokfDxsQPOwJ/PtanO87LhpYY88ubI5dUB1Ab58Txbyje3+jpm+/83R/fevaq/107NNhtYBLuoTrFg==}
@@ -22680,6 +22710,13 @@ snapshots:
 
   '@formkit/auto-animate@0.8.2': {}
 
+  '@googlemaps/js-api-loader@1.16.8': {}
+
+  '@googlemaps/markerclusterer@2.5.3':
+    dependencies:
+      fast-deep-equal: 3.1.3
+      supercluster: 8.0.1
+
   '@hapi/hoek@9.3.0': {}
 
   '@hapi/topo@5.1.0':
@@ -24784,6 +24821,21 @@ snapshots:
       '@babel/runtime': 7.27.0
 
   '@radix-ui/rect@1.1.1': {}
+
+  '@react-google-maps/api@2.20.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@googlemaps/js-api-loader': 1.16.8
+      '@googlemaps/markerclusterer': 2.5.3
+      '@react-google-maps/infobox': 2.20.0
+      '@react-google-maps/marker-clusterer': 2.20.0
+      '@types/google.maps': 3.58.1
+      invariant: 2.2.4
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@react-google-maps/infobox@2.20.0': {}
+
+  '@react-google-maps/marker-clusterer@2.20.0': {}
 
   '@react-pdf/fns@2.2.1':
     dependencies:
@@ -27457,6 +27509,8 @@ snapshots:
     dependencies:
       '@types/minimatch': 5.1.2
       '@types/node': 18.17.19
+
+  '@types/google.maps@3.58.1': {}
 
   '@types/graceful-fs@4.1.9':
     dependencies:
@@ -31818,7 +31872,7 @@ snapshots:
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.1)(typescript@5.8.3)
       eslint: 8.57.1
       eslint-config-standard: 17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
       typescript: 5.8.3
@@ -31828,7 +31882,7 @@ snapshots:
   eslint-config-standard@17.1.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint-plugin-n@16.6.2(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@4.9.5))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-n: 16.6.2(eslint@8.57.1)
       eslint-plugin-promise: 6.6.0(eslint@8.57.1)
 
@@ -34886,6 +34940,8 @@ snapshots:
     dependencies:
       jwa: 1.4.1
       safe-buffer: 5.2.1
+
+  kdbush@4.0.2: {}
 
   keygrip@1.1.0:
     dependencies:
@@ -38682,6 +38738,10 @@ snapshots:
       semver: 7.7.1
     transitivePeerDependencies:
       - supports-color
+
+  supercluster@8.0.1:
+    dependencies:
+      kdbush: 4.0.2
 
   superjson@1.13.3:
     dependencies:

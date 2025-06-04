@@ -122,29 +122,6 @@ export const CompanyDocumentsPage = {
           validate: [],
         },
         {
-          id: 'company-documents-page-document-afs-example',
-          element: 'documentfield',
-          valueDestination: 'documents',
-          params: {
-            label: 'AFS Example Document',
-            documentType: 'document',
-            documentVariant: 'front',
-            template: {
-              id: 'document-afs-example',
-              category: 'collection_documents',
-              type: 'afs_example',
-              issuer: {
-                country: 'ZZ',
-              },
-              version: '1',
-              issuingVersion: 1,
-              properties: {},
-            },
-            uploadOn: 'submit',
-          },
-          validate: [],
-        },
-        {
           id: 'company-documents-page-document-bank-letter',
           element: 'documentfield',
           valueDestination: 'documents',
