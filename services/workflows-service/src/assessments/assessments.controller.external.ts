@@ -1,10 +1,10 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { AssessmentsService } from './assessments.service';
 
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import type { TProjectId } from '@/types';
-import { AssessmentsService } from './assessments.service';
 import { CreateAssessmentDto } from './dtos/create-assessment.dto';
 import {
   GetKybAndOwnershipAssessmentsDto,
@@ -18,6 +18,25 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 @common.Controller('external/assessments')
 export class AssessmentsControllerExternal {
   constructor(private readonly assessmentsService: AssessmentsService) {}
+
+  @common.Get('/latest-by-workflow-runtime-data-id/:workflowRuntimeDataId')
+  @swagger.ApiOperation({ summary: 'Get latest assessment by workflow runtime data id' })
+  @swagger.ApiResponse({
+    status: 200,
+    description: 'Successfully returned latest assessment by workflow runtime data id',
+  })
+  @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
+  async getLatestAssessmentsByWorkflowRuntimeDataId(
+    @common.Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
+    @common.Query('projectId') projectId: string,
+  ) {
+    const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
+      workflowRuntimeDataId,
+      projectId,
+    });
+
+    return assessments;
+  }
 
   @common.Get('/kyb_and_ownership')
   @swagger.ApiOperation({ summary: 'Get KYB & Ownership assessments' })

@@ -45,6 +45,8 @@ import { ClsModule } from 'nestjs-cls';
 import { mockClsService } from '@/test/helpers/cls-service-helper';
 import { CollectionFlowStateService } from './collection-flow-state.service';
 import { DocumentService } from '@/document/document.service';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 const deps: Provider[] = [
   {
@@ -167,6 +169,8 @@ describe('CollectionFlowService', () => {
         WorkflowRuntimeDataActorService,
         mockClsService(),
         CollectionFlowStateService,
+        AssessmentsService,
+        UnifiedApiClient,
       ],
       imports: [ClsModule],
     }).compile();

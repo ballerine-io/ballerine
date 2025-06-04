@@ -47,6 +47,8 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
 import { mockClsService } from '@/test/helpers/cls-service-helper';
 
 import { CollectionFlowStateService } from '../collection-flow-state.service';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -101,6 +103,8 @@ describe('CollectionFlowSignupController', () => {
         EndUserRepository,
         WorkflowLogService,
         WorkflowRuntimeDataActorService,
+        AssessmentsService,
+        UnifiedApiClient,
         mockClsService(),
         { provide: CollectionFlowStateService, useValue: noop },
       ],

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 
 export class WorkflowHookQuery {
@@ -18,4 +18,12 @@ export class WorkflowHookQuery {
   @IsOptional()
   @IsString()
   processName?: UnifiedCallbackNames;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
+  @IsBoolean()
+  saveContext?: boolean;
 }

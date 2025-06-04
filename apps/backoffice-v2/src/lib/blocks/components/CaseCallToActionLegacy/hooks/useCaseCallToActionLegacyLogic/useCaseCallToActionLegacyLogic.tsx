@@ -46,8 +46,11 @@ export const useCaseCallToActionLegacyLogic = ({
     workflow => workflow.id === childWorkflowId,
   );
   const childWorkflowDocuments = useMemo(() => {
-    return (childWorkflow?.context?.documents || []) as TDocument[];
-  }, [childWorkflow?.context?.documents]);
+    return [
+      ...(childWorkflow?.context?.documents ?? []),
+      ...(childWorkflow?.context?.kycDocuments ?? []),
+    ] as TDocument[];
+  }, [childWorkflow?.context?.documents, childWorkflow?.context?.kycDocuments]);
   const { documents } = useKycDocumentsAdapter({
     documents: childWorkflowDocuments,
   });

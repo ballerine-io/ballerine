@@ -37,6 +37,8 @@ import { FileRepository } from '@/storage/storage.repository';
 import { WebhookHttpService } from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 @Module({
   imports: [HttpModule],
@@ -81,6 +83,8 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
     SecretsManagerFactory,
     WorkflowEventEmitterService,
     WorkflowRuntimeDataActorService,
+    AssessmentsService,
+    UnifiedApiClient,
   ],
   exports: [WorkflowTokenRepository, WorkflowTokenService, WorkflowAuthGuard],
 })

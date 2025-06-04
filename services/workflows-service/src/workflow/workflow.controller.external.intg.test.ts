@@ -51,6 +51,8 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
 import { noop } from 'lodash';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 
 describe('/api/v1/external/workflows #api #integration', () => {
   let app: INestApplication;
@@ -108,6 +110,8 @@ describe('/api/v1/external/workflows #api #integration', () => {
       WorkflowRuntimeDataRepository,
       SalesforceIntegrationRepository,
       WorkflowLogService,
+      AssessmentsService,
+      UnifiedApiClient,
       {
         provide: CollectionFlowStateService,
         useValue: noop,

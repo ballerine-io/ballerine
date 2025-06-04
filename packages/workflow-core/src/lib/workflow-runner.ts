@@ -582,6 +582,9 @@ export class WorkflowRunner {
           [BUILT_IN_EVENT.UPDATE_CONTEXT]: {
             actions: updateContext,
           },
+          [BUILT_IN_EVENT.NO_OP]: {
+            actions: BUILT_IN_ACTION.NO_OP,
+          },
           [BUILT_IN_EVENT.DEEP_MERGE_CONTEXT]: {
             actions: deepMergeContext,
           },

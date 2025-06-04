@@ -64,6 +64,13 @@ export class EntityCreateDto {
   @IsOptional()
   @IsObject()
   additionalInfo?: Record<string, any>;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  companyName?: string;
 }
 
 export class CreateEntityInputDto {

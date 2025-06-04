@@ -39,6 +39,7 @@ export class IndividualsSanctionsV2Plugin extends ApiPlugin {
     >;
     endUserId: PluginPayloadProperty<string>;
     clientId: PluginPayloadProperty<string>;
+    saveContext: PluginPayloadProperty<boolean>;
   };
 
   private pluginName = 'Individuals Sanctions V2 Plugin';

@@ -88,6 +88,7 @@ export const BaseWorkflowByIdSchema = z.object({
       vendor: z.string().optional(),
     }).optional(),
     documents: z.array(z.record(zPropertyKey, z.any())).default([]),
+    kycDocuments: z.array(z.record(zPropertyKey, z.any())).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),

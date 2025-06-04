@@ -25,6 +25,8 @@ export const WorkflowDefinitionConfigSchema = z
     enableManualCreation: z.boolean().default(false),
     isDocumentsV2: z.boolean().default(false),
     isInitiateSanctionsScreeningEnabled: z.boolean().default(false),
+    isInitiateKycEnabled: z.boolean().default(false),
+    isKycEndUserEditEnabled: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
     isCaseOverviewEnabled: z.boolean().default(false),

@@ -1,11 +1,17 @@
 import { TProjectId } from '@/types';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GetKybAndOwnershipAssessmentsDto } from './dtos/get-kyb-and-ownership-assessments.dto';
+import { CustomerService } from '@/customer/customer.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
 
 @Injectable()
 export class AssessmentsService {
+  constructor(
+    protected readonly unifiedApiClient: UnifiedApiClient,
+    protected readonly customerService: CustomerService,
+  ) {}
+
   async getKybAndOwnershipAssessments(
     query: GetKybAndOwnershipAssessmentsDto,
     projectId: TProjectId,
@@ -80,5 +86,18 @@ export class AssessmentsService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+
+  async getLatestAssessmentsByWorkflowRuntimeDataId({
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    return await this.unifiedApiClient.getLatestAssessmentsByWorkflowRuntimeDataId({
+      workflowRuntimeDataId,
+      projectId,
+    });
   }
 }

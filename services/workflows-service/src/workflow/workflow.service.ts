@@ -119,6 +119,8 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { PartialDeep } from 'type-fest';
 import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
+import { formatIndividualVerification } from '@/common/utils/idv';
+import { AssessmentsService } from '@/assessments/assessments.service';
 
 type TEntityId = string;
 
@@ -135,6 +137,48 @@ const getAvatarUrl = (website: string | undefined | null) =>
   website
     ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
     : null;
+
+const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
+  const record: Record<string, T> = {};
+  const errors: { key: string; error: unknown }[] = [];
+  const promisesEntries = Object.entries(promises);
+  const results = await Promise.all(
+    promisesEntries.map(([key, promise]) =>
+      promise
+        .then(data => {
+          return { key, status: 'fulfilled' as const, data };
+        })
+        .catch((error: unknown) => {
+          return { key, status: 'rejected' as const, error };
+        }),
+    ),
+  );
+  const fulfilledResults = results.filter(
+    (res): res is { key: string; status: 'fulfilled'; data: T } => res.status === 'fulfilled',
+  );
+  const rejectedResults = results.filter(
+    (res): res is { key: string; status: 'rejected'; error: unknown } => res.status === 'rejected',
+  );
+
+  for (const rejectedResult of rejectedResults) {
+    errors.push({ key: rejectedResult.key, error: rejectedResult.error });
+  }
+
+  if (errors.length > 0) {
+    throw new AggregateError(
+      errors.map(({ key, error }) =>
+        Object.assign(new Error(`Promise for "${key}" failed: ${error}`), { key, original: error }),
+      ),
+      'One or more promises failed',
+    );
+  }
+
+  for (const fulfilledResult of fulfilledResults) {
+    record[fulfilledResult.key] = fulfilledResult.data;
+  }
+
+  return record;
+};
 
 @Injectable()
 export class WorkflowService {
@@ -163,6 +207,7 @@ export class WorkflowService {
     private readonly secretsManagerFactory: SecretsManagerFactory,
     private readonly storageService: StorageService,
     private readonly workflowLogService: WorkflowLogService,
+    private readonly assessmentsService: AssessmentsService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -250,13 +295,38 @@ export class WorkflowService {
   async getWorkflowByIdWithRelations(id: string, projectIds: TProjectIds) {
     const workflow = await this.workflowRuntimeDataRepository.findByIdWithRelations(id, projectIds);
 
-    return this.formatWorkflow(workflow);
+    return await this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(
+  private async getIndividualVerificationsChecksWithFallback({
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    try {
+      const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId(
+        {
+          workflowRuntimeDataId,
+          projectId,
+        },
+      );
+
+      return assessments?.flatMap(assessment => assessment.individualVerificationsChecks) ?? [];
+    } catch (error) {
+      if (!(error instanceof NotFoundException)) {
+        throw error;
+      }
+
+      return [];
+    }
+  }
+
+  private async formatWorkflow(
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
-  ): TWorkflowWithRelations {
+  ): Promise<TWorkflowWithRelations> {
     const getEntity = (workflow: TWorkflowWithRelations) => {
       if ('endUser' in workflow && !!workflow?.endUser) {
         return {
@@ -299,10 +369,60 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
+    let individualVerificationsChecks:
+      | Awaited<ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>>
+      | undefined;
+
+    if (workflow.workflowType === 'parent') {
+      const workflowIds = [
+        workflow.id,
+        ...(workflow.childWorkflowsRuntimeData?.map(childWorkflow => childWorkflow.id) ?? []),
+      ];
+      const workflowIdsToIndividualVerificationsChecks: Record<
+        string,
+        ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>
+      > = {};
+
+      for (const workflowId of workflowIds) {
+        workflowIdsToIndividualVerificationsChecks[workflowId] =
+          this.getIndividualVerificationsChecksWithFallback({
+            workflowRuntimeDataId: workflowId,
+            projectId: workflow.projectId,
+          });
+      }
+
+      const individualVerificationsChecksPromises = await handlePromiseAll(
+        workflowIdsToIndividualVerificationsChecks,
+      );
+
+      individualVerificationsChecks = Object.values(individualVerificationsChecksPromises).flat();
+    }
 
     return {
       ...workflow,
-      endUsers: workflow.endUsers ?? [],
+      endUsers:
+        workflow.endUsers?.map(endUser => {
+          const endUserIndividualVerificationsChecks = individualVerificationsChecks?.find(
+            individualVerificationsCheck => individualVerificationsCheck.endUserId === endUser.id,
+          );
+
+          return {
+            ...endUser,
+            individualVerificationsChecks: endUserIndividualVerificationsChecks
+              ? {
+                  status: endUserIndividualVerificationsChecks.status,
+                  data: {
+                    kyc_session_1: {
+                      vendor: endUserIndividualVerificationsChecks.input.vendor,
+                      result: endUserIndividualVerificationsChecks.output
+                        ? formatIndividualVerification(endUserIndividualVerificationsChecks.output)
+                        : null,
+                    },
+                  },
+                }
+              : undefined,
+          };
+        }) ?? [],
       context: {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
@@ -344,8 +464,10 @@ export class WorkflowService {
       // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
-      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow),
+      childWorkflows: await Promise.all(
+        workflow.childWorkflowsRuntimeData?.map(
+          async childWorkflow => await this.formatWorkflow(childWorkflow),
+        ) ?? [],
       ),
     };
   }
