@@ -297,15 +297,19 @@ export const useTabsToBlocksMap = ({
           )?.enum as string[],
         isReuploadNeededDisabled: isLoadingRevisionCase,
         isApproveDisabled: isLoadingApproveCase,
-        isInitiateKycDisabled: [!childWorkflow?.id, !caseState.actionButtonsEnabled].some(Boolean),
+        isInitiateKycDisabled: [
+          !childWorkflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
         isInitiateSanctionsScreeningDisabled: [
           !initiateSanctionsScreeningEvent,
-          !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
           !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
         ].some(Boolean),
         isEditDisabled: [
           !caseState.actionButtonsEnabled,
-          !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
         ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
@@ -387,11 +391,15 @@ export const useTabsToBlocksMap = ({
         reasons: [],
         isReuploadNeededDisabled: true,
         isApproveDisabled: true,
-        isInitiateKycDisabled: [!workflow?.id, !caseState.actionButtonsEnabled].some(Boolean),
+        isInitiateKycDisabled: [
+          !workflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
         isInitiateSanctionsScreeningDisabled: true,
         isEditDisabled: [
           !caseState.actionButtonsEnabled,
-          !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+          !workflow?.workflowDefinition?.config?.isEditEnabled,
         ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
