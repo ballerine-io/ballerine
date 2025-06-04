@@ -23,5 +23,3 @@ export const severityToClassName = {
 export const ALLOWED_DOCUMENT_FILE_EXTENSIONS = Object.values(SUPPORTED_FILE_EXT_ENUM)
   .map(ext => `.${ext}`)
   .join(',');
-
-export const NO_VIOLATION_DETECTED_RISK_INDICATOR_ID = 'no-violation-detected';

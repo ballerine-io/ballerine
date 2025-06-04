@@ -510,16 +510,16 @@ export const WebsiteCredibility: FunctionComponent<{
                   >
                     <div className="flex-1 flex items-center w-full ml-10">
                       <div className="flex items-center space-x-3 w-3/5">
-                        {indicator.status === 'detected' ? (
-                          <ShieldCheck className="w-5 h-5 text-green-500" />
-                        ) : indicator.status === 'missing' ? (
+                        {!indicator.status || indicator.status === 'missing' ? (
                           <ShieldAlert className="w-5 h-5 text-red-500" />
+                        ) : indicator.status === 'detected' ? (
+                          <ShieldCheck className="w-5 h-5 text-green-500" />
                         ) : (
                           <InfoIcon className="w-5 h-5 text-gray-500" />
                         )}
 
                         <h3 className="text-base font-medium text-gray-900">
-                          {indicator.pageContext}
+                          {indicator.pageContext || indicator.name}
                         </h3>
                       </div>
 

@@ -1,6 +1,5 @@
 import { RiskIndicatorSchema } from '@ballerine/common';
 import { z } from 'zod';
-import { NO_VIOLATION_DETECTED_RISK_INDICATOR_ID } from '../constants';
 
 type RiskIndicator = z.infer<typeof RiskIndicatorSchema>;
 
@@ -14,7 +13,6 @@ export const getUniqueRiskIndicators = (riskIndicators: RiskIndicator[]): RiskIn
   for (const indicator of riskIndicators) {
     if (
       indicator.id in riskIndicatorsMap ||
-      indicator.id === NO_VIOLATION_DETECTED_RISK_INDICATOR_ID ||
       // Website Credibility indicators contain all the risk indicators by default and are
       // distinguished by their status.
       indicator.status === 'detected'
