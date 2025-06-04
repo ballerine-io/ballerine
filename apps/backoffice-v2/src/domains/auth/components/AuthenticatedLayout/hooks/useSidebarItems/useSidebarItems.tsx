@@ -153,7 +153,7 @@ export const useSidebarItems = () => {
           ],
           key: 'nav-item-individuals',
         },
-        ...(customer?.config?.createKybAndOwnershipAssessment
+        ...(customer?.config?.isKybAndOwnershipAssessmentEnabled
           ? [
               {
                 text: 'KYB & Ownership',
