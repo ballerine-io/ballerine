@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.111
+
+### Patch Changes
+
+- Redesigned website structure section
+
 ## 0.9.110
 
 ### Patch Changes

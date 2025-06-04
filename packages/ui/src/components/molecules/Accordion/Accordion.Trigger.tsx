@@ -3,9 +3,13 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { ctw } from '@/common';
 import { ChevronDownIcon } from 'lucide-react';
 
+const Chevron = () => (
+  <ChevronDownIcon className="text-muted-foreground h-4 w-4 shrink-0 transition-transform duration-200" />
+);
+
 export const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> & { chevronLeft?: boolean }
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
@@ -16,8 +20,9 @@ export const AccordionTrigger = React.forwardRef<
       )}
       {...props}
     >
+      {props.chevronLeft && <Chevron />}
       {children}
-      <ChevronDownIcon className="text-muted-foreground h-4 w-4 shrink-0 transition-transform duration-200" />
+      {!props.chevronLeft && <Chevron />}
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));

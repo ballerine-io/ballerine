@@ -11,7 +11,12 @@ export const getUniqueRiskIndicators = (riskIndicators: RiskIndicator[]): RiskIn
   const riskIndicatorsMap: Record<string, (typeof riskIndicators)[number]> = {};
 
   for (const indicator of riskIndicators) {
-    if (indicator.id in riskIndicatorsMap) {
+    if (
+      indicator.id in riskIndicatorsMap ||
+      // Website Credibility indicators contain all the risk indicators by default and are
+      // distinguished by their status.
+      indicator.status === 'detected'
+    ) {
       continue;
     }
 
