@@ -325,6 +325,8 @@ export const useTabsToBlocksMap = ({
       mutateApproveCase,
       mutateRevisionCase,
       workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
     ],
   );
   const directorToIndividualAdapter = useCallback(
@@ -399,11 +401,16 @@ export const useTabsToBlocksMap = ({
         isInitiateSanctionsScreeningDisabled: true,
         isEditDisabled: [
           !caseState.actionButtonsEnabled,
-          !workflow?.workflowDefinition?.config?.isEditEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
         ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
-    [],
+    [
+      workflow?.id,
+      caseState.actionButtonsEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+    ],
   );
   const childWorkflows = useMemo(
     () =>
