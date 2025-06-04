@@ -65,6 +65,7 @@ import { StateTag, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
+import { useIndividualsRegistryProvidedBlock } from '@/lib/blocks/hooks/useIndividualsRegistryProvidedBlock/useIndividualsRegistryProvidedBlock';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -367,27 +368,78 @@ export const useDefaultBlocksLogic = () => {
       ),
     [workflow?.childWorkflows],
   );
-  const deDupedDirectors = useMemo(
-    () =>
-      workflow?.context?.entity?.data?.additionalInfo?.directors?.filter(
+  const deDupedEndUsers = useMemo(
+    () => [
+      ...(workflow?.context?.entity?.data?.additionalInfo?.directors?.filter(
         director =>
           !childWorkflows?.some(
             childWorkflow =>
               childWorkflow?.context?.entity?.data?.ballerineEntityId ===
               director.ballerineEntityId,
           ),
-      ),
+      ) ?? []),
+      ...(workflow?.context?.entity?.data?.additionalInfo?.ubos?.filter(
+        ubo =>
+          !childWorkflows?.some(
+            childWorkflow =>
+              childWorkflow?.context?.entity?.data?.ballerineEntityId === ubo.ballerineEntityId,
+          ),
+      ) ?? []),
+    ],
     [workflow?.context?.entity?.data?.additionalInfo?.directors, childWorkflows],
   );
   const individualsUserProvided = useMemo(() => {
     return [
-      ...(childWorkflows?.map(childWorkflow =>
-        entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
-      ) ?? []),
-      ...(deDupedDirectors?.map(entityDataToIndividualAdapter) ?? []),
+      ...(childWorkflows
+        ?.filter(childWorkflow => {
+          const endUser = workflow?.endUsers?.find(
+            endUser => endUser?.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+          );
+
+          return ['user', 'analyst', undefined, null].includes(endUser?.createdFrom);
+        })
+        ?.map(childWorkflow =>
+          entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
+        ) ?? []),
+      ...(deDupedEndUsers
+        ?.filter(deDupedEndUser => {
+          const endUser = workflow?.endUsers?.find(
+            endUser => endUser?.id === deDupedEndUser?.ballerineEntityId,
+          );
+
+          return ['user', 'analyst', undefined, null].includes(endUser?.createdFrom);
+        })
+        ?.map(entityDataToIndividualAdapter) ?? []),
     ];
   }, [workflow?.childWorkflows, workflow?.context?.entity?.data?.additionalInfo?.directors]);
+  const individualsRegistryProvided = useMemo(() => {
+    return [
+      ...(childWorkflows
+        ?.filter(childWorkflow => {
+          const endUser = workflow?.endUsers?.find(
+            endUser => endUser?.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+          );
+
+          return ['registry'].includes(endUser?.createdFrom ?? '');
+        })
+        ?.map(childWorkflow =>
+          entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
+        ) ?? []),
+      ...(deDupedEndUsers
+        ?.filter(deDupedEndUser => {
+          const endUser = workflow?.endUsers?.find(
+            endUser => endUser?.id === deDupedEndUser?.ballerineEntityId,
+          );
+
+          return ['registry'].includes(endUser?.createdFrom ?? '');
+        })
+        ?.map(entityDataToIndividualAdapter) ?? []),
+    ];
+  }, [workflow?.context?.entity?.data?.additionalInfo?.directors]);
   const individualsUserProvidedBlock = useIndividualsUserProvidedBlock(individualsUserProvided);
+  const individualsRegistryProvidedBlock = useIndividualsRegistryProvidedBlock(
+    individualsRegistryProvided,
+  );
 
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock({
     nodes: workflow?.context?.pluginsOutput?.ubo?.data?.nodes ?? [],
@@ -647,6 +699,7 @@ export const useDefaultBlocksLogic = () => {
       kybRegistryInfoBlock,
       companySanctionsBlock,
       individualsUserProvidedBlock,
+      individualsRegistryProvidedBlock,
       ubosRegistryProvidedBlock,
       storeInfoBlock,
       websiteBasicRequirementBlock,
@@ -693,6 +746,7 @@ export const useDefaultBlocksLogic = () => {
     registryInfoBlock,
     storeInfoBlock,
     individualsUserProvidedBlock,
+    individualsRegistryProvidedBlock,
     ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,

@@ -100,6 +100,7 @@ export const useTabsToBlocksMap = ({
     kybRegistryInfoBlock,
     companySanctionsBlock,
     individualsUserProvidedBlock,
+    individualsRegistryProvidedBlock,
     ubosRegistryProvidedBlock,
     storeInfoBlock,
     websiteBasicRequirementBlock,
@@ -490,6 +491,7 @@ export const useTabsToBlocksMap = ({
     [Tab.DOCUMENTS]: [...businessDocumentBlocks],
     [Tab.INDIVIDUALS]: [
       ...individualsUserProvidedBlock,
+      ...individualsRegistryProvidedBlock,
       ...amlWithContainerBlock,
       ...mainRepresentativeBlock,
       ...uboDocumentBlocks,

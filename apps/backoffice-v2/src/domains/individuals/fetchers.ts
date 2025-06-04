@@ -38,6 +38,7 @@ export const EndUserSchema = z.object({
       }),
     })
     .optional(),
+  createdFrom: z.enum(['user', 'analyst', 'registry']).nullable().optional(),
 });
 
 export const EndUsersSchema = z.array(EndUserSchema);

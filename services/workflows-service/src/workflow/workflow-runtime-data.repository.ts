@@ -280,7 +280,8 @@ export class WorkflowRuntimeDataRepository {
             eu."dateOfBirth",
             eu.phone,
             eu."additionalInfo",
-            eu."amlHits"
+            eu."amlHits",
+            eu."createdFrom"
           FROM
             "EndUser" eu
             JOIN individualBallerineIds AS ibids ON ibids.id = eu.id
