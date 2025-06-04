@@ -87,7 +87,12 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
     params || {};
 
-  const { value, disabled, onChange, onBlur, onFocus } = useField(element, stack);
+  const { value, disabled, onChange, onBlur, onFocus } = useField(
+    // No need to use modified elelement here unless requested or revisions
+    // Otherwise during edit mode element id wont match revision fields and will be disabled
+    document?.decision === 'revisions' || document?.status === 'requested' ? element : _element,
+    stack,
+  );
 
   useLayoutEffect(() => {
     if (document) {
@@ -220,7 +225,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
       </div>
       <FieldDescription element={element} />
       <FieldPriorityReason element={element} />
-      <FieldErrors element={element} />
+      <FieldErrors element={_element} />
     </FieldLayout>
   );
 };
