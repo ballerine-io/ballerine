@@ -30,7 +30,7 @@ import { capitalize, titleCase } from 'string-ts';
 import { useDocuments } from './hooks/useDocuments';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
 import { ExtractCellProps } from '@ballerine/blocks';
-import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
+import { systemCreatedIconCell, userCreatedIconCell } from '@/lib/blocks/utils/constants';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 export const useDocumentBlocks = ({
@@ -408,8 +408,19 @@ export const useDocumentBlocks = ({
           value: createBlocksTyped()
             .addBlock()
             .addCell({
-              type: 'heading',
-              value: getHeaderContentCell(),
+              type: 'container',
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell(userCreatedIconCell)
+                .addCell({
+                  type: 'heading',
+                  value: getHeaderContentCell(),
+                  props: { className: 'mt-0' },
+                })
+                .buildFlat(),
+              props: {
+                className: 'flex space-x-1 items-center mt-6 px-4',
+              },
             })
             .addCell({
               id: 'actions',
@@ -448,34 +459,6 @@ export const useDocumentBlocks = ({
       });
 
       // TODO: temporary mocks
-      //   {
-      //   category: 'proof_of_bank_ownership',
-      //   type: 'bank_letter',
-      //   issuer: { country: 'ZZ' },
-      //   issuingVersion: 1,
-      //   version: 1,
-      //   propertiesSchema: Type.Object({
-      //     accountHolderName: Type.Optional(Type.String()),
-      //     accountNumber: Type.Optional(Type.String()),
-      //     bankName: Type.Optional(Type.String()),
-      //     issueDate: OptionalTypePastDate,
-      //     branchInformation: Type.Optional(Type.String()),
-      //   }),
-      // },
-      // {
-      //   category: 'proof_of_bank_ownership',
-      //   type: 'voided_check',
-      //   issuer: { country: 'ZZ' },
-      //   issuingVersion: 1,
-      //   version: 1,
-      //   propertiesSchema: Type.Object({
-      //     accountHolderName: Type.Optional(Type.String()),
-      //     accountNumber: Type.Optional(Type.String()),
-      //     routingNumber: Type.Optional(Type.String()),
-      //     bankName: Type.Optional(Type.String()),
-      //     checkDate: OptionalTypePastDate,
-      //   }),
-      // },
       const shouldShowMockChecks =
         category === 'proof_of_bank_ownership' &&
         (docType === 'bank_letter' || docType === 'voided_check');
