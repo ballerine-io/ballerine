@@ -2263,7 +2263,7 @@ importers:
         version: 1.52.0
       '@sveltejs/vite-plugin-svelte':
         specifier: 1.0.8
-        version: 1.0.8(svelte@3.59.2)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
+        version: 1.0.8(svelte@3.59.2)(vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       '@testing-library/jest-dom':
         specifier: ^5.16.5
         version: 5.17.0
@@ -2346,14 +2346,14 @@ importers:
         specifier: ^4.5.4
         version: 4.9.5
       vite:
-        specifier: 4.5.3
-        version: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+        specifier: 4.5.11
+        version: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
       vite-plugin-dts:
         specifier: ^1.6.6
-        version: 1.7.3(@types/node@18.17.19)(rollup@4.40.0)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
+        version: 1.7.3(@types/node@18.17.19)(rollup@4.40.0)(vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       vite-plugin-html:
         specifier: ^3.2.0
-        version: 3.2.2(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
+        version: 3.2.2(vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       vitest:
         specifier: ^0.24.5
         version: 0.24.5(jsdom@20.0.3)(sass@1.87.0)(terser@5.39.0)
@@ -5632,6 +5632,12 @@ packages:
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
 
+  '@eslint-community/eslint-utils@4.7.0':
+    resolution: {integrity: sha512-dyybb3AcajC7uha6CvhdVRJqaKyn7w2YKqKyAN37NKYgZT36w+iRb0Dymmc5qEJ549c/S31cMMSFd75bteCpCw==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    peerDependencies:
+      eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
+
   '@eslint-community/regexpp@4.12.1':
     resolution: {integrity: sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
@@ -8455,6 +8461,7 @@ packages:
   '@swc/core@1.11.22':
     resolution: {integrity: sha512-mjPYbqq8XjwqSE0hEPT9CzaJDyxql97LgK4iyvYlwVSQhdN1uK0DBG4eP9PxYzCS2MUGAXB34WFLegdUj5HGpg==}
     engines: {node: '>=10'}
+    deprecated: It has a bug. See https://github.com/swc-project/swc/issues/10413
     peerDependencies:
       '@swc/helpers': '>=0.5.17'
     peerDependenciesMeta:
@@ -12867,6 +12874,9 @@ packages:
   get-tsconfig@4.10.0:
     resolution: {integrity: sha512-kGzZ3LWWQcGIAmg6iWvXn0ei6WDtV26wzHRMwDSzmAbcXrTEXxHy6IehI6/4eT6VRKyMP1eF1VqwrVUmE/LR7A==}
 
+  get-tsconfig@4.10.1:
+    resolution: {integrity: sha512-auHyJ4AgMz7vgS8Hp3N6HXSmlMdUyhSUrfBF16w153rxtLIEOE+HGqaBppczZvnHLqQJfiHotCYpNhl0lUROFQ==}
+
   giget@1.2.5:
     resolution: {integrity: sha512-r1ekGw/Bgpi3HLV3h1MRBIlSAdHoIMklpaQ3OQLFcRw9PwAj2rqigvIbg+dBUI51OxVI2jsEtDywDBjSiuf7Ug==}
     hasBin: true
@@ -14927,6 +14937,7 @@ packages:
   multer@1.4.4-lts.1:
     resolution: {integrity: sha512-WeSGziVj6+Z2/MwQo3GvqzgR+9Uc+qt8SwHKh3gvNPiISKfsMfG4SvCOFYlxxgkXt7yIV2i1yczehm0EOKIxIg==}
     engines: {node: '>= 6.0.0'}
+    deprecated: Multer 1.x is impacted by a number of vulnerabilities, which have been patched in 2.x. You should upgrade to the latest 2.x version.
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -16708,6 +16719,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.7.2:
+    resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
     engines: {node: '>= 0.8.0'}
@@ -18311,6 +18327,34 @@ packages:
       '@types/node':
         optional: true
       less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+
+  vite@4.5.11:
+    resolution: {integrity: sha512-4mVdhLkZ0vpqZLGJhNm+X1n7juqXApEMGlUXcOQawA45UmpxivOYaMBkI/Js3FlBsNA8hCgEnX5X04moFitSGw==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      lightningcss:
         optional: true
       sass:
         optional: true
@@ -21856,7 +21900,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21873,7 +21917,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.1.6)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21907,7 +21951,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -21924,7 +21968,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.1.6)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -22633,6 +22677,11 @@ snapshots:
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/eslint-utils@4.6.1(eslint@8.57.1)':
+    dependencies:
+      eslint: 8.57.1
+      eslint-visitor-keys: 3.4.3
+
+  '@eslint-community/eslint-utils@4.7.0(eslint@8.57.1)':
     dependencies:
       eslint: 8.57.1
       eslint-visitor-keys: 3.4.3
@@ -26755,7 +26804,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@1.0.8(svelte@3.59.2)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))':
+  '@sveltejs/vite-plugin-svelte@1.0.8(svelte@3.59.2)(vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))':
     dependencies:
       '@rollup/pluginutils': 4.2.1
       debug: 4.4.0(supports-color@8.1.1)
@@ -26764,7 +26813,7 @@ snapshots:
       magic-string: 0.26.7
       svelte: 3.59.2
       svelte-hmr: 0.15.3(svelte@3.59.2)
-      vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+      vite: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -29409,8 +29458,8 @@ snapshots:
       tsconfck: 3.1.5(typescript@5.8.3)
       unist-util-visit: 4.1.2
       vfile: 5.3.7
-      vite: 4.5.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)
-      vitefu: 0.2.5(vite@4.5.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0))
+      vite: 4.5.11(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)
+      vitefu: 0.2.5(vite@4.5.11(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0))
       which-pm: 2.2.0
       yargs-parser: 21.1.1
       zod: 3.21.1
@@ -29865,7 +29914,7 @@ snapshots:
 
   builtins@5.1.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   bundle-require@4.2.1(esbuild@0.17.19):
     dependencies:
@@ -30550,18 +30599,18 @@ snapshots:
       ts-node: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@20.5.1)(typescript@5.8.3)
       typescript: 5.8.3
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5):
     dependencies:
       '@types/node': 18.17.19
-      cosmiconfig: 9.0.0(typescript@4.9.5)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 4.9.5
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@18.17.19)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6):
     dependencies:
       '@types/node': 18.17.19
-      cosmiconfig: 9.0.0(typescript@5.1.6)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 5.1.6
     optional: true
@@ -30574,18 +30623,18 @@ snapshots:
       typescript: 5.8.3
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@4.9.5))(typescript@4.9.5):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@4.9.5):
     dependencies:
       '@types/node': 22.15.2
-      cosmiconfig: 9.0.0(typescript@4.9.5)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 4.9.5
     optional: true
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.1.6))(typescript@5.1.6):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.15.2)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.1.6):
     dependencies:
       '@types/node': 22.15.2
-      cosmiconfig: 9.0.0(typescript@5.1.6)
+      cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 5.1.6
     optional: true
@@ -31848,7 +31897,7 @@ snapshots:
   eslint-compat-utils@0.5.1(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      semver: 7.7.1
+      semver: 7.7.2
 
   eslint-config-prettier@6.15.0(eslint@8.57.1):
     dependencies:
@@ -31967,7 +32016,7 @@ snapshots:
 
   eslint-plugin-es-x@7.8.0(eslint@8.57.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.6.1(eslint@8.57.1)
+      '@eslint-community/eslint-utils': 4.7.0(eslint@8.57.1)
       '@eslint-community/regexpp': 4.12.1
       eslint: 8.57.1
       eslint-compat-utils: 0.5.1(eslint@8.57.1)
@@ -32124,18 +32173,18 @@ snapshots:
 
   eslint-plugin-n@16.6.2(eslint@8.57.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.6.1(eslint@8.57.1)
+      '@eslint-community/eslint-utils': 4.7.0(eslint@8.57.1)
       builtins: 5.1.0
       eslint: 8.57.1
       eslint-plugin-es-x: 7.8.0(eslint@8.57.1)
-      get-tsconfig: 4.10.0
+      get-tsconfig: 4.10.1
       globals: 13.24.0
       ignore: 5.3.2
       is-builtin-module: 3.2.1
       is-core-module: 2.16.1
       minimatch: 3.1.2
       resolve: 1.22.10
-      semver: 7.7.1
+      semver: 7.7.2
 
   eslint-plugin-prefer-arrow@1.2.3(eslint@8.57.1):
     dependencies:
@@ -33115,6 +33164,10 @@ snapshots:
       get-intrinsic: 1.3.0
 
   get-tsconfig@4.10.0:
+    dependencies:
+      resolve-pkg-maps: 1.0.0
+
+  get-tsconfig@4.10.1:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
@@ -38115,6 +38168,8 @@ snapshots:
 
   semver@7.7.1: {}
 
+  semver@7.7.2: {}
+
   send@0.18.0:
     dependencies:
       debug: 2.6.9
@@ -40199,7 +40254,7 @@ snapshots:
       picocolors: 1.1.1
       source-map: 0.6.1
       source-map-support: 0.5.21
-      vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+      vite: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -40217,7 +40272,7 @@ snapshots:
       mlly: 1.7.4
       pathe: 1.1.2
       picocolors: 1.1.1
-      vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+      vite: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -40235,7 +40290,7 @@ snapshots:
       mlly: 1.7.4
       pathe: 1.1.2
       picocolors: 1.1.1
-      vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+      vite: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -40310,7 +40365,7 @@ snapshots:
       optionator: 0.9.4
       typescript: 5.8.3
 
-  vite-plugin-dts@1.7.3(@types/node@18.17.19)(rollup@4.40.0)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)):
+  vite-plugin-dts@1.7.3(@types/node@18.17.19)(rollup@4.40.0)(vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)):
     dependencies:
       '@microsoft/api-extractor': 7.52.5(@types/node@18.17.19)
       '@rollup/pluginutils': 5.1.4(rollup@4.40.0)
@@ -40320,7 +40375,7 @@ snapshots:
       fs-extra: 10.1.0
       kolorist: 1.8.0
       ts-morph: 17.0.1
-      vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+      vite: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -40364,7 +40419,7 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-html@3.2.2(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)):
+  vite-plugin-html@3.2.2(vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)):
     dependencies:
       '@rollup/pluginutils': 4.2.1
       colorette: 2.0.20
@@ -40378,7 +40433,7 @@ snapshots:
       html-minifier-terser: 6.1.0
       node-html-parser: 5.4.2
       pathe: 0.2.0
-      vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
+      vite: 4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
 
   vite-plugin-mkcert@1.17.8(vite@5.4.18(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)):
     dependencies:
@@ -40523,6 +40578,28 @@ snapshots:
       sass: 1.87.0
       terser: 5.39.0
 
+  vite@4.5.11(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0):
+    dependencies:
+      esbuild: 0.18.20
+      postcss: 8.5.3
+      rollup: 3.29.5
+    optionalDependencies:
+      '@types/node': 18.17.19
+      fsevents: 2.3.3
+      sass: 1.87.0
+      terser: 5.39.0
+
+  vite@4.5.11(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0):
+    dependencies:
+      esbuild: 0.18.20
+      postcss: 8.5.3
+      rollup: 3.29.5
+    optionalDependencies:
+      '@types/node': 22.15.2
+      fsevents: 2.3.3
+      sass: 1.87.0
+      terser: 5.39.0
+
   vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0):
     dependencies:
       esbuild: 0.18.20
@@ -40578,13 +40655,13 @@ snapshots:
       sass: 1.87.0
       terser: 5.39.0
 
+  vitefu@0.2.5(vite@4.5.11(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)):
+    optionalDependencies:
+      vite: 4.5.11(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)
+
   vitefu@0.2.5(vite@4.5.3(@types/node@20.17.31)(sass@1.87.0)(terser@5.39.0)):
     optionalDependencies:
       vite: 4.5.3(@types/node@20.17.31)(sass@1.87.0)(terser@5.39.0)
-
-  vitefu@0.2.5(vite@4.5.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)):
-    optionalDependencies:
-      vite: 4.5.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)
 
   vitest@0.24.5(jsdom@20.0.3)(sass@1.87.0)(terser@5.39.0):
     dependencies:
