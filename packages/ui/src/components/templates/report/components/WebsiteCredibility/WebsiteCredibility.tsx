@@ -166,20 +166,12 @@ export const WebsiteCredibility: FunctionComponent<{
     Object.entries(trafficData.monthlyVisits ?? {}).map(([label, value]) => ({ label, value })),
   );
 
-  const aggregatedRiskIndicators = useMemo(
-    () => [
-      ...websiteReputationRiskIndicators,
-      ...pricingRiskIndicators,
-      ...websiteStructureRiskIndicators,
-      ...trafficRiskIndicators,
-    ],
-    [
-      websiteReputationRiskIndicators,
-      pricingRiskIndicators,
-      websiteStructureRiskIndicators,
-      trafficRiskIndicators,
-    ],
-  );
+  const aggregatedRiskIndicators = [
+    ...websiteReputationRiskIndicators,
+    ...pricingRiskIndicators,
+    ...websiteStructureRiskIndicators,
+    ...trafficRiskIndicators,
+  ];
 
   return (
     <div className="space-y-6">
