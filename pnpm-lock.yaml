@@ -1172,19 +1172,19 @@ importers:
         version: link:../eslint-config
       '@rollup/plugin-babel':
         specifier: 5.3.1
-        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)
+        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)
       '@rollup/plugin-commonjs':
         specifier: ^24.0.1
-        version: 24.1.0(rollup@2.70.2)
+        version: 24.1.0(rollup@2.79.2)
       '@rollup/plugin-json':
         specifier: ^6.0.0
-        version: 6.1.0(rollup@2.70.2)
+        version: 6.1.0(rollup@2.79.2)
       '@rollup/plugin-node-resolve':
         specifier: 13.2.1
-        version: 13.2.1(rollup@2.70.2)
+        version: 13.2.1(rollup@2.79.2)
       '@rollup/plugin-replace':
         specifier: 4.0.0
-        version: 4.0.0(rollup@2.70.2)
+        version: 4.0.0(rollup@2.79.2)
       '@storybook/addon-a11y':
         specifier: ^7.1.0
         version: 7.6.20
@@ -1205,7 +1205,7 @@ importers:
         version: 7.6.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.1.6)
       '@storybook/react-vite':
         specifier: ^7.1.0
-        version: 7.6.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@2.70.2)(typescript@5.1.6)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
+        version: 7.6.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@2.79.2)(typescript@5.1.6)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       '@storybook/testing-library':
         specifier: ^0.2.0
         version: 0.2.2
@@ -1270,23 +1270,23 @@ importers:
         specifier: ^4.1.2
         version: 4.4.1
       rollup:
-        specifier: 2.70.2
-        version: 2.70.2
+        specifier: 2.79.2
+        version: 2.79.2
       rollup-plugin-dts:
         specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@5.1.6)
+        version: 4.2.2(rollup@2.79.2)(typescript@5.1.6)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
       rollup-plugin-terser:
         specifier: 7.0.2
-        version: 7.0.2(rollup@2.70.2)
+        version: 7.0.2(rollup@2.79.2)
       rollup-plugin-typescript-paths:
         specifier: ^1.4.0
         version: 1.5.0(typescript@5.1.6)
       rollup-plugin-visualizer:
         specifier: 5.6.0
-        version: 5.6.0(rollup@2.70.2)
+        version: 5.6.0(rollup@2.79.2)
       storybook:
         specifier: ^7.1.0
         version: 7.6.20
@@ -1368,19 +1368,19 @@ importers:
         version: 6.31.3
       '@rollup/plugin-babel':
         specifier: 5.3.1
-        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)
+        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)
       '@rollup/plugin-commonjs':
         specifier: ^24.0.1
-        version: 24.1.0(rollup@2.70.2)
+        version: 24.1.0(rollup@2.79.2)
       '@rollup/plugin-json':
         specifier: ^6.0.0
-        version: 6.1.0(rollup@2.70.2)
+        version: 6.1.0(rollup@2.79.2)
       '@rollup/plugin-node-resolve':
         specifier: 13.2.1
-        version: 13.2.1(rollup@2.70.2)
+        version: 13.2.1(rollup@2.79.2)
       '@rollup/plugin-replace':
         specifier: 4.0.0
-        version: 4.0.0(rollup@2.70.2)
+        version: 4.0.0(rollup@2.79.2)
       '@types/babel__core':
         specifier: ^7.20.0
         version: 7.20.5
@@ -1451,23 +1451,23 @@ importers:
         specifier: ^4.1.2
         version: 4.4.1
       rollup:
-        specifier: 2.70.2
-        version: 2.70.2
+        specifier: 2.79.2
+        version: 2.79.2
       rollup-plugin-dts:
         specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@4.9.5)
+        version: 4.2.2(rollup@2.79.2)(typescript@4.9.5)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
       rollup-plugin-terser:
         specifier: 7.0.2
-        version: 7.0.2(rollup@2.70.2)
+        version: 7.0.2(rollup@2.79.2)
       rollup-plugin-typescript-paths:
         specifier: ^1.4.0
         version: 1.5.0(typescript@4.9.5)
       rollup-plugin-visualizer:
         specifier: 5.6.0
-        version: 5.6.0(rollup@2.70.2)
+        version: 5.6.0(rollup@2.79.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@18.17.19)(typescript@4.9.5)
@@ -1654,16 +1654,16 @@ importers:
         version: 6.31.3
       '@rollup/plugin-babel':
         specifier: 5.3.1
-        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)
+        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)
       '@rollup/plugin-commonjs':
         specifier: ^24.0.1
-        version: 24.1.0(rollup@2.70.2)
+        version: 24.1.0(rollup@2.79.2)
       '@rollup/plugin-node-resolve':
         specifier: 13.2.1
-        version: 13.2.1(rollup@2.70.2)
+        version: 13.2.1(rollup@2.79.2)
       '@rollup/plugin-replace':
         specifier: 4.0.0
-        version: 4.0.0(rollup@2.70.2)
+        version: 4.0.0(rollup@2.79.2)
       '@types/babel__core':
         specifier: ^7.20.0
         version: 7.20.5
@@ -1719,20 +1719,20 @@ importers:
         specifier: ^4.4.1
         version: 4.4.1
       rollup:
-        specifier: 2.70.2
-        version: 2.70.2
+        specifier: 2.79.2
+        version: 2.79.2
       rollup-plugin-dts:
         specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@4.9.5)
+        version: 4.2.2(rollup@2.79.2)(typescript@4.9.5)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
       rollup-plugin-terser:
         specifier: 7.0.2
-        version: 7.0.2(rollup@2.70.2)
+        version: 7.0.2(rollup@2.79.2)
       rollup-plugin-visualizer:
         specifier: 5.6.0
-        version: 5.6.0(rollup@2.70.2)
+        version: 5.6.0(rollup@2.79.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@4.9.5)
@@ -2100,22 +2100,22 @@ importers:
         version: 6.31.3
       '@rollup/plugin-babel':
         specifier: 5.3.1
-        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)
+        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)
       '@rollup/plugin-commonjs':
         specifier: ^24.0.1
-        version: 24.1.0(rollup@2.70.2)
+        version: 24.1.0(rollup@2.79.2)
       '@rollup/plugin-json':
         specifier: ^6.0.0
-        version: 6.1.0(rollup@2.70.2)
+        version: 6.1.0(rollup@2.79.2)
       '@rollup/plugin-node-resolve':
         specifier: 13.2.1
-        version: 13.2.1(rollup@2.70.2)
+        version: 13.2.1(rollup@2.79.2)
       '@rollup/plugin-replace':
         specifier: 4.0.0
-        version: 4.0.0(rollup@2.70.2)
+        version: 4.0.0(rollup@2.79.2)
       '@rollup/plugin-terser':
         specifier: ^0.4.0
-        version: 0.4.4(rollup@2.70.2)
+        version: 0.4.4(rollup@2.79.2)
       '@types/babel__core':
         specifier: ^7.20.0
         version: 7.20.5
@@ -2207,17 +2207,17 @@ importers:
         specifier: ^4.1.2
         version: 4.4.1
       rollup:
-        specifier: 2.70.2
-        version: 2.70.2
+        specifier: 2.79.2
+        version: 2.79.2
       rollup-plugin-dts:
         specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@5.1.6)
+        version: 4.2.2(rollup@2.79.2)(typescript@5.1.6)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
       rollup-plugin-visualizer:
         specifier: 5.6.0
-        version: 5.6.0(rollup@2.70.2)
+        version: 5.6.0(rollup@2.79.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@18.17.19)(typescript@5.1.6)
@@ -2390,22 +2390,22 @@ importers:
         version: 6.31.3
       '@rollup/plugin-babel':
         specifier: 5.3.1
-        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)
+        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)
       '@rollup/plugin-commonjs':
         specifier: ^24.0.1
-        version: 24.1.0(rollup@2.70.2)
+        version: 24.1.0(rollup@2.79.2)
       '@rollup/plugin-json':
         specifier: ^6.0.0
-        version: 6.1.0(rollup@2.70.2)
+        version: 6.1.0(rollup@2.79.2)
       '@rollup/plugin-node-resolve':
         specifier: 13.2.1
-        version: 13.2.1(rollup@2.70.2)
+        version: 13.2.1(rollup@2.79.2)
       '@rollup/plugin-replace':
         specifier: 4.0.0
-        version: 4.0.0(rollup@2.70.2)
+        version: 4.0.0(rollup@2.79.2)
       '@rollup/plugin-terser':
         specifier: ^0.4.0
-        version: 0.4.4(rollup@2.70.2)
+        version: 0.4.4(rollup@2.79.2)
       '@types/babel__core':
         specifier: ^7.20.0
         version: 7.20.5
@@ -2476,17 +2476,17 @@ importers:
         specifier: ^4.1.2
         version: 4.4.1
       rollup:
-        specifier: 2.70.2
-        version: 2.70.2
+        specifier: 2.79.2
+        version: 2.79.2
       rollup-plugin-dts:
         specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@4.9.5)
+        version: 4.2.2(rollup@2.79.2)(typescript@4.9.5)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
       rollup-plugin-visualizer:
         specifier: 5.6.0
-        version: 5.6.0(rollup@2.70.2)
+        version: 5.6.0(rollup@2.79.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@18.17.19)(typescript@4.9.5)
@@ -2532,19 +2532,19 @@ importers:
         version: 6.31.3
       '@rollup/plugin-babel':
         specifier: 5.3.1
-        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)
+        version: 5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)
       '@rollup/plugin-commonjs':
         specifier: ^24.0.1
-        version: 24.1.0(rollup@2.70.2)
+        version: 24.1.0(rollup@2.79.2)
       '@rollup/plugin-json':
         specifier: ^6.0.0
-        version: 6.1.0(rollup@2.70.2)
+        version: 6.1.0(rollup@2.79.2)
       '@rollup/plugin-node-resolve':
         specifier: 13.2.1
-        version: 13.2.1(rollup@2.70.2)
+        version: 13.2.1(rollup@2.79.2)
       '@rollup/plugin-replace':
         specifier: 4.0.0
-        version: 4.0.0(rollup@2.70.2)
+        version: 4.0.0(rollup@2.79.2)
       '@types/babel__core':
         specifier: ^7.20.0
         version: 7.20.5
@@ -2597,20 +2597,20 @@ importers:
         specifier: ^2.1.1
         version: 2.8.8
       rollup:
-        specifier: 2.70.2
-        version: 2.70.2
+        specifier: 2.79.2
+        version: 2.79.2
       rollup-plugin-dts:
         specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@5.1.6)
+        version: 4.2.2(rollup@2.79.2)(typescript@5.1.6)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
       rollup-plugin-terser:
         specifier: 7.0.2
-        version: 7.0.2(rollup@2.70.2)
+        version: 7.0.2(rollup@2.79.2)
       rollup-plugin-visualizer:
         specifier: 5.6.0
-        version: 5.6.0(rollup@2.70.2)
+        version: 5.6.0(rollup@2.79.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.1.6)
@@ -2671,7 +2671,7 @@ importers:
         version: 9.3.0(@swc/core@1.11.22(@swc/helpers@0.5.17))
       '@nestjs/schematics':
         specifier: ^9.0.0
-        version: 9.2.0(chokidar@3.5.3)(typescript@4.9.5)
+        version: 9.2.0(chokidar@3.6.0)(typescript@4.9.5)
       '@nestjs/testing':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
@@ -8455,6 +8455,7 @@ packages:
   '@swc/core@1.11.22':
     resolution: {integrity: sha512-mjPYbqq8XjwqSE0hEPT9CzaJDyxql97LgK4iyvYlwVSQhdN1uK0DBG4eP9PxYzCS2MUGAXB34WFLegdUj5HGpg==}
     engines: {node: '>=10'}
+    deprecated: It has a bug. See https://github.com/swc-project/swc/issues/10413
     peerDependencies:
       '@swc/helpers': '>=0.5.17'
     peerDependenciesMeta:
@@ -14927,6 +14928,7 @@ packages:
   multer@1.4.4-lts.1:
     resolution: {integrity: sha512-WeSGziVj6+Z2/MwQo3GvqzgR+9Uc+qt8SwHKh3gvNPiISKfsMfG4SvCOFYlxxgkXt7yIV2i1yczehm0EOKIxIg==}
     engines: {node: '>= 6.0.0'}
+    deprecated: Multer 1.x is impacted by a number of vulnerabilities, which have been patched in 2.x. You should upgrade to the latest 2.x version.
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -16569,11 +16571,6 @@ packages:
     hasBin: true
     peerDependencies:
       rollup: ^2.0.0
-
-  rollup@2.70.2:
-    resolution: {integrity: sha512-EitogNZnfku65I1DD5Mxe8JYRUCy0hkK5X84IlDtUs+O6JRMpRciXTzyCUuX11b5L5pvjH+OmFXiQ3XjabcXgg==}
-    engines: {node: '>=10.0.0'}
-    hasBin: true
 
   rollup@2.79.2:
     resolution: {integrity: sha512-fS6iqSPZDs3dr/y7Od6y5nha8dW1YnbgtsyotCVvoFGKbERG++CVRFv1meyGDE1SNItQA8BrnCw7ScdAhRJ3XQ==}
@@ -18920,6 +18917,16 @@ snapshots:
     optionalDependencies:
       chokidar: 3.5.3
 
+  '@angular-devkit/core@16.0.1(chokidar@3.6.0)':
+    dependencies:
+      ajv: 8.12.0
+      ajv-formats: 2.1.1(ajv@8.12.0)
+      jsonc-parser: 3.2.0
+      rxjs: 7.8.1
+      source-map: 0.7.4
+    optionalDependencies:
+      chokidar: 3.6.0
+
   '@angular-devkit/schematics-cli@15.2.4(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 15.2.4(chokidar@3.5.3)
@@ -18944,6 +18951,16 @@ snapshots:
   '@angular-devkit/schematics@16.0.1(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
+      jsonc-parser: 3.2.0
+      magic-string: 0.30.0
+      ora: 5.4.1
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - chokidar
+
+  '@angular-devkit/schematics@16.0.1(chokidar@3.6.0)':
+    dependencies:
+      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       magic-string: 0.30.0
       ora: 5.4.1
@@ -23708,6 +23725,16 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
+  '@nestjs/schematics@9.2.0(chokidar@3.6.0)(typescript@4.9.5)':
+    dependencies:
+      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
+      '@angular-devkit/schematics': 16.0.1(chokidar@3.6.0)
+      jsonc-parser: 3.2.0
+      pluralize: 8.0.0
+      typescript: 4.9.5
+    transitivePeerDependencies:
+      - chokidar
+
   '@nestjs/serve-static@3.0.1(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(express@4.21.2)':
     dependencies:
       '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2)
@@ -25092,49 +25119,49 @@ snapshots:
       lodash: 4.17.21
       lodash-es: 4.17.21
 
-  '@rollup/plugin-babel@5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.70.2)':
+  '@rollup/plugin-babel@5.3.1(@babel/core@7.17.9)(@types/babel__core@7.20.5)(rollup@2.79.2)':
     dependencies:
       '@babel/core': 7.17.9
       '@babel/helper-module-imports': 7.25.9
-      '@rollup/pluginutils': 3.1.0(rollup@2.70.2)
-      rollup: 2.70.2
+      '@rollup/pluginutils': 3.1.0(rollup@2.79.2)
+      rollup: 2.79.2
     optionalDependencies:
       '@types/babel__core': 7.20.5
     transitivePeerDependencies:
       - supports-color
 
-  '@rollup/plugin-commonjs@24.1.0(rollup@2.70.2)':
+  '@rollup/plugin-commonjs@24.1.0(rollup@2.79.2)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(rollup@2.70.2)
+      '@rollup/pluginutils': 5.1.4(rollup@2.79.2)
       commondir: 1.0.1
       estree-walker: 2.0.2
       glob: 8.1.0
       is-reference: 1.2.1
       magic-string: 0.27.0
     optionalDependencies:
-      rollup: 2.70.2
+      rollup: 2.79.2
 
-  '@rollup/plugin-json@6.1.0(rollup@2.70.2)':
+  '@rollup/plugin-json@6.1.0(rollup@2.79.2)':
     dependencies:
-      '@rollup/pluginutils': 5.1.4(rollup@2.70.2)
+      '@rollup/pluginutils': 5.1.4(rollup@2.79.2)
     optionalDependencies:
-      rollup: 2.70.2
+      rollup: 2.79.2
 
-  '@rollup/plugin-node-resolve@13.2.1(rollup@2.70.2)':
+  '@rollup/plugin-node-resolve@13.2.1(rollup@2.79.2)':
     dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@2.70.2)
+      '@rollup/pluginutils': 3.1.0(rollup@2.79.2)
       '@types/resolve': 1.17.1
       builtin-modules: 3.3.0
       deepmerge: 4.3.1
       is-module: 1.0.0
       resolve: 1.22.10
-      rollup: 2.70.2
+      rollup: 2.79.2
 
-  '@rollup/plugin-replace@4.0.0(rollup@2.70.2)':
+  '@rollup/plugin-replace@4.0.0(rollup@2.79.2)':
     dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@2.70.2)
+      '@rollup/pluginutils': 3.1.0(rollup@2.79.2)
       magic-string: 0.25.9
-      rollup: 2.70.2
+      rollup: 2.79.2
 
   '@rollup/plugin-strip@3.0.4(rollup@4.40.0)':
     dependencies:
@@ -25144,37 +25171,37 @@ snapshots:
     optionalDependencies:
       rollup: 4.40.0
 
-  '@rollup/plugin-terser@0.4.4(rollup@2.70.2)':
+  '@rollup/plugin-terser@0.4.4(rollup@2.79.2)':
     dependencies:
       serialize-javascript: 6.0.2
       smob: 1.5.0
       terser: 5.39.0
     optionalDependencies:
-      rollup: 2.70.2
+      rollup: 2.79.2
 
   '@rollup/plugin-virtual@3.0.2(rollup@4.40.0)':
     optionalDependencies:
       rollup: 4.40.0
 
-  '@rollup/pluginutils@3.1.0(rollup@2.70.2)':
+  '@rollup/pluginutils@3.1.0(rollup@2.79.2)':
     dependencies:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
       picomatch: 2.3.1
-      rollup: 2.70.2
+      rollup: 2.79.2
 
   '@rollup/pluginutils@4.2.1':
     dependencies:
       estree-walker: 2.0.2
       picomatch: 2.3.1
 
-  '@rollup/pluginutils@5.1.4(rollup@2.70.2)':
+  '@rollup/pluginutils@5.1.4(rollup@2.79.2)':
     dependencies:
       '@types/estree': 1.0.7
       estree-walker: 2.0.2
       picomatch: 4.0.2
     optionalDependencies:
-      rollup: 2.70.2
+      rollup: 2.79.2
 
   '@rollup/pluginutils@5.1.4(rollup@4.40.0)':
     dependencies:
@@ -26104,7 +26131,7 @@ snapshots:
       find-cache-dir: 3.3.2
       fs-extra: 11.3.0
       magic-string: 0.30.17
-      rollup: 2.70.2
+      rollup: 2.79.2
       vite: 4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     optionalDependencies:
       typescript: 5.1.6
@@ -26129,7 +26156,7 @@ snapshots:
       find-cache-dir: 3.3.2
       fs-extra: 11.3.0
       magic-string: 0.30.17
-      rollup: 2.70.2
+      rollup: 2.79.2
       vite: 4.5.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)
     optionalDependencies:
       typescript: 5.8.3
@@ -26154,7 +26181,7 @@ snapshots:
       find-cache-dir: 3.3.2
       fs-extra: 11.3.0
       magic-string: 0.30.17
-      rollup: 2.70.2
+      rollup: 2.79.2
       vite: 5.4.18(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0)
     optionalDependencies:
       typescript: 5.8.3
@@ -26179,7 +26206,7 @@ snapshots:
       find-cache-dir: 3.3.2
       fs-extra: 11.3.0
       magic-string: 0.30.17
-      rollup: 2.70.2
+      rollup: 2.79.2
       vite: 5.4.18(@types/node@20.17.31)(sass@1.87.0)(terser@5.39.0)
     optionalDependencies:
       typescript: 5.8.3
@@ -26511,10 +26538,10 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@storybook/react-vite@7.6.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@2.70.2)(typescript@5.1.6)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))':
+  '@storybook/react-vite@7.6.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@2.79.2)(typescript@5.1.6)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))':
     dependencies:
       '@joshwooding/vite-plugin-react-docgen-typescript': 0.3.0(typescript@5.1.6)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
-      '@rollup/pluginutils': 5.1.4(rollup@2.70.2)
+      '@rollup/pluginutils': 5.1.4(rollup@2.79.2)
       '@storybook/builder-vite': 7.6.20(typescript@5.1.6)(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       '@storybook/react': 7.6.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.1.6)
       '@vitejs/plugin-react': 3.1.0(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
@@ -37899,18 +37926,18 @@ snapshots:
     dependencies:
       glob: 10.4.5
 
-  rollup-plugin-dts@4.2.2(rollup@2.70.2)(typescript@4.9.5):
+  rollup-plugin-dts@4.2.2(rollup@2.79.2)(typescript@4.9.5):
     dependencies:
       magic-string: 0.26.7
-      rollup: 2.70.2
+      rollup: 2.79.2
       typescript: 4.9.5
     optionalDependencies:
       '@babel/code-frame': 7.26.2
 
-  rollup-plugin-dts@4.2.2(rollup@2.70.2)(typescript@5.1.6):
+  rollup-plugin-dts@4.2.2(rollup@2.79.2)(typescript@5.1.6):
     dependencies:
       magic-string: 0.26.7
-      rollup: 2.70.2
+      rollup: 2.79.2
       typescript: 5.1.6
     optionalDependencies:
       '@babel/code-frame': 7.26.2
@@ -37921,11 +37948,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  rollup-plugin-terser@7.0.2(rollup@2.70.2):
+  rollup-plugin-terser@7.0.2(rollup@2.79.2):
     dependencies:
       '@babel/code-frame': 7.26.2
       jest-worker: 26.6.2
-      rollup: 2.70.2
+      rollup: 2.79.2
       serialize-javascript: 4.0.0
       terser: 5.39.0
 
@@ -37946,17 +37973,13 @@ snapshots:
     optionalDependencies:
       rollup: 4.40.0
 
-  rollup-plugin-visualizer@5.6.0(rollup@2.70.2):
+  rollup-plugin-visualizer@5.6.0(rollup@2.79.2):
     dependencies:
       nanoid: 3.3.11
       open: 8.4.2
-      rollup: 2.70.2
+      rollup: 2.79.2
       source-map: 0.7.4
       yargs: 17.7.2
-
-  rollup@2.70.2:
-    optionalDependencies:
-      fsevents: 2.3.3
 
   rollup@2.79.2:
     optionalDependencies:
