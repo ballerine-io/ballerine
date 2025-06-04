@@ -733,7 +733,7 @@ export const WebsiteCredibility: FunctionComponent<WebsiteCredibilityProps> = ({
       .sort((a, b) => b.value - a.value);
 
     return values;
-  }, [trafficData.trafficSources]);
+  }, [trafficData.visitorsCountries]);
 
   const trend = calculateTrend(
     Object.entries(trafficData.monthlyVisits ?? {}).map(([label, value]) => ({ label, value })),

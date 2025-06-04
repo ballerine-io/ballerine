@@ -1,7 +1,10 @@
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
 import { Crown } from 'lucide-react';
 import { ComponentProps, ReactNode } from 'react';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { z } from 'zod';
 
+import { getUniqueRiskIndicators } from '@/common';
 import {
   AdsAndSocialMedia,
   BusinessReportSummary,
@@ -11,10 +14,7 @@ import {
   WebsiteLineOfBusiness,
   WebsitesCompany,
 } from '@/components';
-import { z } from 'zod';
-import { MERCHANT_REPORT_TYPES_MAP, ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
-import { getUniqueRiskIndicators } from '@/common';
-import dayjs from 'dayjs';
+import { getVisitorsCountriesDateRange } from '../utils';
 
 type UseReportTabsProps = {
   report: z.infer<typeof ReportSchema>;
@@ -132,16 +132,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
             timeOnSite: report.data?.timeOnSite,
             bounceRate: report.data?.bounceRate,
           }}
-          visitorsCountriesDateRange={
-            dayjs()
-              .subtract(
-                report.reportType === MERCHANT_REPORT_TYPES_MAP.MERCHANT_REPORT_T1 ? 6 : 1,
-                'month',
-              )
-              .format('MMM YYYY') +
-            ' - ' +
-            dayjs().format('MMM YYYY')
-          }
+          visitorsCountriesDateRange={getVisitorsCountriesDateRange(report.reportType)}
           websiteReputationRiskIndicators={report.data?.websiteReputationRiskIndicators ?? []}
           pricingRiskIndicators={report.data?.pricingRiskIndicators ?? []}
           websiteStructureRiskIndicators={report.data?.websiteStructureRiskIndicators ?? []}
