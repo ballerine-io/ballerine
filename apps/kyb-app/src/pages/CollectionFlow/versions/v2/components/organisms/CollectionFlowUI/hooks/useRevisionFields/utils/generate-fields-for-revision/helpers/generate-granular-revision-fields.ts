@@ -45,37 +45,34 @@ export const generateGranularRevisionFields = ({
     }
 
     if (isDocumentFieldDefinition(element)) {
-      const document = documents.find(doc => {
-        if (entityType !== 'business') {
-          return (
-            doc.type === element.params?.template?.type &&
-            doc.category === element.params?.template?.category &&
-            doc.endUserId
-          );
-        }
-
-        return (
+      const documentsToProcess = documents.filter(doc => {
+        const isTypeAndCategoryMatch =
           doc.type === element.params?.template?.type &&
-          doc.category === element.params?.template?.category
-        );
+          doc.category === element.params?.template?.category;
+        const isRevisionOrRequested = doc.status === 'requested' || doc.decision === 'revisions';
+
+        return isTypeAndCategoryMatch && isRevisionOrRequested;
       });
 
-      const isRevisionOrRequested =
-        document?.status === 'requested' || document?.decision === 'revisions';
+      const isRevisionOrRequested = documentsToProcess.every(
+        doc => doc.status === 'requested' || doc.decision === 'revisions',
+      );
 
       if (!isRevisionOrRequested) {
         continue;
       }
 
-      const priorityFieldComment = [document?.decisionReason, document?.comment]
-        .filter(Boolean)
-        .join(' - ');
+      documentsToProcess.forEach(doc => {
+        const priorityFieldComment = [doc?.decisionReason, doc?.comment]
+          .filter(Boolean)
+          .join(' - ');
 
-      revisionFields.push({
-        id: document.endUserId
-          ? formatId(`${element.id}-${document.endUserId}-*`, [])
-          : formatId(element.id, stack),
-        reason: priorityFieldComment,
+        revisionFields.push({
+          id: doc.endUserId
+            ? formatId(`${element.id}-${doc.endUserId}-*`, [])
+            : formatId(element.id, stack),
+          reason: priorityFieldComment,
+        });
       });
     }
 
