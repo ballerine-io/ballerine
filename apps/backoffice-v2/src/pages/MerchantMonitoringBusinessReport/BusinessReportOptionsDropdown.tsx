@@ -102,7 +102,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
           }}
         >
           <DropdownMenuItem
-            disabled={isDemoAccount && !enableWebPresenceReportExport}
+            disabled={isDemoAccount || !enableWebPresenceReportExport}
             className={'w-full p-0 data-[disabled]:!opacity-100'}
             onClick={async () => {
               await generatePDF();
@@ -110,7 +110,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
             }}
           >
             <Button
-              disabled={isDemoAccount && !enableWebPresenceReportExport}
+              disabled={isDemoAccount || !enableWebPresenceReportExport}
               variant={'ghost'}
               className="flex w-full items-center justify-start gap-x-2"
             >

@@ -1,3 +1,4 @@
+import { UISchema } from '@/domains/collection-flow';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { render, screen } from '@testing-library/react';
@@ -23,69 +24,49 @@ vi.mock('@/common/components/molecules/LoadingScreen', () => ({
 
 describe('CollectionFlow', () => {
   beforeEach(() => {
-    const mockUseLanguageParamResult = {
+    vi.mocked(useLanguageParam).mockReturnValue({
       language: 'en',
       setLanguage: vi.fn(),
-    } satisfies ReturnType<typeof useLanguageParam>;
-
-    const mockUISchemasQueryResult = {
-      // @ts-expect-error
-      data: undefined,
+    } as unknown as ReturnType<typeof useLanguageParam>);
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: null,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
-
-    const mockGetCollectionFlowVersionResult = () => <div>Mock Flow Component</div>;
-
-    vi.mocked(useLanguageParam).mockReturnValue(mockUseLanguageParamResult);
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResult,
-    );
-    vi.mocked(getCollectionFlowVersion).mockReturnValue(mockGetCollectionFlowVersionResult);
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
+    vi.mocked(getCollectionFlowVersion).mockReturnValue(() => <div>Mock Flow Component</div>);
   });
 
   it('renders loading screen when schema is loading', () => {
-    // Arrange
-    const mockUISchemasQueryResult = {
-      // @ts-expect-error
-      data: undefined,
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: null,
       isLoading: true,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResult,
-    );
-
-    // Act
     render(<CollectionFlow />);
 
-    // Assert
     expect(screen.getByText('Loading Screen')).toBeInTheDocument();
   });
 
   it('renders error message when no version is found', () => {
-    // Arrange
-    const mockUISchemasQueryResult = {
-      // @ts-expect-error
-      data: { version: 999 },
+    const mockSchema = {
+      id: 'test-id',
+      config: {},
+      uiSchema: { elements: [], theme: {} },
+      definition: { definitionType: 'test', definition: {}, extensions: {} },
+      version: 999,
+      metadata: { businessId: 'test' },
+    } as unknown as UISchema;
+
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: mockSchema,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
-    const mockGetCollectionFlowVersion = undefined;
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
+    vi.mocked(getCollectionFlowVersion).mockReturnValue(undefined);
 
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResult,
-    );
-    vi.mocked(getCollectionFlowVersion).mockReturnValue(mockGetCollectionFlowVersion);
-
-    // Act
     render(<CollectionFlow />);
 
-    // Assert
     expect(
       screen.getByText(/No version found for UI Definition version: 999/i),
     ).toBeInTheDocument();
@@ -93,44 +74,26 @@ describe('CollectionFlow', () => {
   });
 
   it('renders collection flow component when version is found', () => {
-    // Arrange
-    const mockUISchemasQueryResult = {
-      // @ts-expect-error
-      data: { version: 2 },
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: { version: 2 } as unknown as UISchema,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResult,
-    );
-
-    // Act
     render(<CollectionFlow />);
 
-    // Assert
     expect(screen.getByText('Mock Flow Component')).toBeInTheDocument();
   });
 
   it('calls getCollectionFlowVersion with correct version', () => {
-    // Arrange
-    const mockUISchemasQueryResult = {
-      // @ts-expect-error
-      data: { version: 2 },
+    vi.mocked(useUISchemasQuery).mockReturnValue({
+      data: { version: 2 } as UISchema,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResult,
-    );
-
-    // Act
     render(<CollectionFlow />);
 
-    // Assert
     expect(getCollectionFlowVersion).toHaveBeenCalledWith(2);
   });
 });

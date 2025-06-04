@@ -114,6 +114,9 @@ export const useKycBlock = ({
                 vendor: string;
               };
             };
+            kycDocumentDetails?: {
+              expiryDate: string;
+            };
             documents: TDocument[];
           };
     }

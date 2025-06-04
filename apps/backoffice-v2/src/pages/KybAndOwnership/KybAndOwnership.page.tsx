@@ -1,12 +1,10 @@
 import { isNonEmptyArray } from '@ballerine/common';
 import { Badge, Skeleton } from '@ballerine/ui';
-import { t } from 'i18next';
 import { Loader2, Plus } from 'lucide-react';
 import { FunctionComponent } from 'react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
-import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/DateRangePicker';

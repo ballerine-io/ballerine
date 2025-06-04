@@ -24,31 +24,25 @@ describe('useRedirectUrls', () => {
     vi.clearAllMocks();
 
     // Default mock implementations
-    const mockStateManagerContextDefault = {
+    vi.mocked(useStateManagerContext).mockReturnValue({
       config: {},
-      state: '',
+      state: '' as string,
       stateApi: {
         invokePlugin: vi.fn(),
         sendEvent: vi.fn(),
         setContext: vi.fn(),
         getContext: vi.fn(),
         getState: vi.fn(),
-      } satisfies ReturnType<typeof useStateManagerContext>['stateApi'],
-      // @ts-expect-error
-      payload: {},
+      } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
+      payload: {} as any,
       isPluginLoading: false,
-    } satisfies ReturnType<typeof useStateManagerContext>;
-    const mockUISchemasQueryResultDefault = {
+    } as unknown as ReturnType<typeof useStateManagerContext>);
+
+    vi.mocked(useUISchemasQuery).mockReturnValue({
       data: null,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
-
-    vi.mocked(useStateManagerContext).mockReturnValue(
-      // @ts-expect-error
-      mockStateManagerContextDefault,
-    );
-    vi.mocked(useUISchemasQuery).mockReturnValue(mockUISchemasQueryResultDefault);
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
   });
 
   it('should return null when no redirectUrls are available', () => {
@@ -71,26 +65,25 @@ describe('useRedirectUrls', () => {
       failure: 'https://data-failure.com',
     };
 
-    const mockStateManagerContextConfig = {
+    vi.mocked(useStateManagerContext).mockReturnValue({
       config: {
         uiOptions: {
           redirectUrls: configRedirectUrls,
         },
       },
-      state: '',
+      state: '' as string,
       stateApi: {
         invokePlugin: vi.fn(),
         sendEvent: vi.fn(),
         setContext: vi.fn(),
         getContext: vi.fn(),
         getState: vi.fn(),
-      } satisfies ReturnType<typeof useStateManagerContext>['stateApi'],
-      // @ts-expect-error
-      payload: {},
+      } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
+      payload: {} as any,
       isPluginLoading: false,
-    } satisfies ReturnType<typeof useStateManagerContext>;
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
-    const mockUISchemasQueryResultConfig = {
+    vi.mocked(useUISchemasQuery).mockReturnValue({
       data: {
         id: 'test-id',
         config: {},
@@ -105,13 +98,7 @@ describe('useRedirectUrls', () => {
       } as unknown as UISchema,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
-
-    vi.mocked(useStateManagerContext).mockReturnValue(
-      // @ts-expect-error
-      mockStateManagerContextConfig,
-    );
-    vi.mocked(useUISchemasQuery).mockReturnValue(mockUISchemasQueryResultConfig);
+    });
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());
@@ -127,51 +114,36 @@ describe('useRedirectUrls', () => {
       failure: 'https://data-failure.com',
     };
 
-    const mockStateManagerContextData = {
+    vi.mocked(useStateManagerContext).mockReturnValue({
       config: {},
-      state: '',
+      state: '' as string,
       stateApi: {
         invokePlugin: vi.fn(),
         sendEvent: vi.fn(),
         setContext: vi.fn(),
         getContext: vi.fn(),
         getState: vi.fn(),
-      } satisfies ReturnType<typeof useStateManagerContext>['stateApi'],
-      // @ts-expect-error
-      payload: {},
+      } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
+      payload: {} as any,
       isPluginLoading: false,
-    } satisfies ReturnType<typeof useStateManagerContext>;
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
-    const mockUISchemasQueryResultData = {
+    vi.mocked(useUISchemasQuery).mockReturnValue({
       data: {
         id: 'test-id',
-        // @ts-expect-error
         config: {},
-        // @ts-expect-error
         uiSchema: {},
-        // @ts-expect-error
         definition: { definition: {} },
         uiOptions: {
           redirectUrls: dataRedirectUrls,
         },
-        // @ts-expect-error
         version: '1.0',
-        // @ts-expect-error
         createdAt: '',
         updatedAt: '',
-      } satisfies UISchema,
+      } as unknown as UISchema,
       isLoading: false,
       error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
-
-    vi.mocked(useStateManagerContext).mockReturnValue(
-      // @ts-expect-error
-      mockStateManagerContextData,
-    );
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResultData,
-    );
+    } as unknown as ReturnType<typeof useUISchemasQuery>);
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());
@@ -182,50 +154,21 @@ describe('useRedirectUrls', () => {
 
   it('should return null when uiOptions exists but redirectUrls is not defined', () => {
     // Arrange
-    const mockStateManagerContextNoRedirect = {
+    vi.mocked(useStateManagerContext).mockReturnValue({
       config: {
-        uiOptions: {} satisfies UIOptions,
+        uiOptions: {} as UIOptions,
       },
-      state: '',
+      state: '' as string,
       stateApi: {
         invokePlugin: vi.fn(),
         sendEvent: vi.fn(),
         setContext: vi.fn(),
         getContext: vi.fn(),
         getState: vi.fn(),
-      } satisfies ReturnType<typeof useStateManagerContext>['stateApi'],
-      // @ts-expect-error
-      payload: {},
+      } as unknown as ReturnType<typeof useStateManagerContext>['stateApi'],
+      payload: {} as any,
       isPluginLoading: false,
-    } satisfies ReturnType<typeof useStateManagerContext>;
-
-    const mockUISchemasQueryResultNoRedirect = {
-      data: {
-        id: 'test-id',
-        // @ts-expect-error
-        config: {},
-        // @ts-expect-error
-        uiSchema: {},
-        // @ts-expect-error
-        definition: { definition: {} },
-        uiOptions: {} satisfies UIOptions,
-        // @ts-expect-error
-        version: '1.0',
-        createdAt: '',
-        updatedAt: '',
-      },
-      isLoading: false,
-      error: null,
-    } satisfies ReturnType<typeof useUISchemasQuery>;
-
-    vi.mocked(useStateManagerContext).mockReturnValue(
-      // @ts-expect-error
-      mockStateManagerContextNoRedirect,
-    );
-    vi.mocked(useUISchemasQuery).mockReturnValue(
-      // @ts-expect-error
-      mockUISchemasQueryResultNoRedirect,
-    );
+    } as unknown as ReturnType<typeof useStateManagerContext>);
 
     // Act
     const { result } = renderHook(() => useRedirectUrls());
