@@ -408,74 +408,83 @@ const VisitorsCountryMap: FunctionComponent<{
       </CardHeader>
 
       <CardContent className="relative h-full p-2 flex gap-2">
-        <ComposableMap projectionConfig={{ scale: 150 }} className="w-1/2 h-full">
-          <Geographies geography={GEO_URL}>
-            {({ geographies }) =>
-              geographies.map(geo => {
-                const countryName = geo.properties.name;
-                const countryCode = getAlpha2Code(countryName, 'en') ?? countryName.toUpperCase();
-                const countryData = countryCode
-                  ? visitorsCountries.find(d => d.label === countryName)
-                  : null;
+        {visitorsCountries.length === 0 ? (
+          <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+            No Top Visitors Countries Data Available
+          </div>
+        ) : (
+          <>
+            <ComposableMap projectionConfig={{ scale: 150 }} className="w-1/2 h-full">
+              <Geographies geography={GEO_URL}>
+                {({ geographies }) =>
+                  geographies.map(geo => {
+                    const countryName = geo.properties.name;
+                    const countryCode =
+                      getAlpha2Code(countryName, 'en') ?? countryName.toUpperCase();
+                    const countryData = countryCode
+                      ? visitorsCountries.find(d => d.label === countryName)
+                      : null;
+
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        fill={countryData ? getBlueShade(countryData.value, maxShare) : '#F0F0F0'}
+                        stroke={countryData ? getBlueShade(countryData.value, maxShare) : '#D6D6DA'}
+                        strokeWidth={countryData ? 1 : 0.5}
+                        style={{
+                          default: {
+                            outline: 'none',
+                          },
+                          hover: {
+                            fill: countryData ? '#1E40AF' : '#D6D6DA',
+                            stroke: countryData ? '#1E40AF' : '#D6D6DA',
+                            outline: 'none',
+                          },
+                        }}
+                        data-tip={
+                          countryData ? `${countryName}: ${countryData.value}%` : countryName || ''
+                        }
+                      />
+                    );
+                  })
+                }
+              </Geographies>
+            </ComposableMap>
+
+            <div className="w-1/2 flex flex-col gap-2 p-4">
+              <div className="flex items-center justify-between font-medium">
+                <div className="w-1/2">Country</div>
+                <div className="w-1/2">Traffic Share</div>
+              </div>
+
+              <Separator className="w-full" />
+
+              {visitorsCountries.map(({ label, value }, index) => {
+                const countryCode = getAlpha2Code(label, 'en') ?? label.toUpperCase();
 
                 return (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill={countryData ? getBlueShade(countryData.value, maxShare) : '#F0F0F0'}
-                    stroke={countryData ? getBlueShade(countryData.value, maxShare) : '#D6D6DA'}
-                    strokeWidth={countryData ? 1 : 0.5}
-                    style={{
-                      default: {
-                        outline: 'none',
-                      },
-                      hover: {
-                        fill: countryData ? '#1E40AF' : '#D6D6DA',
-                        stroke: countryData ? '#1E40AF' : '#D6D6DA',
-                        outline: 'none',
-                      },
-                    }}
-                    data-tip={
-                      countryData ? `${countryName}: ${countryData.value}%` : countryName || ''
-                    }
-                  />
-                );
-              })
-            }
-          </Geographies>
-        </ComposableMap>
+                  <Fragment key={label}>
+                    <div className="flex items-center justify-between">
+                      <div className="w-1/2 flex items-center gap-2">
+                        <CircleFlag countryCode={countryCode.toLowerCase()} className="size-4" />
 
-        <div className="w-1/2 flex flex-col gap-2 p-4">
-          <div className="flex items-center justify-between font-medium">
-            <div className="w-1/2">Country</div>
-            <div className="w-1/2">Traffic Share</div>
-          </div>
-
-          <Separator className="w-full" />
-
-          {visitorsCountries.map(({ label, value }, index) => {
-            const countryCode = getAlpha2Code(label, 'en') ?? label.toUpperCase();
-
-            return (
-              <Fragment key={label}>
-                <div className="flex items-center justify-between">
-                  <div className="w-1/2 flex items-center gap-2">
-                    <CircleFlag countryCode={countryCode.toLowerCase()} className="size-4" />
-
-                    <span className="text-sm text-gray-700">{label}</span>
-                  </div>
-                  <div className="w-1/2 flex items-center gap-2">
-                    <span className="text-sm text-gray-700 w-10">{value}%</span>
-                    <div className="flex-1 h-2 bg-gray-200 overflow-hidden">
-                      <div className="h-full bg-blue-500" style={{ width: `${value}%` }} />
+                        <span className="text-sm text-gray-700">{label}</span>
+                      </div>
+                      <div className="w-1/2 flex items-center gap-2">
+                        <span className="text-sm text-gray-700 w-10">{value}%</span>
+                        <div className="flex-1 h-2 bg-gray-200 overflow-hidden">
+                          <div className="h-full bg-blue-500" style={{ width: `${value}%` }} />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                {index < visitorsCountries.length - 1 && <Separator className="w-full" />}
-              </Fragment>
-            );
-          })}
-        </div>
+                    {index < visitorsCountries.length - 1 && <Separator className="w-full" />}
+                  </Fragment>
+                );
+              })}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
