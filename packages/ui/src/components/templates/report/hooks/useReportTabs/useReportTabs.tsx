@@ -14,7 +14,6 @@ import {
   WebsiteLineOfBusiness,
   WebsitesCompany,
 } from '@/components';
-import { getVisitorsCountriesDateRange } from '../utils';
 
 type UseReportTabsProps = {
   report: z.infer<typeof ReportSchema>;
@@ -132,7 +131,6 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
             timeOnSite: report.data?.timeOnSite,
             bounceRate: report.data?.bounceRate,
           }}
-          visitorsCountriesDateRange={getVisitorsCountriesDateRange(report.reportType)}
           websiteReputationRiskIndicators={report.data?.websiteReputationRiskIndicators ?? []}
           pricingRiskIndicators={report.data?.pricingRiskIndicators ?? []}
           websiteStructureRiskIndicators={report.data?.websiteStructureRiskIndicators ?? []}

@@ -22,7 +22,6 @@ import {
   WebsiteLineOfBusiness,
   WebsitesCompany,
 } from '@/components';
-import { getVisitorsCountriesDateRange } from '../utils';
 
 type BusinessReportSection = {
   id: string;
@@ -153,7 +152,6 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
                 timeOnSite,
                 bounceRate,
               }}
-              visitorsCountriesDateRange={getVisitorsCountriesDateRange(report.reportType)}
               websiteReputationRiskIndicators={websiteReputationRiskIndicators ?? []}
               pricingRiskIndicators={pricingRiskIndicators ?? []}
               websiteStructureRiskIndicators={websiteStructureRiskIndicators ?? []}

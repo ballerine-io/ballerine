@@ -19,7 +19,6 @@ export type WebsiteCredibilityProps = {
   websiteStructureRiskIndicators: Array<RiskIndicator>;
   trafficRiskIndicators: Array<RiskIndicator>;
   trafficData: TrafficDataType;
-  visitorsCountriesDateRange: string;
 };
 
 export type DisplayableMetricType = {

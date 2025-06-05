@@ -402,8 +402,6 @@ const VisitorsCountryMap: FunctionComponent<{
         <CardDescription className="text-muted-foreground text-sm font-normal flex gap-2 items-center mt-2">
           <CalendarIcon className="size-4" />
           <span>{visitorsCountriesDateRange}</span>
-          <MonitorSmartphoneIcon className="size-4" />
-          <span>All traffic</span>
         </CardDescription>
       </CardHeader>
 
@@ -687,7 +685,6 @@ export const WebsiteCredibility: FunctionComponent<WebsiteCredibilityProps> = ({
   websiteStructureRiskIndicators,
   trafficData,
   trafficRiskIndicators,
-  visitorsCountriesDateRange,
 }) => {
   const trafficSources = useMemo(() => {
     if (!Object.keys(trafficData.trafficSources ?? {}).length) {
@@ -756,6 +753,13 @@ export const WebsiteCredibility: FunctionComponent<WebsiteCredibilityProps> = ({
 
     return values;
   }, [trafficData.visitorsCountries?.data]);
+
+  const visitorsCountriesDateRange = useMemo(() => {
+    const startDateMMMYYYY = dayjs(trafficData.visitorsCountries?.startDate).format('MMM YYYY');
+    const endDateMMMYYYY = dayjs(trafficData.visitorsCountries?.endDate).format('MMM YYYY');
+
+    return `${startDateMMMYYYY} - ${endDateMMMYYYY}`;
+  }, [trafficData.visitorsCountries?.startDate, trafficData.visitorsCountries?.endDate]);
 
   const trend = calculateTrend(
     Object.entries(trafficData.monthlyVisits ?? {}).map(([label, value]) => ({ label, value })),
