@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@ballerine/ui';
 import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
+import { RegistryOriginValueTitle } from '@/common/components/molecules/RegistryOriginValueTitle/RegistryOriginValueTitle';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
   const getCell = useCallback(() => {
@@ -14,6 +15,14 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         value: {
           data: Object.entries(pluginsOutput?.businessInformation?.data?.[0])?.map(
             ([title, value]) => ({
+              titleNode: pluginsOutput?.businessInformation?.data?.[0]?._raw?.[title]?.original ? (
+                <RegistryOriginValueTitle
+                  title={title}
+                  originalValue={
+                    pluginsOutput?.businessInformation?.data?.[0]?._raw?.[title]?.original
+                  }
+                />
+              ) : undefined,
               title,
               value,
             }),

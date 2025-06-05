@@ -7,7 +7,11 @@ export const useWatchDropdownOptions = ({ form, data, setFormData }) => {
   useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (!['category'].includes(name)) return subscription.unsubscribe();
-      const newData = structuredClone(data);
+      const newData = data.map(({ titleNode, ...rest }) => {
+        const restCopy = structuredClone(rest);
+        restCopy.titleNode = titleNode;
+        return restCopy;
+      });
 
       newData
         .filter(item => !!item.dropdownOptions)

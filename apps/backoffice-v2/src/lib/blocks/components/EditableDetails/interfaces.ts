@@ -1,5 +1,6 @@
 import { AnyObject } from '@ballerine/ui';
 import { TDropdownOption } from './types';
+import { ReactNode } from 'react';
 
 export type IEditableDetailsDocument = {
   propertiesSchema: Record<string, unknown>;
@@ -10,6 +11,7 @@ export type IEditableDetailsDocument = {
 export interface IEditableDetails {
   data: Array<{
     title: string;
+    titleNode?: ReactNode;
     value: unknown;
     valueAlias?: unknown;
     isEditable: boolean;
