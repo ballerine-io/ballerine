@@ -107,7 +107,13 @@ export const ReportSchema = z
         timeOnSite: z.string().nullish(),
         pagesPerVisit: z.string().nullish(),
         trafficSources: z.record(z.string(), z.number()).nullish(),
-        visitorsCountries: z.record(z.string(), z.number()).nullish(),
+        visitorsCountries: z
+          .object({
+            data: z.record(z.string(), z.number()).nullish(),
+            startDate: z.string().nullish(),
+            endDate: z.string().nullish(),
+          })
+          .nullish(),
         monthlyVisits: z.record(z.string(), z.number()).nullish(),
         facebookPage: FacebookPageSchema.nullish(),
         instagramPage: InstagramPageSchema.nullish(),

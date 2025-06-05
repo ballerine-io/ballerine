@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getAlpha2Code } from 'i18n-iso-countries';
+import { getAlpha2Code, getName } from 'i18n-iso-countries';
 import {
   CalendarIcon,
   InfoIcon,
@@ -421,8 +421,11 @@ const VisitorsCountryMap: FunctionComponent<{
                     const countryName = geo.properties.name;
                     const countryCode =
                       getAlpha2Code(countryName, 'en') ?? countryName.toUpperCase();
+                    const allCountryNames = getName(countryCode, 'en', { select: 'all' });
                     const countryData = countryCode
-                      ? visitorsCountries.find(d => d.label === countryName)
+                      ? visitorsCountries.find(
+                          d => allCountryNames?.includes(d.label) || d.label === countryCode,
+                        )
                       : null;
 
                     return (
@@ -569,54 +572,60 @@ const WebsiteStructureCard: FunctionComponent<{
     <CardContent>
       <div className="space-y-4">
         <Accordion type="multiple">
-          {websiteStructureRiskIndicators.map((indicator, index) => (
-            <AccordionItem
-              key={`${index}-${indicator.id}`}
-              className={ctw(
-                'border border-gray-200 shadow-sm rounded-none',
-                index === 0 && 'rounded-t-lg',
-              )}
-              value={`${index}-${indicator.id}`}
-            >
-              <AccordionTrigger
-                className="px-4 py-3 hover:no-underline flex items-center justify-between [&>svg]:-rotate-90 [&[data-state=open]>svg]:rotate-0 font-normal"
-                chevronLeft={true}
+          {websiteStructureRiskIndicators.length > 0 ? (
+            websiteStructureRiskIndicators.map((indicator, index) => (
+              <AccordionItem
+                key={`${index}-${indicator.id}`}
+                className={ctw(
+                  'border border-gray-200 shadow-sm rounded-none',
+                  index === 0 && 'rounded-t-lg',
+                )}
+                value={`${index}-${indicator.id}`}
               >
-                <div className="flex-1 flex items-center w-full ml-10">
-                  <div className="flex items-center space-x-3 w-3/5">
-                    {!indicator.status || indicator.status === 'missing' ? (
-                      <ShieldAlert className="w-5 h-5 text-red-500" />
-                    ) : indicator.status === 'detected' ? (
-                      <ShieldCheck className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <InfoIcon className="w-5 h-5 text-gray-500" />
+                <AccordionTrigger
+                  className="px-4 py-3 hover:no-underline flex items-center justify-between [&>svg]:-rotate-90 [&[data-state=open]>svg]:rotate-0 font-normal"
+                  chevronLeft={true}
+                >
+                  <div className="flex-1 flex items-center w-full ml-10">
+                    <div className="flex items-center space-x-3 w-3/5">
+                      {!indicator.status || indicator.status === 'missing' ? (
+                        <ShieldAlert className="w-5 h-5 text-red-500" />
+                      ) : indicator.status === 'detected' ? (
+                        <ShieldCheck className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <InfoIcon className="w-5 h-5 text-gray-500" />
+                      )}
+
+                      <h3 className="text-base font-medium text-gray-900">
+                        {indicator.pageContext || indicator.name}
+                      </h3>
+                    </div>
+
+                    {indicator.status && (
+                      <span className="text-sm">{capitalize(indicator.status)}</span>
                     )}
 
-                    <h3 className="text-base font-medium text-gray-900">
-                      {indicator.pageContext || indicator.name}
-                    </h3>
+                    <div className="ml-auto text-sm font-medium">
+                      {indicator.sourceUrl ? (
+                        <BallerineLink href={indicator.sourceUrl} className="px-2 py-1 h-auto">
+                          View
+                        </BallerineLink>
+                      ) : (
+                        <span className="text-gray-400 cursor-not-allowed">View</span>
+                      )}
+                    </div>
                   </div>
-
-                  {indicator.status && (
-                    <span className="text-sm">{capitalize(indicator.status)}</span>
-                  )}
-
-                  <div className="ml-auto text-sm font-medium">
-                    {indicator.sourceUrl ? (
-                      <BallerineLink href={indicator.sourceUrl} className="px-2 py-1 h-auto">
-                        View
-                      </BallerineLink>
-                    ) : (
-                      <span className="text-gray-400 cursor-not-allowed">View</span>
-                    )}
-                  </div>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="p-4 bg-slate-100">
-                <p className="text-gray-600">{indicator.reason}</p>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+                </AccordionTrigger>
+                <AccordionContent className="p-4 bg-slate-100">
+                  <p className="text-gray-600">{indicator.reason}</p>
+                </AccordionContent>
+              </AccordionItem>
+            ))
+          ) : (
+            <div className="text-gray-600">
+              No structural issues on missing compliance pages were detected.
+            </div>
+          )}
         </Accordion>
       </div>
     </CardContent>
@@ -734,11 +743,11 @@ export const WebsiteCredibility: FunctionComponent<WebsiteCredibilityProps> = ({
   ).filter(({ value }) => typeof value === 'string') as EngagementType[];
 
   const visitorsCountries = useMemo(() => {
-    if (!Object.keys(trafficData.visitorsCountries ?? {}).length) {
+    if (!Object.keys(trafficData.visitorsCountries?.data ?? {}).length) {
       return [];
     }
 
-    const values = Object.entries(trafficData.visitorsCountries ?? {})
+    const values = Object.entries(trafficData.visitorsCountries?.data ?? {})
       .map(([label, value]) => ({
         label,
         value: Number((value * 100).toFixed(2)),
@@ -746,7 +755,7 @@ export const WebsiteCredibility: FunctionComponent<WebsiteCredibilityProps> = ({
       .sort((a, b) => b.value - a.value);
 
     return values;
-  }, [trafficData.visitorsCountries]);
+  }, [trafficData.visitorsCountries?.data]);
 
   const trend = calculateTrend(
     Object.entries(trafficData.monthlyVisits ?? {}).map(([label, value]) => ({ label, value })),
