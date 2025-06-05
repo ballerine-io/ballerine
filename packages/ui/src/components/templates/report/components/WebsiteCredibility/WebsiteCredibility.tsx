@@ -86,6 +86,10 @@ const calculateTrend = (data: Array<{ label: string; value: number }>) => {
 
   const lastMonthValue = data[data.length - 1]?.value ?? 0;
   const previousMonthValue = data[data.length - 2]?.value ?? 0;
+  // Prevent division by zero
+  if (previousMonthValue === 0) {
+    return { direction: 'No trend data', percentage: 0 };
+  }
   const percentageChange = ((lastMonthValue - previousMonthValue) / previousMonthValue) * 100;
   const direction = lastMonthValue > previousMonthValue ? 'up' : 'down';
 
