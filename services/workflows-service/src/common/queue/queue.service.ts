@@ -61,12 +61,14 @@ export class QueueService implements OnModuleDestroy {
         host: env.REDIS_HOST || 'localhost',
         port: env.REDIS_PORT || 6379,
         password: env.REDIS_PASSWORD,
+        maxRetriesPerRequest: null,
       };
 
       this.redisClient = new IORedis({
         host: redisConfig.host,
         port: redisConfig.port,
         password: redisConfig.password,
+        maxRetriesPerRequest: null,
       });
 
       this.redisClient.on('error', error => {
@@ -212,7 +214,7 @@ export class QueueService implements OnModuleDestroy {
       const jobName = options.jobName || 'scheduled-job';
       const firstJob = await queue.upsertJobScheduler(
         schedulerId,
-        { every: options.every },
+        { every: options.every, jobId: schedulerId },
         {
           name: jobName,
           data: options.data || { timestamp: Date.now() },
