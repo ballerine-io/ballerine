@@ -16,24 +16,24 @@ import { AlertModule } from './alert/alert.module';
 
 @Module({
   imports: [
-    ClsModule.forRoot({
-      global: true,
-    }),
-    SentryModule,
-    AnalyticsModule,
-    WebhooksModule,
-    HealthModule,
-    PrismaModule,
-    AlertModule,
-    QueueModule,
     ConfigModule.forRoot({
       validate,
       isGlobal: true,
       load: [configs],
-      envFilePath: env.ENV_FILE_NAME ?? '.env',
+      envFilePath: '.env.worker',
+    }),
+    ClsModule.forRoot({
+      global: true,
     }),
     SecretsManagerModule,
     AppLoggerModule,
+    SentryModule,
+    PrismaModule,
+    QueueModule,
+    AnalyticsModule,
+    WebhooksModule,
+    HealthModule,
+    AlertModule,
   ],
 })
 export class WorkerAppModule {}
