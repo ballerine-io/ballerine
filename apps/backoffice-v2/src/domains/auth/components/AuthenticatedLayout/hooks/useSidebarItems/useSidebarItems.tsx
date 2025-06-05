@@ -164,16 +164,7 @@ export const useSidebarItems = () => {
           ],
           key: 'nav-item-individuals',
         },
-        ...(customer?.config?.isKybAndOwnershipAssessmentEnabled
-          ? [
-              {
-                text: 'KYB & Ownership',
-                icon: BuildingIcon,
-                href: `/${locale}/kyb-and-ownership`,
-                key: 'nav-item-kyb-and-ownership',
-              },
-            ]
-          : []),
+        ...(customer?.config?.isKybAndOwnershipAssessmentEnabled ? [kybAndOwnershipNavItem] : []),
         // ...(customer?.config?.createIdentityVerification
         //   ? [
         //       {
