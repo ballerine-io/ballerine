@@ -1,5 +1,6 @@
 import { SortDirection } from '@ballerine/common';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import dayjs from 'dayjs';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -55,7 +56,7 @@ export const usePortfolioRiskStatisticsLogic = ({
   const { data: businessReports } = useBusinessReportsQuery({
     isAlert: true,
     from,
-    to,
+    to: to ? dayjs(to).add(1, 'day').format('YYYY-MM-DD') : undefined,
   });
 
   const alertedReports = businessReports?.totalItems ?? 0;
