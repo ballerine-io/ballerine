@@ -15,11 +15,12 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         value: {
           data: Object.entries(pluginsOutput?.businessInformation?.data?.[0])?.map(
             ([title, value]) => ({
-              titleNode: pluginsOutput?.businessInformation?.data?.[0]?._raw?.[title]?.original ? (
+              titleNode: pluginsOutput?.businessInformation?.data?.[0]?.originalDates?.[title]
+                ?.original ? (
                 <RegistryOriginValueTitle
                   title={title}
                   originalValue={
-                    pluginsOutput?.businessInformation?.data?.[0]?._raw?.[title]?.original
+                    pluginsOutput?.businessInformation?.data?.[0]?.originalDates?.[title]?.original
                   }
                 />
               ) : undefined,

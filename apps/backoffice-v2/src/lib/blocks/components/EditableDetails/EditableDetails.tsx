@@ -299,7 +299,6 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               dropdownOptions,
               titleNode,
             }) => {
-              console.log('title node', titleNode);
               const originalValue = form.watch(title);
 
               const displayValue = (value: unknown) => {
