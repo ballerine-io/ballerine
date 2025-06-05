@@ -5,11 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { BadRequestException, InternalServerErrorException, Injectable } from '@nestjs/common';
 import { EndUserService } from '@/end-user/end-user.service';
-import { TProjectId } from '@/types';
+import { TProjectId, type TProjectIds } from '@/types';
 import { CustomerService } from '@/customer/customer.service';
 import { isType } from '@ballerine/common';
 import z from 'zod';
-
 @Injectable()
 export class KycService {
   private readonly axiosClient: AxiosInstance;
