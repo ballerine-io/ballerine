@@ -264,7 +264,11 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     [],
   );
 
-  useWatchDropdownOptions({ form, data, setFormData });
+  useWatchDropdownOptions({
+    form,
+    data: data,
+    setFormData,
+  });
   useInitialCategorySetValue({
     form,
     data,
@@ -293,7 +297,9 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               value,
               valueAlias,
               dropdownOptions,
+              titleNode,
             }) => {
+              console.log('title node', titleNode);
               const originalValue = form.watch(title);
 
               const displayValue = (value: unknown) => {
@@ -335,7 +341,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
                     return (
                       <FormItem>
-                        <FormLabel>{toTitleCase(title)}</FormLabel>
+                        <FormLabel>{titleNode ?? toTitleCase(title)}</FormLabel>
                         {(isObject(value) || Array.isArray(value)) && (
                           <div
                             className={`flex items-end justify-start`}
