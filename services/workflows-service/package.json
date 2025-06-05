@@ -138,7 +138,7 @@
     "@types/node": "^18.14.6",
     "@types/object-hash": "^3.0.6",
     "@types/passport": "^1.0.12",
-    "@types/passport-http": "0.3.9",
+    "@types/passport-http": "0.3.11",
     "@types/passport-jwt": "4.0.1",
     "@types/passport-local": "^1.0.35",
     "@types/supertest": "2.0.11",
