@@ -1,6 +1,7 @@
 import { ReportSchema } from '@ballerine/common';
 import {
   BuildingIcon,
+  CreditCard,
   FactoryIcon,
   Globe,
   ListChecksIcon,
@@ -21,7 +22,6 @@ import {
   WebsiteLineOfBusiness,
   WebsitesCompany,
 } from '@/components';
-import { CreditCard } from 'lucide-react';
 
 type BusinessReportSection = {
   id: string;
@@ -50,6 +50,7 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
     mcc,
     mccDescription,
     trafficSources,
+    visitorsCountries,
     monthlyVisits,
     pagesPerVisit,
     timeOnSite,
@@ -144,11 +145,12 @@ export const useReportSections = (report: z.infer<typeof ReportSchema>) => {
           Component: (
             <WebsiteCredibility
               trafficData={{
-                trafficSources: trafficSources,
-                monthlyVisits: monthlyVisits,
-                pagesPerVisit: pagesPerVisit,
-                timeOnSite: timeOnSite,
-                bounceRate: bounceRate,
+                visitorsCountries,
+                trafficSources,
+                monthlyVisits,
+                pagesPerVisit,
+                timeOnSite,
+                bounceRate,
               }}
               websiteReputationRiskIndicators={websiteReputationRiskIndicators ?? []}
               pricingRiskIndicators={pricingRiskIndicators ?? []}
