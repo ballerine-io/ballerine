@@ -92,6 +92,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     // Otherwise during edit mode element id wont match revision fields and will be disabled
     document?.decision === 'revisions' || document?.status === 'requested' ? element : _element,
     stack,
+    documentState,
   );
 
   useLayoutEffect(() => {
