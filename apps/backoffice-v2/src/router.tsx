@@ -252,7 +252,7 @@ const router = createBrowserRouter([
       (acc, result, i) =>
         Object.assign(acc, {
           // Length of matches and results is asserter above
-          [matchesToLoad[i]!!.route.id]: result,
+          [matchesToLoad[i]!.route.id]: result,
         }),
       {}
     );
