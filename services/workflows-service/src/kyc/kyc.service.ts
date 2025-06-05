@@ -206,4 +206,44 @@ export class KycService {
       url: kycLink,
     };
   }
+
+  async initiateAml({
+    endUserId,
+    clientId,
+
+    vendor,
+    ongoingMonitoring,
+    immediateResults,
+    callbackUrl,
+
+    firstName,
+    lastName,
+    dateOfBirth,
+  }: {
+    endUserId: string;
+    clientId: string;
+
+    vendor: 'veriff';
+    ongoingMonitoring: boolean;
+    immediateResults: boolean;
+    callbackUrl: string;
+
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string;
+  }) {
+    return await this.unifiedApiClient.runAml({
+      endUserId,
+      clientId,
+
+      vendor,
+      ongoingMonitoring,
+      immediateResults,
+      callbackUrl,
+
+      firstName,
+      lastName,
+      dateOfBirth,
+    });
+  }
 }

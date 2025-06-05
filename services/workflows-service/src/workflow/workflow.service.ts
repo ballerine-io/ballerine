@@ -59,6 +59,7 @@ import {
   IndividualDataSchema,
   isErrorWithMessage,
   isObject,
+  isType,
   ProcessStatus,
   setCollectionFlowStatus,
   TWorkflowHelpers,
@@ -86,6 +87,7 @@ import {
 import {
   ApprovalState,
   BusinessPosition,
+  CreatedFrom,
   Customer,
   EndUser,
   Prisma,
@@ -121,6 +123,8 @@ import { PartialDeep } from 'type-fest';
 import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
 import { formatIndividualVerification } from '@/common/utils/idv';
 import { AssessmentsService } from '@/assessments/assessments.service';
+import { KycService } from '@/kyc/kyc.service';
+import z from 'zod';
 
 type TEntityId = string;
 
@@ -208,6 +212,7 @@ export class WorkflowService {
     private readonly storageService: StorageService,
     private readonly workflowLogService: WorkflowLogService,
     private readonly assessmentsService: AssessmentsService,
+    private readonly kycService: KycService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -2360,6 +2365,66 @@ export class WorkflowService {
               website: typedPayload.website,
             },
           },
+        );
+      });
+
+      service.subscribe('RUN_AML_ON_REGISTRY_PEOPLE_OF_INTEREST', async ({ payload }) => {
+        const PayloadWithPeopleOfInterestSchema = z.object({
+          pluginsOutput: z.object({
+            businessInformation: z.object({
+              data: z.array(
+                z.object({
+                  peopleOfInterest: z.array(
+                    z.object({
+                      firstName: z.string(),
+                      lastName: z.string(),
+                    }),
+                  ),
+                }),
+              ),
+            }),
+          }),
+        });
+        const checkIsValidPayload = isType(PayloadWithPeopleOfInterestSchema);
+
+        if (!checkIsValidPayload(payload)) {
+          this.logger.log('Skipping AML on registry people of interest');
+
+          return;
+        }
+
+        const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
+
+        await Promise.all(
+          payload.pluginsOutput.businessInformation.data[0]?.peopleOfInterest?.map(
+            async ({ firstName, lastName }) => {
+              const customer = await this.customerService.getByProjectId(currentProjectId);
+              const endUser = await this.endUserService.create(
+                {
+                  data: {
+                    firstName,
+                    lastName,
+                    createdFrom: CreatedFrom.registry,
+                    projectId: currentProjectId,
+                  },
+                },
+                transaction,
+              );
+
+              return await this.kycService.initiateAml({
+                endUserId: endUser.id,
+                clientId: customer.name,
+
+                vendor: 'veriff',
+                immediateResults: true,
+                ongoingMonitoring: false,
+
+                firstName,
+                lastName,
+                callbackUrl,
+              });
+            },
+          ) ?? [],
         );
       });
 
