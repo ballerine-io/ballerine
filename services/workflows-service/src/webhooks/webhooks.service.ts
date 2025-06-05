@@ -34,9 +34,13 @@ export class WebhooksService implements OnModuleInit {
     private readonly queueBullboardService: QueueBullboardService,
     @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
     private bullBoard: BullBoardInjectedInstance,
-  ) {}
+  ) {
+    this.logger.log('WebhooksService constructor');
+  }
 
   async onModuleInit() {
+    this.logger.log('WebhooksService onModuleInit');
+
     if (!env.QUEUE_SYSTEM_ENABLED) {
       this.logger.log('Queue system is disabled. Webhooks will be sent directly.');
       return;
@@ -173,7 +177,6 @@ export class WebhooksService implements OnModuleInit {
       data,
       timeout: timeout ?? 15_000,
     };
-
     if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {
       try {
         const queue = this.queueService.getQueue<OutgoingWebhookJobData>({ name: this.QUEUE_NAME });
