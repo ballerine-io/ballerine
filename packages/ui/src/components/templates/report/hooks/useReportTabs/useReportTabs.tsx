@@ -1,7 +1,10 @@
+import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
 import { Crown } from 'lucide-react';
 import { ComponentProps, ReactNode } from 'react';
-import { ContentTooltip } from '@/components/molecules/ContentTooltip/ContentTooltip';
+import { z } from 'zod';
 
+import { getUniqueRiskIndicators } from '@/common';
 import {
   AdsAndSocialMedia,
   BusinessReportSummary,
@@ -11,9 +14,6 @@ import {
   WebsiteLineOfBusiness,
   WebsitesCompany,
 } from '@/components';
-import { z } from 'zod';
-import { ReportSchema, RiskIndicatorSchema } from '@ballerine/common';
-import { getUniqueRiskIndicators } from '@/common';
 
 type UseReportTabsProps = {
   report: z.infer<typeof ReportSchema>;
@@ -124,6 +124,7 @@ export const useReportTabs = ({ report, Link }: UseReportTabsProps) => {
       content: (
         <WebsiteCredibility
           trafficData={{
+            visitorsCountries: report.data?.visitorsCountries,
             trafficSources: report.data?.trafficSources,
             monthlyVisits: report.data?.monthlyVisits,
             pagesPerVisit: report.data?.pagesPerVisit,
