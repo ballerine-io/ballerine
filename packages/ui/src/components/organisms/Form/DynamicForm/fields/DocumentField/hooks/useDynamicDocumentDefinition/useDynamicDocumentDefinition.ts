@@ -9,10 +9,12 @@ export const useDynamicDocumentDefinition = ({
   element,
   document,
   entityId,
+  valueDestination,
 }: {
   element: IFormElement<'documentfield', IDocumentFieldParams>;
   document: IDocument | undefined;
   entityId: string | undefined;
+  valueDestination: string;
 }) => {
   const isRevisionOrRequested = useMemo(() => {
     return document?.decision === 'revisions' || document?.status === 'requested';
@@ -59,6 +61,7 @@ export const useDynamicDocumentDefinition = ({
     return {
       ...element,
       id: entityId ? `${element.id}-${entityId}` : element.id,
+      valueDestination,
       params: {
         ...element.params,
         label: documentLabel,
@@ -74,6 +77,7 @@ export const useDynamicDocumentDefinition = ({
     documentValidationRules,
     document,
     entityId,
+    valueDestination,
   ]);
 
   return elementDefinition as IFormElement<'documentfield', IDocumentFieldParams>;

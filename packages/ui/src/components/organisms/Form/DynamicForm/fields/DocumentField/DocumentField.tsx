@@ -78,6 +78,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
     document: document ?? undefined,
     entityId: undefined,
+    valueDestination: 'entity.ballerineEntityId',
   });
 
   const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();

@@ -14,7 +14,7 @@ import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../providers/TaskRunner/types';
-import { TDynamicFormField } from '../../types';
+import { IFormElement, TDynamicFormField } from '../../types';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
 import { EntityFields } from './components/EntityFields';
@@ -235,6 +235,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
             tempEntityId={entity.__id!}
             entityFieldGroupType={element.params?.type as TEntityFieldGroupType}
             isSyncing={isCreatingEntity || isUpdatingEntity}
+            element={element as IFormElement<'entityfieldgroup', IEntityFieldGroupParams>}
           >
             <div className="flex flex-col gap-4">
               <div className="flex flex-row items-center justify-between">

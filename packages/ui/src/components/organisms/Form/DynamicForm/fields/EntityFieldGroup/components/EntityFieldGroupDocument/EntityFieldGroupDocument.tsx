@@ -35,7 +35,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   const { values } = useDynamicForm();
   const { stack } = useStack();
 
-  const { isSyncing, entityId, tempEntityId } = useEntityField();
+  const { isSyncing, entityId, tempEntityId, element: entityFieldElement } = useEntityField();
   const { addTask, removeTask } = useTaskRunner();
   const id = useElementId(_element, stack);
 
@@ -81,6 +81,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
     document: document ?? undefined,
     entityId: entityId ?? undefined,
+    valueDestination: `${entityFieldElement.valueDestination}[$0]`,
   });
 
   const { params } = element;
@@ -107,12 +108,6 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   }, [inputRef]);
 
   const clearFileAndInput = useCallback(async () => {
-    if (!element.params?.template?.id) {
-      console.warn('Template id is migging in element', element);
-
-      return;
-    }
-
     if (document) {
       await deleteDocumentFiles(document.id);
     }

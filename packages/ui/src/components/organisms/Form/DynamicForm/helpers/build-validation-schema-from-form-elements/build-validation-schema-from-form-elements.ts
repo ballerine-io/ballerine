@@ -41,7 +41,10 @@ export const buildValidationSchemaFromFormElements = (
         id: element.id,
         valueDestination: getValueDestination(element, parent),
         metadata: {
-          element,
+          element: {
+            ...element,
+            valueDestination: getValueDestination(element, parent),
+          },
         } as AnyObject,
         getThisContext: contextBuilders[element.element],
       } as IValidationSchema;
@@ -64,7 +67,10 @@ export const buildValidationSchemaFromFormElements = (
         id: element.id,
         valueDestination: getValueDestination(element, parent),
         metadata: {
-          element,
+          element: {
+            ...element,
+            valueDestination: getValueDestination(element, parent),
+          },
         } as AnyObject,
         getThisContext: contextBuilders[element.element],
       } as IValidationSchema;
