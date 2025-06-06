@@ -19,11 +19,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Twingate
-        uses: twingate/github-action@v1
-        with:
-          service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
-
       - name: Execute EKS Start Action
         uses: ./.github/actions/start-dev
         with:
@@ -31,6 +26,7 @@ jobs:
           aws-role: ${{ secrets.AWS_ASSUME_ROLE }}
           eks-cluster: ${{ secrets.EKS_CLUSTER_NAME }}
           environment-name: 'dev'
+          twingate-service-key: ${{ secrets.TWINGATE_SERVICE_KEY_SECRET_NAME }}
 
   send-to-slack:
     runs-on: ubuntu-latest

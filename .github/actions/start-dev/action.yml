@@ -10,6 +10,9 @@ inputs:
   eks-cluster:
     required: true
     description: "EKS Cluster Name"
+  twingate-service-key:
+    required: true
+    description: "Twingate service key for configuration"
 
 runs:
   using: composite
@@ -28,9 +31,39 @@ runs:
       shell: bash
       env:
         AWS_REGION: ${{ inputs.aws-region }}
-        EKS_CLUSTER: ${{ inputs.eks-cluster }}  
+        EKS_CLUSTER: ${{ inputs.eks-cluster }}
       run: |
         aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+
+        # Scale up the nodegroup
+        echo "Scaling up nodegroup"
+        NODEGROUP_NAME=$(aws eks list-nodegroups --cluster-name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }} --query 'nodegroups[0]' --output text)
+        
+        if [ -z "$NODEGROUP_NAME" ]; then
+          echo "No nodegroup found"
+          exit 1
+        fi
+
+        echo "Scaling up nodegroup $NODEGROUP_NAME to 2 nodes"
+        aws eks update-nodegroup-config \
+          --cluster-name ${{ env.EKS_CLUSTER }} \
+          --nodegroup-name $NODEGROUP_NAME \
+          --scaling-config desiredSize=2,minSize=2,maxSize=2 \
+          --update-config maxUnavailable=1 \
+          --region ${{ env.AWS_REGION }}
+
+        echo "Waiting for nodegroup to scale up"
+        aws eks wait nodegroup-active \
+          --cluster-name ${{ env.EKS_CLUSTER }} \
+          --nodegroup-name $NODEGROUP_NAME \
+          --region ${{ env.AWS_REGION }}
+
+        sleep 150
+
+    - name: Configure Twingate
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ inputs.twingate-service-key }}
 
     - name: Scale Up Application Deployments
       shell: bash
