@@ -6,7 +6,7 @@ import { ITask } from '../../../../providers/TaskRunner/types';
 import { IFormElement } from '../../../../types';
 import { IDocumentFieldParams } from '../../DocumentField';
 import { useDocument, useDocumentFile } from '@/components/organisms/Form/DocumentsService';
-import { useElementId, useField } from '../../../../hooks/external';
+import { useElementId } from '../../../../hooks/external';
 import { useStack } from '../../../FieldList';
 import { useCreateDocument } from '../useCreateDocument';
 import { useReuploadDocument } from '../useReuploadDocument';
@@ -20,14 +20,13 @@ export const useDocumentUpload = (
   const { addTask, removeTask } = useTaskRunner();
   const { stack } = useStack();
   const id = useElementId(element, stack);
-  const { onChange } = useField(element, stack);
   const document = useDocument({
     type: element.params?.template?.type!,
     category: element.params?.template?.category!,
     entityType: 'business',
     entityId: metadata.businessId!,
   });
-  const { file, setFile } = useDocumentFile({
+  const { setFile } = useDocumentFile({
     type: element.params?.template?.type!,
     category: element.params?.template?.category!,
     entityType: 'business',
@@ -57,8 +56,6 @@ export const useDocumentUpload = (
           document
             ? await reuploadDocument(e.target?.files?.[0] as File)
             : await createDocument(e.target?.files?.[0] as File);
-
-          onChange([]);
         } catch (error) {
           console.error('Failed to upload file.', error);
 
@@ -91,7 +88,7 @@ export const useDocumentUpload = (
         addTask(task);
       }
     },
-    [uploadOn, metadata, addTask, removeTask, onChange, id, element, document],
+    [uploadOn, metadata, addTask, removeTask, id, element, document],
   );
 
   return {

@@ -103,7 +103,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
 
   const { stack } = useStack();
   const id = useElementId(element, stack);
-  const { disabled, onChange, onBlur, onFocus } = useField<
+  const { disabled, value, onChange, onBlur, onFocus } = useField<
     Array<IDocumentFieldParams['template']> | undefined
   >(element, stack, documentState);
 
@@ -116,7 +116,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   }, [inputRef]);
 
   const clearFileAndInput = useCallback(async () => {
-    onChange([]);
+    onChange(value);
     removeTask(id);
 
     if (document) {
@@ -128,7 +128,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-  }, [document, removeFile, deleteDocumentFiles, onChange, removeTask, id]);
+  }, [document, removeFile, deleteDocumentFiles, onChange, removeTask, id, value]);
 
   const isShouldDisableInput = useMemo(() => {
     return (
