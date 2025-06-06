@@ -91,3 +91,25 @@ runs:
         for ns in "pg-admin" "rosette" "rosettev2" "temporal"; do
           scale_namespace_deployments "$ns" ""
         done
+
+    - name: Scale Down Nodegroup
+      shell: bash
+      env:
+        AWS_REGION: ${{ inputs.aws-region }}
+        EKS_CLUSTER: ${{ inputs.eks-cluster }}
+      run: |
+        echo "Scaling down nodegroup..."
+        NODEGROUP_NAME=$(aws eks list-nodegroups --cluster-name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }} --query 'nodegroups[0]' --output text)
+        
+        if [ -z "$NODEGROUP_NAME" ]; then
+          echo "No nodegroup found"
+          exit 1
+        fi
+
+        echo "Scaling down nodegroup $NODEGROUP_NAME to 0 nodes..."
+        aws eks update-nodegroup-config \
+          --cluster-name ${{ env.EKS_CLUSTER }} \
+          --nodegroup-name $NODEGROUP_NAME \
+          --scaling-config minSize=0,maxSize=0,desiredSize=0 \
+          --update-config maxUnavailable=0 \
+          --region ${{ env.AWS_REGION }}
