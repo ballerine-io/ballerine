@@ -1273,8 +1273,8 @@ importers:
         specifier: 2.70.2
         version: 2.70.2
       rollup-plugin-dts:
-        specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@5.1.6)
+        specifier: 4.2.3
+        version: 4.2.3(rollup@2.70.2)(typescript@5.1.6)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
@@ -1454,8 +1454,8 @@ importers:
         specifier: 2.70.2
         version: 2.70.2
       rollup-plugin-dts:
-        specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@4.9.5)
+        specifier: 4.2.3
+        version: 4.2.3(rollup@2.70.2)(typescript@4.9.5)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
@@ -1722,8 +1722,8 @@ importers:
         specifier: 2.70.2
         version: 2.70.2
       rollup-plugin-dts:
-        specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@4.9.5)
+        specifier: 4.2.3
+        version: 4.2.3(rollup@2.70.2)(typescript@4.9.5)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
@@ -2222,8 +2222,8 @@ importers:
         specifier: 2.70.2
         version: 2.70.2
       rollup-plugin-dts:
-        specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@5.1.6)
+        specifier: 4.2.3
+        version: 4.2.3(rollup@2.70.2)(typescript@5.1.6)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
@@ -2491,8 +2491,8 @@ importers:
         specifier: 2.70.2
         version: 2.70.2
       rollup-plugin-dts:
-        specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@4.9.5)
+        specifier: 4.2.3
+        version: 4.2.3(rollup@2.70.2)(typescript@4.9.5)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
@@ -2612,8 +2612,8 @@ importers:
         specifier: 2.70.2
         version: 2.70.2
       rollup-plugin-dts:
-        specifier: 4.2.2
-        version: 4.2.2(rollup@2.70.2)(typescript@5.1.6)
+        specifier: 4.2.3
+        version: 4.2.3(rollup@2.70.2)(typescript@5.1.6)
       rollup-plugin-size:
         specifier: 0.2.2
         version: 0.2.2
@@ -14996,6 +14996,7 @@ packages:
   multer@1.4.4-lts.1:
     resolution: {integrity: sha512-WeSGziVj6+Z2/MwQo3GvqzgR+9Uc+qt8SwHKh3gvNPiISKfsMfG4SvCOFYlxxgkXt7yIV2i1yczehm0EOKIxIg==}
     engines: {node: '>= 6.0.0'}
+    deprecated: Multer 1.x is impacted by a number of vulnerabilities, which have been patched in 2.x. You should upgrade to the latest 2.x version.
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -16610,9 +16611,9 @@ packages:
     resolution: {integrity: sha512-l0OE8wL34P4nJH/H2ffoaniAokM2qSmrtXHmlpvYr5AVVX8msAyW0l8NVJFDxlSK4u3Uh/f41cQheDVdnYijwQ==}
     hasBin: true
 
-  rollup-plugin-dts@4.2.2:
-    resolution: {integrity: sha512-A3g6Rogyko/PXeKoUlkjxkP++8UDVpgA7C+Tdl77Xj4fgEaIjPSnxRmR53EzvoYy97VMVwLAOcWJudaVAuxneQ==}
-    engines: {node: '>=v12.22.11'}
+  rollup-plugin-dts@4.2.3:
+    resolution: {integrity: sha512-jlcpItqM2efqfIiKzDB/IKOS9E9fDvbkJSGw5GtK/PqPGS9eC3R3JKyw2VvpTktZA+TNgJRMu1NTv244aTUzzQ==}
+    engines: {node: '>=v12.22.12'}
     peerDependencies:
       rollup: ^2.55
       typescript: ^4.1
@@ -38069,7 +38070,7 @@ snapshots:
     dependencies:
       glob: 10.4.5
 
-  rollup-plugin-dts@4.2.2(rollup@2.70.2)(typescript@4.9.5):
+  rollup-plugin-dts@4.2.3(rollup@2.70.2)(typescript@4.9.5):
     dependencies:
       magic-string: 0.26.7
       rollup: 2.70.2
@@ -38077,7 +38078,7 @@ snapshots:
     optionalDependencies:
       '@babel/code-frame': 7.26.2
 
-  rollup-plugin-dts@4.2.2(rollup@2.70.2)(typescript@5.1.6):
+  rollup-plugin-dts@4.2.3(rollup@2.70.2)(typescript@5.1.6):
     dependencies:
       magic-string: 0.26.7
       rollup: 2.70.2
