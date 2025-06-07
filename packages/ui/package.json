@@ -123,7 +123,7 @@
     "rimraf": "^5.0.5",
     "storybook": "^7.0.26",
     "tailwindcss": "^3.3.2",
-    "tailwindcss-animate": "1.0.5",
+    "tailwindcss-animate": "1.0.7",
     "type-fest": "4.23.0",
     "typescript": "^5.5.4",
     "vite": "^5.3.5",
