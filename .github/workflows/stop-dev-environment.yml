@@ -4,10 +4,10 @@ permissions:
     id-token: write
     contents: read
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 21 * * *'  # 12:00 AM Israel time
+#on:
+#  workflow_dispatch:
+#  schedule:
+#    - cron: '0 21 * * *'  # 12:00 AM Israel time
 
 jobs:
   Stop-Environment:
