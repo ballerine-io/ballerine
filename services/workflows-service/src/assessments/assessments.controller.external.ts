@@ -12,6 +12,8 @@ import {
 } from './dtos/get-kyb-and-ownership-assessments.dto';
 import type { UpdateableAssessmentStatus } from '@ballerine/common';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import type { Response } from 'express';
+import { Observable, interval, from, switchMap, map, catchError, of } from 'rxjs';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Assessments')
@@ -94,5 +96,39 @@ export class AssessmentsControllerExternal {
     @CurrentProject() projectId: TProjectId,
   ) {
     return this.assessmentsService.updateAssessmentStatus(id, status, projectId);
+  }
+
+  @common.Get('/kyb_and_ownership/:id/sse')
+  @swagger.ApiOperation({ summary: 'Stream KYB & Ownership assessment updates via SSE' })
+  @swagger.ApiResponse({
+    status: 200,
+    description: 'SSE stream for KYB & Ownership assessment updates',
+  })
+  @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
+  @common.Header('Content-Type', 'text/event-stream')
+  @common.Header('Cache-Control', 'no-cache')
+  @common.Header('Connection', 'keep-alive')
+  streamKybAndOwnershipAssessment(
+    @common.Param('id') id: string,
+    @CurrentProject() projectId: TProjectId,
+    @common.Res() res: Response,
+  ): Observable<any> {
+    // Send initial connection message
+    res.write('data: {"type":"connected"}\n\n');
+
+    // Create observable that polls for updates every 2 seconds
+    return interval(2000).pipe(
+      switchMap(() => from(this.assessmentsService.getKybAndOwnershipAssessment(id, projectId))),
+      map(assessment => {
+        const event = `data: ${JSON.stringify({ type: 'assessment-update', data: assessment })}\n\n`;
+        res.write(event);
+        return assessment;
+      }),
+      catchError(error => {
+        const errorEvent = `data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`;
+        res.write(errorEvent);
+        return of(null);
+      }),
+    );
   }
 }
