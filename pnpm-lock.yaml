@@ -726,8 +726,8 @@ importers:
         specifier: ^4.0.1
         version: 4.4.1(vite@4.5.3(@types/node@18.17.19)(sass@1.87.0)(terser@5.39.0))
       autoprefixer:
-        specifier: 10.4.14
-        version: 10.4.14(postcss@8.5.3)
+        specifier: 10.4.21
+        version: 10.4.21(postcss@8.5.3)
       eslint:
         specifier: ^8.44.0
         version: 8.57.1
@@ -1996,8 +1996,8 @@ importers:
         specifier: ^4.0.1
         version: 4.4.1(vite@5.4.18(@types/node@20.17.31)(sass@1.87.0)(terser@5.39.0))
       autoprefixer:
-        specifier: 10.4.14
-        version: 10.4.14(postcss@8.5.3)
+        specifier: 10.4.21
+        version: 10.4.21(postcss@8.5.3)
       cspell:
         specifier: ^6.31.2
         version: 6.31.3
@@ -2683,7 +2683,7 @@ importers:
         version: 9.3.0(@swc/core@1.11.22(@swc/helpers@0.5.17))
       '@nestjs/schematics':
         specifier: ^9.0.0
-        version: 9.2.0(chokidar@3.5.3)(typescript@4.9.5)
+        version: 9.2.0(chokidar@3.6.0)(typescript@4.9.5)
       '@nestjs/testing':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
@@ -10301,6 +10301,13 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
 
+  autoprefixer@10.4.21:
+    resolution: {integrity: sha512-O+A6LWV5LDHSJD3LjHYoNi4VLsj/Whi7k6zG12xTYaU4cQ8oxQGckXNX8cRHK5yOZ/ppVHe0ZBXGzSV9jXdVbQ==}
+    engines: {node: ^10 || ^12 || >=14}
+    hasBin: true
+    peerDependencies:
+      postcss: ^8.1.0
+
   available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
@@ -14996,6 +15003,7 @@ packages:
   multer@1.4.4-lts.1:
     resolution: {integrity: sha512-WeSGziVj6+Z2/MwQo3GvqzgR+9Uc+qt8SwHKh3gvNPiISKfsMfG4SvCOFYlxxgkXt7yIV2i1yczehm0EOKIxIg==}
     engines: {node: '>= 6.0.0'}
+    deprecated: Multer 1.x is impacted by a number of vulnerabilities, which have been patched in 2.x. You should upgrade to the latest 2.x version.
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -19006,6 +19014,16 @@ snapshots:
     optionalDependencies:
       chokidar: 3.5.3
 
+  '@angular-devkit/core@16.0.1(chokidar@3.6.0)':
+    dependencies:
+      ajv: 8.12.0
+      ajv-formats: 2.1.1(ajv@8.12.0)
+      jsonc-parser: 3.2.0
+      rxjs: 7.8.1
+      source-map: 0.7.4
+    optionalDependencies:
+      chokidar: 3.6.0
+
   '@angular-devkit/schematics-cli@15.2.4(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 15.2.4(chokidar@3.5.3)
@@ -19030,6 +19048,16 @@ snapshots:
   '@angular-devkit/schematics@16.0.1(chokidar@3.5.3)':
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
+      jsonc-parser: 3.2.0
+      magic-string: 0.30.0
+      ora: 5.4.1
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - chokidar
+
+  '@angular-devkit/schematics@16.0.1(chokidar@3.6.0)':
+    dependencies:
+      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       magic-string: 0.30.0
       ora: 5.4.1
@@ -19145,7 +19173,7 @@ snapshots:
   '@astrojs/tailwind@4.0.0(astro@3.3.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)(typescript@5.8.3))(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3)))(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))':
     dependencies:
       astro: 3.3.3(@types/node@22.15.2)(sass@1.87.0)(terser@5.39.0)(typescript@5.8.3)
-      autoprefixer: 10.4.14(postcss@8.5.3)
+      autoprefixer: 10.4.21(postcss@8.5.3)
       postcss: 8.5.3
       postcss-load-config: 4.0.2(postcss@8.5.3)(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))
       tailwindcss: 3.4.17(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))
@@ -23788,6 +23816,16 @@ snapshots:
     dependencies:
       '@angular-devkit/core': 16.0.1(chokidar@3.5.3)
       '@angular-devkit/schematics': 16.0.1(chokidar@3.5.3)
+      jsonc-parser: 3.2.0
+      pluralize: 8.0.0
+      typescript: 4.9.5
+    transitivePeerDependencies:
+      - chokidar
+
+  '@nestjs/schematics@9.2.0(chokidar@3.6.0)(typescript@4.9.5)':
+    dependencies:
+      '@angular-devkit/core': 16.0.1(chokidar@3.6.0)
+      '@angular-devkit/schematics': 16.0.1(chokidar@3.6.0)
       jsonc-parser: 3.2.0
       pluralize: 8.0.0
       typescript: 4.9.5
@@ -29558,6 +29596,16 @@ snapshots:
   atob@2.1.2: {}
 
   autoprefixer@10.4.14(postcss@8.5.3):
+    dependencies:
+      browserslist: 4.24.4
+      caniuse-lite: 1.0.30001715
+      fraction.js: 4.3.7
+      normalize-range: 0.1.2
+      picocolors: 1.1.1
+      postcss: 8.5.3
+      postcss-value-parser: 4.2.0
+
+  autoprefixer@10.4.21(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.4
       caniuse-lite: 1.0.30001715
