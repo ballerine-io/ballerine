@@ -39,13 +39,17 @@ const router = createBrowserRouter([
   {
     path: '/*',
     element: <NotFoundRedirectWithProviders />,
-    loader: rootLoader,
+    handle: {
+      middleware: rootLoader,
+    },
     errorElement: <RouteErrorWithProviders />,
   },
   {
     path: '/',
     element: <Root />,
-    loader: rootLoader,
+    handle: {
+      middleware: rootLoader,
+    },
     errorElement: <RootError />,
     children: [
       {
@@ -216,7 +220,44 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+], {
+  // From RR Wiki: Two-phase "middlewares in sequence first, loaders in parallel next" strategy
+  async dataStrategy({ request, params, matches }) {
+    const context = {};
+
+    for (const match of matches) {
+      if (match.route.handle?.middleware) {
+        await match.route.handle.middleware(
+          { request, params },
+          context
+        );
+      }
+    }
+
+    // Run loaders in parallel with the `context` value
+    const matchesToLoad = matches.filter((m) => m.shouldLoad);
+    const results = await Promise.all(
+      matchesToLoad.map((match, i) =>
+        match.resolve((handler) => {
+          // Whatever you pass to `handler` will be passed as the 2nd parameter
+          // to your loader/action
+          return handler(context);
+        })
+      )
+    );
+
+    console.assert(matchesToLoad.length === results.length, 'result must match matches in length');
+
+    return results.reduce(
+      (acc, result, i) =>
+        Object.assign(acc, {
+          // Length of matches and results is asserter above
+          [matchesToLoad[i]!.route.id]: result,
+        }),
+      {}
+    );
+  },
+});
 
 export const Router: FunctionComponent = () => {
   return <RouterProvider router={router} />;
