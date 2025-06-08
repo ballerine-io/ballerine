@@ -5,12 +5,11 @@ import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
-import { ICommonFieldParams, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { TTagsFieldParams } from '@ballerine/common';
 
-export type ITagsFieldParams = ICommonFieldParams;
-
-export const TagsField: TDynamicFormField<ITagsFieldParams> = ({ element }) => {
+export const TagsField: TDynamicFormField<TTagsFieldParams> = ({ element }) => {
   const { stack } = useStack();
   const { value, onChange, onBlur, onFocus, disabled } = useField<string[] | undefined>(
     element,

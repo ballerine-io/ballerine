@@ -1,15 +1,13 @@
-import { getCountryStates } from '@ballerine/common';
 import {
-  formatValueDestination,
-  IFormElement,
-  ISelectFieldParams,
-  useDynamicForm,
-  useStack,
-} from '@ballerine/ui';
+  getCountryStates,
+  STATE_PICKER_FIELD_ELEMENT_TYPE,
+  TStatePickerFieldParams,
+} from '@ballerine/common';
+import { formatValueDestination, IFormElement, useDynamicForm, useStack } from '@ballerine/ui';
 import { IDynamicFormContext } from '@ballerine/ui/dist/components/organisms/Form/DynamicForm/context';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { STATE_PICKER_FIELD_TYPE, StatePickerField } from './StatePicker';
+import { StatePickerField } from './StatePicker';
 
 vi.mock('@ballerine/ui', () => ({
   ...vi.importActual('@ballerine/ui'),
@@ -30,7 +28,7 @@ describe('StatePickerField', () => {
     params: {
       countryCodePath: 'country',
     },
-  } as unknown as IFormElement<typeof STATE_PICKER_FIELD_TYPE, ISelectFieldParams>;
+  } as unknown as IFormElement<typeof STATE_PICKER_FIELD_ELEMENT_TYPE, TStatePickerFieldParams>;
 
   beforeEach(() => {
     vi.mocked(useDynamicForm).mockReturnValue({
@@ -58,7 +56,7 @@ describe('StatePickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: STATE_PICKER_FIELD_TYPE,
+      element: STATE_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         countryCodePath: 'country',
         options: [
@@ -76,7 +74,7 @@ describe('StatePickerField', () => {
         countryCodePath: 'country',
         placeholder: 'Select a state',
       },
-    } as unknown as IFormElement<typeof STATE_PICKER_FIELD_TYPE, ISelectFieldParams>;
+    } as unknown as IFormElement<typeof STATE_PICKER_FIELD_ELEMENT_TYPE, TStatePickerFieldParams>;
 
     render(<StatePickerField element={elementWithParams} />);
 
@@ -84,7 +82,7 @@ describe('StatePickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: STATE_PICKER_FIELD_TYPE,
+      element: STATE_PICKER_FIELD_ELEMENT_TYPE,
       valueDestination: 'country',
       params: {
         countryCodePath: 'country',
@@ -108,7 +106,7 @@ describe('StatePickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: STATE_PICKER_FIELD_TYPE,
+      element: STATE_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         countryCodePath: 'country',
         options: [],

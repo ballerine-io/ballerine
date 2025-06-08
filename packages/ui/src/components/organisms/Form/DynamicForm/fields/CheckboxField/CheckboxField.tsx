@@ -7,10 +7,11 @@ import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
-import { ICommonFieldParams, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { TCheckboxFieldParams } from '@ballerine/common';
+import { TDynamicFormField } from '../../types';
 
-export const CheckboxField: TDynamicFormField<ICommonFieldParams> = ({ element }) => {
+export const CheckboxField: TDynamicFormField<TCheckboxFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

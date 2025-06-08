@@ -10,17 +10,9 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { TCheckboxListParams } from '@ballerine/common';
 
-export interface ICheckboxListOption {
-  label: string;
-  value: string;
-}
-
-export interface ICheckboxListFieldParams {
-  options: ICheckboxListOption[];
-}
-
-export const CheckboxListField: TDynamicFormField<ICheckboxListFieldParams> = ({ element }) => {
+export const CheckboxListField: TDynamicFormField<TCheckboxListParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

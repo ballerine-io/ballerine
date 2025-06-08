@@ -1,7 +1,8 @@
-import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
+import { IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { LOCALE_PICKER_FIELD_TYPE, LocalePickerField } from './LocalePicker';
+import { LocalePickerField } from './LocalePicker';
+import { LOCALE_PICKER_FIELD_ELEMENT_TYPE, TLocalePickerFieldParams } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('react-i18next', () => ({
@@ -22,7 +23,7 @@ vi.mock('@ballerine/ui', () => ({
 describe('LocalePickerField', () => {
   const mockElement = {
     params: {},
-  } as IFormElement<typeof LOCALE_PICKER_FIELD_TYPE, ISelectFieldParams>;
+  } as IFormElement<typeof LOCALE_PICKER_FIELD_ELEMENT_TYPE, TLocalePickerFieldParams>;
 
   it('renders SelectField with transformed locale options', () => {
     render(<LocalePickerField element={mockElement} />);
@@ -31,7 +32,7 @@ describe('LocalePickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: LOCALE_PICKER_FIELD_TYPE,
+      element: LOCALE_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         options: [
           { value: 'en', label: 'English' },
@@ -47,7 +48,7 @@ describe('LocalePickerField', () => {
       params: {
         placeholder: 'Select a language',
       },
-    } as IFormElement<typeof LOCALE_PICKER_FIELD_TYPE, ISelectFieldParams>;
+    } as IFormElement<typeof LOCALE_PICKER_FIELD_ELEMENT_TYPE, TLocalePickerFieldParams>;
 
     render(<LocalePickerField element={elementWithParams} />);
 

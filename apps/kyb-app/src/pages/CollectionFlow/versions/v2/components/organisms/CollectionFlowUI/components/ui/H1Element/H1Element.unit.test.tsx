@@ -2,8 +2,8 @@ import { createTestId, IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ElementContainer } from '../../utility/ElementContainer';
-import { H1_UI_ELEMENT_TYPE, H1Element } from './H1Element';
-import { TH1ElementParams } from '@ballerine/common';
+import { H1Element } from './H1Element';
+import { H1_UI_ELEMENT_TYPE, TH1ElementParams } from '@ballerine/common';
 
 vi.mock('@ballerine/ui', () => ({
   createTestId: vi.fn(),

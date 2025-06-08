@@ -1,7 +1,8 @@
-import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
+import { IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { MCC_PICKER_FIELD_TYPE, MCCPickerField } from './MCCPicker';
+import { MCCPickerField } from './MCCPicker';
+import { MCC_PICKER_FIELD_ELEMENT_TYPE, TMCCPickerFieldParams } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('@/components/organisms/UIRenderer/elements/JSONForm/components/MCCPicker/options', () => ({
@@ -20,7 +21,7 @@ vi.mock('@ballerine/ui', () => ({
 describe('MCCPickerField', () => {
   const mockElement = {
     params: {},
-  } as IFormElement<typeof MCC_PICKER_FIELD_TYPE, ISelectFieldParams>;
+  } as IFormElement<typeof MCC_PICKER_FIELD_ELEMENT_TYPE, TMCCPickerFieldParams>;
 
   it('renders SelectField with transformed MCC options', () => {
     render(<MCCPickerField element={mockElement} />);
@@ -29,7 +30,7 @@ describe('MCCPickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: MCC_PICKER_FIELD_TYPE,
+      element: MCC_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         options: [
           { value: '1234', label: '1234 - Test MCC 1' },
@@ -45,7 +46,7 @@ describe('MCCPickerField', () => {
       params: {
         placeholder: 'Select an MCC',
       },
-    } as IFormElement<typeof MCC_PICKER_FIELD_TYPE, ISelectFieldParams>;
+    } as IFormElement<typeof MCC_PICKER_FIELD_ELEMENT_TYPE, TMCCPickerFieldParams>;
 
     render(<MCCPickerField element={elementWithParams} />);
 

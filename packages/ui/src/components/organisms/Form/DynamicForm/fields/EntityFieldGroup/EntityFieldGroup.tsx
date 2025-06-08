@@ -30,6 +30,7 @@ import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
 import { useCreateDocumentMutation } from '../../../DocumentsService';
 import { useDocumentsService } from '../../../DocumentsService/hooks/internal/useDocumentsService';
 import { useReuploadDocumentMutation } from '../../../DocumentsService/domains/documents/mutations/useReuploadDocumentMutation';
+import { TEntityFieldGroupParams } from '@ballerine/common';
 
 export type TEntityFieldGroupType = 'director' | 'ubo';
 
@@ -55,7 +56,7 @@ export interface IEntityFieldGroupParams extends IFieldListParams {
   type: TEntityFieldGroupType;
 }
 
-export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
+export const EntityFieldGroup: TDynamicFormField<TEntityFieldGroupParams> = ({
   element: _element,
 }) => {
   const element = useMemo(

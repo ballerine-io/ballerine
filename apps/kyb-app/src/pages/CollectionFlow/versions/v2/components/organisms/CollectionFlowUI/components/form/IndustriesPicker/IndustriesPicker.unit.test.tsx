@@ -1,7 +1,11 @@
-import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
+import { IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { INDUSTRIES_PICKER_FIELD_TYPE, IndustriesPickerField } from './IndustriesPicker';
+import { IndustriesPickerField } from './IndustriesPicker';
+import {
+  INDUSTRIES_PICKER_FIELD_ELEMENT_TYPE,
+  TIndustriesPickerFieldParams,
+} from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('react-i18next', () => ({
@@ -19,7 +23,7 @@ vi.mock('@ballerine/ui', () => ({
 describe('IndustriesPickerField', () => {
   const mockElement = {
     params: {},
-  } as IFormElement<typeof INDUSTRIES_PICKER_FIELD_TYPE, ISelectFieldParams>;
+  } as IFormElement<typeof INDUSTRIES_PICKER_FIELD_ELEMENT_TYPE, TIndustriesPickerFieldParams>;
 
   it('renders SelectField with transformed industry options', () => {
     render(<IndustriesPickerField element={mockElement} />);
@@ -28,7 +32,7 @@ describe('IndustriesPickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: INDUSTRIES_PICKER_FIELD_TYPE,
+      element: INDUSTRIES_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         options: [
           { value: 'Industry1', label: 'Industry1' },
@@ -44,7 +48,7 @@ describe('IndustriesPickerField', () => {
       params: {
         placeholder: 'Select an industry',
       },
-    } as IFormElement<typeof INDUSTRIES_PICKER_FIELD_TYPE, ISelectFieldParams>;
+    } as IFormElement<typeof INDUSTRIES_PICKER_FIELD_ELEMENT_TYPE, TIndustriesPickerFieldParams>;
 
     render(<IndustriesPickerField element={elementWithParams} />);
 
