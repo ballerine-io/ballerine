@@ -14,11 +14,9 @@ import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../providers/TaskRunner/types';
-import { TDynamicFormField } from '../../types';
-import { createOrUpdateDocumentInList } from '../DocumentField/hooks/useDocumentUpload/helpers/create-or-update-document-in-list';
+import { IFormElement, TDynamicFormField } from '../../types';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
-import { DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS } from './components/EntityFieldGroupDocument/defaults';
 import { EntityFields } from './components/EntityFields';
 import { buildDocumentsCreationPayload } from './components/EntityFields/helpers/build-documents-creation-payload';
 import { buildEntityCreationPayload } from './components/EntityFields/helpers/build-entity-for-creation';
@@ -29,6 +27,9 @@ import { useEntityFieldGroupList } from './hooks/useEntityFieldGroupList';
 import { EntityFieldProvider } from './providers/EntityFieldProvider';
 import { IEntity } from './types';
 import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
+import { useCreateDocumentMutation } from '../../../DocumentsService';
+import { useDocumentsService } from '../../../DocumentsService/hooks/internal/useDocumentsService';
+import { useReuploadDocumentMutation } from '../../../DocumentsService/domains/documents/mutations/useReuploadDocumentMutation';
 
 export type TEntityFieldGroupType = 'director' | 'ubo';
 
@@ -70,6 +71,7 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
   useMountEvent(element);
   useUnmountEvent(element);
 
+  const { files, documents } = useDocumentsService();
   const { elementsMap } = useDynamicForm();
   const { stack } = useStack();
   const { id: fieldId, hidden } = useElement(element, stack);
@@ -87,10 +89,8 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     element.params!.httpParams?.updateEntity.httpParams,
   );
 
-  const { run: uploadDocument } = useFormHttp(
-    element.params!.httpParams?.uploadDocument ||
-      DEFAULT_ENTITY_FIELD_GROUP_DOCUMENT_CREATION_PARAMS,
-  );
+  const { mutateAsync: createDocument } = useCreateDocumentMutation();
+  const { mutateAsync: reuploadDocument } = useReuploadDocumentMutation();
   const { addTask, removeTask } = useTaskRunner();
   const elementsOverride = useMemo(
     () => ({
@@ -125,24 +125,61 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
           ),
         );
 
-        const documentsCreationPayload = buildDocumentsCreationPayload(
+        const documentsCreationPayload = buildDocumentsCreationPayload({
           element,
-          createdEntitiesIds,
-          context,
-          stack,
-        );
+          entities: entities.map((entity, index) => {
+            return {
+              ...entity,
+              ballerineEntityId: createdEntitiesIds[index]!,
+            };
+          }) as IEntity[],
+          files: files.files,
+        });
 
         await Promise.all(
-          documentsCreationPayload.map(async documentData => {
-            const uploadedDocument = await uploadDocument(documentData.payload);
-
-            const updatedDocuments = createOrUpdateDocumentInList(
-              get(context, documentData.valueDestination, []),
-              documentData.documentDefinition,
-              uploadedDocument,
+          documentsCreationPayload.map(async ({ documentData, file, entity }) => {
+            const document = documents.find(
+              document =>
+                document.endUserId === documentData.entityId &&
+                document.type === documentData.type &&
+                document.category === documentData.category,
             );
 
-            set(context, documentData.valueDestination, updatedDocuments);
+            const isDocumentExists = Boolean(document);
+
+            const uploadedDocument = !isDocumentExists
+              ? await createDocument({
+                  data: documentData,
+                  documentFile: file,
+                })
+              : await reuploadDocument({
+                  documentId: document!.id,
+                  documentFile: file,
+                  metadata: {
+                    documentType: documentData.documentType,
+                    documentVariant: documentData.documentVariant,
+                    pageIndex: documentData.documentPage,
+                  },
+                });
+
+            if (entity.__id) {
+              files.removeFile({
+                type: documentData.documentType,
+                category: documentData.documentVariant,
+                entityType: 'ubo',
+                entityId: entity.__id!,
+              });
+
+              files.setFile(
+                {
+                  type: documentData.type,
+                  category: documentData.category,
+                  entityType: 'ubo',
+                  entityId: entity.ballerineEntityId!,
+                },
+                file,
+              );
+            }
 
             return uploadedDocument;
           }),
@@ -166,11 +203,23 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
     } catch (error) {
       console.error(error);
     }
-  }, [onChange, element, createEntity, uploadDocument, stack, removeTask, addTask, updateEntity]);
+  }, [
+    onChange,
+    element,
+    createEntity,
+    stack,
+    removeTask,
+    addTask,
+    updateEntity,
+    files.files,
+    files.setFile,
+    files.removeFile,
+    documents,
+  ]);
 
   useEffect(() => {
     void createEntitiesCreationTaskOnChange();
-  }, [value, createEntitiesCreationTaskOnChange]);
+  }, [value, documents, files.files, createEntitiesCreationTaskOnChange]);
 
   if (hidden) {
     return null;
@@ -183,8 +232,10 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
           <EntityFieldProvider
             key={entity.__id || entity.ballerineEntityId}
             entityId={entity.ballerineEntityId}
+            tempEntityId={entity.__id!}
             entityFieldGroupType={element.params?.type as TEntityFieldGroupType}
             isSyncing={isCreatingEntity || isUpdatingEntity}
+            element={element as IFormElement<'entityfieldgroup', IEntityFieldGroupParams>}
           >
             <div className="flex flex-col gap-4">
               <div className="flex flex-row items-center justify-between">

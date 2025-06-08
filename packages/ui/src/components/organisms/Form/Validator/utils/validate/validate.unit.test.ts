@@ -907,7 +907,7 @@ describe('validate', () => {
       });
 
       it('even number validator', () => {
-        const evenNumberValidator = (value: number, _: ICommonValidator) => {
+        const evenNumberValidator = (value: number, _: ICommonValidator<any, any>) => {
           if (typeof value !== 'number') {
             return true;
           }

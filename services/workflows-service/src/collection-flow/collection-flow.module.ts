@@ -4,12 +4,11 @@ import { PasswordService } from '@/auth/password/password.service';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
+import { CollectionFlowService } from '@/collection-flow/services/collection-flow.service';
 // eslint-disable-next-line import/no-cycle
 import { CollectionFlowBusinessController } from '@/collection-flow/controllers/collection-flow.business.controller';
 import { CollectionFlowController } from '@/collection-flow/controllers/collection-flow.controller';
 import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
-import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
 import { CollectionFlowNoUserController } from '@/collection-flow/controllers/collection-flow.no-user.controller';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
@@ -43,10 +42,13 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
-import { CollectionFlowEntityService } from './collection-flow-entity.service';
+import { CollectionFlowEntityService } from './services/collection-flow-entity.service';
 import { CollectionFlowEntityController } from './controllers/collection-flow.entity.controller';
 import { DocumentModule } from '@/document/document.module';
-import { CollectionFlowStateService } from './collection-flow-state.service';
+import { CollectionFlowStateService } from './services/collection-flow-state.service';
+import { CollectionFlowDocumentsController } from './controllers/collection-flow.documents.controller';
+import { CollectionFlowDocumentsService } from './services/collection-flow-documents.service';
+import { DocumentFileModule } from '@/document-file/document-file.module';
 
 @Module({
   imports: [
@@ -64,14 +66,15 @@ import { CollectionFlowStateService } from './collection-flow-state.service';
     // eslint-disable-next-line import/no-cycle
     forwardRef(() => WorkflowModule),
     DocumentModule,
+    DocumentFileModule,
   ],
   controllers: [
     CollectionFlowController,
-    CollectionFlowFilesController,
     CollectionFlowNoUserController,
     CollectionFlowBusinessController,
     CollectionFlowEndUserController,
     CollectionFlowEntityController,
+    CollectionFlowDocumentsController,
   ],
   providers: [
     CollectionFlowService,
@@ -103,6 +106,7 @@ import { CollectionFlowStateService } from './collection-flow-state.service';
     SentryService,
     CollectionFlowEntityService,
     CollectionFlowStateService,
+    CollectionFlowDocumentsService,
   ],
   exports: [CollectionFlowStateService],
 })

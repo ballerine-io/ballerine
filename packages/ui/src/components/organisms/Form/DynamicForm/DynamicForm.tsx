@@ -1,7 +1,6 @@
 import { forwardRef, useImperativeHandle, useMemo } from 'react';
 
 import { Renderer, TRendererSchema } from '../../Renderer';
-import { ValidatorProvider } from '../Validator';
 import { DynamicFormContext, IDynamicFormContext } from './context';
 import { defaultValidationParams } from './defaults';
 import { useSubmit } from './hooks/external/useSubmit';
@@ -14,6 +13,15 @@ import { TaskRunner } from './providers/TaskRunner';
 import { extendFieldsRepository, getFieldsRepository } from './repositories';
 import { IDynamicFormProps, IFormRef } from './types';
 import { Toaster } from 'sonner';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { HttpClientProvider } from './providers/HttpClientProvider';
+import { queryClient } from './utils/query-client';
+import { DocumentsService } from '../DocumentsService';
+import { ValidatorWrapper } from './providers/ValidatorWrapper';
+import { registerValidator } from '../Validator/utils/register-validator';
+import { documentValidator } from './validators/document';
+
+registerValidator('document', documentValidator);
 
 export const DynamicFormV2 = forwardRef(
   <TValues extends object>(
@@ -97,23 +105,29 @@ export const DynamicFormV2 = forwardRef(
     }, [context.values, context.metadata]);
 
     return (
-      <TaskRunner>
-        <EventsProvider onEvent={onEvent}>
-          <DynamicFormContext.Provider value={context}>
-            <ValidatorProvider
-              schema={validationSchema}
-              value={valuesAndMetadata}
-              {...validationParams}
-            >
-              <Renderer
-                elements={elements}
-                schema={context.elementsMap as unknown as TRendererSchema}
-              />
-            </ValidatorProvider>
-          </DynamicFormContext.Provider>
-        </EventsProvider>
-        <Toaster richColors />
-      </TaskRunner>
+      <QueryClientProvider client={queryClient}>
+        <HttpClientProvider httpParams={httpParams} metadata={metadata}>
+          <DocumentsService>
+            <TaskRunner>
+              <EventsProvider onEvent={onEvent}>
+                <DynamicFormContext.Provider value={context}>
+                  <ValidatorWrapper
+                    schema={validationSchema}
+                    value={valuesAndMetadata}
+                    {...validationParams}
+                  >
+                    <Renderer
+                      elements={elements}
+                      schema={context.elementsMap as unknown as TRendererSchema}
+                    />
+                  </ValidatorWrapper>
+                </DynamicFormContext.Provider>
+              </EventsProvider>
+              <Toaster richColors />
+            </TaskRunner>
+          </DocumentsService>
+        </HttpClientProvider>
+      </QueryClientProvider>
     );
   },
 );
