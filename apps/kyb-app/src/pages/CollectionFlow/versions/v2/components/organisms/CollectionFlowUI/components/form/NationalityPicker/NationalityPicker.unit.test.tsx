@@ -1,8 +1,12 @@
-import { getNationalities } from '@ballerine/common';
-import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
+import {
+  getNationalities,
+  NATIONALITY_PICKER_FIELD_ELEMENT_TYPE,
+  TNationalityPickerFieldParams,
+} from '@ballerine/common';
+import { IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { NATIONALITY_PICKER_FIELD_TYPE, NationalityPickerField } from './NationalityPicker';
+import { NationalityPickerField } from './NationalityPicker';
 
 vi.mock('@/hooks/useLanguageParam/useLanguageParam', () => ({
   useLanguageParam: () => ({
@@ -30,7 +34,7 @@ vi.mock('@ballerine/common', () => ({
 describe('NationalityPickerField', () => {
   const mockElement = {
     params: {},
-  } as IFormElement<typeof NATIONALITY_PICKER_FIELD_TYPE, ISelectFieldParams>;
+  } as IFormElement<typeof NATIONALITY_PICKER_FIELD_ELEMENT_TYPE, TNationalityPickerFieldParams>;
 
   beforeEach(() => {
     vi.mocked(getNationalities).mockReturnValue([
@@ -46,7 +50,7 @@ describe('NationalityPickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: NATIONALITY_PICKER_FIELD_TYPE,
+      element: NATIONALITY_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         options: [
           { value: 'US', label: 'American' },
@@ -62,7 +66,7 @@ describe('NationalityPickerField', () => {
       params: {
         placeholder: 'Select a nationality',
       },
-    } as IFormElement<typeof NATIONALITY_PICKER_FIELD_TYPE, ISelectFieldParams>;
+    } as IFormElement<typeof NATIONALITY_PICKER_FIELD_ELEMENT_TYPE, TNationalityPickerFieldParams>;
 
     render(<NationalityPickerField element={elementWithParams} />);
 

@@ -10,12 +10,13 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { TPhoneFieldParams } from '@ballerine/common';
 
 export interface IPhoneFieldParams {
   defaultCountry?: string;
 }
 
-export const PhoneField: TDynamicFormElement<string, IPhoneFieldParams> = ({ element }) => {
+export const PhoneField: TDynamicFormElement<string, TPhoneFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

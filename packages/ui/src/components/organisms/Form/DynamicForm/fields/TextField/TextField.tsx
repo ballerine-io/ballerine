@@ -12,6 +12,7 @@ import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { serializeTextFieldValue } from './helpers';
+import { TTextFieldParams } from '@ballerine/common';
 
 export interface ITextFieldParams {
   valueType: 'integer' | 'number' | 'string';
@@ -19,7 +20,7 @@ export interface ITextFieldParams {
   placeholder?: string;
 }
 
-export const TextField: TDynamicFormField<ITextFieldParams> = ({ element }) => {
+export const TextField: TDynamicFormField<TTextFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

@@ -1,19 +1,18 @@
-import { IFormElement, ISelectFieldParams, SelectField, TDynamicFormField } from '@ballerine/ui';
+import { LOCALE_PICKER_FIELD_ELEMENT_TYPE, TLocalePickerFieldParams } from '@ballerine/common';
+import { IFormElement, SelectField, TDynamicFormField } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const LOCALE_PICKER_FIELD_TYPE = 'localePickerField';
-
-export const LocalePickerField: TDynamicFormField<ISelectFieldParams> = ({ element }) => {
+export const LocalePickerField: TDynamicFormField<TLocalePickerFieldParams> = ({ element }) => {
   const { t } = useTranslation();
 
   const elementDefinitionWithLocaleList: IFormElement<
-    typeof LOCALE_PICKER_FIELD_TYPE,
-    ISelectFieldParams
+    typeof LOCALE_PICKER_FIELD_ELEMENT_TYPE,
+    TLocalePickerFieldParams
   > = useMemo(() => {
     return {
       ...element,
-      element: LOCALE_PICKER_FIELD_TYPE,
+      element: LOCALE_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         ...element.params,
         options: (

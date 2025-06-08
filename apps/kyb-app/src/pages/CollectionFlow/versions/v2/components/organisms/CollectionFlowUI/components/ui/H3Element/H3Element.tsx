@@ -1,8 +1,6 @@
 import { createTestId, TDynamicFormElement } from '@ballerine/ui';
 import { ElementContainer } from '../../utility/ElementContainer';
-import { TH3ElementParams } from '@ballerine/common';
-
-export const H3_UI_ELEMENT_TYPE = 'h3';
+import { H3_UI_ELEMENT_TYPE, TH3ElementParams } from '@ballerine/common';
 
 export const H3Element: TDynamicFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams> = ({
   element,

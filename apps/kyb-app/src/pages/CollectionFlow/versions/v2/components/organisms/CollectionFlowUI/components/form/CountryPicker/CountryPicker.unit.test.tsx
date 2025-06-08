@@ -1,9 +1,13 @@
-import { getCountries } from '@ballerine/common';
+import {
+  COUNTRY_PICKER_FIELD_ELEMENT_TYPE,
+  getCountries,
+  TCountryPickerFieldParams,
+} from '@ballerine/common';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
-import { IFormElement, ISelectFieldParams } from '@ballerine/ui';
+import { IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { COUNTRY_PICKER_FIELD_TYPE, CountryPickerField } from './CountryPicker';
+import { CountryPickerField } from './CountryPicker';
 
 // Mock dependencies
 vi.mock('@ballerine/common');
@@ -17,7 +21,7 @@ vi.mock('@ballerine/ui', () => ({
 describe('CountryPickerField', () => {
   const mockElement = {
     params: {},
-  } as IFormElement<typeof COUNTRY_PICKER_FIELD_TYPE, ISelectFieldParams>;
+  } as IFormElement<typeof COUNTRY_PICKER_FIELD_ELEMENT_TYPE, TCountryPickerFieldParams>;
 
   const mockCountries = [
     { const: 'US', title: 'United States' },
@@ -36,7 +40,7 @@ describe('CountryPickerField', () => {
     const elementProp = JSON.parse(selectField.textContent || '');
 
     expect(elementProp).toEqual({
-      element: COUNTRY_PICKER_FIELD_TYPE,
+      element: COUNTRY_PICKER_FIELD_ELEMENT_TYPE,
       params: {
         options: [
           { value: 'US', label: 'United States' },
@@ -60,7 +64,7 @@ describe('CountryPickerField', () => {
       params: {
         placeholder: 'Select a country',
       },
-    } as IFormElement<typeof COUNTRY_PICKER_FIELD_TYPE, ISelectFieldParams>;
+    } as IFormElement<typeof COUNTRY_PICKER_FIELD_ELEMENT_TYPE, TCountryPickerFieldParams>;
 
     render(<CountryPickerField element={elementWithParams} />);
 

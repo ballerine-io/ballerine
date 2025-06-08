@@ -22,6 +22,7 @@ import { useDynamicForm } from '../../context';
 import { useDeleteDocumentFiles } from './hooks/useDeleteDocument';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { useDynamicDocumentDefinition } from './hooks/useDynamicDocumentDefinition';
+import { TDocumentFieldParams } from '@ballerine/common';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
@@ -55,7 +56,7 @@ export interface IDocumentFieldParams extends Omit<IFileFieldParams, 'httpParams
 
 export const DOCUMENT_FIELD_TYPE = 'documentfield';
 
-export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element: _element }) => {
+export const DocumentField: TDynamicFormField<TDocumentFieldParams> = ({ element: _element }) => {
   useMountEvent(_element);
   useUnmountEvent(_element);
 

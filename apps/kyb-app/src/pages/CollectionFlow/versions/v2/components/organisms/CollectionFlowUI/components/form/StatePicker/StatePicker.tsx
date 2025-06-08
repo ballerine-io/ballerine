@@ -1,8 +1,11 @@
-import { getCountryStates } from '@ballerine/common';
+import {
+  getCountryStates,
+  STATE_PICKER_FIELD_ELEMENT_TYPE,
+  TStatePickerFieldParams,
+} from '@ballerine/common';
 import {
   formatValueDestination,
   IFormElement,
-  ISelectFieldParams,
   SelectField,
   TDeepthLevelStack,
   TDynamicFormField,
@@ -12,13 +15,7 @@ import {
 import get from 'lodash/get';
 import { useMemo } from 'react';
 
-export const STATE_PICKER_FIELD_TYPE = 'statepickerfield';
-
-export interface IStatePickerParams extends ISelectFieldParams {
-  countryCodePath?: string;
-}
-
-export const StatePickerField: TDynamicFormField<IStatePickerParams> = ({ element }) => {
+export const StatePickerField: TDynamicFormField<TStatePickerFieldParams> = ({ element }) => {
   const { countryCodePath } = element.params || {};
   const { values } = useDynamicForm();
   const { stack } = useStack();
@@ -34,17 +31,19 @@ export const StatePickerField: TDynamicFormField<IStatePickerParams> = ({ elemen
       : [];
   }, [values, countryCodePath]);
 
-  const elementWithStateOptions: IFormElement<typeof STATE_PICKER_FIELD_TYPE, IStatePickerParams> =
-    useMemo(() => {
-      return {
-        ...element,
-        element: STATE_PICKER_FIELD_TYPE,
-        params: {
-          ...element.params,
-          options: options.map(option => ({ value: option.const, label: option.title })),
-        },
-      };
-    }, [element, options]);
+  const elementWithStateOptions: IFormElement<
+    typeof STATE_PICKER_FIELD_ELEMENT_TYPE,
+    TStatePickerFieldParams
+  > = useMemo(() => {
+    return {
+      ...element,
+      element: STATE_PICKER_FIELD_ELEMENT_TYPE,
+      params: {
+        ...element.params,
+        options: options.map(option => ({ value: option.const, label: option.title })),
+      },
+    };
+  }, [element, options]);
 
   return <SelectField element={elementWithStateOptions} />;
 };

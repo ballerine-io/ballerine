@@ -15,17 +15,18 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
+import { TDateFieldParams } from '@ballerine/common';
 
-export interface IDateFieldParams {
-  disableFuture?: boolean;
-  disablePast?: boolean;
-  // Reference for formats https://day.js.org/docs/en/display/format
-  outputFormat?: string;
-  // Reference for formats https://day.js.org/docs/en/parse/string-format
-  inputFormat?: string;
-}
+// export interface IDateFieldParams {
+//   disableFuture?: boolean;
+//   disablePast?: boolean;
+//   // Reference for formats https://day.js.org/docs/en/display/format
+//   outputFormat?: string;
+//   // Reference for formats https://day.js.org/docs/en/parse/string-format
+//   inputFormat?: string;
+// }
 
-export const DateField: TDynamicFormField<IDateFieldParams> = ({ element }) => {
+export const DateField: TDynamicFormField<TDateFieldParams> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 
