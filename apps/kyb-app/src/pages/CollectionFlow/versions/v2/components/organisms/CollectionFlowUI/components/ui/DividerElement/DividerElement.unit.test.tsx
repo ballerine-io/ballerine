@@ -2,7 +2,8 @@ import { IFormElement, createTestId } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ElementContainer } from '../../utility/ElementContainer';
-import { DIVIDER_UI_ELEMENT_TYPE, DividerElement } from './DividerElement';
+import { DividerElement } from './DividerElement';
+import { DIVIDER_UI_ELEMENT_TYPE } from '@ballerine/common';
 
 vi.mock('@ballerine/ui', () => ({
   createTestId: vi.fn(),

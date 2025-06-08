@@ -1,16 +1,11 @@
 import { createTestId, TDynamicFormElement } from '@ballerine/ui';
 import DOMPurify from 'dompurify';
 import { ElementContainer } from '../../utility/ElementContainer';
-
-export const DESCRIPTION_UI_ELEMENT_TYPE = 'description';
-
-export interface IDescriptionElementParams {
-  descriptionRaw: string;
-}
+import { DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams } from '@ballerine/common';
 
 export const DescriptionElement: TDynamicFormElement<
   typeof DESCRIPTION_UI_ELEMENT_TYPE,
-  IDescriptionElementParams
+  TDescriptionElementParams
 > = ({ element }) => {
   const { descriptionRaw } = element.params || {};
 

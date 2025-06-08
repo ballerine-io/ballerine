@@ -1,13 +1,10 @@
 import { createTestId, TDynamicFormElement } from '@ballerine/ui';
 import { ElementContainer } from '../../utility/ElementContainer';
+import { TH3ElementParams } from '@ballerine/common';
 
 export const H3_UI_ELEMENT_TYPE = 'h3';
 
-export interface IH3ElementParams {
-  text: string;
-}
-
-export const H3Element: TDynamicFormElement<typeof H3_UI_ELEMENT_TYPE, IH3ElementParams> = ({
+export const H3Element: TDynamicFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams> = ({
   element,
 }) => {
   const { text = '' } = element.params || {};

@@ -1,7 +1,6 @@
 import { createTestId, TDynamicFormElement } from '@ballerine/ui';
 import { ElementContainer } from '../../utility/ElementContainer';
-
-export const DIVIDER_UI_ELEMENT_TYPE = 'divider';
+import { DIVIDER_UI_ELEMENT_TYPE } from '@ballerine/common';
 
 export const DividerElement: TDynamicFormElement<typeof DIVIDER_UI_ELEMENT_TYPE> = ({
   element,

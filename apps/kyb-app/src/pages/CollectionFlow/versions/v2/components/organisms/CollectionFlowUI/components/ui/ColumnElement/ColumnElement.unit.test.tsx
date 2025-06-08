@@ -2,7 +2,8 @@ import { createTestId, IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ElementContainer } from '../../utility/ElementContainer';
-import { COLUMN_UI_ELEMENT_TYPE, ColumnElement } from './ColumnElement';
+import { ColumnElement } from './ColumnElement';
+import { COLUMN_UI_ELEMENT_TYPE } from '@ballerine/common';
 
 vi.mock('@ballerine/ui', async () => {
   const actual = await vi.importActual('@ballerine/ui');

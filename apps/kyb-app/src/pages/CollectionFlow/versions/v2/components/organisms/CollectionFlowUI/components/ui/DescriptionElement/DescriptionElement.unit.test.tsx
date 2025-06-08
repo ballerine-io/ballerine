@@ -3,11 +3,8 @@ import { render, screen } from '@testing-library/react';
 import DOMPurify from 'dompurify';
 import { describe, expect, it, vi } from 'vitest';
 import { ElementContainer } from '../../utility/ElementContainer';
-import {
-  DESCRIPTION_UI_ELEMENT_TYPE,
-  DescriptionElement,
-  IDescriptionElementParams,
-} from './DescriptionElement';
+import { DescriptionElement } from './DescriptionElement';
+import { DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams } from '@ballerine/common';
 
 vi.mock('@ballerine/ui', () => ({
   createTestId: vi.fn(),
@@ -37,7 +34,7 @@ describe('DescriptionElement', () => {
       params: {
         descriptionRaw: 'Test Description',
       },
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     render(<DescriptionElement element={element} />);
 
@@ -50,7 +47,7 @@ describe('DescriptionElement', () => {
       params: {
         descriptionRaw: 'Test Description',
       },
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     render(<DescriptionElement element={element} />);
 
@@ -66,7 +63,7 @@ describe('DescriptionElement', () => {
       params: {
         descriptionRaw: '<p>Test Description</p>',
       },
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     render(<DescriptionElement element={element} />);
 
@@ -79,7 +76,7 @@ describe('DescriptionElement', () => {
       params: {
         descriptionRaw: '',
       },
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     const { container } = render(<DescriptionElement element={element} />);
 
@@ -90,7 +87,7 @@ describe('DescriptionElement', () => {
     const element = {
       element: DESCRIPTION_UI_ELEMENT_TYPE,
       params: undefined,
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     const { container } = render(<DescriptionElement element={element} />);
 
@@ -105,7 +102,7 @@ describe('DescriptionElement', () => {
       params: {
         descriptionRaw: '',
       },
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     render(<DescriptionElement element={element} />);
 
@@ -122,7 +119,7 @@ describe('DescriptionElement', () => {
       params: {
         descriptionRaw: 'Test Description',
       },
-    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, IDescriptionElementParams>;
+    } as IFormElement<typeof DESCRIPTION_UI_ELEMENT_TYPE, TDescriptionElementParams>;
 
     render(<DescriptionElement element={element} />);
 

@@ -11,16 +11,18 @@ import {
   NationalityPickerField,
 } from './components/form/NationalityPicker';
 import { STATE_PICKER_FIELD_TYPE, StatePickerField } from './components/form/StatePicker';
-import { COLUMN_UI_ELEMENT_TYPE, ColumnElement } from './components/ui/ColumnElement';
-import {
-  DESCRIPTION_UI_ELEMENT_TYPE,
-  DescriptionElement,
-} from './components/ui/DescriptionElement';
-import { DIVIDER_UI_ELEMENT_TYPE, DividerElement } from './components/ui/DividerElement';
+import { ColumnElement } from './components/ui/ColumnElement';
+import { DescriptionElement } from './components/ui/DescriptionElement';
+import { DividerElement } from './components/ui/DividerElement';
 import { H1_UI_ELEMENT_TYPE, H1Element } from './components/ui/H1Element';
 import { H3_UI_ELEMENT_TYPE, H3Element } from './components/ui/H3Element';
 import { H4_UI_ELEMENT_TYPE, H4Element } from './components/ui/H4Element';
 import { ROW_UI_ELEMENT_TYPE, RowElement } from './components/ui/RowElement';
+import {
+  COLUMN_UI_ELEMENT_TYPE,
+  DESCRIPTION_UI_ELEMENT_TYPE,
+  DIVIDER_UI_ELEMENT_TYPE,
+} from '@ballerine/common';
 
 const fields = {
   [COUNTRY_PICKER_FIELD_TYPE]: CountryPickerField,

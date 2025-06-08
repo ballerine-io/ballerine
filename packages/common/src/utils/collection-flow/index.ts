@@ -12,3 +12,4 @@ export * from './set-step-state';
 export * from './types';
 export * from './update-collection-flow-step';
 export * from './validators';
+export * from './schemas/elements';
