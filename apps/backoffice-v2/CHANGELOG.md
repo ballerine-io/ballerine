@@ -4,11 +4,9 @@
 
 ### Patch Changes
 
-- version bump
+- Bump
 - Updated dependencies
   - @ballerine/ui@0.7.162
-  - @ballerine/workflow-browser-sdk@0.6.136
-  - @ballerine/workflow-node-sdk@0.6.136
   - @ballerine/react-pdf-toolkit@1.2.125
 
 ## 0.7.161

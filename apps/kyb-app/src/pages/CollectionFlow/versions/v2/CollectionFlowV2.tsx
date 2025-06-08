@@ -9,7 +9,7 @@ import { PoweredByLogo } from '@/components/molecules/PoweredByLogo';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { StepperUI } from '@/components/organisms/UIRenderer/elements/StepperUI';
 import { useCustomer } from '@/components/providers/CustomerProvider';
-import { UIPage, UISchema } from '@/domains/collection-flow';
+import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
@@ -24,10 +24,10 @@ import { Rejected } from '../v1/components/pages/Rejected';
 import { useAdditionalWorkflowContext } from '../v1/hooks/useAdditionalWorkflowContext';
 import { CollectionFlowUI } from './components/organisms/CollectionFlowUI';
 import { PluginsRunner } from './components/organisms/CollectionFlowUI/components/utility/PluginsRunner';
-import { useCollectionFlowContext } from './hooks/useCollectionFlowContext/useCollectionFlowContext';
 import { GlobalUIState } from './components/providers/GlobalUIState';
 import { useSuccessRedirectUrl } from './hooks/useSuccessRedirectUrl';
 import { useFailureRedirectUrl } from './hooks/useFailureRedirectUrl';
+import { useDocumentsQuery } from '@/hooks/useDocumentsQuery';
 
 const isCompleted = (state: string) => state === 'completed' || state === 'finish';
 const isFailed = (state: string) => state === 'failed';
@@ -36,10 +36,7 @@ export const CollectionFlowV2 = withSessionProtected(() => {
   const { language } = useLanguageParam();
   const { data: schema } = useUISchemasQuery(language);
   const { data: collectionFlowData } = useFlowContextQuery();
-  const collectionFlowContext = useCollectionFlowContext(
-    collectionFlowData?.context as CollectionFlowContext,
-    schema as UISchema,
-  );
+  const { isLoading: isLoadingDocuments } = useDocumentsQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
   const { themeDefinition } = useTheme();
@@ -92,11 +89,11 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     return <FailedScreen redirectUrl={failureRedirectUrl} />;
   }
 
-  return definition && collectionFlowContext ? (
+  return definition && collectionFlowData?.context && !isLoadingDocuments ? (
     <GlobalUIState>
       <DynamicUI>
         <DynamicUI.StateManager
-          initialContext={collectionFlowContext as CollectionFlowContext}
+          initialContext={collectionFlowData?.context as CollectionFlowContext}
           workflowId="1"
           definitionType={schema?.definition.definitionType}
           extensions={schema?.definition.extensions}

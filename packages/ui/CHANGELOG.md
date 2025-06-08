@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- version bump
+- Bump
 
 ## 0.7.161
 

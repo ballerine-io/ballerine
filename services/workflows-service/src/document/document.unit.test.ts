@@ -22,7 +22,6 @@ describe('DocumentService', () => {
                 element: 'documentfield',
                 params: {
                   template: {
-                    id: 'bank-statement-document',
                     type: 'bank_statement',
                     category: 'financial_information',
                     issuer: { country: 'ZZ' },
@@ -44,7 +43,6 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toEqual({
           type: 'bank_statement',
-          templateId: 'bank-statement-document',
           category: 'financial_information',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
@@ -65,7 +63,6 @@ describe('DocumentService', () => {
                 element: 'documentfield',
                 params: {
                   template: {
-                    id: 'proof-of-address-document',
                     type: 'general_document',
                     category: 'proof_of_address',
                     issuer: { country: 'ZZ' },
@@ -87,7 +84,6 @@ describe('DocumentService', () => {
         const businessDoc = result.business[0];
         expect(businessDoc).toEqual({
           type: 'general_document',
-          templateId: 'proof-of-address-document',
           category: 'proof_of_address',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
@@ -118,7 +114,6 @@ describe('DocumentService', () => {
                     element: 'documentfield',
                     params: {
                       template: {
-                        id: 'proof-of-address-document',
                         type: 'general_document',
                         category: 'proof_of_address',
                         issuer: { country: 'ZZ' },
@@ -156,7 +151,6 @@ describe('DocumentService', () => {
         const uboDoc = result.individuals.ubos[0];
         expect(uboDoc).toEqual({
           type: 'general_document',
-          templateId: 'proof-of-address-document',
           category: 'proof_of_address',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
@@ -185,7 +179,6 @@ describe('DocumentService', () => {
                     element: 'documentfield',
                     params: {
                       template: {
-                        id: 'proof-of-address-document',
                         type: 'general_document',
                         category: 'proof_of_address',
                         issuer: { country: 'ZZ' },
@@ -223,7 +216,6 @@ describe('DocumentService', () => {
         const directorDoc = result.individuals.directors[0];
         expect(directorDoc).toEqual({
           type: 'general_document',
-          templateId: 'proof-of-address-document',
           category: 'proof_of_address',
           issuingCountry: 'ZZ',
           issuingVersion: '1',
@@ -285,7 +277,6 @@ describe('DocumentService', () => {
                 element: 'documentfield',
                 params: {
                   template: {
-                    id: 'malformed-doc',
                     // Missing required fields
                   },
                 },

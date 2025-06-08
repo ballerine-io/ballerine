@@ -22,6 +22,6 @@ import { ProjectScopeService } from '@/project/project-scope.service';
   ],
   controllers: [DocumentControllerExternal],
   providers: [DocumentService, DocumentRepository, ProjectScopeService],
-  exports: [DocumentService],
+  exports: [DocumentService, DocumentRepository],
 })
 export class DocumentModule {}
