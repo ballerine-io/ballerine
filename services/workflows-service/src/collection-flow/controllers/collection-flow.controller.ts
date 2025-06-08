@@ -170,72 +170,19 @@ export class CollectionFlowController {
           tokenScope.workflowRuntimeDataId,
           {},
           [tokenScope.projectId],
+          transaction,
         );
 
-        const directors = await Promise.all(
-          workflowRuntimeData.context.entity.data.additionalInfo.directors?.map(
-            async (director: {
-              ballerineEntityId?: string;
-              firstName: string;
-              lastName: string;
-              email: string;
-            }) => {
-              // If ID is present then entity been created in KYB
-              if (director.ballerineEntityId) {
-                return director;
-              }
-
-              const { id } = await this.endUserService.create(
-                {
-                  data: {
-                    firstName: director.firstName,
-                    lastName: director.lastName,
-                    email: director.email,
-                    projectId: tokenScope.projectId,
-                  },
-                },
-                transaction,
-              );
-
-              return {
-                ballerineEntityId: id,
-                ...director,
-              };
-            },
-          ) || [],
+        const directors = await this.collectionFlowService.createEntitiesIfNeeded(
+          workflowRuntimeData.context.entity.data.additionalInfo.directors || [],
+          tokenScope.projectId,
+          transaction,
         );
 
-        const ubos = await Promise.all(
-          workflowRuntimeData.context.entity.data.additionalInfo.ubos?.map(
-            async (ubo: {
-              ballerineEntityId?: string;
-              firstName: string;
-              lastName: string;
-              email: string;
-            }) => {
-              // If ID is present then entity been created in KYB
-              if (ubo.ballerineEntityId) {
-                return ubo;
-              }
-
-              const { id } = await this.endUserService.create(
-                {
-                  data: {
-                    firstName: ubo.firstName,
-                    lastName: ubo.lastName,
-                    email: ubo.email,
-                    projectId: tokenScope.projectId,
-                  },
-                },
-                transaction,
-              );
-
-              return {
-                ballerineEntityId: id,
-                ...ubo,
-              };
-            },
-          ) || [],
+        const ubos = await this.collectionFlowService.createEntitiesIfNeeded(
+          workflowRuntimeData.context.entity.data.additionalInfo.ubos || [],
+          tokenScope.projectId,
+          transaction,
         );
 
         await this.collectionFlowStateService.updateCollectionFlowState(

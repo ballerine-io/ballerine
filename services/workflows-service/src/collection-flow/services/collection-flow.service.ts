@@ -227,4 +227,41 @@ export class CollectionFlowService {
       { shouldDownloadFromSource: false },
     );
   }
+
+  async createEntitiesIfNeeded(
+    entities: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      ballerineEntityId?: string;
+    }[],
+    projectId: string,
+    transaction: Prisma.TransactionClient,
+  ) {
+    const createdEntities = entities.map(async entity => {
+      // If ID is present then entity been created in KYB
+      if (entity.ballerineEntityId) {
+        return entity;
+      }
+
+      const { id } = await this.endUserService.create(
+        {
+          data: {
+            firstName: entity.firstName,
+            lastName: entity.lastName,
+            email: entity.email,
+            projectId,
+          },
+        },
+        transaction,
+      );
+
+      return {
+        ballerineEntityId: id,
+        ...entity,
+      };
+    });
+
+    return await Promise.all(createdEntities);
+  }
 }
