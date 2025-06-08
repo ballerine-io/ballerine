@@ -53,6 +53,7 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
                     <FormControl>
                       <Input
                         type="file"
+                        accept=".csv"
                         onChange={onChange}
                         id={`merchantSheet`}
                         name={`merchantSheet`}
