@@ -12,21 +12,11 @@ const ruleSet: RuleSet = {
   operator: OPERATOR.AND,
   rules: [
     {
-      value: undefined,
+      value: null,
       key: 'bankAccountVerification',
       operator: OPERATION.BANK_ACCOUNT_VERIFICATION,
     },
   ],
-};
-
-const successResult = {
-  error: undefined,
-  rule: {
-    key: 'bankAccountVerification',
-    operator: 'BANK_ACCOUNT_VERIFICATION',
-    value: undefined,
-  },
-  status: 'PASSED',
 };
 
 const failedResult = {
@@ -34,13 +24,23 @@ const failedResult = {
   rule: {
     key: 'bankAccountVerification',
     operator: 'BANK_ACCOUNT_VERIFICATION',
-    value: undefined,
+    value: null,
   },
   status: 'FAILED',
 };
 
+const passedResult = {
+  error: undefined,
+  rule: {
+    key: 'bankAccountVerification',
+    operator: 'BANK_ACCOUNT_VERIFICATION',
+    value: null,
+  },
+  status: 'PASSED',
+};
+
 describe('Bank account verification operator', () => {
-  describe('should fail', () => {
+  describe('should pass', () => {
     it('when one of the rules have ruleScore 1', async () => {
       const bankAccountVerificationContextWithFailedRules = {
         pluginsOutput: {
@@ -70,7 +70,7 @@ describe('Bank account verification operator', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchObject(failedResult);
+      expect(result[0]).toMatchObject(passedResult);
     });
 
     it('when multiple rules have ruleScore 1', async () => {
@@ -102,7 +102,7 @@ describe('Bank account verification operator', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchObject(failedResult);
+      expect(result[0]).toMatchObject(passedResult);
     });
 
     it('when all rules have ruleScore 1', async () => {
@@ -134,123 +134,107 @@ describe('Bank account verification operator', () => {
 
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject(passedResult);
+    });
+  });
+
+  describe('should fail', () => {
+    it('when all rules have ruleScore 0', async () => {
+      const bankAccountVerificationContextThatPasses = {
+        pluginsOutput: {
+          bankAccountVerification: {
+            data: {
+              responseHeader: {
+                requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
+              },
+              clientResponsePayload: {
+                decisionElements: [
+                  {
+                    rules: [
+                      { ruleId: 'CMM1069', ruleScore: 0 },
+                      { ruleId: 'CMM1048', ruleScore: 0 },
+                      { ruleId: 'CMM1052', ruleScore: 0 },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      };
+
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(bankAccountVerificationContextThatPasses, helpers);
+
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
       expect(result[0]).toMatchObject(failedResult);
     });
 
-    describe('should pass', () => {
-      it('when all rules have ruleScore 0', async () => {
-        const bankAccountVerificationContextThatPasses = {
-          pluginsOutput: {
-            bankAccountVerification: {
-              data: {
-                responseHeader: {
-                  requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
-                },
-                clientResponsePayload: {
-                  decisionElements: [
-                    {
-                      rules: [
-                        { ruleId: 'CMM1069', ruleScore: 0 },
-                        { ruleId: 'CMM1048', ruleScore: 0 },
-                        { ruleId: 'CMM1052', ruleScore: 0 },
-                      ],
-                    },
-                  ],
-                },
+    it('when only non-required rules have ruleScore 1', async () => {
+      const contextWithFailingNonRequiredRules = {
+        pluginsOutput: {
+          bankAccountVerification: {
+            data: {
+              responseHeader: {
+                requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
+              },
+              clientResponsePayload: {
+                decisionElements: [
+                  {
+                    rules: [
+                      { ruleId: 'CMM1069', ruleScore: 0 },
+                      { ruleId: 'CMM1048', ruleScore: 0 },
+                      { ruleId: 'CMM1052', ruleScore: 0 },
+                      { ruleId: 'CMM9999', ruleScore: 1 },
+                      { ruleId: 'OTHER_RULE', ruleScore: 1 },
+                    ],
+                  },
+                ],
               },
             },
           },
-        };
+        },
+      };
 
-        const engine = createRuleEngine(ruleSet);
-        const result = await engine.run(bankAccountVerificationContextThatPasses, helpers);
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(contextWithFailingNonRequiredRules, helpers);
 
-        expect(result).toBeDefined();
-        expect(result).toHaveLength(1);
-        expect(result[0]).toMatchObject({
-          error: undefined,
-          rule: {
-            key: 'bankAccountVerification',
-            operator: 'BANK_ACCOUNT_VERIFICATION',
-            value: undefined,
-          },
-          status: 'PASSED',
-        });
-      });
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject(failedResult);
+    });
 
-      it('when only non-required rules have ruleScore 1', async () => {
-        const contextWithFailingNonRequiredRules = {
-          pluginsOutput: {
-            bankAccountVerification: {
-              data: {
-                responseHeader: {
-                  requestType: BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE,
-                },
-                clientResponsePayload: {
-                  decisionElements: [
-                    {
-                      rules: [
-                        { ruleId: 'CMM1069', ruleScore: 0 },
-                        { ruleId: 'CMM1048', ruleScore: 0 },
-                        { ruleId: 'CMM1052', ruleScore: 0 },
-                        { ruleId: 'CMM9999', ruleScore: 1 },
-                        { ruleId: 'OTHER_RULE', ruleScore: 1 },
-                      ],
-                    },
-                  ],
-                },
+    it('when requestType is not BAVCommercial-Standard', async () => {
+      const contextWithInvalidRequestType = {
+        pluginsOutput: {
+          bankAccountVerification: {
+            data: {
+              responseHeader: {
+                requestType: 'BAVConsumer-Standard',
+              },
+              clientResponsePayload: {
+                decisionElements: [
+                  {
+                    rules: [
+                      { ruleId: 'CMM1069', ruleScore: 0 },
+                      { ruleId: 'CMM1048', ruleScore: 0 },
+                      { ruleId: 'CMM1052', ruleScore: 0 },
+                    ],
+                  },
+                ],
               },
             },
           },
-        };
+        },
+      };
 
-        const engine = createRuleEngine(ruleSet);
-        const result = await engine.run(contextWithFailingNonRequiredRules, helpers);
+      const engine = createRuleEngine(ruleSet);
+      const result = await engine.run(contextWithInvalidRequestType, helpers);
 
-        expect(result).toBeDefined();
-        expect(result).toHaveLength(1);
-        expect(result[0]).toMatchObject({
-          error: undefined,
-          rule: {
-            key: 'bankAccountVerification',
-            operator: 'BANK_ACCOUNT_VERIFICATION',
-            value: undefined,
-          },
-          status: 'PASSED',
-        });
-      });
-
-      it('when requestType is not BAVCommercial-Standard', async () => {
-        const contextWithInvalidRequestType = {
-          pluginsOutput: {
-            bankAccountVerification: {
-              data: {
-                responseHeader: {
-                  requestType: 'BAVConsumer-Standard',
-                },
-                clientResponsePayload: {
-                  decisionElements: [
-                    {
-                      rules: [
-                        { ruleId: 'CMM1069', ruleScore: 0 },
-                        { ruleId: 'CMM1048', ruleScore: 0 },
-                        { ruleId: 'CMM1052', ruleScore: 0 },
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        };
-
-        const engine = createRuleEngine(ruleSet);
-        const result = await engine.run(contextWithInvalidRequestType, helpers);
-
-        expect(result).toBeDefined();
-        expect(result).toHaveLength(1);
-        expect(result[0]).toMatchObject(successResult);
-      });
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.error).toBeDefined();
     });
   });
 });

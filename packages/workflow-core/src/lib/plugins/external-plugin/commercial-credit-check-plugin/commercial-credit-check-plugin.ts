@@ -10,17 +10,27 @@ import { validateEnv } from '../shared/validate-env';
 import { IApiPluginParams, PluginPayloadProperty } from '../types';
 import { getPayloadPropertiesValue } from '../shared/get-payload-properties-value';
 
-const CommercialCreditCheckPluginPayloadSchema = z.object({
-  clientId: z.string().min(1),
-  vendor: z.enum(['experian']),
-  businessType: z.string().min(1),
-  legalForm: z.string().min(1),
-  companyRegistrationNumber: z.union([z.string(), z.undefined()]),
-  registeredCharityNumber: z.union([z.string(), z.undefined()]),
-});
+const CommercialCreditCheckPluginPayloadSchema = z.discriminatedUnion('vendor', [
+  z.object({
+    vendor: z.literal('experian'),
+    clientId: z.string().min(1),
+    businessType: z.string().min(1),
+    legalForm: z.string().min(1),
+    companyRegistrationNumber: z.union([z.string(), z.undefined()]),
+    registeredCharityNumber: z.union([z.string(), z.undefined()]),
+  }),
+  z.object({
+    vendor: z.literal('creditsafe'),
+    clientId: z.string().min(1),
+    country: z.string().min(1),
+    companyRegistrationNumber: z.union([z.string(), z.undefined()]),
+  }),
+]);
 
 type TCommercialCreditCheckPluginPayload = {
+  vendor: 'experian' | 'creditsafe';
   clientId: PluginPayloadProperty;
+  country?: PluginPayloadProperty;
   businessType?: PluginPayloadProperty;
   legalForm?: PluginPayloadProperty;
   companyRegistrationNumber?: PluginPayloadProperty<string | undefined>;
@@ -48,25 +58,10 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
 
     this.payload = payload;
 
-    merge(this.payload, {
-      vendor: pluginParams.vendor || 'experian',
-      businessType: {
-        __type: 'path',
-        value: 'entity.data.businessType',
-      },
-      legalForm: {
-        __type: 'path',
-        value: 'entity.data.legalForm',
-      },
-      companyRegistrationNumber: {
-        __type: 'path',
-        value: 'entity.data.registrationNumber',
-      },
-      registeredCharityNumber: {
-        __type: 'path',
-        value: 'entity.data.additionalInfo.registeredCharityNumber',
-      },
-    });
+    merge(
+      this.payload,
+      getPayloadByVendor(commercialCreditCheckPluginParams.vendor as 'experian' | 'creditsafe'),
+    );
   }
 
   async invoke(context: TContext) {
@@ -88,7 +83,10 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
         );
       }
 
-      if (validatedPayload.data.businessType === 'sole_proprietorship') {
+      if (
+        'businessType' in validatedPayload.data &&
+        validatedPayload.data.businessType === 'sole_proprietorship'
+      ) {
         return this.successAction
           ? this.returnSuccessResponse(this.successAction, {
               name: this.name,
@@ -158,3 +156,37 @@ export class CommercialCreditCheckPlugin extends ApiPlugin {
     }
   }
 }
+
+const getPayloadByVendor = (vendor: 'experian' | 'creditsafe' = 'experian') => {
+  return vendor === 'experian'
+    ? {
+        vendor: 'experian',
+        businessType: {
+          __type: 'path',
+          value: 'entity.data.businessType',
+        },
+        legalForm: {
+          __type: 'path',
+          value: 'entity.data.legalForm',
+        },
+        companyRegistrationNumber: {
+          __type: 'path',
+          value: 'entity.data.registrationNumber',
+        },
+        registeredCharityNumber: {
+          __type: 'path',
+          value: 'entity.data.additionalInfo.registeredCharityNumber',
+        },
+      }
+    : {
+        vendor: 'creditsafe',
+        country: {
+          __type: 'path',
+          value: 'entity.data.country',
+        },
+        companyRegistrationNumber: {
+          __type: 'path',
+          value: 'entity.data.registrationNumber',
+        },
+      };
+};
