@@ -82,7 +82,7 @@
     "base64-stream": "^1.0.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",
-    "class-validator": "0.14.0",
+    "class-validator": "0.14.2",
     "concat-stream": "^2.0.0",
     "cookie-session": "^2.0.0",
     "csv-parse": "^5.5.6",
