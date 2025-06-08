@@ -61,32 +61,110 @@ const router = createBrowserRouter([
               ...(env.VITE_AUTH_ENABLED
                 ? [
                     {
-                      path: '/:locale/merchant-monitoring',
-                      element: <MerchantMonitoring />,
+                      path: '/:locale/auth/sign-in',
+                      element: <SignIn />,
                       errorElement: <RouteError />,
                     },
-                    {
-                      path: '/:locale/merchant-monitoring/:businessReportId',
-                      element: <MerchantMonitoringBusinessReport />,
-                      errorElement: <RouteError />,
-                    },
-                    {
-                      path: '/:locale/merchant-monitoring/create-check',
-                      element: <MerchantMonitoringCreateCheckPage />,
-                      errorElement: <RouteError />,
-                    },
-                    {
-                      path: '/:locale/merchant-monitoring/upload-multiple-merchants',
-                      element: <MerchantMonitoringUploadMultiplePage />,
-                      errorElement: <RouteError />,
-                    },
-                  ],
-                },
-                {
-                  loader: async () => {
-                    await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+                  ]
+                : []),
+            ],
+          },
+        ],
+      },
+      {
+        element: <AuthenticatedLayout />,
+        loader: authenticatedLayoutLoader,
+        errorElement: <RouteError />,
+        children: [
+          {
+            path: '/:locale',
+            element: <Locale />,
+            errorElement: <RouteError />,
+            children: [
+              {
+                element: <MerchantMonitoringLayout />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/merchant-monitoring',
+                    element: <MerchantMonitoring />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/:businessReportId',
+                    element: <MerchantMonitoringBusinessReport />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/create-check',
+                    element: <MerchantMonitoringCreateCheckPage />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/merchant-monitoring/upload-multiple-merchants',
+                    element: <MerchantMonitoringUploadMultiplePage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              {
+                loader: async () => {
+                  await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
 
-                    return true;
+                  return true;
+                },
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/kyb-and-ownership',
+                    element: <KybAndOwnership />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/kyb-and-ownership/:assessmentId',
+                    element: <KybAndOwnershipAssessmentPage />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              // {
+              //   loader: async () => {
+              //     await queryClient.ensureQueryData(customerQueryKeys.getCurrent());
+
+              //     return true;
+              //   },
+              //   errorElement: <RouteError />,
+              //   children: [
+              //     {
+              //       path: '/:locale/identity-verification',
+              //       element: <IdentityVerification />,
+              //       errorElement: <RouteError />,
+              //     },
+              //     {
+              //       path: '/:locale/identity-verification/:checkId',
+              //       element: <IdentityVerificationAssessmentPage />,
+              //       errorElement: <RouteError />,
+              //     },
+              //   ],
+              // },
+              {
+                path: '/:locale/case-management',
+                element: <CaseManagement />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/case-management/entities',
+                    element: <Entities />,
+                    loader: entitiesLoader,
+                    errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/case-management/entities/:entityId',
+                        element: <Entity />,
+                        loader: entityLoader,
+                        errorElement: <RouteError />,
+                      },
+                    ],
                   },
                 ],
               },
