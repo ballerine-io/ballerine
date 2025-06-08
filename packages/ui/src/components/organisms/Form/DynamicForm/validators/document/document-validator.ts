@@ -2,22 +2,11 @@ import { TDocument } from '@ballerine/common';
 import { IDocumentValidatorParams } from './types';
 import { TBaseValidators } from '../../../Validator/types';
 import { TValidator } from '../../../Validator';
-import { IEntity } from '../../fields/EntityFieldGroup/types';
 import { IValidatorWrapperContext } from '../../providers/ValidatorWrapper/types';
 import { formatErrorMessage } from '../../../Validator/utils/format-error-message';
 import { formatDocumentId } from '../../utils/format-document-id';
-
-const isValueAnEntity = (value: unknown): value is IEntity => {
-  if (typeof value !== 'object' || value === null) return false;
-
-  return '__id' in value || 'ballerineEntityId' in value;
-};
-
-const isValueBusinessId = (value: unknown): value is string => {
-  if (typeof value !== 'string') return false;
-
-  return true;
-};
+import { isValueAnEntity } from '../../helpers/is-value-an-entity/is-value-an-entity';
+import { isValueBusinessId } from '../../helpers/is-value-business-id/is-value-business-id';
 
 export const documentValidator: TValidator<
   TDocument[],

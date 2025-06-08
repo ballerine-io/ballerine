@@ -4,18 +4,8 @@ import { IDocument } from '@/components/organisms/Form/DocumentsService/types';
 import get from 'lodash/get';
 import { IEntity } from '../../EntityFieldGroup/types';
 import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
-
-const isValueAnEntity = (value: unknown): value is IEntity => {
-  if (typeof value !== 'object' || value === null) return false;
-
-  return '__id' in value || 'ballerineEntityId' in value;
-};
-
-const isValueBusinessId = (value: unknown): value is string => {
-  if (typeof value !== 'string') return false;
-
-  return true;
-};
+import { isValueAnEntity } from '../../../helpers/is-value-an-entity/is-value-an-entity';
+import { isValueBusinessId } from '../../../helpers/is-value-business-id/is-value-business-id';
 
 export const buildDocumentFieldThisState = (
   context: AnyObject,
