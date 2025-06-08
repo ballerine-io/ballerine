@@ -19,7 +19,6 @@ export const DocumentTrackerItemSchema = z.object({
   identifiers: z.object({
     document: z.object({
       type: z.string(),
-      templateId: z.string(),
       category: z.string(),
       issuingCountry: z.string(),
       decisionReason: z.string().optional(),

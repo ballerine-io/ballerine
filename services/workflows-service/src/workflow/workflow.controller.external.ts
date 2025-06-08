@@ -51,7 +51,7 @@ import { ValidationError } from '@/errors';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import { CreateTokenDto } from '@/workflow/dtos/create-token.dto';
 import { type PartialDeep } from 'type-fest';
-import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
+import { CollectionFlowStateService } from '@/collection-flow/services/collection-flow-state.service';
 
 export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiBearerAuth()

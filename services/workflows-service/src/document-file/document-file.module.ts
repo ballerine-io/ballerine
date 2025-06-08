@@ -7,6 +7,6 @@ import { DocumentFileService } from './document-file.service';
 @Module({
   imports: [PrismaModule],
   providers: [DocumentFileService, DocumentFileRepository, ProjectScopeService],
-  exports: [DocumentFileService],
+  exports: [DocumentFileService, DocumentFileRepository],
 })
 export class DocumentFileModule {}
