@@ -1,76 +1,75 @@
-import { AnyObject } from '@/common';
 import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
-import { get } from 'lodash';
-import {
-  getDocumentObjectFromDocumentsList,
-  IDocumentFieldParams,
-} from '../../../../DocumentField';
-import { buildDocumentFormData } from '../../../../DocumentField/helpers/build-document-form-data';
-import { getFileOrFileIdFromDocumentsList } from '../../../../DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
+import { IDocumentFieldParams } from '../../../../DocumentField';
 import { IEntityFieldGroupParams } from '../../../EntityFieldGroup';
+import { IDocumentCreationData } from '@/components/organisms/Form/DocumentsService/types';
+import { formatDocumentId } from '@/components/organisms/Form/DynamicForm/utils/format-document-id';
+import { IEntity } from '../../../types';
 
-export interface IDocumentCreationResult {
-  payload: FormData;
-  documentDefinition: IFormElement<any, IDocumentFieldParams>;
-  valueDestination: string;
+export interface IDocumentCreationPayload {
+  documentData: IDocumentCreationData;
+  entity: IEntity;
+  file: File;
 }
 
-export const buildDocumentsCreationPayload = (
-  element: IFormElement<any, IEntityFieldGroupParams>,
-  entityIds: string[],
-  context: AnyObject,
-  stack: TDeepthLevelStack,
-): IDocumentCreationResult[] => {
-  const documentElements = (element.children?.filter(child => child.element === 'documentfield') ||
-    []) as Array<IFormElement<any, IDocumentFieldParams>>;
+export const buildDocumentsCreationPayload = ({
+  element,
+  entities,
+  files,
+}: {
+  element: IFormElement<any, IEntityFieldGroupParams>;
+  entities: IEntity[];
+  files: Record<string, File>;
+}): IDocumentCreationPayload[] => {
+  const documentElements = element.children?.filter(
+    child => child.element === 'documentfield',
+  ) as Array<IFormElement<'documentfield', IDocumentFieldParams>>;
 
-  if (!documentElements?.length) {
-    return [];
-  }
+  if (!documentElements?.length) return [];
 
-  const documentPayload: IDocumentCreationResult[] = [];
+  const creationPayload: IDocumentCreationPayload[] = [];
 
-  // Outer loop for correct index calculation
-  for (let entityIndex = 0; entityIndex < entityIds.length; entityIndex++) {
-    const entityId = entityIds[entityIndex];
+  entities.forEach(entity => {
+    documentElements.forEach(documentElement => {
+      const creationData: IDocumentCreationData = {
+        category: documentElement.params?.template?.category!,
+        type: documentElement.params?.template?.type!,
+        issuingVersion: documentElement.params?.template?.issuingVersion!,
+        issuingCountry: documentElement.params?.template?.issuer.country!,
+        documentType: documentElement.params?.documentType!,
+        documentVariant: documentElement.params?.documentVariant!,
+        documentPage: documentElement.params?.pageIndex! || 1,
+        entityId: entity.ballerineEntityId!,
+        entityType: 'ubo' as const,
+      };
 
-    // Inner loop for document elements, each entity can have multiple document fields
-    for (const documentElement of documentElements) {
-      if (!documentElement?.params?.template) {
-        console.warn('No template found for document field', documentElement);
-        continue;
-      }
-
-      const documentDestination = formatValueDestination(documentElement.valueDestination, [
-        ...(stack || []),
-        entityIndex,
-      ]);
-
-      const documentsList = get(context, documentDestination, []);
-
-      const document = getDocumentObjectFromDocumentsList(documentsList, documentElement);
-
-      // Document already created
-      if (document?._document?.id) {
-        continue;
-      }
-
-      const documentFile = getFileOrFileIdFromDocumentsList(documentsList, documentElement);
-
-      if (!documentFile || !(documentFile instanceof File)) {
-        continue;
-      }
-
-      const payload = buildDocumentFormData(documentElement, { entityId }, documentFile);
-
-      documentPayload.push({
-        payload,
-        documentDefinition: documentElement,
-        valueDestination: documentDestination,
+      const idToFileByEntityId = formatDocumentId({
+        type: documentElement.params?.template?.type!,
+        category: documentElement.params?.template?.category!,
+        entityType: 'ubo',
+        entityId: entity.ballerineEntityId!,
       });
-    }
-  }
 
-  return documentPayload;
+      const idToFileByTempId = formatDocumentId({
+        type: documentElement.params?.template?.type!,
+        category: documentElement.params?.template?.category!,
+        entityType: 'ubo',
+        entityId: entity.__id!,
+      });
+
+      const file = files[idToFileByEntityId] || files[idToFileByTempId];
+
+      if (!file) {
+        console.warn('File is missing for document', idToFileByEntityId, idToFileByTempId);
+        return;
+      }
+
+      creationPayload.push({
+        documentData: creationData,
+        entity,
+        file,
+      });
+    });
+  });
+
+  return creationPayload;
 };

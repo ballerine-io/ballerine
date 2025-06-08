@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ICommonValidator } from '../../types';
+import { ICommonValidator, IValidationSchema, TBaseValidators } from '../../types';
 import { patternValueValidator } from './pattern-validator';
 
 describe('patternValueValidator', () => {
@@ -7,12 +7,21 @@ describe('patternValueValidator', () => {
     value: { pattern: '^[A-Z]+$' },
   };
 
+  const mockSchema: IValidationSchema<TBaseValidators, any> = {
+    id: 'test',
+    validators: [],
+    metadata: {},
+    getThisContext: () => ({}),
+  };
+
   it('should not throw error when value matches pattern', () => {
-    expect(() => patternValueValidator('ABC', params as ICommonValidator<any>)).not.toThrow();
+    expect(() =>
+      patternValueValidator('ABC', params as ICommonValidator<any>, mockSchema),
+    ).not.toThrow();
   });
 
   it('should throw error when value does not match pattern', () => {
-    expect(() => patternValueValidator('abc', params as ICommonValidator<any>)).toThrow(
+    expect(() => patternValueValidator('abc', params as ICommonValidator<any>, mockSchema)).toThrow(
       'Value must match ^[A-Z]+$.',
     );
   });
@@ -23,20 +32,26 @@ describe('patternValueValidator', () => {
       message: 'Custom message: {pattern}',
     };
 
-    expect(() => patternValueValidator('abc', customParams as ICommonValidator<any>)).toThrow(
-      'Custom message: ^[A-Z]+$',
-    );
+    expect(() =>
+      patternValueValidator('abc', customParams as ICommonValidator<any>, mockSchema),
+    ).toThrow('Custom message: ^[A-Z]+$');
   });
 
   it('should handle empty string', () => {
-    expect(() => patternValueValidator('', params as ICommonValidator<any>)).toThrow(
+    expect(() => patternValueValidator('', params as ICommonValidator<any>, mockSchema)).toThrow(
       'Value must match ^[A-Z]+$.',
     );
   });
 
   it('should return true for non-string values', () => {
-    expect(patternValueValidator(undefined as any, params as ICommonValidator<any>)).toBe(true);
-    expect(patternValueValidator(null as any, params as ICommonValidator<any>)).toBe(true);
-    expect(patternValueValidator(123 as any, params as ICommonValidator<any>)).toBe(true);
+    expect(
+      patternValueValidator(undefined as any, params as ICommonValidator<any>, mockSchema),
+    ).toBe(true);
+    expect(patternValueValidator(null as any, params as ICommonValidator<any>, mockSchema)).toBe(
+      true,
+    );
+    expect(patternValueValidator(123 as any, params as ICommonValidator<any>, mockSchema)).toBe(
+      true,
+    );
   });
 });

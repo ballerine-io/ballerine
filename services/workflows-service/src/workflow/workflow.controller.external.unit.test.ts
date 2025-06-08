@@ -13,7 +13,7 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
-import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
+import { CollectionFlowStateService } from '@/collection-flow/services/collection-flow-state.service';
 import { noop } from 'lodash';
 
 describe('Workflow (external)', () => {

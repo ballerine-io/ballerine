@@ -17,6 +17,7 @@ import {
   TUpdateEndUserPluginData,
   TFetchCompanyInformationPluginData,
 } from '@/domains/collection-flow/types';
+import { IDocument } from '@ballerine/ui';
 
 export const fetchUser = async (): Promise<TUser> => {
   const user = await request.get('collection-flow/user').json<TUser>();
@@ -164,4 +165,10 @@ export const fetchDocumentsByIds = async (ids: string[]) => {
   });
 
   return result.json<IDocumentRecord[]>();
+};
+
+export const fetchDocuments = async () => {
+  const result = await request.get('collection-flow/documents');
+
+  return result.json<IDocument[]>();
 };

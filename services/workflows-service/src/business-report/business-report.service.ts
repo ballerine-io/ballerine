@@ -215,6 +215,7 @@ export class BusinessReportService {
             [projectId],
             transaction,
           );
+
           for (const business of businesses) {
             businessesLookup.set(business.correlationId || business.id, business);
           }
@@ -226,12 +227,14 @@ export class BusinessReportService {
           ),
           'correlationId',
         );
+
         if (businessesToCreate.length > 0) {
           const businesses = await Promise.all(
             businessesToCreate.map(business =>
               this.createBusiness(projectId, business, transaction),
             ),
           );
+
           for (const business of businesses) {
             businessesLookup.set(business.correlationId || business.id, business);
           }

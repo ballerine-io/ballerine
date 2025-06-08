@@ -1,4 +1,4 @@
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
+import { CollectionFlowService } from '@/collection-flow/services/collection-flow.service';
 import {
   TokenScope,
   type ITokenScopeWithEndUserId,

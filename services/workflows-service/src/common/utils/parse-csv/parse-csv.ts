@@ -46,6 +46,7 @@ export const parseCsv = async <TSchema extends ZodSchema>(
         }
 
         let hadErrors = false;
+
         for (const record of records) {
           try {
             const validatedRecord = schema.parse(record);
