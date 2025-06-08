@@ -10,9 +10,6 @@ export class CreateDocumentDto {
   @IsString()
   type!: string;
 
-  @Transform(({ value }) => {
-    return value.toString();
-  })
   @IsString()
   issuingVersion!: string;
 
