@@ -20,6 +20,24 @@ export const EndUserSchema = z.object({
   phone: z.string().nullable(),
   additionalInfo: z.record(z.string(), z.any()).nullable(),
   amlHits: z.array(HitSchema.extend({ vendor: z.string().optional() })).optional(),
+  individualVerificationsChecks: z
+    .object({
+      status: z.string(),
+      data: z.object({
+        kyc_session_1: z.object({
+          vendor: z.string(),
+          result: z
+            .object({
+              entity: z.record(z.string(), z.any()),
+              decision: z.record(z.string(), z.any()),
+              aml: z.record(z.string(), z.any()).optional(),
+              document: z.record(z.string(), z.any()),
+            })
+            .nullable(),
+        }),
+      }),
+    })
+    .optional(),
 });
 
 export const EndUsersSchema = z.array(EndUserSchema);

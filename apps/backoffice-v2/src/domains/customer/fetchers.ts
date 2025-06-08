@@ -43,7 +43,7 @@ const CustomerSchema = z.object({
       isExample: z.boolean().default(false),
       isDemoAccount: z.boolean().default(false),
       isDemoKybEnabled: z.boolean().default(false),
-      createKybAndOwnershipAssessment: z.boolean().default(false),
+      isKybAndOwnershipAssessmentEnabled: z.boolean().default(false),
       createIdentityVerification: z.boolean().default(false),
       demoAccessDetails: z
         .object({

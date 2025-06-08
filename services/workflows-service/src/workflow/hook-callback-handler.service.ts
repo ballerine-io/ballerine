@@ -1,5 +1,4 @@
 import { BusinessService } from '@/business/business.service';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { TDocumentsWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
@@ -8,42 +7,19 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, EndUserActiveMonitoringsSchema, ProcessStatus } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
-import fs from 'fs';
 import { get, isObject, set } from 'lodash';
-import * as tmp from 'tmp';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 import { SentryService } from '@/sentry/sentry.service';
+import {
+  formatIndividualVerification,
+  handleIndividualVerificationDocuments,
+  TIndividualVerificationData,
+} from '@/common/utils/idv';
 
 const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
-
-const IGNORED_DECISION_CHECKS = ['newUser', 'newDocument'] as const;
-
-const DECISION_CHECKS = [
-  'allowedAge',
-  'faceLiveness',
-  'documentNotExpired',
-  'geolocationMatch',
-  'documentAccepted',
-  'faceNotInBlocklist',
-  'allowedIpLocation',
-  'faceImageAvailable',
-  'documentRecognised',
-  'faceSimilarToPortrait',
-  'validDocumentAppearance',
-  'expectedTrafficBehaviour',
-  'physicalDocumentPresent',
-  'documentBackFullyVisible',
-  'documentFrontFullyVisible',
-  'documentBackImageAvailable',
-  'faceImageQualitySufficient',
-  'documentFrontImageAvailable',
-  'documentImageQualitySufficient',
-] as const;
-
-const ALL_KNOWN_CHECKS = [...IGNORED_DECISION_CHECKS, ...DECISION_CHECKS] as const;
 
 export const setPluginStatus = ({
   data,
@@ -219,22 +195,15 @@ export class HookCallbackHandlerService {
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
+    const typedData = data as TIndividualVerificationData;
     const attributePath = resultDestinationPath.split('.');
     const context = JSON.parse(JSON.stringify(workflowRuntime.context));
-    const kycDocument = data.document as AnyRecord;
-    const entity = this.formatEntityData(data);
-    const issuer = this.formatIssuerData(kycDocument);
-    const documentProperties = this.formatDocumentProperties(data, kycDocument);
-    const pages = await this.formatPages(data);
-    const decision = this.formatDecision(data);
-    const documentCategory = (kycDocument.type as AnyRecord)?.value as string;
-    const documents = this.formatDocuments(
-      documentCategory,
-      pages,
-      issuer,
-      documentProperties,
-      kycDocument,
-    );
+    const result = formatIndividualVerification(typedData);
+    const documents = await handleIndividualVerificationDocuments({
+      kycDocument: typedData.document,
+      kycDocumentImages: typedData.images,
+      person: typedData.person,
+    });
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
@@ -243,151 +212,17 @@ export class HookCallbackHandlerService {
       currentProjectId,
       customer.name,
     );
-    const kycDocumentDetails = this.formatKycDocumentDetais(kycDocument);
-
-    const result = {
-      entity: entity,
-      decision: decision,
-      aml: data.aml,
-      kycDocumentDetails: kycDocumentDetails,
-    };
 
     // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
     // @ts-expect-error - we don't validate `context` is an object
-    context.documents = [
+    context.documents =
       // @ts-expect-error - we don't validate `context` is an object
-      ...(context.documents?.filter(document => document.type !== 'identification_document') ?? []),
-      ...persistedDocuments,
-    ];
+      context.documents?.filter(document => document.type !== 'identification_document') ?? [];
+    // @ts-expect-error - we don't validate `context` is an object
+    context.kycDocuments = persistedDocuments;
 
     return context;
-  }
-
-  private formatKycDocumentDetais(kycDocument: AnyRecord) {
-    return {
-      expiryDate: (kycDocument['validUntil'] as any)?.value,
-    };
-  }
-
-  private formatDocuments(
-    documentCategory: string,
-    pages: any[],
-    issuer: AnyRecord,
-    documentProperties: AnyRecord,
-    kycDocument: AnyRecord,
-  ) {
-    return [
-      {
-        type: 'identification_document',
-        category: documentCategory?.toLocaleLowerCase(),
-        pages: pages,
-        issuer: issuer,
-        properties: documentProperties,
-        issuingVersion: kycDocument['issueNumber'] || 1,
-      },
-    ];
-  }
-
-  private formatDecision(data: AnyRecord) {
-    const insights = data.insights as Record<string, Record<string, string | null>>;
-
-    const insightValues = Object.values(insights).flatMap(category => Object.entries(category));
-
-    const unknownValues = insightValues.filter(([check]) => !ALL_KNOWN_CHECKS.includes(check));
-
-    if (unknownValues.length > 0) {
-      this.sentryService.captureException(
-        `Unknown KYC decision checks: ${unknownValues.join(', ')}`,
-      );
-    }
-
-    const riskLabels = insightValues
-      .filter(([label, result]) => IGNORED_DECISION_CHECKS.includes(label) && result !== 'yes')
-      .map(([label]) => label);
-
-    return {
-      riskLabels,
-      status: data.decision,
-      decisionReason: data.reason,
-      decisionScore: data.decisionScore,
-    };
-  }
-
-  private formatEntityData(data: AnyRecord) {
-    const person = data.person as AnyRecord;
-    const additionalInfo = {
-      gender: (person['gender'] as any)?.value,
-      nationality: (person['nationality'] as any)?.value,
-      placeOfBirth: (person['placeOfBirth'] as any)?.value,
-      addresses: (person['addresses'] as any)?.value,
-    };
-
-    const entityInformation = {
-      firstName: (person['firstName'] as any)?.value,
-      lastName: (person['lastName'] as any)?.value,
-      dateOfBirth: (person['dateOfBirth'] as any)?.value,
-      additionalInfo: additionalInfo,
-    };
-
-    return {
-      type: 'individual',
-      data: entityInformation,
-    };
-  }
-
-  private formatIssuerData(kycDocument: AnyRecord) {
-    const additionalIssuerInfor = {
-      validFrom: (kycDocument['validFrom'] as any)?.value,
-      validUntil: (kycDocument['validUntil'] as any)?.value, // Add type assertion here
-      firstIssue: (kycDocument['firstIssue'] as any)?.value,
-    };
-
-    return {
-      additionalInfo: additionalIssuerInfor,
-      country: (kycDocument['country'] as any)?.value,
-      // name: kycDocument['issuedBy'],
-      city: (kycDocument['placeOfIssue'] as any)?.value,
-    };
-  }
-
-  async formatPages(data: AnyRecord) {
-    const documentImages: AnyRecord[] = [];
-
-    for (const image of data.images as Array<{ context?: string; content: string }>) {
-      const tmpFile = tmp.fileSync({ keep: false }).name;
-      const base64ImageContent = image.content.split(',')[1];
-      const buffer = Buffer.from(base64ImageContent as string, 'base64');
-      const fileType = await getFileMetadata({
-        file: buffer,
-      });
-      const fileWithExtension = `${tmpFile}${fileType?.extension ? `.${fileType?.extension}` : ''}`;
-
-      fs.writeFileSync(fileWithExtension, buffer);
-
-      documentImages.push({
-        uri: `file://${fileWithExtension}`,
-        provider: 'file-system',
-        type: fileType?.mimeType,
-        metadata: {
-          side: image.context?.replace('document-', ''),
-        },
-      });
-    }
-
-    return documentImages;
-  }
-
-  private formatDocumentProperties(data: AnyRecord, kycDocument: AnyRecord) {
-    const person = data.person as AnyRecord;
-
-    return {
-      expiryDate: (kycDocument['validUntil'] as any)?.value,
-      idNumber: (person['idNumber'] as any)?.value,
-      validFrom: (kycDocument['validFrom'] as any)?.value,
-      validUntil: (kycDocument['validUntil'] as any)?.value,
-      firstIssue: (kycDocument['firstIssue'] as any)?.value,
-    };
   }
 
   setNestedProperty(obj: Record<string, any>, path: string[], value: AnyRecord) {

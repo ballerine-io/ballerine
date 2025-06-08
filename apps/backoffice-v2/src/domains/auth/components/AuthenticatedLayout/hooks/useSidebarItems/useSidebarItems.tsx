@@ -69,6 +69,13 @@ export const useSidebarItems = () => {
     key: 'nav-item-web-presence',
   };
 
+  const kybAndOwnershipNavItem = {
+    text: 'KYB & Ownership',
+    icon: BuildingIcon,
+    href: `/${locale}/kyb-and-ownership`,
+    key: 'nav-item-kyb-and-ownership',
+  };
+
   const navItems: TRoute[] = customer?.config?.isDemoAccount
     ? [
         homeNavItem,
@@ -83,19 +90,23 @@ export const useSidebarItems = () => {
                 key: 'nav-item-full-onboarding',
               },
             ]),
-        {
-          text: 'KYB & Ownership',
-          icon: BuildingIcon,
-          premium: {
-            caption: 'Verify businesses, activity, and ownership to stay compliant.',
-            checkList: [
-              'Retrieve company registry data',
-              'Validate existence and status',
-              'Identify key stakeholders',
-            ],
-          },
-          key: 'nav-item-kyb-ownership',
-        },
+        ...(customer?.config?.isKybAndOwnershipAssessmentEnabled
+          ? [kybAndOwnershipNavItem]
+          : [
+              {
+                text: 'KYB & Ownership',
+                icon: BuildingIcon,
+                premium: {
+                  caption: 'Verify businesses, activity, and ownership to stay compliant.',
+                  checkList: [
+                    'Retrieve company registry data',
+                    'Validate existence and status',
+                    'Identify key stakeholders',
+                  ],
+                },
+                key: 'nav-item-kyb-ownership',
+              },
+            ]),
         {
           text: 'Identity Verification',
           icon: UserRoundSearchIcon,
@@ -153,16 +164,7 @@ export const useSidebarItems = () => {
           ],
           key: 'nav-item-individuals',
         },
-        ...(customer?.config?.createKybAndOwnershipAssessment
-          ? [
-              {
-                text: 'KYB & Ownership',
-                icon: BuildingIcon,
-                href: `/${locale}/kyb-and-ownership`,
-                key: 'nav-item-kyb-and-ownership',
-              },
-            ]
-          : []),
+        ...(customer?.config?.isKybAndOwnershipAssessmentEnabled ? [kybAndOwnershipNavItem] : []),
         // ...(customer?.config?.createIdentityVerification
         //   ? [
         //       {

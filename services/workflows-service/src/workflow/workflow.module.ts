@@ -56,6 +56,8 @@ import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-dat
 // eslint-disable-next-line import/no-cycle
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
+import { AssessmentsModule } from '@/assessments/assessments.module';
+import { AssessmentsService } from '@/assessments/assessments.service';
 
 @Module({
   controllers: [
@@ -80,6 +82,7 @@ import { WorkflowCollectionFlowController } from './workflow-collection-flow.con
     RuleEngineModule,
     SecretsManagerModule,
     forwardRef(() => CollectionFlowModule),
+    AssessmentsModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -114,6 +117,7 @@ import { WorkflowCollectionFlowController } from './workflow-collection-flow.con
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    AssessmentsService,
   ],
   exports: [
     WorkflowService,
