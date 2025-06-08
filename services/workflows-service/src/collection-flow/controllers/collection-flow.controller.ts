@@ -162,7 +162,6 @@ export class CollectionFlowController {
       const beginTransaction = beginTransactionIfNotExistCurry({
         prismaService: this.prismaService,
         options: defaultPrismaTransactionOptions,
-        transaction: this.prismaService,
       });
 
       return beginTransaction(async transaction => {
