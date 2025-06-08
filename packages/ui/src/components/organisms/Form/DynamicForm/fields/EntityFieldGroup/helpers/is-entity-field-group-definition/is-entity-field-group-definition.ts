@@ -1,5 +1,5 @@
 import { IFormElement } from '../../../../types';
-import { IEntityFieldGroupParams } from '../../../EntityFieldGroup/EntityFieldGroup';
+import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 
 export const isEntityFieldGroupDefinition = (
   element: IFormElement<any, any>,
