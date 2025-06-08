@@ -52,10 +52,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/react-pdf-toolkit": "^1.2.123",
-    "@ballerine/ui": "0.7.160",
+    "@ballerine/react-pdf-toolkit": "^1.2.124",
+    "@ballerine/ui": "0.7.161",
     "@ballerine/blocks": "0.2.47",
-    "@ballerine/common": "0.9.111",
+    "@ballerine/common": "0.9.112",
     "@ballerine/workflow-browser-sdk": "0.6.135",
     "@ballerine/workflow-node-sdk": "0.6.135",
     "@fontsource/inter": "^4.5.15",

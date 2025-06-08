@@ -50,7 +50,7 @@
     "@aws-sdk/client-secrets-manager": "^3.620.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
-    "@ballerine/common": "0.9.111",
+    "@ballerine/common": "0.9.112",
     "@ballerine/workflow-core": "0.6.135",
     "@ballerine/workflow-node-sdk": "0.6.135",
     "@faker-js/faker": "^7.6.0",
