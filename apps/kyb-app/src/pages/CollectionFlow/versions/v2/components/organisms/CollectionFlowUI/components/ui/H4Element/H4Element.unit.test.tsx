@@ -2,7 +2,8 @@ import { createTestId, IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ElementContainer } from '../../utility/ElementContainer';
-import { H4_UI_ELEMENT_TYPE, H4Element, IH4ElementParams } from './H4Element';
+import { H4_UI_ELEMENT_TYPE, H4Element } from './H4Element';
+import { TH4ElementParams } from '@ballerine/common';
 
 vi.mock('@ballerine/ui', () => ({
   createTestId: vi.fn(),
@@ -25,7 +26,7 @@ describe('H4Element', () => {
       params: {
         text: 'Test Heading',
       },
-    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, IH4ElementParams>;
+    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, TH4ElementParams>;
 
     render(<H4Element element={element} />);
 
@@ -38,7 +39,7 @@ describe('H4Element', () => {
       params: {
         text: 'Test Heading',
       },
-    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, IH4ElementParams>;
+    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, TH4ElementParams>;
 
     render(<H4Element element={element} />);
 
@@ -53,7 +54,7 @@ describe('H4Element', () => {
       params: {
         text: '',
       },
-    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, IH4ElementParams>;
+    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, TH4ElementParams>;
 
     const { container } = render(<H4Element element={element} />);
 
@@ -64,7 +65,7 @@ describe('H4Element', () => {
     const element = {
       element: H4_UI_ELEMENT_TYPE,
       params: undefined,
-    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, IH4ElementParams>;
+    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, TH4ElementParams>;
 
     const { container } = render(<H4Element element={element} />);
 
@@ -79,7 +80,7 @@ describe('H4Element', () => {
       params: {
         text: '',
       },
-    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, IH4ElementParams>;
+    } as IFormElement<typeof H4_UI_ELEMENT_TYPE, TH4ElementParams>;
 
     render(<H4Element element={element} />);
 

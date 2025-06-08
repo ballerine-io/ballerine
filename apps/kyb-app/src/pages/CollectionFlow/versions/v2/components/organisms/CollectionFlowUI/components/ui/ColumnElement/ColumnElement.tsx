@@ -1,15 +1,10 @@
 import { createTestId, ctw, TDynamicFormElement } from '@ballerine/ui';
 import { ElementContainer } from '../../utility/ElementContainer';
-
-export const COLUMN_UI_ELEMENT_TYPE = 'column';
-
-interface IColumnElementParams {
-  className?: string;
-}
+import { COLUMN_UI_ELEMENT_TYPE, TColumnElementParams } from '@ballerine/common';
 
 export const ColumnElement: TDynamicFormElement<
   typeof COLUMN_UI_ELEMENT_TYPE,
-  IColumnElementParams
+  TColumnElementParams
 > = ({ element, children }) => {
   const { className } = element.params || {};
 

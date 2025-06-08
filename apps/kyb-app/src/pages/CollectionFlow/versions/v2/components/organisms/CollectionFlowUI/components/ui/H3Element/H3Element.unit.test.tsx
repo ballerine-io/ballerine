@@ -2,7 +2,8 @@ import { createTestId, IFormElement } from '@ballerine/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ElementContainer } from '../../utility/ElementContainer';
-import { H3_UI_ELEMENT_TYPE, H3Element, IH3ElementParams } from './H3Element';
+import { H3_UI_ELEMENT_TYPE, H3Element } from './H3Element';
+import { TH3ElementParams } from '@ballerine/common';
 
 vi.mock('@ballerine/ui', () => ({
   createTestId: vi.fn(),
@@ -24,7 +25,7 @@ describe('H3Element', () => {
       params: {
         text: 'Test Heading',
       },
-    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, IH3ElementParams>;
+    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams>;
 
     render(<H3Element element={element} />);
     expect(ElementContainer).toHaveBeenCalled();
@@ -36,7 +37,7 @@ describe('H3Element', () => {
       params: {
         text: 'Test Heading',
       },
-    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, IH3ElementParams>;
+    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams>;
 
     render(<H3Element element={element} />);
 
@@ -51,7 +52,7 @@ describe('H3Element', () => {
       params: {
         text: '',
       },
-    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, IH3ElementParams>;
+    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams>;
 
     const { container } = render(<H3Element element={element} />);
 
@@ -62,7 +63,7 @@ describe('H3Element', () => {
     const element = {
       element: H3_UI_ELEMENT_TYPE,
       params: undefined,
-    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, IH3ElementParams>;
+    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams>;
 
     const { container } = render(<H3Element element={element} />);
 
@@ -77,7 +78,7 @@ describe('H3Element', () => {
       params: {
         text: '',
       },
-    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, IH3ElementParams>;
+    } as IFormElement<typeof H3_UI_ELEMENT_TYPE, TH3ElementParams>;
 
     render(<H3Element element={element} />);
 
