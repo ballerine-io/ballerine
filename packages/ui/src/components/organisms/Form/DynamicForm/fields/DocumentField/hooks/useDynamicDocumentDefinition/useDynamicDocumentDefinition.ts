@@ -75,6 +75,7 @@ export const useDynamicDocumentDefinition = ({
     documentHiddenRules,
     documentDisabledRules,
     documentValidationRules,
+    documentLabel,
     document,
     entityId,
     valueDestination,

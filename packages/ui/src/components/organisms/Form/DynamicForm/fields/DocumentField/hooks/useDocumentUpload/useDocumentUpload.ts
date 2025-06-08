@@ -88,7 +88,17 @@ export const useDocumentUpload = (
         addTask(task);
       }
     },
-    [uploadOn, metadata, addTask, removeTask, id, element, document],
+    [
+      uploadOn,
+      metadata,
+      addTask,
+      removeTask,
+      id,
+      element,
+      document,
+      createDocument,
+      reuploadDocument,
+    ],
   );
 
   return {
