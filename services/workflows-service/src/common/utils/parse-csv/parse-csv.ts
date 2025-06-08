@@ -23,7 +23,7 @@ export const parseCsv = async <TSchema extends ZodSchema>(
     fileContent = fs.readFileSync(processEntity.filePath);
     filenameWithExtension = processEntity.filePath;
   }
-  const isCsv = filenameWithExtension.endsWith('.csv');
+  const isCsv = filenameWithExtension.toLowerCase().endsWith('.csv');
 
   return new Promise((resolve, reject) => {
     const results: z.output<TSchema> = [];
