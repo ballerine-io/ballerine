@@ -14,8 +14,17 @@ import {
   H4ElementParamsSchema,
   RowElementParamsSchema,
 } from './ui';
+import { AutocompleteFieldElementType, AutocompleteFieldParamsSchema } from './fields/autocomplete';
+import { CheckboxFieldElementType, CheckboxFieldParamsSchema } from './fields/checkbox';
 
-export const ElementsSchema = z.union([
+export const FieldsSchema = z.union([AutocompleteFieldElementType, CheckboxFieldElementType]);
+
+export const FieldsParamsSchema = z.union([
+  AutocompleteFieldParamsSchema,
+  CheckboxFieldParamsSchema,
+]);
+
+export const UIElementsSchema = z.union([
   ColumnElementType,
   DescriptionElementType,
   H1ElementType,
@@ -37,20 +46,23 @@ export const UIElementParams = z.union([
 export const BaseUIElement = z.object({
   id: z.string(),
   valueDestination: z.string().optional(),
-  params: UIElementParams,
+  params: z.union([...UIElementParams.options, ...FieldsParamsSchema.options]),
   defaultValue: z.any().optional(),
   validate: z.any(),
   hidden: z.any(),
 });
 
 export const BaseUIElementSchema = z.discriminatedUnion('element', [
+  // UI Elements start
   BaseUIElement.extend({
     element: ColumnElementType,
     params: ColumnElementParamsSchema,
+    children: z.array(BaseUIElement),
   }),
   BaseUIElement.extend({
     element: RowElementType,
     params: RowElementParamsSchema,
+    children: z.array(BaseUIElement),
   }),
   BaseUIElement.extend({
     element: DescriptionElementType,
@@ -71,9 +83,23 @@ export const BaseUIElementSchema = z.discriminatedUnion('element', [
   BaseUIElement.extend({
     element: DividerElementType,
   }),
+
+  // UI Elements end
+
+  // Fields start
+  BaseUIElement.extend({
+    element: AutocompleteFieldElementType,
+    params: AutocompleteFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: CheckboxFieldElementType,
+    params: CheckboxFieldParamsSchema,
+  }),
 ]);
 
-export type TUIElement = z.infer<typeof BaseUIElementSchema> & { children?: TUIElement[] };
+export type TUIElement = z.infer<typeof BaseUIElementSchema> & {
+  children?: TUIElement[];
+};
 
 const test: TUIElement = {
   id: '1',
@@ -88,10 +114,34 @@ const test: TUIElement = {
   children: [
     {
       id: '2',
-      element: 'column',
+      element: 'row',
       params: {
         className: 'test',
       },
+      children: [
+        {
+          id: '3',
+          element: 'description',
+          params: {
+            descriptionRaw: 'test',
+          },
+        },
+      ],
+    },
+    {
+      id: '3',
+      element: 'autocompletefield',
+      params: {
+        options: [
+          {
+            label: 'test',
+            value: 'test',
+          },
+        ],
+        label: 'test',
+        placeholder: 'test',
+      },
+      children: [],
     },
   ],
 };
