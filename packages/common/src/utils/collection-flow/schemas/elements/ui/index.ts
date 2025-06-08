@@ -5,3 +5,4 @@ export * from './h4';
 export * from './column';
 export * from './row';
 export * from './divider';
+export * from './submit';
