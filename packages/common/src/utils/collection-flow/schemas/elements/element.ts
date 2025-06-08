@@ -13,40 +13,53 @@ import {
   H3ElementParamsSchema,
   H4ElementParamsSchema,
   RowElementParamsSchema,
+  SubmitButtonElementType,
+  SubmitParamsSchema,
 } from './ui';
 import { AutocompleteFieldElementType, AutocompleteFieldParamsSchema } from './fields/autocomplete';
 import { CheckboxFieldElementType, CheckboxFieldParamsSchema } from './fields/checkbox';
-
-export const FieldsSchema = z.union([AutocompleteFieldElementType, CheckboxFieldElementType]);
-
-export const FieldsParamsSchema = z.union([
-  AutocompleteFieldParamsSchema,
-  CheckboxFieldParamsSchema,
-]);
-
-export const UIElementsSchema = z.union([
-  ColumnElementType,
-  DescriptionElementType,
-  H1ElementType,
-  H3ElementType,
-  H4ElementType,
-  RowElementType,
-  DividerElementType,
-]);
-
-export const UIElementParams = z.union([
-  ColumnElementParamsSchema,
-  DescriptionElementParamsSchema,
-  H1ElementParamsSchema,
-  H3ElementParamsSchema,
-  H4ElementParamsSchema,
-  RowElementParamsSchema,
-]);
+import {
+  CheckboxListElementType,
+  CheckboxListParamsSchema,
+  CountryPickerFieldElementType,
+  CountryPickerFieldParamsSchema,
+  DateFieldElementType,
+  DateFieldParamsSchema,
+  DocumentFieldElementType,
+  DocumentFieldParamsSchema,
+  EntityFieldGroupElementType,
+  EntityFieldGroupParamsSchema,
+  FieldListElementType,
+  FieldListParamsSchema,
+  FileFieldElementType,
+  FileFieldParamsSchema,
+  IndustriesPickerFieldElementType,
+  IndustriesPickerFieldParamsSchema,
+  LocalePickerFieldElementType,
+  LocalePickerFieldParamsSchema,
+  MCCPickerFieldElementType,
+  MCCPickerFieldParamsSchema,
+  MultiSelectFieldElementType,
+  MultiSelectFieldParamsSchema,
+  NationalityPickerFieldElementType,
+  NationalityPickerFieldParamsSchema,
+  PhoneFieldElementType,
+  PhoneFieldParamsSchema,
+  RadioFieldElementType,
+  RadioFieldParamsSchema,
+  SelectFieldElementType,
+  SelectFieldParamsSchema,
+  StatePickerFieldElementType,
+  StatePickerFieldParamsSchema,
+  TagsFieldElementType,
+  TagsFieldParamsSchema,
+  TextFieldElementType,
+  TextFieldParamsSchema,
+} from './fields';
 
 export const BaseUIElement = z.object({
   id: z.string(),
   valueDestination: z.string().optional(),
-  params: z.union([...UIElementParams.options, ...FieldsParamsSchema.options]),
   defaultValue: z.any().optional(),
   validate: z.any(),
   hidden: z.any(),
@@ -95,53 +108,84 @@ export const BaseUIElementSchema = z.discriminatedUnion('element', [
     element: CheckboxFieldElementType,
     params: CheckboxFieldParamsSchema,
   }),
+  BaseUIElement.extend({
+    element: CheckboxListElementType,
+    params: CheckboxListParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: DateFieldElementType,
+    params: DateFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: DocumentFieldElementType,
+    params: DocumentFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: FieldListElementType,
+    params: FieldListParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: EntityFieldGroupElementType,
+    params: EntityFieldGroupParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: FileFieldElementType,
+    params: FileFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: MultiSelectFieldElementType,
+    params: MultiSelectFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: PhoneFieldElementType,
+    params: PhoneFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: RadioFieldElementType,
+    params: RadioFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: SelectFieldElementType,
+    params: SelectFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: TagsFieldElementType,
+    params: TagsFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: TextFieldElementType,
+    params: TextFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: IndustriesPickerFieldElementType,
+    params: IndustriesPickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: CountryPickerFieldElementType,
+    params: CountryPickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: LocalePickerFieldElementType,
+    params: LocalePickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: MCCPickerFieldElementType,
+    params: MCCPickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: NationalityPickerFieldElementType,
+    params: NationalityPickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: StatePickerFieldElementType,
+    params: StatePickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: SubmitButtonElementType,
+    params: SubmitParamsSchema,
+  }),
 ]);
 
 export type TUIElement = z.infer<typeof BaseUIElementSchema> & {
   children?: TUIElement[];
-};
-
-const test: TUIElement = {
-  id: '1',
-  valueDestination: 'test',
-  element: 'h3',
-  params: {
-    text: 'test',
-  },
-  defaultValue: 'test',
-  validate: 'test',
-  hidden: false,
-  children: [
-    {
-      id: '2',
-      element: 'row',
-      params: {
-        className: 'test',
-      },
-      children: [
-        {
-          id: '3',
-          element: 'description',
-          params: {
-            descriptionRaw: 'test',
-          },
-        },
-      ],
-    },
-    {
-      id: '3',
-      element: 'autocompletefield',
-      params: {
-        options: [
-          {
-            label: 'test',
-            value: 'test',
-          },
-        ],
-        label: 'test',
-        placeholder: 'test',
-      },
-      children: [],
-    },
-  ],
 };

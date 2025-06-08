@@ -6,8 +6,10 @@ export const CheckboxFieldParamsSchema = FieldSchema.extend({
   syncEvents: z.boolean().optional(),
 });
 
+export type TCheckboxFieldParams = z.infer<typeof CheckboxFieldParamsSchema>;
+
 export const CHECKBOX_FIELD_ELEMENT_TYPE = 'checkboxfield' as const;
 
 export const CheckboxFieldElementType = z.literal(CHECKBOX_FIELD_ELEMENT_TYPE);
 
-export type TCheckboxField = z.infer<typeof CheckboxFieldParamsSchema>;
+export type TCheckboxFieldParamsSchema = z.infer<typeof CheckboxFieldParamsSchema>;
