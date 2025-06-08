@@ -10,7 +10,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import set from 'lodash/set';
-import { CollectionFlowService } from '../collection-flow.service';
+import { CollectionFlowService } from '../services/collection-flow.service';
 import { GetFlowConfigurationInputDto } from '../dto/get-flow-configuration-input.dto';
 import { FlowConfigurationModel } from '../models/flow-configuration.model';
 

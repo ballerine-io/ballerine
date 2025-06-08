@@ -106,9 +106,9 @@ describe('usePriorityFields', () => {
     expect(result.current.isShouldHidePriorityField).toBeFalsy();
   });
 
-  it('should return false for disable and hide when priorityFields is empty', () => {
+  it('should return false for disable and hide when priorityFields is undefined', () => {
     vi.mocked(useDynamicForm).mockReturnValue({
-      priorityFields: [],
+      priorityFields: undefined,
       priorityFieldsParams: { behavior: 'disableOthers' },
     } as unknown as ReturnType<typeof useDynamicForm>);
 

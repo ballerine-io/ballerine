@@ -16,7 +16,6 @@ export type TBaseValidators =
   | 'minimum'
   | 'maximum'
   | 'format'
-  | 'document'
   | 'minimumAge'
   | 'futureDate'
   | 'pastDate';
@@ -58,7 +57,13 @@ export type TValidator<
   T,
   TValidatorParams = unknown,
   TValidatorType extends string = TBaseValidators,
-> = (value: T, validator: ICommonValidator<TValidatorParams, TValidatorType>) => void;
+  TContext = AnyObject,
+> = (
+  value: T,
+  validator: ICommonValidator<TValidatorParams, TValidatorType>,
+  schema: IValidationSchema<TValidatorType, TValidatorParams>,
+  context?: TContext,
+) => void;
 
 export type TDeepthLevelStack = number[] | undefined;
 

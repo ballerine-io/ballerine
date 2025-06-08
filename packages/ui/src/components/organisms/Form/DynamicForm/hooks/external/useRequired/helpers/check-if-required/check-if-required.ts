@@ -14,7 +14,8 @@ export const checkIfRequired = (
   const validate = [..._elementValidate, ...globalValidationRules];
 
   const requiredLikeValidators = validate.filter(
-    validator => validator.type === 'required' || validator.considerRequired,
+    validator =>
+      validator.type === 'required' || validator.type === 'document' || validator.considerRequired,
   );
   const contextBuilder = contextBuilders[element.element];
 

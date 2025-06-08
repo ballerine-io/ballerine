@@ -4,7 +4,6 @@ import { z } from 'zod';
 const ParsedUIDocumentSchema = z.object({
   entityType: z.enum(['business', 'ubo', 'director']),
   type: z.string(),
-  templateId: z.string(),
   category: z.string(),
   issuingCountry: z.string(),
   issuingVersion: z.string(),
