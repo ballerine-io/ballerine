@@ -16,7 +16,7 @@
     "prod": "npm run db:migrate-up && npm run start:prod",
     "prod:next": "npm run db:migrate-up && npm run db:data-sync && npm run start:prod",
     "start:watch": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:debug": "nest start --debug",
     "build": "nest build --path=tsconfig.build.json",
     "test": "jest --runInBand",
     "test:unit": "cross-env SKIP_DB_SETUP_TEARDOWN=true jest --testRegex '.*\\.unit\\.test\\.ts$'",

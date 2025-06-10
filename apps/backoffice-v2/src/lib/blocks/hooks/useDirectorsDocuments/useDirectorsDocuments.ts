@@ -9,6 +9,7 @@ export const useDirectorsDocuments = (workflow: TWorkflowById) => {
 
   const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
+    // TODO: Remove once documents v1 are deprecated
     documents: (workflow?.context?.entity?.data?.additionalInfo?.directors?.flatMap(
       director => director.documents ?? [],
     ) ?? []) as TDocument[],
