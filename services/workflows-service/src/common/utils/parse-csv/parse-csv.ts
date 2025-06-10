@@ -53,7 +53,7 @@ export const parseCsv = async <TSchema extends ZodSchema>(
       },
       (err, records) => {
         if (err) {
-          logger.error(`Error parsing CSV file: ${err.message}`);
+          logger.warn(`Error parsing CSV file: ${err.message}`);
           errors.push({ message: err.message });
         }
 
