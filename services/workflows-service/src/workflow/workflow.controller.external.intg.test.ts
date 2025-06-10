@@ -53,6 +53,7 @@ import { CollectionFlowStateService } from '@/collection-flow/collection-flow-st
 import { noop } from 'lodash';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { KycService } from '@/kyc/kyc.service';
 
 describe('/api/v1/external/workflows #api #integration', () => {
   let app: INestApplication;
@@ -112,6 +113,7 @@ describe('/api/v1/external/workflows #api #integration', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
+      KycService,
       {
         provide: CollectionFlowStateService,
         useValue: noop,
