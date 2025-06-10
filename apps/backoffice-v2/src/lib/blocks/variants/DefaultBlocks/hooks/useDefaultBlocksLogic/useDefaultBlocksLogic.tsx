@@ -385,6 +385,14 @@ export const useDefaultBlocksLogic = () => {
               childWorkflow?.context?.entity?.data?.ballerineEntityId === ubo.ballerineEntityId,
           ),
       ) ?? []),
+      ...(workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest?.filter(
+        personOfInterest =>
+          !childWorkflows?.some(
+            childWorkflow =>
+              childWorkflow?.context?.entity?.data?.ballerineEntityId ===
+              personOfInterest.ballerineEntityId,
+          ),
+      ) ?? []),
     ],
     [workflow?.context?.entity?.data?.additionalInfo?.directors, childWorkflows],
   );

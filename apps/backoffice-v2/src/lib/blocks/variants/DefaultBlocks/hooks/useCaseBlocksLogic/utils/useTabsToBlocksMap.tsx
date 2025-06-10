@@ -451,9 +451,106 @@ export const useTabsToBlocksMap = ({
     [workflow, endUsers, directorToIndividualAdapter],
   );
 
+  const personOfInterestToIndividualAdapter = useCallback(
+    ({
+      ballerineEntityId,
+      role,
+    }: NonNullable<
+      TWorkflowById['context']['entity']['data']['additionalInfo']['peopleOfInterest']
+    >[number]) => {
+      const {
+        id: _id,
+        amlHits,
+        individualVerificationsChecks,
+        ...personOfInterestEndUser
+      } = endUsers?.find(endUser => endUser.id === ballerineEntityId) ?? {};
+      const status = getStatusFromCheckStatus(individualVerificationsChecks?.status);
+      const kycSession = omitPropsFromObject(
+        individualVerificationsChecks?.data ?? {},
+        'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
+      );
+
+      return {
+        status,
+        documents: [],
+        kycSession,
+        aml: {
+          vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
+          hits: amlHits,
+        },
+        entityData: {
+          ...personOfInterestEndUser,
+          role,
+        },
+        isActionsDisabled: true,
+        isLoadingReuploadNeeded: false,
+        isLoadingApprove: false,
+        onInitiateKyc: () => {
+          if (!workflow?.id) {
+            console.error('No workflow id found');
+            toast.error('Something went wrong. Please try again later.');
+
+            return;
+          }
+
+          return mutateInitiateIndividualVerificationAndSendEmail({
+            endUserId: ballerineEntityId,
+            ongoingMonitoring: false,
+            withAml: true,
+            workflowRuntimeDataId: workflow?.id,
+            vendor: 'veriff',
+            language: workflow?.workflowDefinition?.config?.language ?? 'en',
+          });
+        },
+        onInitiateSanctionsScreening: () => {},
+        onApprove:
+          ({ ids }: { ids: string[] }) =>
+          () => {},
+        onReuploadNeeded:
+          ({ reason, ids }: { reason: string; ids: string[] }) =>
+          () => {},
+        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        reasons: [],
+        isReuploadNeededDisabled: true,
+        isApproveDisabled: true,
+        isInitiateKycDisabled: [
+          !workflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
+        isInitiateSanctionsScreeningDisabled: true,
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+        ].some(Boolean),
+      } satisfies Parameters<typeof createKycBlocks>[0][number];
+    },
+    [
+      workflow?.id,
+      caseState.actionButtonsEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+    ],
+  );
+
+  const peopleOfInterest = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest?.map(
+        personOfInterestToIndividualAdapter,
+      ) ?? [],
+    [
+      workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest,
+      personOfInterestToIndividualAdapter,
+    ],
+  );
+
   const individuals = useMemo(
-    () => [...childWorkflows, ...deDupedDirectors],
-    [childWorkflows, deDupedDirectors],
+    () => [...childWorkflows, ...deDupedDirectors, ...peopleOfInterest],
+    [childWorkflows, deDupedDirectors, peopleOfInterest],
   );
 
   const kycBlocks = useKYCBlocks(individuals);

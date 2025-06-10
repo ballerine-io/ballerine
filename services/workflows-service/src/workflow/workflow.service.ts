@@ -2370,20 +2370,13 @@ export class WorkflowService {
 
       service.subscribe('RUN_AML_ON_REGISTRY_PEOPLE_OF_INTEREST', async ({ payload }) => {
         const PayloadWithPeopleOfInterestSchema = z.object({
-          pluginsOutput: z.object({
-            businessInformation: z.object({
-              data: z.array(
-                z.object({
-                  peopleOfInterest: z.array(
-                    z.object({
-                      firstName: z.string(),
-                      lastName: z.string(),
-                    }),
-                  ),
-                }),
-              ),
+          peopleOfInterest: z.array(
+            z.object({
+              firstName: z.string(),
+              lastName: z.string(),
+              role: z.string(),
             }),
-          }),
+          ),
         });
         const checkIsValidPayload = isType(PayloadWithPeopleOfInterestSchema);
 
@@ -2394,38 +2387,67 @@ export class WorkflowService {
         }
 
         const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
+        let peopleOfInterest: Array<{
+          ballerineEntityId: string;
+          firstName: string;
+          lastName: string;
+          role: string;
+        }> = [];
 
-        await Promise.all(
-          payload.pluginsOutput.businessInformation.data[0]?.peopleOfInterest?.map(
-            async ({ firstName, lastName }) => {
-              const customer = await this.customerService.getByProjectId(currentProjectId);
-              const endUser = await this.endUserService.create(
-                {
-                  data: {
-                    firstName,
-                    lastName,
-                    createdFrom: CreatedFrom.registry,
-                    projectId: currentProjectId,
+        const promises: Record<string, Promise<any>> = {};
+
+        for (const personOfInterest of payload.peopleOfInterest) {
+          const customer = await this.customerService.getByProjectId(currentProjectId);
+          const endUser = await this.endUserService.create(
+            {
+              data: {
+                firstName: personOfInterest.firstName,
+                lastName: personOfInterest.lastName,
+                createdFrom: CreatedFrom.registry,
+                projectId: currentProjectId,
+              },
+            },
+            transaction,
+          );
+
+          peopleOfInterest.push({
+            ballerineEntityId: endUser.id,
+            firstName: endUser.firstName,
+            lastName: endUser.lastName,
+            role: personOfInterest.role,
+          });
+
+          promises[endUser.id] = this.kycService.initiateAml({
+            endUserId: endUser.id,
+            clientId: customer.name,
+
+            vendor: 'veriff',
+            immediateResults: true,
+            ongoingMonitoring: false,
+            callbackUrl,
+
+            firstName: endUser.firstName,
+            lastName: endUser.lastName,
+          });
+        }
+
+        await handlePromiseAll(promises);
+
+        await service.sendEvent({
+          type: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_INDEX,
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    peopleOfInterest,
                   },
                 },
-                transaction,
-              );
-
-              return await this.kycService.initiateAml({
-                endUserId: endUser.id,
-                clientId: customer.name,
-
-                vendor: 'veriff',
-                immediateResults: true,
-                ongoingMonitoring: false,
-
-                firstName,
-                lastName,
-                callbackUrl,
-              });
+              },
             },
-          ) ?? [],
-        );
+          },
+        });
       });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {
