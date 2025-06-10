@@ -22,6 +22,7 @@ import { SentryModule } from '@/sentry/sentry.module';
 import { WebhooksModule } from '@/webhooks/webhooks.module';
 import { AlertQueueService } from './alert-queue.service';
 import { QueueModule } from '@/common/queue/queue.module';
+import { MonitoringModule } from '@/common/monitoring/monitoring.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { QueueModule } from '@/common/queue/queue.module';
     ProjectModule,
     WebhooksModule,
     QueueModule,
+    MonitoringModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 10,

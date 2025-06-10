@@ -10,6 +10,7 @@ import { QueueService } from '@/common/queue/queue.service';
 import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
 import type { BullBoardInjectedInstance } from '@/common/queue/types';
+import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
 import { env } from '@/env';
 import { type OutgoingWebhookJobData, type OutgoingWebhookPayloads } from './types/webhook';
 
@@ -32,6 +33,7 @@ export class WebhooksService implements OnModuleInit {
     private readonly httpService: HttpService,
     private readonly queueService: QueueService,
     private readonly queueBullboardService: QueueBullboardService,
+    private readonly bullMQPrometheusService: BullMQPrometheusService,
     @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
     private bullBoard: BullBoardInjectedInstance,
   ) {
@@ -63,6 +65,8 @@ export class WebhooksService implements OnModuleInit {
           removeOnFail: false,
         },
       });
+
+      this.bullMQPrometheusService.registerQueue(queue);
 
       if (this.queueService.isWorkerEnabled()) {
         this.queueBullboardService.registerQueue(this.bullBoard, queue);

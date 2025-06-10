@@ -12,7 +12,7 @@ storage:
   trace:
     backend: local
     local:
-      path: /tmp/tempo/traces
+      path: /tmp/tempo
 
 ingester:
   max_block_duration: 5m
