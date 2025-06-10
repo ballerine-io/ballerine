@@ -119,6 +119,8 @@ export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
     checks.push(createCheck('Registered Address', null));
   }
 
+  // comment for dummy commit
+
   // 7. Company Jurisdiction check
   if (registryData?.incorporationJurisdiction?.original) {
     // High-risk jurisdictions
