@@ -368,33 +368,16 @@ export const useDefaultBlocksLogic = () => {
       ),
     [workflow?.childWorkflows],
   );
-  const deDupedEndUsers = useMemo(
+  const dedupedEndUsers = useMemo(
     () => [
-      ...(workflow?.context?.entity?.data?.additionalInfo?.directors?.filter(
-        director =>
+      ...(workflow?.endUsers?.filter(
+        endUser =>
           !childWorkflows?.some(
-            childWorkflow =>
-              childWorkflow?.context?.entity?.data?.ballerineEntityId ===
-              director.ballerineEntityId,
-          ),
-      ) ?? []),
-      ...(workflow?.context?.entity?.data?.additionalInfo?.ubos?.filter(
-        ubo =>
-          !childWorkflows?.some(
-            childWorkflow =>
-              childWorkflow?.context?.entity?.data?.ballerineEntityId === ubo.ballerineEntityId,
-          ),
-      ) ?? []),
-      ...(workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest?.filter(
-        personOfInterest =>
-          !childWorkflows?.some(
-            childWorkflow =>
-              childWorkflow?.context?.entity?.data?.ballerineEntityId ===
-              personOfInterest.ballerineEntityId,
+            childWorkflow => childWorkflow?.context?.entity?.data?.ballerineEntityId === endUser.id,
           ),
       ) ?? []),
     ],
-    [workflow?.context?.entity?.data?.additionalInfo?.directors, childWorkflows],
+    [workflow?.endUsers, childWorkflows],
   );
   const individualsUserProvided = useMemo(() => {
     return [
@@ -409,17 +392,15 @@ export const useDefaultBlocksLogic = () => {
         ?.map(childWorkflow =>
           entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
         ) ?? []),
-      ...(deDupedEndUsers
+      ...(dedupedEndUsers
         ?.filter(deDupedEndUser => {
-          const endUser = workflow?.endUsers?.find(
-            endUser => endUser?.id === deDupedEndUser?.ballerineEntityId,
-          );
+          const endUser = workflow?.endUsers?.find(endUser => endUser?.id === deDupedEndUser?.id);
 
           return ['user', 'analyst', undefined, null].includes(endUser?.createdFrom);
         })
         ?.map(entityDataToIndividualAdapter) ?? []),
     ];
-  }, [workflow?.childWorkflows, workflow?.context?.entity?.data?.additionalInfo?.directors]);
+  }, [workflow?.childWorkflows, dedupedEndUsers]);
   const individualsRegistryProvided = useMemo(() => {
     return [
       ...(childWorkflows
@@ -433,17 +414,24 @@ export const useDefaultBlocksLogic = () => {
         ?.map(childWorkflow =>
           entityDataToIndividualAdapter(childWorkflow?.context?.entity?.data),
         ) ?? []),
-      ...(deDupedEndUsers
+      ...(dedupedEndUsers
         ?.filter(deDupedEndUser => {
-          const endUser = workflow?.endUsers?.find(
-            endUser => endUser?.id === deDupedEndUser?.ballerineEntityId,
-          );
+          const endUser = workflow?.endUsers?.find(endUser => endUser?.id === deDupedEndUser?.id);
 
           return ['registry'].includes(endUser?.createdFrom ?? '');
         })
-        ?.map(entityDataToIndividualAdapter) ?? []),
+        ?.map(endUser => {
+          const role = workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest?.find(
+            personOfInterest => personOfInterest.ballerineEntityId === endUser?.id,
+          )?.role;
+
+          return entityDataToIndividualAdapter({
+            ...endUser,
+            role,
+          });
+        }) ?? []),
     ];
-  }, [workflow?.context?.entity?.data?.additionalInfo?.directors]);
+  }, [workflow?.endUsers, childWorkflows, dedupedEndUsers]);
   const individualsUserProvidedBlock = useIndividualsUserProvidedBlock(individualsUserProvided);
   const individualsRegistryProvidedBlock = useIndividualsRegistryProvidedBlock(
     individualsRegistryProvided,

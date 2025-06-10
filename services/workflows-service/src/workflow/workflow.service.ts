@@ -142,8 +142,9 @@ const getAvatarUrl = (website: string | undefined | null) =>
     ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
     : null;
 
-const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
-  const record: Record<string, T> = {};
+const handlePromiseAll = async <TPromises extends Record<string, Promise<any>>>(
+  promises: TPromises,
+) => {
   const errors: { key: string; error: unknown }[] = [];
   const promisesEntries = Object.entries(promises);
   const results = await Promise.all(
@@ -158,7 +159,8 @@ const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
     ),
   );
   const fulfilledResults = results.filter(
-    (res): res is { key: string; status: 'fulfilled'; data: T } => res.status === 'fulfilled',
+    (res): res is { key: string; status: 'fulfilled'; data: Awaited<TPromises[keyof TPromises]> } =>
+      res.status === 'fulfilled',
   );
   const rejectedResults = results.filter(
     (res): res is { key: string; status: 'rejected'; error: unknown } => res.status === 'rejected',
@@ -177,11 +179,16 @@ const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
     );
   }
 
-  for (const fulfilledResult of fulfilledResults) {
-    record[fulfilledResult.key] = fulfilledResult.data;
-  }
+  return fulfilledResults.reduce(
+    (acc, fulfilledResult) => {
+      acc[fulfilledResult.key as keyof TPromises] = fulfilledResult.data;
 
-  return record;
+      return acc;
+    },
+    {} as {
+      [TKey in keyof TPromises]: Awaited<TPromises[TKey]>;
+    },
+  );
 };
 
 @Injectable()
@@ -2397,18 +2404,20 @@ export class WorkflowService {
         const promises: Record<string, Promise<any>> = {};
 
         for (const personOfInterest of payload.peopleOfInterest) {
-          const customer = await this.customerService.getByProjectId(currentProjectId);
-          const endUser = await this.endUserService.create(
-            {
-              data: {
-                firstName: personOfInterest.firstName,
-                lastName: personOfInterest.lastName,
-                createdFrom: CreatedFrom.registry,
-                projectId: currentProjectId,
+          const { customer, endUser } = await handlePromiseAll({
+            customer: this.customerService.getByProjectId(currentProjectId),
+            endUser: this.endUserService.create(
+              {
+                data: {
+                  firstName: personOfInterest.firstName,
+                  lastName: personOfInterest.lastName,
+                  createdFrom: CreatedFrom.registry,
+                  projectId: currentProjectId,
+                },
               },
-            },
-            transaction,
-          );
+              transaction,
+            ),
+          });
 
           peopleOfInterest.push({
             ballerineEntityId: endUser.id,
@@ -2420,12 +2429,10 @@ export class WorkflowService {
           promises[endUser.id] = this.kycService.initiateAml({
             endUserId: endUser.id,
             clientId: customer.name,
-
             vendor: 'veriff',
             immediateResults: true,
             ongoingMonitoring: false,
             callbackUrl,
-
             firstName: endUser.firstName,
             lastName: endUser.lastName,
           });
