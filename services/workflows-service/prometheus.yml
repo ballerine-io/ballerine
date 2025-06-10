@@ -5,8 +5,8 @@ global:
 scrape_configs:
   - job_name: 'bullmq-metrics'
     static_configs:
-      - targets: ['localhost:9464']
-    metrics_path: /metrics
+      - targets: ['host.docker.internal:3000']
+    metrics_path: /api/v1/metrics
 
   - job_name: 'workflows-service'
     static_configs:
