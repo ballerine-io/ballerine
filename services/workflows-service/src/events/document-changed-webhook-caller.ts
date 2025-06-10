@@ -2,7 +2,7 @@ import {
   EventConfig,
   WorkflowEventEmitterService,
 } from '@/workflow/workflow-event-emitter.service';
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
@@ -24,44 +24,28 @@ const getExtensionFromMimeType = (mimeType: string) => {
 };
 
 @Injectable()
-export class DocumentChangedWebhookCaller implements OnModuleDestroy {
-  private eventListener:
-    | ((
-        data: ExtractWorkflowEventData<'workflow.context.changed'>,
-        config: EventConfig,
-      ) => Promise<void>)
-    | null = null;
-
+export class DocumentChangedWebhookCaller {
   constructor(
     private readonly configService: ConfigService,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
     private readonly webhooksService: WebhooksService,
   ) {
-    this.eventListener = async (
-      data: ExtractWorkflowEventData<'workflow.context.changed'>,
-      config: EventConfig,
-    ) => {
-      try {
-        await this.handleWorkflowEvent(data, config);
-      } catch (error) {
-        this.logger.error('workflowEventEmitter::workflow.context.changed::', {
-          correlationId: data.correlationId,
-          error,
-        });
-        alertWebhookFailure(error);
-      }
-    };
-
-    this.workflowEventEmitter.on('workflow.context.changed', this.eventListener);
-  }
-
-  async onModuleDestroy() {
-    if (this.eventListener) {
-      this.workflowEventEmitter.off('workflow.context.changed', this.eventListener);
-      this.eventListener = null;
-    }
+    workflowEventEmitter.on(
+      'workflow.context.changed',
+      async (data: ExtractWorkflowEventData<'workflow.context.changed'>, config) => {
+        try {
+          await this.handleWorkflowEvent(data, config);
+        } catch (error) {
+          this.logger.error('workflowEventEmitter::workflow.context.changed::', {
+            correlationId: data.correlationId,
+            error,
+          });
+          alertWebhookFailure(error);
+        }
+      },
+    );
   }
 
   async handleWorkflowEvent(

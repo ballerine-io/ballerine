@@ -36,15 +36,4 @@ export class WorkflowEventEmitterService {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.eventEmitter.on(eventName, listener);
   }
-
-  off<TEvent extends TEventName>(
-    eventName: TEvent,
-    listener: (eventData: ExtractWorkflowEventData<TEvent>, config: EventConfig) => Promise<void>,
-  ) {
-    if (!eventName) {
-      throw new Error('Event name is required');
-    }
-
-    this.eventEmitter.off(eventName, listener);
-  }
 }

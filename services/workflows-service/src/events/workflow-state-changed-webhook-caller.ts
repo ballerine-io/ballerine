@@ -1,5 +1,5 @@
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
@@ -10,35 +10,22 @@ import type { TAuthenticationConfiguration } from '@/customer/types';
 import { WebhooksService } from '@/webhooks/webhooks.service';
 
 @Injectable()
-export class WorkflowStateChangedWebhookCaller implements OnModuleDestroy {
-  private eventListener:
-    | ((data: ExtractWorkflowEventData<'workflow.state.changed'>) => Promise<void>)
-    | null = null;
-
+export class WorkflowStateChangedWebhookCaller {
   constructor(
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
     private readonly webhooksService: WebhooksService,
   ) {
-    this.eventListener = async (data: ExtractWorkflowEventData<'workflow.state.changed'>) => {
+    workflowEventEmitter.on('workflow.state.changed', async data => {
       try {
         await this.handleWorkflowEvent(data);
       } catch (error) {
         console.error(error);
         alertWebhookFailure(error);
       }
-    };
-
-    this.workflowEventEmitter.on('workflow.state.changed', this.eventListener);
-  }
-
-  async onModuleDestroy() {
-    if (this.eventListener) {
-      this.workflowEventEmitter.off('workflow.state.changed', this.eventListener);
-      this.eventListener = null;
-    }
+    });
   }
 
   async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.state.changed'>) {
