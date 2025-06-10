@@ -170,6 +170,8 @@ export class WorkflowRuntimeDataRepository {
                 'approvalState',
                 e."approvalState",
                 'stateReason',
+                'variant',
+                e."variant",
                 e."stateReason",
                 'firstName',
                 e."firstName",
@@ -280,7 +282,8 @@ export class WorkflowRuntimeDataRepository {
             eu."dateOfBirth",
             eu.phone,
             eu."additionalInfo",
-            eu."amlHits"
+            eu."amlHits",
+            eu."variant"
           FROM
             "EndUser" eu
             JOIN individualBallerineIds AS ibids ON ibids.id = eu.id
