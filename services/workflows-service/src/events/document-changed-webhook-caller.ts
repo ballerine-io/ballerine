@@ -2,7 +2,7 @@ import {
   EventConfig,
   WorkflowEventEmitterService,
 } from '@/workflow/workflow-event-emitter.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
@@ -24,28 +24,44 @@ const getExtensionFromMimeType = (mimeType: string) => {
 };
 
 @Injectable()
-export class DocumentChangedWebhookCaller {
+export class DocumentChangedWebhookCaller implements OnModuleDestroy {
+  private eventListener:
+    | ((
+        data: ExtractWorkflowEventData<'workflow.context.changed'>,
+        config: EventConfig,
+      ) => Promise<void>)
+    | null = null;
+
   constructor(
     private readonly configService: ConfigService,
-    workflowEventEmitter: WorkflowEventEmitterService,
+    private workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
     private readonly webhooksService: WebhooksService,
   ) {
-    workflowEventEmitter.on(
-      'workflow.context.changed',
-      async (data: ExtractWorkflowEventData<'workflow.context.changed'>, config) => {
-        try {
-          await this.handleWorkflowEvent(data, config);
-        } catch (error) {
-          this.logger.error('workflowEventEmitter::workflow.context.changed::', {
-            correlationId: data.correlationId,
-            error,
-          });
-          alertWebhookFailure(error);
-        }
-      },
-    );
+    this.eventListener = async (
+      data: ExtractWorkflowEventData<'workflow.context.changed'>,
+      config: EventConfig,
+    ) => {
+      try {
+        await this.handleWorkflowEvent(data, config);
+      } catch (error) {
+        this.logger.error('workflowEventEmitter::workflow.context.changed::', {
+          correlationId: data.correlationId,
+          error,
+        });
+        alertWebhookFailure(error);
+      }
+    };
+
+    this.workflowEventEmitter.on('workflow.context.changed', this.eventListener);
+  }
+
+  async onModuleDestroy() {
+    if (this.eventListener) {
+      this.workflowEventEmitter.off('workflow.context.changed', this.eventListener);
+      this.eventListener = null;
+    }
   }
 
   async handleWorkflowEvent(

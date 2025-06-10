@@ -1,5 +1,5 @@
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
@@ -14,9 +14,13 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WebhooksService } from '@/webhooks/webhooks.service';
 
 @Injectable()
-export class WorkflowCompletedWebhookCaller {
+export class WorkflowCompletedWebhookCaller implements OnModuleDestroy {
+  private eventListener:
+    | ((data: ExtractWorkflowEventData<'workflow.completed'>) => Promise<void>)
+    | null = null;
+
   constructor(
-    workflowEventEmitter: WorkflowEventEmitterService,
+    private workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly workflowService: WorkflowService,
@@ -24,7 +28,7 @@ export class WorkflowCompletedWebhookCaller {
     private readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     private readonly webhooksService: WebhooksService,
   ) {
-    workflowEventEmitter.on('workflow.completed', async data => {
+    this.eventListener = async (data: ExtractWorkflowEventData<'workflow.completed'>) => {
       try {
         await this.handleWorkflowEvent(data);
       } catch (error) {
@@ -33,7 +37,16 @@ export class WorkflowCompletedWebhookCaller {
       }
 
       await this.updateSalesforceRecord(data.runtimeData);
-    });
+    };
+
+    this.workflowEventEmitter.on('workflow.completed', this.eventListener);
+  }
+
+  async onModuleDestroy() {
+    if (this.eventListener) {
+      this.workflowEventEmitter.off('workflow.completed', this.eventListener);
+      this.eventListener = null;
+    }
   }
 
   async handleWorkflowEvent(data: ExtractWorkflowEventData<'workflow.completed'>) {

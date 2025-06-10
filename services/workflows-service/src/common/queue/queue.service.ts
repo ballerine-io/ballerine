@@ -35,8 +35,9 @@ export class QueueService implements OnModuleDestroy {
   ) {
     this.shouldProcessJobs = this.determineIfShouldProcessJobs();
     this.logger.log(`Queue worker mode: ${this.shouldProcessJobs ? 'ENABLED' : 'DISABLED'}`);
-
-    this.initRedisConnection();
+    if (env.QUEUE_SYSTEM_ENABLED) {
+      this.initRedisConnection();
+    }
   }
 
   private determineIfShouldProcessJobs(): boolean {
@@ -244,6 +245,13 @@ export class QueueService implements OnModuleDestroy {
   async onModuleDestroy() {
     this.logger.log('Closing all queues and workers');
 
+    // Close Redis connection first
+    if (this.redisClient) {
+      this.redisClient.disconnect();
+      this.redisClient = null;
+    }
+
+    // Then close workers and queues
     const workerClosePromises = Array.from(this.workers.values()).map(worker =>
       worker.close().catch(err => this.logger.error(`Error closing worker`, { err })),
     );
@@ -253,13 +261,6 @@ export class QueueService implements OnModuleDestroy {
     );
 
     await Promise.all([...workerClosePromises, ...queueClosePromises]);
-
-    if (this.redisClient) {
-      await this.redisClient
-        .quit()
-        .catch(err => this.logger.error(`Error closing Redis connection`, { err }));
-      this.redisClient = null;
-    }
 
     this.logger.log('All queues and workers closed');
   }
