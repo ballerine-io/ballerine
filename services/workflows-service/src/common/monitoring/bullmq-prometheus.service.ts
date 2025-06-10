@@ -42,8 +42,10 @@ export class BullMQPrometheusService implements OnModuleInit {
         return '# No BullMQ queues available for metrics';
       }
 
-      const metrics = await queue.exportPrometheusMetrics(globalVariables);
-      return metrics;
+      const metrics = await Promise.all(
+        this.queues.map(q => q.exportPrometheusMetrics(globalVariables)),
+      );
+      return metrics.join('\n');
     } catch (error) {
       this.logger.error('Failed to export BullMQ Prometheus metrics', { error });
       return '# Error exporting BullMQ metrics';

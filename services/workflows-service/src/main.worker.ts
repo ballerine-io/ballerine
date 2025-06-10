@@ -31,6 +31,8 @@ const workerMain = async () => {
   process.once('SIGTERM', () => closeApp('SIGTERM'));
   process.once('SIGINT', () => closeApp('SIGINT'));
 
+  await app.init();
+
   logger.log('Worker started');
 
   return app;

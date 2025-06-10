@@ -4,6 +4,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AlertService } from './alert.service';
 import { QueueService } from '@/common/queue/queue.service';
 import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
+import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
 import type { BullBoardInjectedInstance } from '@/common/queue/types';
 
@@ -21,6 +22,7 @@ export class AlertQueueService implements OnModuleInit {
     private readonly alertService: AlertService,
     private readonly queueService: QueueService,
     private readonly queueBullboardService: QueueBullboardService,
+    private readonly bullMQPrometheusService: BullMQPrometheusService,
     @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
     private bullBoard: BullBoardInjectedInstance,
   ) {}
@@ -43,6 +45,8 @@ export class AlertQueueService implements OnModuleInit {
           removeOnFail: false,
         },
       });
+
+      this.bullMQPrometheusService.registerQueue(queue);
 
       if (this.queueService.isWorkerEnabled()) {
         this.queueBullboardService.registerQueue(this.bullBoard, queue);
