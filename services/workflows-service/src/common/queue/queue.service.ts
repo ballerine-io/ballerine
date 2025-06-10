@@ -35,8 +35,9 @@ export class QueueService implements OnModuleDestroy {
   ) {
     this.shouldProcessJobs = this.determineIfShouldProcessJobs();
     this.logger.log(`Queue worker mode: ${this.shouldProcessJobs ? 'ENABLED' : 'DISABLED'}`);
-
-    this.initRedisConnection();
+    if (env.QUEUE_SYSTEM_ENABLED) {
+      this.initRedisConnection();
+    }
   }
 
   private determineIfShouldProcessJobs(): boolean {
