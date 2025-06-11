@@ -256,6 +256,14 @@ export class WorkflowRuntimeDataRepository {
           FROM
             workflows
         ),
+        peopleOfInterest AS (
+          SELECT
+            jsonb_array_elements(
+              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'peopleOfInterest'
+            ) AS peopleOfInterest
+          FROM
+            workflows
+        ),
         individualBallerineIds AS (
           SELECT
             directors ->> 'ballerineEntityId' AS id
@@ -267,6 +275,12 @@ export class WorkflowRuntimeDataRepository {
             ubos ->> 'ballerineEntityId' AS id
           FROM
             ubos
+          UNION
+          ALL
+          SELECT
+            peopleOfInterest ->> 'ballerineEntityId' AS id
+          FROM
+            peopleOfInterest
         ),
         individuals AS (
           SELECT
@@ -280,7 +294,8 @@ export class WorkflowRuntimeDataRepository {
             eu."dateOfBirth",
             eu.phone,
             eu."additionalInfo",
-            eu."amlHits"
+            eu."amlHits",
+            eu."createdFrom"
           FROM
             "EndUser" eu
             JOIN individualBallerineIds AS ibids ON ibids.id = eu.id

@@ -58,6 +58,9 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
 import { AssessmentsModule } from '@/assessments/assessments.module';
 import { AssessmentsService } from '@/assessments/assessments.service';
+// eslint-disable-next-line import/no-cycle
+import { KycModule } from '@/kyc/kyc.module';
+import { EndUserModule } from '@/end-user/end-user.module';
 
 @Module({
   controllers: [
@@ -81,7 +84,9 @@ import { AssessmentsService } from '@/assessments/assessments.service';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    forwardRef(() => EndUserModule),
     forwardRef(() => CollectionFlowModule),
+    forwardRef(() => KycModule),
     AssessmentsModule,
   ],
   providers: [
