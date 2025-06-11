@@ -17,11 +17,11 @@ export const CustomerConfigSchema = z.object({
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
   isOngoingMonitoringEnabled: z.boolean().default(false).optional(),
   isCasesOnboardingEnabled: z.boolean().default(false).optional(),
-  maxBusinessReports: z.number().default(10).optional(),
+  maxBusinessReports: z.number().default(10).optional().nullable(),
   withQualityControl: z.boolean().default(true).optional(),
   disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
   isDemoAccount: z.boolean().default(false).optional(),
-  createKybAndOwnershipAssessment: z.boolean().default(false).optional(),
+  isKybAndOwnershipAssessmentEnabled: z.boolean().default(false).optional(),
   createIdentityVerification: z.boolean().default(false).optional(),
 });
 

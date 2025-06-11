@@ -1,5 +1,27 @@
 # @ballerine/ui
 
+## 0.7.163
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.113
+
+## 0.7.162
+
+### Patch Changes
+
+- Bump
+
+## 0.7.161
+
+### Patch Changes
+
+- Add top visitors countries section
+- Updated dependencies
+  - @ballerine/common@0.9.112
+
 ## 0.7.160
 
 ### Patch Changes

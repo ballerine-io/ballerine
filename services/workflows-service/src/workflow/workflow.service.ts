@@ -36,6 +36,7 @@ import type {
   InputJsonValue,
   IObjectWithId,
   PrismaTransaction,
+  PrismaTransactionClient,
   TProjectId,
   TProjectIds,
 } from '@/types';
@@ -145,7 +146,7 @@ const getAvatarUrl = (website: string | undefined | null) =>
 const handlePromiseAll = async <TPromises extends Record<string, Promise<any>>>(
   promises: TPromises,
 ) => {
-  const errors: { key: string; error: unknown }[] = [];
+  const errors: Array<{ key: string; error: unknown }> = [];
   const promisesEntries = Object.entries(promises);
   const results = await Promise.all(
     promisesEntries.map(([key, promise]) =>
@@ -287,8 +288,9 @@ export class WorkflowService {
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
     projectIds: TProjectIds,
+    transaction?: PrismaTransactionClient,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds, transaction);
   }
 
   async getWorkflowRuntimeDataByIdAndLockUnscoped({
@@ -381,6 +383,7 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
+
     let individualVerificationsChecks:
       | Awaited<ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>>
       | undefined;

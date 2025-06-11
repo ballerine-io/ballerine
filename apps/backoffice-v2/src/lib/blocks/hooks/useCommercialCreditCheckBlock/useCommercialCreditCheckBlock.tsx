@@ -17,6 +17,10 @@ export const useCommercialCreditCheckBlock = ({
       return [];
     }
 
+    const vendor = pluginsOutput?.commercialCreditCheck?.data?.companyId
+      ? 'Creditsafe'
+      : 'Experian';
+
     if (!pluginsOutput?.commercialCreditCheck?.data) {
       return createBlocksTyped()
         .addBlock()
@@ -32,7 +36,7 @@ export const useCommercialCreditCheckBlock = ({
             .addCell({
               id: 'nested-details-subheading',
               type: 'subheading',
-              value: 'Experian-Provided Data',
+              value: `${vendor}-Provided Data`,
               props: {
                 className: 'mb-4',
               },
@@ -69,7 +73,7 @@ export const useCommercialCreditCheckBlock = ({
           .addCell({
             id: 'nested-details-subheading',
             type: 'subheading',
-            value: 'Experian-Provided Data',
+            value: `${vendor}-Provided Data`,
             props: {
               className: 'mb-4',
             },

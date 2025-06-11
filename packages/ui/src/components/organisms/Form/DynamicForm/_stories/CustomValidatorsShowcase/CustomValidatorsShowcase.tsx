@@ -5,7 +5,7 @@ import { JSONEditorComponent } from '../../../Validator/_stories/components/Json
 import { DynamicFormV2 } from '../../DynamicForm';
 import { IFormElement } from '../../types';
 
-const johnDoeCheckerValidator: TValidator<string> = (value, context) => {
+const johnDoeCheckerValidator: TValidator<string, any, 'johnDoeChecker'> = (value, context) => {
   if (value !== 'John Doe') {
     throw new Error('You has to be John Doe');
   }

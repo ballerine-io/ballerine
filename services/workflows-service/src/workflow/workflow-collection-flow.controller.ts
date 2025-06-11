@@ -1,4 +1,4 @@
-import { CollectionFlowStateService } from '@/collection-flow/collection-flow-state.service';
+import { CollectionFlowStateService } from '@/collection-flow/services/collection-flow-state.service';
 import { CollectionFlowMissingException } from '@/collection-flow/exceptions/collection-flow-missing.exception';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';

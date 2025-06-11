@@ -3,6 +3,7 @@ import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-
 import { KycControllerExternal } from './kyc.controller.external';
 import { HttpModule } from '@nestjs/axios';
 import { KycService } from './kyc.service';
+// eslint-disable-next-line import/no-cycle
 import { EndUserModule } from '@/end-user/end-user.module';
 import { EndUserService } from '@/end-user/end-user.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';

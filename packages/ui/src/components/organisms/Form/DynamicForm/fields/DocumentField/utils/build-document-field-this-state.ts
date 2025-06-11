@@ -1,29 +1,51 @@
 import { AnyObject } from '@/common';
-import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
-import get from 'lodash/get';
-import { IFormElement } from '../../../types';
-import { IDocumentFieldParams } from '../DocumentField';
 import { IDocumentState } from '../hooks/useDocumentState';
-import { getDocumentObjectFromDocumentsList } from '../hooks/useDocumentUpload/helpers/get-document-object-from-documents-list';
-import { getFileOrFileIdFromDocumentsList } from '../hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
+import { IDocument } from '@/components/organisms/Form/DocumentsService/types';
+import get from 'lodash/get';
+import { IEntity } from '../../EntityFieldGroup/types';
+import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
+import { isValueAnEntity } from '../../../helpers/is-value-an-entity/is-value-an-entity';
+import { isValueBusinessId } from '../../../helpers/is-value-business-id/is-value-business-id';
 
 export const buildDocumentFieldThisState = (
   context: AnyObject,
   _metadata: AnyObject,
   stack: TDeepthLevelStack,
 ) => {
-  const metadata = _metadata as unknown as {
-    element: IFormElement<'documentfield', IDocumentFieldParams>;
-  };
-  const documentsDestination = formatValueDestination(metadata.element.valueDestination, stack);
-  const documents = get(context, documentsDestination);
-  const fileOrFileId = getFileOrFileIdFromDocumentsList(documents, metadata.element);
+  const { element } = _metadata;
+
+  if (!element) {
+    return {
+      $this: undefined,
+    };
+  }
 
   const elementContext: IDocumentState = {
-    document: getDocumentObjectFromDocumentsList(documents, metadata.element),
-    fileId: typeof fileOrFileId === 'string' ? fileOrFileId : undefined,
-    element: metadata.element,
+    document: undefined,
+    element,
   };
+
+  const bussinessIdOrEntity = get(context, formatValueDestination(element.valueDestination, stack));
+
+  if (isValueAnEntity(bussinessIdOrEntity)) {
+    const entity = bussinessIdOrEntity as IEntity;
+
+    elementContext.document = context._documents?.find(
+      (document: IDocument) =>
+        document.endUserId === entity.ballerineEntityId &&
+        document.type === element.params.template.type &&
+        document.category === element.params.template.category,
+    );
+  }
+
+  if (isValueBusinessId(bussinessIdOrEntity)) {
+    elementContext.document = context._documents?.find(
+      (document: IDocument) =>
+        document.type === element.params.template.type &&
+        document.category === element.params.template.category &&
+        !document.endUserId,
+    );
+  }
 
   return { $this: elementContext };
 };

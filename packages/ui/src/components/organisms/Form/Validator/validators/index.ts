@@ -1,5 +1,4 @@
 import { TBaseValidators, TValidator } from '../types';
-import { documentValidator } from './document';
 import { formatValidator } from './format';
 import { futureDateValidator } from './future-date-validator';
 import { maxLengthValidator } from './max-length';
@@ -19,7 +18,6 @@ export const baseValidatorsMap: Record<TBaseValidators, TValidator<any, any>> = 
   minimum: minimumValueValidator,
   maximum: maximumValueValidator,
   format: formatValidator,
-  document: documentValidator,
   minimumAge: minimumAgeValueValidator,
   futureDate: futureDateValidator,
   pastDate: pastDateValidator,

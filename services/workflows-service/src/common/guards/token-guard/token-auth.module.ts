@@ -39,6 +39,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+// eslint-disable-next-line import/no-cycle
 import { KycModule } from '@/kyc/kyc.module';
 
 @Module({
