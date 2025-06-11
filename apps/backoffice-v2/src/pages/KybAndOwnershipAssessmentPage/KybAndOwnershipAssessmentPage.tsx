@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { ChevronLeft } from 'lucide-react';
 import { useRef } from 'react';
+import { X } from 'lucide-react';
 
 import { Button, ContentTooltip, Skeleton, TextWithNAFallback } from '@ballerine/ui';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
@@ -9,6 +10,33 @@ import { useKybAndOwnershipAssessmentPageLogic } from './hooks/useKybAndOwnershi
 import { NotesSheet } from '@/domains/notes/NotesSheet';
 import { NotesButton } from '@/domains/notes/NotesButton';
 import { MerchantMonitoringReportStatus } from '../MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
+import { WarningFlag } from './hooks/useAssessmentChecks';
+
+type WarningBannerProps = {
+  warningFlags: WarningFlag[];
+};
+
+const WarningBanner = ({ warningFlags }: WarningBannerProps) => {
+  if (!warningFlags.length) return null;
+
+  return (
+    <div className="mb-6 space-y-2">
+      {warningFlags.map(flag => (
+        <div
+          key={flag.id}
+          className="flex items-center gap-3 rounded-md border border-red-200 bg-red-100 p-2.5"
+        >
+          <div className="flex items-center justify-center rounded-full bg-red-600 p-0.5">
+            <X className="h-3.5 w-3.5 text-white" />
+          </div>
+          <span className="text-sm text-gray-700">
+            {flag.title}: {flag.description}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export const KybAndOwnershipAssessmentPage = () => {
   const {
@@ -20,6 +48,7 @@ export const KybAndOwnershipAssessmentPage = () => {
     notes,
     isNotesOpen,
     setIsNotesOpen,
+    warningFlags,
   } = useKybAndOwnershipAssessmentPageLogic();
 
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -57,6 +86,8 @@ export const KybAndOwnershipAssessmentPage = () => {
         <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
           {assessment.input?.companyName}
         </TextWithNAFallback>
+
+        {warningFlags && warningFlags.length > 0 && <WarningBanner warningFlags={warningFlags} />}
 
         <div className={`flex items-center space-x-8 pb-4`}>
           <div className={`flex items-center`}>
