@@ -89,7 +89,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
-      KycService
+      KycService,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(

@@ -99,7 +99,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
-      KycService
+      KycService,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,
