@@ -1,4 +1,4 @@
-import { Badge, WarningFilledSvg } from '@ballerine/ui';
+import { ctw, Badge, WarningFilledSvg } from '@ballerine/ui';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
@@ -6,7 +6,7 @@ import { toTitleCase } from 'string-ts';
 import { checkIsUrl } from '@ballerine/common';
 import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
-export const useCompanySanctionsBlock = companySanctions => {
+export const useCompanySanctionsBlock = (companySanctions, hideHeader?: boolean) => {
   return useMemo(() => {
     if (!Array.isArray(companySanctions)) {
       return [];
@@ -23,12 +23,18 @@ export const useCompanySanctionsBlock = companySanctions => {
               type: 'container',
               value: createBlocksTyped()
                 .addBlock()
-                .addCell(systemCreatedIconCell)
+                .addCell({
+                  ...systemCreatedIconCell,
+                  props: {
+                    ...systemCreatedIconCell.props,
+                    className: ctw(systemCreatedIconCell.props.className, hideHeader && 'hidden'),
+                  },
+                })
                 .addCell({
                   id: 'nested-details-heading',
                   type: 'heading',
                   value: 'Company Sanctions',
-                  props: { className: 'mt-0' },
+                  props: { className: ctw('mt-0', hideHeader && 'hidden') },
                 })
                 .buildFlat(),
               props: {
@@ -41,9 +47,9 @@ export const useCompanySanctionsBlock = companySanctions => {
                 .addBlock()
                 .addCell({
                   type: 'subheading',
-                  value: 'Company check results',
+                  value: 'Compliance check results',
                   props: {
-                    className: 'text-lg my-4 block',
+                    className: ctw('text-lg my-4 block', hideHeader && 'mt-1'),
                   },
                 })
                 .addCell({

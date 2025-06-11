@@ -51,19 +51,23 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     }));
   }, [assessment?.companySanctions?.output?.data]);
 
-  const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
+  const companySanctionsBlock = useCompanySanctionsBlock(companySanctions, true);
 
-  const registryInfoBlock = useKybRegistryInfoBlock({
-    pluginsOutput: {
-      businessInformation: { data: [assessment?.companyRegistryInformation?.output?.data] },
+  const registryInfoBlock = useKybRegistryInfoBlock(
+    {
+      pluginsOutput: {
+        businessInformation: { data: [assessment?.companyRegistryInformation?.output?.data] },
+      },
+      workflow: {},
     },
-    workflow: {},
-  });
+    true,
+  );
 
   const companyStructureBlock = useUbosRegistryProvidedBlock(
     assessment?.companyStructure?.output?.nodes && assessment?.companyStructure?.output.edges
       ? assessment?.companyStructure?.output
       : { nodes: [], edges: [] },
+    true,
   );
 
   const assessmentChecks = useAssessmentChecks(assessment);
