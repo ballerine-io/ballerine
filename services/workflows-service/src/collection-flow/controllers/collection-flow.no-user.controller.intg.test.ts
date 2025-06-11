@@ -50,6 +50,7 @@ import { CollectionFlowStateService } from '../services/collection-flow-state.se
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { KycService } from '@/kyc/kyc.service';
+import { HttpService } from '@nestjs/axios';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -107,6 +108,7 @@ describe('CollectionFlowSignupController', () => {
         AssessmentsService,
         UnifiedApiClient,
         KycService,
+        HttpService,
         mockClsService(),
         { provide: CollectionFlowStateService, useValue: noop },
       ],
