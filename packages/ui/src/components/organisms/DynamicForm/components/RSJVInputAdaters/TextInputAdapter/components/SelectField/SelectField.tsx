@@ -16,15 +16,15 @@ export const SelectField = ({
 }: WithTestId<FieldProps<string>>) => {
   const options = useMemo((): ISearchableDropdownOption[] => {
     if (Array.isArray(schema.enum)) {
-      return schema.enum.map((value, index) => {
-        return {
-          label: schema.enumNames ? schema.enumNames[index] : value,
-          value: value as string,
-        };
-      });
+      return schema.enum.map((value, index) => ({
+        label: (uiSchema?.['ui:enumNames']?.[index] as string) ?? value,
+        value: value as string,
+      }));
     }
 
-    if (!Array.isArray(schema.oneOf)) return [];
+    if (!Array.isArray(schema.oneOf)) {
+      return [];
+    }
 
     return (schema.oneOf as TOneOfItem[]).map(item => {
       return {
@@ -32,7 +32,7 @@ export const SelectField = ({
         value: item.const as string,
       };
     }) as ISearchableDropdownOption[];
-  }, [schema.oneOf, schema.enumNames, schema.enum]);
+  }, [schema.enum, schema.oneOf, uiSchema]);
 
   const handleBlur = useCallback(() => {
     // @ts-ignore
@@ -46,8 +46,9 @@ export const SelectField = ({
       name={id}
       options={options}
       value={formData}
-      disabled={disabled}
+      disabled={false}
       testId={testId}
+      disablePortal
       textInputClassName="placeholder:text-gray-400"
       onChange={onChange}
       onBlur={handleBlur}
