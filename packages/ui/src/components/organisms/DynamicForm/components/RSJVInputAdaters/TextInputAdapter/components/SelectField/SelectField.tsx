@@ -46,7 +46,7 @@ export const SelectField = ({
       name={id}
       options={options}
       value={formData}
-      disabled={false}
+      disabled={disabled}
       testId={testId}
       disablePortal
       textInputClassName="placeholder:text-gray-400"
