@@ -44,6 +44,7 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { KycService } from '@/kyc/kyc.service';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -98,6 +99,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
+      KycService
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,
