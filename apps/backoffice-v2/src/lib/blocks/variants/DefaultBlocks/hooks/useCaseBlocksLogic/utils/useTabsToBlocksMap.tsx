@@ -315,6 +315,9 @@ export const useTabsToBlocksMap = ({
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
     [
+      getStatusFromCheckStatus,
+      mutateInitiateIndividualVerificationAndSendEmail,
+      onEditCollectionFlow,
       getStatusFromTags,
       getInitiateKycEvent,
       getInitiateSanctionsScreeningEvent,
@@ -407,6 +410,9 @@ export const useTabsToBlocksMap = ({
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
     [
+      mutateInitiateIndividualVerificationAndSendEmail,
+      onEditCollectionFlow,
+      workflow?.workflowDefinition?.config?.language,
       workflow?.id,
       caseState.actionButtonsEnabled,
       workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
@@ -448,7 +454,7 @@ export const useTabsToBlocksMap = ({
             documents: [...(director?.documents ?? []), ...(workflow?.context?.kycDocuments ?? [])],
           });
         }) ?? [],
-    [workflow, endUsers, directorToIndividualAdapter],
+    [workflow, endUsers, directorToIndividualAdapter, getStatusFromCheckStatus],
   );
 
   const personOfInterestToIndividualAdapter = useCallback(
@@ -534,6 +540,11 @@ export const useTabsToBlocksMap = ({
       caseState.actionButtonsEnabled,
       workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
       workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+      endUsers,
+      getStatusFromCheckStatus,
+      mutateInitiateIndividualVerificationAndSendEmail,
+      onEditCollectionFlow,
+      workflow?.workflowDefinition?.config?.language,
     ],
   );
 
