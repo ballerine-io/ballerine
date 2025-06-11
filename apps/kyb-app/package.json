@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.2.47",
-    "@ballerine/common": "^0.9.114",
-    "@ballerine/ui": "0.7.163",
-    "@ballerine/workflow-browser-sdk": "0.6.138",
+    "@ballerine/common": "^0.9.113",
+    "@ballerine/ui": "0.7.164",
+    "@ballerine/workflow-browser-sdk": "0.6.137",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-icons": "^1.3.0",
     "@rjsf/core": "^5.9.0",
