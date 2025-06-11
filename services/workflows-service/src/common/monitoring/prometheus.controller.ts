@@ -6,7 +6,6 @@ import { Public } from '@/common/decorators/public.decorator';
 export class PrometheusController {
   constructor(private readonly bullMQPrometheusService: BullMQPrometheusService) {}
 
-  @Public()
   @Get()
   @Header('Content-Type', 'text/plain')
   async getMetrics(): Promise<string> {
