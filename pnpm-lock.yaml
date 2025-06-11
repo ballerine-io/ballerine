@@ -2834,6 +2834,9 @@ importers:
       '@t3-oss/env-core':
         specifier: ^0.6.1
         version: 0.6.1(typescript@4.9.3)(zod@3.23.8)
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
       ajv-formats:
         specifier: ^2.1.1
         version: 2.1.1(ajv@8.17.1)
@@ -3048,9 +3051,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^5.54.1
         version: 5.62.0(eslint@8.57.1)(typescript@4.9.3)
-      ajv:
-        specifier: ^8.17.1
-        version: 8.17.1
       cspell:
         specifier: ^6.31.2
         version: 6.31.3

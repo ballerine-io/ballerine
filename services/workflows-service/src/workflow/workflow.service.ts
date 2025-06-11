@@ -141,7 +141,7 @@ const getAvatarUrl = (website: string | undefined | null) =>
 
 const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
   const record: Record<string, T> = {};
-  const errors: { key: string; error: unknown }[] = [];
+  const errors: Array<{ key: string; error: unknown }> = [];
   const promisesEntries = Object.entries(promises);
   const results = await Promise.all(
     promisesEntries.map(([key, promise]) =>
@@ -371,6 +371,7 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
+
     let individualVerificationsChecks:
       | Awaited<ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>>
       | undefined;
