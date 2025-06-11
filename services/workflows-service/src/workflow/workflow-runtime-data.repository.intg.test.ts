@@ -41,6 +41,7 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { AssessmentsService } from '@/assessments/assessments.service';
+import { KycService } from '@/kyc/kyc.service';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -88,6 +89,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
+      KycService,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
