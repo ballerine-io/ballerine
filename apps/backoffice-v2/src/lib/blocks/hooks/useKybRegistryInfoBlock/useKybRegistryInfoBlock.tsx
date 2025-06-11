@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { WarningFilledSvg } from '@ballerine/ui';
+import { ctw, WarningFilledSvg } from '@ballerine/ui';
 import { systemCreatedIconCell } from '@/lib/blocks/utils/constants';
 
-export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
+export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }, hideHeader?: boolean) => {
   const getCell = useCallback(() => {
     if (Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length) {
       return {
@@ -94,7 +94,13 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
             type: 'container',
             value: createBlocksTyped()
               .addBlock()
-              .addCell(systemCreatedIconCell)
+              .addCell({
+                ...systemCreatedIconCell,
+                props: {
+                  ...systemCreatedIconCell.props,
+                  className: ctw(systemCreatedIconCell.props.className, hideHeader && 'hidden'),
+                },
+              })
               .addCell({
                 type: 'container',
                 value: createBlocksTyped()
@@ -103,12 +109,19 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
                     id: 'nested-details-heading',
                     type: 'heading',
                     value: 'Registry Information',
-                    props: { className: 'mt-0' },
+                    props: { className: ctw('mt-0', hideHeader && 'hidden') },
                   })
                   .addCell({
                     id: 'nested-details-subheading',
                     type: 'subheading',
                     value: 'Registry-Provided Data',
+                    props: { className: ctw(hideHeader && 'hidden') },
+                  })
+                  .addCell({
+                    id: 'nested-details-alternative-heading',
+                    type: 'heading',
+                    value: 'Company Registry Information',
+                    props: { className: ctw('text-lg m-0', !hideHeader && 'hidden') },
                   })
                   .buildFlat(),
               })
@@ -121,5 +134,5 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
           .buildFlat(),
       })
       .build();
-  }, [getCell]);
+  }, [getCell, hideHeader]);
 };

@@ -1,6 +1,6 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import React, { useCallback, useMemo } from 'react';
-import { WarningFilledSvg } from '@ballerine/ui';
+import { ctw, WarningFilledSvg } from '@ballerine/ui';
 import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { buildTree } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/build-tree';
@@ -11,31 +11,34 @@ const nodeTypes = {
   customNode: CustomNode,
 };
 
-export const useUbosRegistryProvidedBlock = ({
-  nodes,
-  edges,
-  message,
-  isRequestTimedOut,
-}: {
-  nodes: Array<{
-    id: string;
-    data: {
-      name: string;
-      type: string;
-      sharePercentage?: number;
-    };
-  }>;
-  edges: Array<{
-    id: string;
-    source: string;
-    target: string;
-    data: {
-      sharePercentage?: number;
-    };
-  }>;
-  message: string | undefined;
-  isRequestTimedOut: boolean | undefined;
-}) => {
+export const useUbosRegistryProvidedBlock = (
+  {
+    nodes,
+    edges,
+    message,
+    isRequestTimedOut,
+  }: {
+    nodes: Array<{
+      id: string;
+      data: {
+        name: string;
+        type: string;
+        sharePercentage?: number;
+      };
+    }>;
+    edges: Array<{
+      id: string;
+      source: string;
+      target: string;
+      data: {
+        sharePercentage?: number;
+      };
+    }>;
+    message: string | undefined;
+    isRequestTimedOut: boolean | undefined;
+  },
+  hideHeader?: boolean,
+) => {
   const { nodes: uiNodes, edges: uiEdges } = buildTree({
     nodes,
     edges,
@@ -137,7 +140,13 @@ export const useUbosRegistryProvidedBlock = ({
             type: 'container',
             value: createBlocksTyped()
               .addBlock()
-              .addCell(systemCreatedIconCell)
+              .addCell({
+                ...systemCreatedIconCell,
+                props: {
+                  ...systemCreatedIconCell.props,
+                  className: ctw(systemCreatedIconCell.props.className, hideHeader && 'hidden'),
+                },
+              })
               .addCell({
                 type: 'container',
                 value: createBlocksTyped()
@@ -145,11 +154,12 @@ export const useUbosRegistryProvidedBlock = ({
                   .addCell({
                     type: 'heading',
                     value: 'Corporate Structure',
-                    props: { className: 'mt-0' },
+                    props: { className: ctw('mt-0', hideHeader && 'hidden') },
                   })
                   .addCell({
                     type: 'subheading',
                     value: 'Registry-Provided Data',
+                    props: { className: ctw(hideHeader && 'hidden') },
                   })
                   .buildFlat(),
               })
@@ -162,5 +172,5 @@ export const useUbosRegistryProvidedBlock = ({
           .buildFlat(),
       })
       .build();
-  }, [getCell]);
+  }, [getCell, hideHeader]);
 };
