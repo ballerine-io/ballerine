@@ -50,7 +50,7 @@ export class WorkflowRuntimeDataRepository {
       }),
     } as any);
 
-    this.trackChanges(customer, runtimeData);
+    void this.trackChanges(customer, runtimeData);
 
     return runtimeData;
   }
@@ -410,7 +410,7 @@ export class WorkflowRuntimeDataRepository {
         customer = await this.customerService.getByProjectId(runtimeData.projectId);
       }
 
-      this.trackChanges(customer, runtimeData);
+      void this.trackChanges(customer, runtimeData);
     } catch (error) {
       console.error('Error tracking changes', error);
     }
@@ -436,7 +436,7 @@ export class WorkflowRuntimeDataRepository {
       include,
     });
 
-    this.trackChanges(customer, runtimeData);
+    void this.trackChanges(customer, runtimeData);
 
     return runtimeData;
   }
@@ -665,11 +665,14 @@ export class WorkflowRuntimeDataRepository {
     return (await this.prismaService.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
 
-  private async trackChanges(customer: Customer, workflowRuntimeData: WorkflowRuntimeData) {
+  private async trackChanges(
+    customer: Customer,
+    workflowRuntimeData: WorkflowRuntimeData,
+  ): Promise<void> {
     const distinctId =
       workflowRuntimeData.actorUserId || workflowRuntimeData.actorEndUserId || 'SYSTEM';
 
-    this.analyticsService.trackSafe({
+    await this.analyticsService.trackSafe({
       event: EventNamesMap.CASE_CHANGED,
       distinctId,
       customerId: customer.id,

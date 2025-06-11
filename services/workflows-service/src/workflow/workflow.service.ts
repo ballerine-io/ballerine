@@ -2410,7 +2410,7 @@ export class WorkflowService {
         }
 
         const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
-        let peopleOfInterest: Array<{
+        const peopleOfInterest: Array<{
           ballerineEntityId: string;
           firstName: string;
           lastName: string;
