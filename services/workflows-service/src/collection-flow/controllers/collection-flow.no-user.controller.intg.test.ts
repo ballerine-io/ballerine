@@ -51,6 +51,7 @@ import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { KycService } from '@/kyc/kyc.service';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -107,8 +108,7 @@ describe('CollectionFlowSignupController', () => {
         WorkflowRuntimeDataActorService,
         AssessmentsService,
         UnifiedApiClient,
-        KycService,
-        HttpService,
+        { provide: KycService, useValue: noop },
         mockClsService(),
         { provide: CollectionFlowStateService, useValue: noop },
       ],
