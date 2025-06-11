@@ -51,6 +51,7 @@ export const SearchableDropdown = ({
       if (selectedOption) {
         onChange(selectedOption.value);
       }
+
       setOpen(false);
     },
     [onChange, options],
@@ -70,6 +71,7 @@ export const SearchableDropdown = ({
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
       setOpen(isOpen);
+
       if (!isOpen) {
         setIsFocused(false);
         onBlur?.();
@@ -97,7 +99,7 @@ export const SearchableDropdown = ({
           >
             {selectedOption ? selectedOption.label : placeholder}
           </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+          <ChevronsUpDown className="ml-2 size-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -131,7 +133,7 @@ export const SearchableDropdown = ({
                   {option.label}
                   <Check
                     className={ctw(
-                      'ml-auto h-4 w-4',
+                      'ml-auto size-4',
                       value === option.value ? 'opacity-100' : 'opacity-0',
                     )}
                   />
