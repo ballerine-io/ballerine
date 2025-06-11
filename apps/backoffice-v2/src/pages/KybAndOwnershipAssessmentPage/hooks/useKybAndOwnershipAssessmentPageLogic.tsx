@@ -9,7 +9,7 @@ import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQu
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
 import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
-import { useAssessmentChecks } from './useAssessmentChecks';
+import { useAssessmentChecks, useAssessmentWarningFlags } from './useAssessmentChecks';
 import { useSectionData } from './useSectionData';
 
 export const useKybAndOwnershipAssessmentPageLogic = () => {
@@ -67,6 +67,7 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
   );
 
   const assessmentChecks = useAssessmentChecks(assessment);
+  const warningFlags = useAssessmentWarningFlags(assessment);
 
   const sections = useSectionData({
     assessment,
@@ -86,5 +87,6 @@ export const useKybAndOwnershipAssessmentPageLogic = () => {
     notes,
     isNotesOpen,
     setIsNotesOpen,
+    warningFlags,
   };
 };

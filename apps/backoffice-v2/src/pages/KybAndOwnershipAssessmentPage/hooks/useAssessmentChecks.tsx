@@ -137,6 +137,96 @@ export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
   return checks;
 };
 
+export type WarningFlag = {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'info' | 'warning' | 'error';
+};
+
+export const getWarningFlags = (assessment: Assessment | undefined): WarningFlag[] => {
+  if (!assessment) {
+    return [];
+  }
+
+  const flags: WarningFlag[] = [];
+
+  const geographyInfo = assessment.input?.countryOfIncorporation || assessment.input?.country;
+  const registryStatus = assessment.companyRegistryInformation?.status;
+  const registryError = assessment.companyRegistryInformation?.error;
+
+  if (registryStatus === 'failed' || registryError) {
+    if (registryError?.includes('not supported') || registryError?.includes('unsupported')) {
+      flags.push({
+        id: 'registry-not-supported',
+        title: 'Registry Information Not Supported',
+        description: `Company registry information is not supported for ${
+          geographyInfo || 'the provided geography'
+        }.`,
+        severity: 'warning',
+      });
+    } else if (registryError?.includes('not found') || registryError?.includes('does not exist')) {
+      flags.push({
+        id: 'company-not-exist',
+        title: 'Company Does Not Exist in Registry',
+        description: 'The company could not be found in the registry database.',
+        severity: 'error',
+      });
+    } else {
+      flags.push({
+        id: 'registry-not-available',
+        title: 'Registry Information Not Available',
+        description: 'Registry information is temporarily unavailable.',
+        severity: 'info',
+      });
+    }
+  }
+
+  const structureStatus = assessment.companyStructure?.status;
+  const structureError = assessment.companyStructure?.error;
+
+  if (structureStatus === 'failed' || structureError) {
+    if (structureError?.includes('not supported') || structureError?.includes('unsupported')) {
+      flags.push({
+        id: 'ownership-not-supported',
+        title: 'Ownership Information Not Supported',
+        description: `Ownership information is not supported for ${
+          geographyInfo || 'the provided geography'
+        }.`,
+        severity: 'warning',
+      });
+    } else {
+      flags.push({
+        id: 'ownership-not-available',
+        title: 'Ownership Information Not Available',
+        description: 'Ownership information is temporarily unavailable.',
+        severity: 'info',
+      });
+    }
+  }
+
+  const registryData = assessment.companyRegistryInformation?.output?.data;
+  if (registryData?.incorporationJurisdiction?.original) {
+    const highRiskJurisdictions = ['RU', 'BY', 'IR', 'KP', 'SY', 'CU', 'VE'];
+    const jurisdiction = String(registryData.incorporationJurisdiction.original);
+
+    if (highRiskJurisdictions.includes(jurisdiction)) {
+      flags.push({
+        id: 'high-risk-jurisdiction',
+        title: 'High Risk Company Jurisdiction',
+        description: `The company is registered in ${jurisdiction}, which is considered a high-risk jurisdiction.`,
+        severity: 'error',
+      });
+    }
+  }
+
+  return flags;
+};
+
 export const useAssessmentChecks = (assessment: Assessment | undefined): CheckItem[] => {
   return useMemo(() => getChecks(assessment), [assessment]);
+};
+
+export const useAssessmentWarningFlags = (assessment: Assessment | undefined): WarningFlag[] => {
+  return useMemo(() => getWarningFlags(assessment), [assessment]);
 };
