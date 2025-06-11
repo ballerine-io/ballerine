@@ -55,6 +55,11 @@ import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
+import { AssessmentsModule } from '@/assessments/assessments.module';
+import { AssessmentsService } from '@/assessments/assessments.service';
+// eslint-disable-next-line import/no-cycle
+import { KycModule } from '@/kyc/kyc.module';
+import { EndUserModule } from '@/end-user/end-user.module';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 
 @Module({
@@ -79,7 +84,10 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
     AlertDefinitionModule,
     RuleEngineModule,
     SecretsManagerModule,
+    forwardRef(() => EndUserModule),
     forwardRef(() => CollectionFlowModule),
+    forwardRef(() => KycModule),
+    AssessmentsModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -115,6 +123,7 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
     CustomerService,
+    AssessmentsService,
   ],
   exports: [
     WorkflowService,

@@ -42,6 +42,9 @@ import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerFactory } from '@/secrets-manager/secrets-manager.factory';
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { KycService } from '@/kyc/kyc.service';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -94,6 +97,9 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       SecretsManagerFactory,
       MerchantMonitoringClient,
       WorkflowLogService,
+      AssessmentsService,
+      UnifiedApiClient,
+      KycService,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,

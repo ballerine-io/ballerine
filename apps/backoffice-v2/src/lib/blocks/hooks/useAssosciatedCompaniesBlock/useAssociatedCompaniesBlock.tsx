@@ -82,7 +82,7 @@ export const useAssociatedCompaniesBlock = ({
                   })
                   .buildFlat(),
                 props: {
-                  className: 'flex space-x-1 items-center mt-4',
+                  className: 'flex space-x-1 items-center my-4',
                 },
               })
               .addCell({

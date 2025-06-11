@@ -14,6 +14,14 @@ import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/us
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
 import { useCallback, useMemo } from 'react';
 import { useKYCBlocks } from '../hooks/useKYCBlocks/useKYCBlocks';
+import { useMutation } from '@tanstack/react-query';
+import { Method } from '@/common/enums';
+import { apiClient } from '@/common/api-client/api-client';
+import { z } from 'zod';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { toast } from 'sonner';
+import { t } from 'i18next';
+import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -23,6 +31,57 @@ export type TCaseBlocksCreationProps = {
     reason?: string;
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
+};
+
+export const initiateIndividualVerificationAndSendEmail = async ({
+  endUserId,
+  workflowRuntimeDataId,
+  vendor,
+  withAml,
+  ongoingMonitoring,
+  language,
+  revisionReason,
+}: {
+  endUserId: string;
+  workflowRuntimeDataId: string;
+  vendor: 'veriff';
+  withAml?: boolean;
+  ongoingMonitoring?: boolean;
+  language: string;
+  revisionReason?: string;
+}) => {
+  const [response, error] = await apiClient({
+    endpoint: `../external/kyc`,
+    method: Method.POST,
+    body: {
+      endUserId,
+      workflowRuntimeDataId,
+      vendor,
+      withAml,
+      ongoingMonitoring,
+      language,
+      revisionReason,
+    },
+    schema: z.object({
+      checkId: z.string(),
+      sessionId: z.string(),
+      url: z.string(),
+    }),
+  });
+
+  return handleZodError(error, response);
+};
+
+export const useInitiateIndividualVerificationAndSendEmailMutation = () => {
+  return useMutation({
+    mutationFn: initiateIndividualVerificationAndSendEmail,
+    onSuccess: () => {
+      toast.success(t('toast:approve_case.success'));
+    },
+    onError: () => {
+      toast.error(t('toast:approve_case.error'));
+    },
+  });
 };
 
 export const useTabsToBlocksMap = ({
@@ -41,6 +100,7 @@ export const useTabsToBlocksMap = ({
     kybRegistryInfoBlock,
     companySanctionsBlock,
     individualsUserProvidedBlock,
+    individualsRegistryProvidedBlock,
     ubosRegistryProvidedBlock,
     storeInfoBlock,
     websiteBasicRequirementBlock,
@@ -82,7 +142,10 @@ export const useTabsToBlocksMap = ({
     });
 
   const { mutate: mutateEvent } = useEventMutation();
+  const { mutate: mutateInitiateIndividualVerificationAndSendEmail } =
+    useInitiateIndividualVerificationAndSendEmailMutation();
 
+  const { onEditCollectionFlow } = useEditCollectionFlow();
   const getInitiateKycEvent = (nextEvents: string[]) => {
     if (nextEvents?.includes('start')) {
       return 'start';
@@ -99,7 +162,7 @@ export const useTabsToBlocksMap = ({
   const caseState = useCaseState(session?.user ?? null, workflow);
   const { endUsers } = workflow ?? {};
 
-  const getStatus = (tags: string[]) => {
+  const getStatusFromTags = useCallback((tags: string[]) => {
     if (tags?.includes(StateTag.REVISION)) {
       return 'revision';
     }
@@ -115,10 +178,21 @@ export const useTabsToBlocksMap = ({
     if (tags?.includes(StateTag.PENDING_PROCESS)) {
       return 'pending';
     }
-  };
+  }, []);
+
+  const getStatusFromCheckStatus = useCallback((status: string | undefined) => {
+    if (status === 'in-progress') {
+      return 'pending';
+    }
+
+    // TODO: Approved
+
+    // TODO: Rejected
+
+    // TODO: Revision
+  }, []);
   const childWorkflowToIndividualAdapter = useCallback(
     (childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number]) => {
-      const status = getStatus(childWorkflow?.tags ?? []);
       const initiateKycEvent = getInitiateKycEvent(childWorkflow?.nextEvents ?? []);
       const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
         childWorkflow?.nextEvents ?? [],
@@ -129,6 +203,7 @@ export const useTabsToBlocksMap = ({
         additionalInfo,
         dateOfBirth,
         gender,
+        individualVerificationsChecks,
         ...endUserRest
       } = endUsers?.find(
         endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
@@ -141,18 +216,25 @@ export const useTabsToBlocksMap = ({
         percentageOfOwnership,
         ...additionalInfoRest
       } = additionalInfo ?? {};
+      const statusFromTags = getStatusFromTags(childWorkflow?.tags ?? []);
+      const statusFromCheckStatus = getStatusFromCheckStatus(individualVerificationsChecks?.status);
+      const status = statusFromCheckStatus ?? statusFromTags;
+      const kycSession = omitPropsFromObject(
+        childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
+        'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
+      );
 
       return {
         status,
-        documents: childWorkflow?.context?.documents,
-        kycSession: omitPropsFromObject(
-          childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
-          'invokedAt',
-          'error',
-          'name',
-          'status',
-          'isRequestTimedOut',
-        ),
+        documents: [
+          ...(childWorkflow?.context?.documents ?? []),
+          ...(childWorkflow?.context?.kycDocuments ?? []),
+        ],
+        kycSession: individualVerificationsChecks?.data ?? kycSession,
         aml: {
           vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
           hits: amlHits,
@@ -171,13 +253,20 @@ export const useTabsToBlocksMap = ({
         isLoadingReuploadNeeded: isLoadingRevisionCase,
         isLoadingApprove: isLoadingApproveCase,
         onInitiateKyc: () => {
-          if (!initiateKycEvent) {
+          if (!childWorkflow?.id) {
+            console.error('No workflow id found');
+            toast.error('Something went wrong. Please try again later.');
+
             return;
           }
 
-          mutateEvent({
-            workflowId: childWorkflow?.id,
-            event: initiateKycEvent,
+          return mutateInitiateIndividualVerificationAndSendEmail({
+            endUserId: childWorkflow?.context?.entity?.data?.ballerineEntityId,
+            ongoingMonitoring: false,
+            withAml: true,
+            workflowRuntimeDataId: childWorkflow?.id,
+            vendor: 'veriff',
+            language: childWorkflow?.workflowDefinition?.config?.language ?? 'en',
           });
         },
         onInitiateSanctionsScreening: () => {
@@ -202,22 +291,31 @@ export const useTabsToBlocksMap = ({
               ids,
               workflowId: childWorkflow?.id,
             }),
+        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
         reasons:
           childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
             ({ enum: enum_ }) => !!enum_,
           )?.enum as string[],
         isReuploadNeededDisabled: isLoadingRevisionCase,
         isApproveDisabled: isLoadingApproveCase,
-        isInitiateKycDisabled: !initiateKycEvent || !caseState.actionButtonsEnabled,
+        isInitiateKycDisabled: [
+          !childWorkflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
         isInitiateSanctionsScreeningDisabled: [
           !initiateSanctionsScreeningEvent,
-          !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
           !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+        ].some(Boolean),
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
         ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
     [
-      getStatus,
+      getStatusFromTags,
       getInitiateKycEvent,
       getInitiateSanctionsScreeningEvent,
       endUsers,
@@ -228,12 +326,15 @@ export const useTabsToBlocksMap = ({
       mutateApproveCase,
       mutateRevisionCase,
       workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
     ],
   );
   const directorToIndividualAdapter = useCallback(
     ({
       kycSession,
       aml,
+      status,
       ...director
     }: NonNullable<
       TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
@@ -249,7 +350,7 @@ export const useTabsToBlocksMap = ({
       } = additionalInfo ?? {};
 
       return {
-        status: undefined,
+        status,
         documents: director?.documents,
         kycSession,
         aml,
@@ -265,7 +366,23 @@ export const useTabsToBlocksMap = ({
         isActionsDisabled: true,
         isLoadingReuploadNeeded: false,
         isLoadingApprove: false,
-        onInitiateKyc: () => {},
+        onInitiateKyc: () => {
+          if (!workflow?.id) {
+            console.error('No workflow id found');
+            toast.error('Something went wrong. Please try again later.');
+
+            return;
+          }
+
+          return mutateInitiateIndividualVerificationAndSendEmail({
+            endUserId: director.id,
+            ongoingMonitoring: false,
+            withAml: true,
+            workflowRuntimeDataId: workflow?.id,
+            vendor: 'veriff',
+            language: workflow?.workflowDefinition?.config?.language ?? 'en',
+          });
+        },
         onInitiateSanctionsScreening: () => {},
         onApprove:
           ({ ids }: { ids: string[] }) =>
@@ -273,14 +390,28 @@ export const useTabsToBlocksMap = ({
         onReuploadNeeded:
           ({ reason, ids }: { reason: string; ids: string[] }) =>
           () => {},
+        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
         reasons: [],
         isReuploadNeededDisabled: true,
         isApproveDisabled: true,
-        isInitiateKycDisabled: true,
+        isInitiateKycDisabled: [
+          !workflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
         isInitiateSanctionsScreeningDisabled: true,
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+        ].some(Boolean),
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
-    [],
+    [
+      workflow?.id,
+      caseState.actionButtonsEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+    ],
   );
   const childWorkflows = useMemo(
     () =>
@@ -302,24 +433,124 @@ export const useTabsToBlocksMap = ({
             ),
         )
         ?.map(director => {
-          const { amlHits, ...directorEndUser } =
+          const { amlHits, individualVerificationsChecks, ...directorEndUser } =
             endUsers?.find(endUser => endUser.id === director.ballerineEntityId) ?? {};
+          const status = getStatusFromCheckStatus(individualVerificationsChecks?.status);
 
           return directorToIndividualAdapter({
             ...directorEndUser,
-            kycSession: {},
+            kycSession: individualVerificationsChecks?.data ?? {},
             aml: {
               vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
               hits: amlHits,
             },
+            status,
+            documents: [...(director?.documents ?? []), ...(workflow?.context?.kycDocuments ?? [])],
           });
         }) ?? [],
     [workflow, endUsers, directorToIndividualAdapter],
   );
 
+  const personOfInterestToIndividualAdapter = useCallback(
+    ({
+      ballerineEntityId,
+      role,
+    }: NonNullable<
+      TWorkflowById['context']['entity']['data']['additionalInfo']['peopleOfInterest']
+    >[number]) => {
+      const {
+        id: _id,
+        amlHits,
+        individualVerificationsChecks,
+        ...personOfInterestEndUser
+      } = endUsers?.find(endUser => endUser.id === ballerineEntityId) ?? {};
+      const status = getStatusFromCheckStatus(individualVerificationsChecks?.status);
+      const kycSession = omitPropsFromObject(
+        individualVerificationsChecks?.data ?? {},
+        'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
+      );
+
+      return {
+        status,
+        documents: [],
+        kycSession,
+        aml: {
+          vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
+          hits: amlHits,
+        },
+        entityData: {
+          ...personOfInterestEndUser,
+          role,
+        },
+        isActionsDisabled: true,
+        isLoadingReuploadNeeded: false,
+        isLoadingApprove: false,
+        onInitiateKyc: () => {
+          if (!workflow?.id) {
+            console.error('No workflow id found');
+            toast.error('Something went wrong. Please try again later.');
+
+            return;
+          }
+
+          return mutateInitiateIndividualVerificationAndSendEmail({
+            endUserId: ballerineEntityId,
+            ongoingMonitoring: false,
+            withAml: true,
+            workflowRuntimeDataId: workflow?.id,
+            vendor: 'veriff',
+            language: workflow?.workflowDefinition?.config?.language ?? 'en',
+          });
+        },
+        onInitiateSanctionsScreening: () => {},
+        onApprove:
+          ({ ids }: { ids: string[] }) =>
+          () => {},
+        onReuploadNeeded:
+          ({ reason, ids }: { reason: string; ids: string[] }) =>
+          () => {},
+        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        reasons: [],
+        isReuploadNeededDisabled: true,
+        isApproveDisabled: true,
+        isInitiateKycDisabled: [
+          !workflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
+        isInitiateSanctionsScreeningDisabled: true,
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+        ].some(Boolean),
+      } satisfies Parameters<typeof createKycBlocks>[0][number];
+    },
+    [
+      workflow?.id,
+      caseState.actionButtonsEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+    ],
+  );
+
+  const peopleOfInterest = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest?.map(
+        personOfInterestToIndividualAdapter,
+      ) ?? [],
+    [
+      workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest,
+      personOfInterestToIndividualAdapter,
+    ],
+  );
+
   const individuals = useMemo(
-    () => [...childWorkflows, ...deDupedDirectors],
-    [childWorkflows, deDupedDirectors],
+    () => [...childWorkflows, ...deDupedDirectors, ...peopleOfInterest],
+    [childWorkflows, deDupedDirectors, peopleOfInterest],
   );
 
   const kycBlocks = useKYCBlocks(individuals);
@@ -357,6 +588,7 @@ export const useTabsToBlocksMap = ({
     [Tab.DOCUMENTS]: [...businessDocumentBlocks],
     [Tab.INDIVIDUALS]: [
       ...individualsUserProvidedBlock,
+      ...individualsRegistryProvidedBlock,
       ...amlWithContainerBlock,
       ...mainRepresentativeBlock,
       ...uboDocumentBlocks,

@@ -16,11 +16,13 @@ export const KycBlock: FunctionComponent<Parameters<typeof useKycBlock>[0]> = ({
   onInitiateSanctionsScreening,
   onApprove,
   onReuploadNeeded,
+  onEdit,
   reasons,
   isReuploadNeededDisabled,
   isApproveDisabled,
   isInitiateKycDisabled,
   isInitiateSanctionsScreeningDisabled,
+  isEditDisabled,
 }) => {
   const childTasks = useKycBlock({
     documents,
@@ -35,11 +37,13 @@ export const KycBlock: FunctionComponent<Parameters<typeof useKycBlock>[0]> = ({
     onInitiateSanctionsScreening,
     onApprove,
     onReuploadNeeded,
+    onEdit,
     reasons,
     isReuploadNeededDisabled,
     isApproveDisabled,
     isInitiateKycDisabled,
     isInitiateSanctionsScreeningDisabled,
+    isEditDisabled,
   });
 
   return (

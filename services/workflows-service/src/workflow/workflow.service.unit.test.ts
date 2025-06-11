@@ -62,6 +62,18 @@ class FakeWorkflowLogService extends BaseFakeRepository {
   }
 }
 
+class FakeAssessmentsService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+class FakeKycService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
 const buildWorkflowDeifintion = (sequenceNum: number) => {
   return {
     id: sequenceNum.toString(),
@@ -121,6 +133,8 @@ describe('WorkflowService', () => {
   let fakeHttpService;
   let testingModule: TestingModule;
   let workflowLogService;
+  let assessmentsService;
+  let kycService;
 
   const configService = {
     WEBHOOK_URL: 'https://example.com',
@@ -154,7 +168,8 @@ describe('WorkflowService', () => {
     workflowTokenService = new FakeEntityRepo();
     uiDefinitionService = new FakeUiDefinitionService();
     workflowLogService = new FakeWorkflowLogService();
-
+    assessmentsService = new FakeAssessmentsService();
+    kycService = new FakeKycService();
     fakeHttpService = {
       requests: [],
 
@@ -218,6 +233,8 @@ describe('WorkflowService', () => {
       {} as any,
       {} as any,
       workflowLogService,
+      assessmentsService,
+      kycService,
     );
   });
 

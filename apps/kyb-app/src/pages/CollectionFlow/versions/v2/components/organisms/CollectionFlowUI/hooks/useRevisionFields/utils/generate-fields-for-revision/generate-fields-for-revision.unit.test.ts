@@ -3,6 +3,7 @@ import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-cont
 import { describe, vi } from 'vitest';
 import { generateFieldsForRevision } from './generate-fields-for-revision';
 import { CollectionFlowStepStatesEnum } from '@ballerine/common';
+import { IDocument } from '@ballerine/ui';
 
 // Mock dependencies
 
@@ -29,7 +30,7 @@ describe('generateFieldsForRevision', () => {
     } as unknown as CollectionFlowContext;
 
     // Act
-    const result = generateFieldsForRevision(mockPages, mockContext);
+    const result = generateFieldsForRevision(mockPages, mockContext, []);
 
     // Assert
     expect(result).toBeUndefined();
@@ -56,7 +57,7 @@ describe('generateFieldsForRevision', () => {
     } as unknown as CollectionFlowContext;
 
     // Act
-    const result = generateFieldsForRevision(mockPages, mockContext);
+    const result = generateFieldsForRevision(mockPages, mockContext, []);
 
     // Assert
     expect(result).toEqual([
@@ -67,7 +68,7 @@ describe('generateFieldsForRevision', () => {
 
   it('should return only documents that are in revision', () => {
     // Arrange
-    const contextWithDocumentsInRevision = {
+    const context = {
       collectionFlow: {
         state: {
           steps: [
@@ -82,10 +83,6 @@ describe('generateFieldsForRevision', () => {
           ],
         },
       },
-      documents: [
-        { id: 'document1', _document: { decision: 'revisions' } },
-        { id: 'document2', _document: { decision: 'revisions' } },
-      ],
     };
 
     const pagesWithDocumentsInRevision = [
@@ -96,21 +93,31 @@ describe('generateFieldsForRevision', () => {
             id: 'document1',
             element: 'documentfield',
             valueDestination: 'documents',
-            params: { template: { id: 'document1' } },
+            params: { template: { type: 'document1', category: 'document1' } },
           },
           {
             id: 'document2',
             element: 'documentfield',
             valueDestination: 'documents',
-            params: { template: { id: 'document2' } },
+            params: { template: { type: 'document2', category: 'document2' } },
           },
         ],
       },
       {
         stateName: 'page2',
         elements: [
-          { id: 'document3', element: 'documentfield', valueDestination: 'documents' },
-          { id: 'document4', element: 'documentfield', valueDestination: 'documents' },
+          {
+            id: 'document3',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { type: 'document3', category: 'document3' } },
+          },
+          {
+            id: 'document4',
+            element: 'documentfield',
+            valueDestination: 'documents',
+            params: { template: { type: 'document4', category: 'document4' } },
+          },
         ],
       },
     ] as Array<UIPage<'v2'>>;
@@ -118,12 +125,31 @@ describe('generateFieldsForRevision', () => {
     // Act
     const result = generateFieldsForRevision(
       pagesWithDocumentsInRevision,
-      contextWithDocumentsInRevision as unknown as CollectionFlowContext,
+      context as unknown as CollectionFlowContext,
+      [
+        {
+          id: 'document1',
+          decision: 'revisions',
+          decisionReason: 'needs_review',
+          comment: 'please fix this',
+          type: 'document1',
+          category: 'document1',
+        } as IDocument,
+        {
+          id: 'document2',
+          decision: 'revisions',
+          type: 'document2',
+          category: 'document2',
+        } as IDocument,
+        {
+          id: 'random-document',
+        } as IDocument,
+      ] as IDocument[],
     );
 
     // Assert
     expect(result).toEqual([
-      { id: 'document1', reason: '' },
+      { id: 'document1', reason: 'needs_review - please fix this' },
       { id: 'document2', reason: '' },
     ]);
   });
@@ -136,10 +162,6 @@ describe('generateFieldsForRevision', () => {
           steps: [{ stepName: 'page1', state: CollectionFlowStepStatesEnum.revision }],
         },
       },
-      documents: [
-        { id: 'document1', _document: { status: 'requested' } },
-        { id: 'document2', _document: { status: 'requested' } },
-      ],
     } as unknown as CollectionFlowContext;
 
     const pagesWithRequestedDocuments = [
@@ -150,13 +172,13 @@ describe('generateFieldsForRevision', () => {
             id: 'document1',
             element: 'documentfield',
             valueDestination: 'documents',
-            params: { template: { id: 'document1' } },
+            params: { template: { type: 'document1', category: 'document1' } },
           },
           {
             id: 'document2',
             element: 'documentfield',
             valueDestination: 'documents',
-            params: { template: { id: 'document2' } },
+            params: { template: { type: 'document2', category: 'document2' } },
           },
         ],
       },
@@ -183,6 +205,23 @@ describe('generateFieldsForRevision', () => {
     const result = generateFieldsForRevision(
       pagesWithRequestedDocuments,
       mockContext as unknown as CollectionFlowContext,
+      [
+        {
+          id: 'document1',
+          status: 'requested',
+          type: 'document1',
+          category: 'document1',
+        } as IDocument,
+        {
+          id: 'document2',
+          status: 'requested',
+          type: 'document2',
+          category: 'document2',
+        } as IDocument,
+        {
+          id: 'random-document',
+        } as IDocument,
+      ],
     );
 
     // Assert
@@ -200,12 +239,6 @@ describe('generateFieldsForRevision', () => {
           steps: [{ stepName: 'page1', state: CollectionFlowStepStatesEnum.revision }],
         },
       },
-      documents: [
-        {
-          id: 'document1',
-          _document: { decision: 'revisions', decisionReason: 'reason1', comment: 'comment1' },
-        },
-      ],
     } as unknown as CollectionFlowContext;
 
     const pagesWithDocumentsInRevision = [
@@ -219,6 +252,8 @@ describe('generateFieldsForRevision', () => {
             params: {
               template: {
                 id: 'document1',
+                type: 'document1',
+                category: 'document1',
               },
             },
           },
@@ -230,6 +265,19 @@ describe('generateFieldsForRevision', () => {
     const result = generateFieldsForRevision(
       pagesWithDocumentsInRevision,
       mockContext as unknown as CollectionFlowContext,
+      [
+        {
+          id: 'document1',
+          decision: 'revisions',
+          decisionReason: 'reason1',
+          comment: 'comment1',
+          type: 'document1',
+          category: 'document1',
+        } as IDocument,
+        {
+          id: 'random-document',
+        } as IDocument,
+      ],
     );
 
     // Assert

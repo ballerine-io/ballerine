@@ -46,6 +46,8 @@ export const RiskIndicatorSchema = z
     quoteFromSource: z.string().nullish(),
     riskLevel: z.enum(RISK_INDICATOR_RISK_LEVELS).nullish(),
     pricingViolationExamples: z.array(z.string()).nullish(),
+    pageContext: z.string().nullish().optional(),
+    status: z.enum(['detected', 'missing', 'unverified']).nullish().optional(),
   })
   .passthrough();
 
@@ -105,6 +107,13 @@ export const ReportSchema = z
         timeOnSite: z.string().nullish(),
         pagesPerVisit: z.string().nullish(),
         trafficSources: z.record(z.string(), z.number()).nullish(),
+        visitorsCountries: z
+          .object({
+            data: z.record(z.string(), z.number()).nullish(),
+            startDate: z.string().nullish(),
+            endDate: z.string().nullish(),
+          })
+          .nullish(),
         monthlyVisits: z.record(z.string(), z.number()).nullish(),
         facebookPage: FacebookPageSchema.nullish(),
         instagramPage: InstagramPageSchema.nullish(),

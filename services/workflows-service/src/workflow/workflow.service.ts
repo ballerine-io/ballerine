@@ -36,6 +36,7 @@ import type {
   InputJsonValue,
   IObjectWithId,
   PrismaTransaction,
+  PrismaTransactionClient,
   TProjectId,
   TProjectIds,
 } from '@/types';
@@ -59,6 +60,7 @@ import {
   IndividualDataSchema,
   isErrorWithMessage,
   isObject,
+  isType,
   ProcessStatus,
   setCollectionFlowStatus,
   TWorkflowHelpers,
@@ -86,6 +88,7 @@ import {
 import {
   ApprovalState,
   BusinessPosition,
+  CreatedFrom,
   Customer,
   EndUser,
   Prisma,
@@ -119,6 +122,10 @@ import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { PartialDeep } from 'type-fest';
 import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
+import { formatIndividualVerification } from '@/common/utils/idv';
+import { AssessmentsService } from '@/assessments/assessments.service';
+import { KycService } from '@/kyc/kyc.service';
+import z from 'zod';
 
 type TEntityId = string;
 
@@ -135,6 +142,55 @@ const getAvatarUrl = (website: string | undefined | null) =>
   website
     ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
     : null;
+
+const handlePromiseAll = async <TPromises extends Record<string, Promise<any>>>(
+  promises: TPromises,
+) => {
+  const errors: Array<{ key: string; error: unknown }> = [];
+  const promisesEntries = Object.entries(promises);
+  const results = await Promise.all(
+    promisesEntries.map(([key, promise]) =>
+      promise
+        .then(data => {
+          return { key, status: 'fulfilled' as const, data };
+        })
+        .catch((error: unknown) => {
+          return { key, status: 'rejected' as const, error };
+        }),
+    ),
+  );
+  const fulfilledResults = results.filter(
+    (res): res is { key: string; status: 'fulfilled'; data: Awaited<TPromises[keyof TPromises]> } =>
+      res.status === 'fulfilled',
+  );
+  const rejectedResults = results.filter(
+    (res): res is { key: string; status: 'rejected'; error: unknown } => res.status === 'rejected',
+  );
+
+  for (const rejectedResult of rejectedResults) {
+    errors.push({ key: rejectedResult.key, error: rejectedResult.error });
+  }
+
+  if (errors.length > 0) {
+    throw new AggregateError(
+      errors.map(({ key, error }) =>
+        Object.assign(new Error(`Promise for "${key}" failed: ${error}`), { key, original: error }),
+      ),
+      'One or more promises failed',
+    );
+  }
+
+  return fulfilledResults.reduce(
+    (acc, fulfilledResult) => {
+      acc[fulfilledResult.key as keyof TPromises] = fulfilledResult.data;
+
+      return acc;
+    },
+    {} as {
+      [TKey in keyof TPromises]: Awaited<TPromises[TKey]>;
+    },
+  );
+};
 
 @Injectable()
 export class WorkflowService {
@@ -163,6 +219,8 @@ export class WorkflowService {
     private readonly secretsManagerFactory: SecretsManagerFactory,
     private readonly storageService: StorageService,
     private readonly workflowLogService: WorkflowLogService,
+    private readonly assessmentsService: AssessmentsService,
+    private readonly kycService: KycService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -230,8 +288,9 @@ export class WorkflowService {
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
     projectIds: TProjectIds,
+    transaction?: PrismaTransactionClient,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds, transaction);
   }
 
   async getWorkflowRuntimeDataByIdAndLockUnscoped({
@@ -250,13 +309,38 @@ export class WorkflowService {
   async getWorkflowByIdWithRelations(id: string, projectIds: TProjectIds) {
     const workflow = await this.workflowRuntimeDataRepository.findByIdWithRelations(id, projectIds);
 
-    return this.formatWorkflow(workflow);
+    return await this.formatWorkflow(workflow);
   }
 
-  private formatWorkflow(
+  private async getIndividualVerificationsChecksWithFallback({
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    try {
+      const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId(
+        {
+          workflowRuntimeDataId,
+          projectId,
+        },
+      );
+
+      return assessments?.flatMap(assessment => assessment.individualVerificationsChecks) ?? [];
+    } catch (error) {
+      if (!(error instanceof NotFoundException)) {
+        throw error;
+      }
+
+      return [];
+    }
+  }
+
+  private async formatWorkflow(
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
-  ): TWorkflowWithRelations {
+  ): Promise<TWorkflowWithRelations> {
     const getEntity = (workflow: TWorkflowWithRelations) => {
       if ('endUser' in workflow && !!workflow?.endUser) {
         return {
@@ -300,9 +384,60 @@ export class WorkflowService {
       nextEvents = service.getSnapshot().nextEvents;
     }
 
+    let individualVerificationsChecks:
+      | Awaited<ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>>
+      | undefined;
+
+    if (workflow.workflowType === 'parent') {
+      const workflowIds = [
+        workflow.id,
+        ...(workflow.childWorkflowsRuntimeData?.map(childWorkflow => childWorkflow.id) ?? []),
+      ];
+      const workflowIdsToIndividualVerificationsChecks: Record<
+        string,
+        ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>
+      > = {};
+
+      for (const workflowId of workflowIds) {
+        workflowIdsToIndividualVerificationsChecks[workflowId] =
+          this.getIndividualVerificationsChecksWithFallback({
+            workflowRuntimeDataId: workflowId,
+            projectId: workflow.projectId,
+          });
+      }
+
+      const individualVerificationsChecksPromises = await handlePromiseAll(
+        workflowIdsToIndividualVerificationsChecks,
+      );
+
+      individualVerificationsChecks = Object.values(individualVerificationsChecksPromises).flat();
+    }
+
     return {
       ...workflow,
-      endUsers: workflow.endUsers ?? [],
+      endUsers:
+        workflow.endUsers?.map(endUser => {
+          const endUserIndividualVerificationsChecks = individualVerificationsChecks?.find(
+            individualVerificationsCheck => individualVerificationsCheck.endUserId === endUser.id,
+          );
+
+          return {
+            ...endUser,
+            individualVerificationsChecks: endUserIndividualVerificationsChecks
+              ? {
+                  status: endUserIndividualVerificationsChecks.status,
+                  data: {
+                    kyc_session_1: {
+                      vendor: endUserIndividualVerificationsChecks.input.vendor,
+                      result: endUserIndividualVerificationsChecks.output
+                        ? formatIndividualVerification(endUserIndividualVerificationsChecks.output)
+                        : null,
+                    },
+                  },
+                }
+              : undefined,
+          };
+        }) ?? [],
       context: {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
@@ -344,8 +479,10 @@ export class WorkflowService {
       // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
-      childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow),
+      childWorkflows: await Promise.all(
+        workflow.childWorkflowsRuntimeData?.map(
+          async childWorkflow => await this.formatWorkflow(childWorkflow),
+        ) ?? [],
       ),
     };
   }
@@ -2252,6 +2389,88 @@ export class WorkflowService {
             },
           },
         );
+      });
+
+      service.subscribe('RUN_AML_ON_REGISTRY_PEOPLE_OF_INTEREST', async ({ payload }) => {
+        const PayloadWithPeopleOfInterestSchema = z.object({
+          peopleOfInterest: z.array(
+            z.object({
+              firstName: z.string(),
+              lastName: z.string(),
+              role: z.string(),
+            }),
+          ),
+        });
+        const checkIsValidPayload = isType(PayloadWithPeopleOfInterestSchema);
+
+        if (!checkIsValidPayload(payload)) {
+          this.logger.log('Skipping AML on registry people of interest');
+
+          return;
+        }
+
+        const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
+        let peopleOfInterest: Array<{
+          ballerineEntityId: string;
+          firstName: string;
+          lastName: string;
+          role: string;
+        }> = [];
+
+        const promises: Record<string, Promise<any>> = {};
+
+        for (const personOfInterest of payload.peopleOfInterest) {
+          const { customer, endUser } = await handlePromiseAll({
+            customer: this.customerService.getByProjectId(currentProjectId),
+            endUser: this.endUserService.create(
+              {
+                data: {
+                  firstName: personOfInterest.firstName,
+                  lastName: personOfInterest.lastName,
+                  createdFrom: CreatedFrom.registry,
+                  projectId: currentProjectId,
+                },
+              },
+              transaction,
+            ),
+          });
+
+          peopleOfInterest.push({
+            ballerineEntityId: endUser.id,
+            firstName: endUser.firstName,
+            lastName: endUser.lastName,
+            role: personOfInterest.role,
+          });
+
+          promises[endUser.id] = this.kycService.initiateAml({
+            endUserId: endUser.id,
+            clientId: customer.name,
+            vendor: 'veriff',
+            immediateResults: true,
+            ongoingMonitoring: false,
+            callbackUrl,
+            firstName: endUser.firstName,
+            lastName: endUser.lastName,
+          });
+        }
+
+        await handlePromiseAll(promises);
+
+        await service.sendEvent({
+          type: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_INDEX,
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    peopleOfInterest,
+                  },
+                },
+              },
+            },
+          },
+        });
       });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {

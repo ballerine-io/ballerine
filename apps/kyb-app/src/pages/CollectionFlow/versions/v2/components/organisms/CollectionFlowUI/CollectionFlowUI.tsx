@@ -1,5 +1,3 @@
-import './validator';
-
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
 import { UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
@@ -55,7 +53,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   const appMetadata = useAppMetadata();
   const commonHttpParams = useCommonHttpParams();
   const { pluginStatuses } = usePlugins();
-  const revisionFields = useRevisionFields(pages, context);
+  const { revisionFields, isLoadingRevisionFields } = useRevisionFields(pages, context);
   const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
     useFinalSubmission(context, state);
   const validationParams: IDynamicFormValidationParams = useMemo(
@@ -217,6 +215,14 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       context,
     ],
   );
+
+  if (isLoadingRevisionFields) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <div className="border-primary h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
