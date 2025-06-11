@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.114
+
+### Patch Changes
+
+- updated common schema
+
 ## 0.9.113
 
 ### Patch Changes
