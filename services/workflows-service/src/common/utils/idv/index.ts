@@ -107,7 +107,10 @@ export const formatIndividualVerificationDecision = ({
   }
 
   const riskLabels = insightValues
-    .filter(([label, result]) => IGNORED_DECISION_CHECKS.includes(label) && result !== 'yes')
+    .filter(
+      ([label, result]) =>
+        !IGNORED_DECISION_CHECKS.includes(label) && result !== 'yes' && result !== 'notApplicable',
+    )
     .map(([label]) => label);
 
   return {
