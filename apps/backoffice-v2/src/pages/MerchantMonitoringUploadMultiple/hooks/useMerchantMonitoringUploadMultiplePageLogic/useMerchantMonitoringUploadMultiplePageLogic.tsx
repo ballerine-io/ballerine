@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -10,6 +10,7 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { CreateBusinessReportBatchSchema } from '@/pages/MerchantMonitoringUploadMultiple/create-business-report-batch-schema';
 import { useCreateBusinessReportBatchMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportBatchMutation/useCreateBusinessReportBatchMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
+import { HttpError } from '@/common/errors/http-error';
 
 export const useMerchantMonitoringUploadMultiplePageLogic = () => {
   const { data: customer, isLoading: isLoadingCustomer } = useCustomerQuery();
@@ -22,6 +23,9 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
 
   const locale = useLocale();
   const navigate = useNavigate();
+  const [createReportBatchErrors, setCreateReportBatchErrors] = useState<string[] | undefined>(
+    undefined,
+  );
 
   const { mutate: mutateCreateBusinessReportBatch, isLoading: isSubmitting } =
     useCreateBusinessReportBatchMutation({
@@ -30,6 +34,9 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
       workflowVersion: customer?.features?.createBusinessReportBatch?.options.version ?? '2',
       onSuccess: () => {
         navigate(`/${locale}/merchant-monitoring`);
+      },
+      onError: (error: HttpError) => {
+        setCreateReportBatchErrors(error?.errors?.map(el => el.message));
       },
     });
 
@@ -68,6 +75,7 @@ export const useMerchantMonitoringUploadMultiplePageLogic = () => {
     onSubmit,
     onChange,
     csvTemplateUrl,
+    createReportBatchErrors,
     isCreateReportBatchReady: isLoadingCustomer || isSubmitting,
   };
 };
