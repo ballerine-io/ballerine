@@ -23,11 +23,12 @@ export const parseCsv = async <TSchema extends ZodSchema>(
     fileContent = fs.readFileSync(processEntity.filePath);
     filenameWithExtension = processEntity.filePath;
   }
+
   const isCsv = filenameWithExtension.toLowerCase().endsWith('.csv');
 
   return new Promise((resolve, reject) => {
     const results: z.output<TSchema> = [];
-    const errors: { message: string }[] = [];
+    const errors: Array<{ message: string }> = [];
 
     if (!isCsv) {
       errors.push({
@@ -67,9 +68,11 @@ export const parseCsv = async <TSchema extends ZodSchema>(
             results.push(validatedRecord);
           } catch (error) {
             const lineNumber = index + 2;
+
             if (!(error instanceof ZodError)) {
               throw error;
             }
+
             logger.error('Validation error:', { error, record });
             const rowErrors = error.errors.map(zodIssue => ({
               message: `Line ${lineNumber} - ${zodIssue.message}`,
