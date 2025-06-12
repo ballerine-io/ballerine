@@ -53,14 +53,15 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
-// eslint-disable-next-line import/no-cycle
-import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { CustomerService } from '@/customer/customer.service';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
 import { AssessmentsModule } from '@/assessments/assessments.module';
 import { AssessmentsService } from '@/assessments/assessments.service';
 // eslint-disable-next-line import/no-cycle
 import { KycModule } from '@/kyc/kyc.module';
 import { EndUserModule } from '@/end-user/end-user.module';
+// eslint-disable-next-line import/no-cycle
+import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 
 @Module({
   controllers: [
@@ -122,6 +123,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    CustomerService,
     AssessmentsService,
   ],
   exports: [
@@ -139,6 +141,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    CustomerService,
   ],
 })
 export class WorkflowModule {}

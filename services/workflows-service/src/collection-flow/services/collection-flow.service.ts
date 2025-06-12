@@ -229,12 +229,12 @@ export class CollectionFlowService {
   }
 
   async createEntitiesIfNeeded(
-    entities: {
+    entities: Array<{
       firstName: string;
       lastName: string;
       email: string;
       ballerineEntityId?: string;
-    }[],
+    }>,
     projectId: string,
     transaction: Prisma.TransactionClient,
   ) {
