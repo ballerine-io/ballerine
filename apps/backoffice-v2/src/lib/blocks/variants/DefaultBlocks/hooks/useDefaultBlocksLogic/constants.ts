@@ -7,6 +7,7 @@ export const ALL_BLOCKS = [
   'kybRegistryInfoBlock',
   'companySanctionsBlock',
   'individualsUserProvidedBlock',
+  'individualsRegistryProvidedBlock',
   'ubosRegistryProvidedBlock',
   'storeInfoBlock',
   'websiteBasicRequirementBlock',

@@ -12,7 +12,7 @@ export const EndUserSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  email: z.string().optional(),
+  email: z.string().nullable().optional(),
   gender: z.string().nullable(),
   nationality: z.string().nullable(),
   address: z.string().nullable(),
@@ -39,6 +39,7 @@ export const EndUserSchema = z.object({
     })
     .optional(),
   variant: z.enum(['director', 'ubo']).optional(),
+  createdFrom: z.enum(['user', 'analyst', 'registry']).nullable().optional(),
 });
 
 export const EndUsersSchema = z.array(EndUserSchema);
