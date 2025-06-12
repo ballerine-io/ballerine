@@ -12,7 +12,7 @@ type BankAccountRule = {
 };
 
 // These rules are required in order to pass the bank account verification check
-const requiredRules = ['CMM1069', 'CMM1048', 'CMM1052'];
+const requiredRules = ['CMM1069', 'CMM1048', 'CMM1053'];
 
 export class BankAccountVerification extends BaseOperator<
   any,
