@@ -56,7 +56,7 @@ const deps: Provider[] = [
   },
   {
     provide: AnalyticsService,
-    useValue: noop,
+    useValue: { trackSafe: noop },
   },
   {
     provide: EndUserService,
@@ -246,7 +246,7 @@ describe('CollectionFlowService', () => {
         },
       });
 
-      const workflowRuntimeData = await workflowRuntimeDataRepository.create({
+      const workflowRuntimeData = await workflowRuntimeDataRepository.create(customer, {
         data: {
           workflowDefinitionId: workflowDefinition.id,
           workflowDefinitionVersion: workflowDefinition.version,
