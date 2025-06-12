@@ -61,6 +61,12 @@ enum Gender {
   other
 }
 
+enum CreatedFrom {
+  analyst
+  user
+  registry
+}
+
 model EndUser {
   id              String  @id @default(cuid())
   isContactPerson Boolean @default(false)
@@ -101,6 +107,7 @@ model EndUser {
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   Counterparty             Counterparty[]
   documents                Document[]
+  createdFrom              CreatedFrom?
 
   @@unique([projectId, correlationId])
   @@index([endUserType])

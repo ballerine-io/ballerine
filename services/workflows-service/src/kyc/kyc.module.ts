@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { KycControllerExternal } from './kyc.controller.external';
 import { HttpModule } from '@nestjs/axios';
 import { KycService } from './kyc.service';
+// eslint-disable-next-line import/no-cycle
 import { EndUserModule } from '@/end-user/end-user.module';
 import { EndUserService } from '@/end-user/end-user.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
@@ -22,8 +23,8 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
     CustomerRepository,
     MerchantMonitoringClient,
   ],
-  imports: [HttpModule, EndUserModule],
+  imports: [HttpModule, forwardRef(() => EndUserModule)],
   controllers: [KycControllerExternal],
-  exports: [],
+  exports: [KycService],
 })
 export class KycModule {}

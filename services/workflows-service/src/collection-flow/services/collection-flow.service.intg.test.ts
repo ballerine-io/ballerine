@@ -47,6 +47,7 @@ import { CollectionFlowStateService } from './collection-flow-state.service';
 import { DocumentService } from '@/document/document.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { KycService } from '@/kyc/kyc.service';
 
 const deps: Provider[] = [
   {
@@ -55,7 +56,7 @@ const deps: Provider[] = [
   },
   {
     provide: AnalyticsService,
-    useValue: noop,
+    useValue: { trackSafe: noop },
   },
   {
     provide: EndUserService,
@@ -127,6 +128,10 @@ const deps: Provider[] = [
   },
   {
     provide: DocumentService,
+    useValue: noop,
+  },
+  {
+    provide: KycService,
     useValue: noop,
   },
 ];
@@ -241,7 +246,7 @@ describe('CollectionFlowService', () => {
         },
       });
 
-      const workflowRuntimeData = await workflowRuntimeDataRepository.create({
+      const workflowRuntimeData = await workflowRuntimeDataRepository.create(customer, {
         data: {
           workflowDefinitionId: workflowDefinition.id,
           workflowDefinitionVersion: workflowDefinition.version,
