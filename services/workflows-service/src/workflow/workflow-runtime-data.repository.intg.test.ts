@@ -16,7 +16,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
-import { Project } from '@prisma/client';
+import { Customer, Project } from '@prisma/client';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
 import { UserService } from '@/user/user.service';
@@ -41,12 +41,15 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { AssessmentsService } from '@/assessments/assessments.service';
+import { KycService } from '@/kyc/kyc.service';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
   let userRepository: UserRepository;
   let workflowDefinitionRepository: WorkflowDefinitionRepository;
   let project: Project;
+  let customer: Customer;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     await cleanupDatabase();
@@ -88,6 +91,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
+      KycService,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
@@ -106,11 +110,11 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       PrismaModule,
     ])) as unknown as UserRepository;
 
-    const prismaService = (await fetchServiceFromModule(PrismaService, servicesProviders, [
+    prismaService = (await fetchServiceFromModule(PrismaService, servicesProviders, [
       PrismaModule,
     ])) as unknown as PrismaService;
 
-    const customer = await createCustomer(
+    customer = await createCustomer(
       prismaService,
       faker.datatype.uuid(),
       'secret',
@@ -177,20 +181,22 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             },
             projectId: project.id,
           },
-        } satisfies Parameters<(typeof workflowRuntimeRepository)['create']>[0];
+        } satisfies Parameters<(typeof workflowRuntimeRepository)['create']>[1];
         const updatePayload = {
           data: {
             assigneeId: userPayload.data.id,
             assignedAt: new Date(),
           },
         } satisfies Parameters<(typeof workflowRuntimeRepository)['updateById']>[1];
-        const workflow = await workflowRuntimeRepository.create(createPayload);
+        const workflow = await workflowRuntimeRepository.create(customer, createPayload);
         await userRepository.create(userPayload, project.id);
 
         // Act
         const updatedWorkflow = await workflowRuntimeRepository.updateById(
           workflow.id,
           updatePayload,
+          prismaService,
+          customer,
         );
 
         // Assert

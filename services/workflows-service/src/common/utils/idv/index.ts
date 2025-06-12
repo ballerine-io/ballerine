@@ -130,14 +130,14 @@ export const handleIndividualVerificationDocuments = async ({
   kycDocumentImages: Array<{ context?: string; content: string }>;
   person: Pick<TIndividualVerificationData['person'], 'idNumber'>;
 }) => {
-  const documentPages: {
+  const documentPages: Array<{
     uri: string;
     provider: string;
     type: string | undefined;
     metadata: {
       side: string | undefined;
     };
-  }[] = [];
+  }> = [];
 
   for (const kycDocumentImage of kycDocumentImages) {
     const tmpFile = tmp.fileSync({ keep: false }).name;

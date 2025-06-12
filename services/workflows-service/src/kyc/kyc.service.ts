@@ -30,12 +30,10 @@ export class KycService {
     workflowRuntimeDataId: string;
     sessionId: string | undefined;
     clientId: string;
-
     vendor: 'veriff';
     withAml: boolean;
     ongoingMonitoring: boolean;
     callbackUrl: string;
-
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
@@ -179,12 +177,10 @@ export class KycService {
       // TODO: Get from KYC check table
       sessionId: undefined,
       clientId: customer.name,
-
       vendor,
       withAml: withAml ?? true,
       ongoingMonitoring: ongoingMonitoring ?? false,
       callbackUrl,
-
       firstName: endUser.firstName,
       lastName: endUser.lastName,
       dateOfBirth: endUser.dateOfBirth?.toISOString().split('T')[0] ?? undefined,
@@ -206,5 +202,39 @@ export class KycService {
       sessionId,
       url: kycLink,
     };
+  }
+
+  async initiateAml({
+    endUserId,
+    clientId,
+    vendor,
+    ongoingMonitoring,
+    immediateResults,
+    callbackUrl,
+    firstName,
+    lastName,
+    dateOfBirth,
+  }: {
+    endUserId: string;
+    clientId: string;
+    vendor: 'veriff';
+    ongoingMonitoring: boolean;
+    immediateResults: boolean;
+    callbackUrl: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string;
+  }) {
+    return await this.unifiedApiClient.runAml({
+      endUserId,
+      clientId,
+      vendor,
+      ongoingMonitoring,
+      immediateResults,
+      callbackUrl,
+      firstName,
+      lastName,
+      dateOfBirth,
+    });
   }
 }
