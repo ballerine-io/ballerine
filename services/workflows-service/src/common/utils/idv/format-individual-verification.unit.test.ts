@@ -245,7 +245,7 @@ describe('formatIndividualVerification #unit', () => {
           },
         },
         decision: {
-          riskLabels: ['newUser', 'newDocument'],
+          riskLabels: [],
           status: decision,
           decisionReason: reason,
           decisionScore,
