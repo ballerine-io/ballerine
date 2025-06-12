@@ -60,6 +60,7 @@ import { AssessmentsService } from '@/assessments/assessments.service';
 // eslint-disable-next-line import/no-cycle
 import { KycModule } from '@/kyc/kyc.module';
 import { EndUserModule } from '@/end-user/end-user.module';
+// eslint-disable-next-line import/no-cycle
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 
 @Module({

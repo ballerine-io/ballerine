@@ -50,7 +50,7 @@ export class WorkflowRuntimeDataRepository {
       }),
     } as any);
 
-    void this.trackChanges(customer, runtimeData);
+    void trackChanges(this.analyticsService, customer, runtimeData);
 
     return runtimeData;
   }
@@ -410,7 +410,7 @@ export class WorkflowRuntimeDataRepository {
         customer = await this.customerService.getByProjectId(runtimeData.projectId);
       }
 
-      void this.trackChanges(customer, runtimeData);
+      void trackChanges(this.analyticsService, customer, runtimeData);
     } catch (error) {
       console.error('Error tracking changes', error);
     }
@@ -436,7 +436,7 @@ export class WorkflowRuntimeDataRepository {
       include,
     });
 
-    void this.trackChanges(customer, runtimeData);
+    void trackChanges(this.analyticsService, customer, runtimeData);
 
     return runtimeData;
   }
@@ -664,26 +664,27 @@ export class WorkflowRuntimeDataRepository {
 
     return (await this.prismaService.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
-
-  private async trackChanges(
-    customer: Customer,
-    workflowRuntimeData: WorkflowRuntimeData,
-  ): Promise<void> {
-    const distinctId =
-      workflowRuntimeData.actorUserId || workflowRuntimeData.actorEndUserId || 'SYSTEM';
-
-    await this.analyticsService.trackSafe({
-      event: EventNamesMap.CASE_CHANGED,
-      distinctId,
-      customerId: customer.id,
-      properties: {
-        workflowRuntimeDataId: workflowRuntimeData.id,
-        endUserId: workflowRuntimeData.endUserId,
-        businessId: workflowRuntimeData.businessId,
-        projectId: workflowRuntimeData.projectId,
-        actorUserId: workflowRuntimeData.actorUserId,
-        actorEndUserId: workflowRuntimeData.actorEndUserId,
-      },
-    });
-  }
 }
+
+const trackChanges = async (
+  analyticsService: AnalyticsService,
+  customer: Customer,
+  workflowRuntimeData: WorkflowRuntimeData,
+): Promise<void> => {
+  const distinctId =
+    workflowRuntimeData.actorUserId || workflowRuntimeData.actorEndUserId || 'SYSTEM';
+
+  await analyticsService.trackSafe({
+    event: EventNamesMap.CASE_CHANGED,
+    distinctId,
+    customerId: customer.id,
+    properties: {
+      workflowRuntimeDataId: workflowRuntimeData.id,
+      endUserId: workflowRuntimeData.endUserId,
+      businessId: workflowRuntimeData.businessId,
+      projectId: workflowRuntimeData.projectId,
+      actorUserId: workflowRuntimeData.actorUserId,
+      actorEndUserId: workflowRuntimeData.actorEndUserId,
+    },
+  });
+};
