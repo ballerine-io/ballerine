@@ -1192,7 +1192,9 @@ export class WorkflowService {
           });
 
         if (allDocumentsResolved) {
+          const customer = await this.customerService.getByProjectId(projectId);
           updatedWorkflow = await this.workflowRuntimeDataRepository.updateStateById(
+            customer,
             workflowId,
             {
               data: {
@@ -1391,7 +1393,10 @@ export class WorkflowService {
       const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
       const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
+      const customer = await this.customerService.getByProjectId(projectId);
+
       const updatedResult = (await this.workflowRuntimeDataRepository.updateStateById(
+        customer,
         runtimeData.id,
         {
           data: {
@@ -1457,6 +1462,8 @@ export class WorkflowService {
       {},
       projectIds,
     );
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+
     const workflowCompleted =
       workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
@@ -1469,6 +1476,8 @@ export class WorkflowService {
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId, assignedAt: new Date(), projectId: currentProjectId } },
+      this.prismaService,
+      customer,
     );
 
     if (
@@ -1653,6 +1662,7 @@ export class WorkflowService {
         }
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
+          customer,
           {
             data: {
               ...entityConnect,
@@ -1762,6 +1772,7 @@ export class WorkflowService {
           });
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
+            customer,
             workflowRuntimeData.id,
             {
               data: {
@@ -1827,6 +1838,7 @@ export class WorkflowService {
         };
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
+          customer,
           existingWorkflowRuntimeData.id,
           {
             data: {
@@ -2321,6 +2333,7 @@ export class WorkflowService {
               },
             },
             transaction,
+            customer,
           );
 
           return {
@@ -2397,7 +2410,7 @@ export class WorkflowService {
         }
 
         const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
-        let peopleOfInterest: Array<{
+        const peopleOfInterest: Array<{
           ballerineEntityId: string;
           firstName: string;
           lastName: string;
