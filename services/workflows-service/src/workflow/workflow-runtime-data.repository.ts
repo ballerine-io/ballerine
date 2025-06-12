@@ -179,9 +179,9 @@ export class WorkflowRuntimeDataRepository {
                 e."endUserType",
                 'approvalState',
                 e."approvalState",
-                'stateReason',
                 'variant',
                 e."variant",
+                'stateReason',
                 e."stateReason",
                 'firstName',
                 e."firstName",
@@ -307,7 +307,7 @@ export class WorkflowRuntimeDataRepository {
             eu.phone,
             eu."additionalInfo",
             eu."amlHits",
-            eu."variant"
+            eu."variant",
             eu."createdFrom"
           FROM
             "EndUser" eu
