@@ -1,7 +1,7 @@
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.guard';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CustomerService } from '@/customer/customer.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { CustomerRepository } from '@/customer/customer.repository';
@@ -39,9 +39,11 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+// eslint-disable-next-line import/no-cycle
+import { KycModule } from '@/kyc/kyc.module';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, forwardRef(() => KycModule)],
   providers: [
     MerchantMonitoringClient,
     WorkflowTokenRepository,

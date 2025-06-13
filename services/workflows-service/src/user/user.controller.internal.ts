@@ -116,6 +116,7 @@ export class UserControllerInternal {
     try {
       // Check if user exists
       const existingUser = await this.userService.getByIdUnscoped(id, {});
+
       if (!existingUser) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
@@ -141,6 +142,7 @@ export class UserControllerInternal {
       if (error instanceof NotFoundException) {
         throw error;
       }
+
       throw new BadRequestException('Failed to update user');
     }
   }
@@ -155,6 +157,7 @@ export class UserControllerInternal {
     try {
       // Check if user exists
       const existingUser = await this.userService.getByIdUnscoped(id, {});
+
       if (!existingUser) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
@@ -169,6 +172,7 @@ export class UserControllerInternal {
       if (error instanceof NotFoundException) {
         throw error;
       }
+
       throw new BadRequestException('Failed to delete user');
     }
   }
@@ -183,6 +187,7 @@ export class UserControllerInternal {
     try {
       // Check if user exists
       const existingUser = await this.userService.getByIdUnscoped(id, {});
+
       if (!existingUser) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
@@ -208,6 +213,7 @@ export class UserControllerInternal {
       if (error instanceof NotFoundException) {
         throw error;
       }
+
       throw new BadRequestException('Failed to block user');
     }
   }
@@ -222,6 +228,7 @@ export class UserControllerInternal {
     try {
       // Check if user exists
       const existingUser = await this.userService.getByIdUnscoped(id, {});
+
       if (!existingUser) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
@@ -247,6 +254,7 @@ export class UserControllerInternal {
       if (error instanceof NotFoundException) {
         throw error;
       }
+
       throw new BadRequestException('Failed to unblock user');
     }
   }
