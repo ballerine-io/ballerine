@@ -2,7 +2,6 @@ import { forwardRef, Module } from '@nestjs/common';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectModule } from '@/project/project.module';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { BusinessReportControllerInternal } from '@/business-report/business-report.controller.internal';
 import { HttpModule } from '@nestjs/axios';
 // eslint-disable-next-line import/no-cycle
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
@@ -18,7 +17,7 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
 import { BusinessReportControllerExternal } from '@/business-report/business-report.controller.external';
 
 @Module({
-  controllers: [BusinessReportControllerInternal, BusinessReportControllerExternal],
+  controllers: [BusinessReportControllerExternal],
   imports: [
     forwardRef(() => WorkflowModule),
     forwardRef(() => EndUserModule),
