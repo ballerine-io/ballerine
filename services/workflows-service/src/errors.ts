@@ -92,9 +92,9 @@ export class ValidationError extends common.BadRequestException {
   timestamp!: string;
 
   @ApiProperty({ type: DetailedValidationError })
-  errors?: Array<{ message: string; path: string }>;
+  errors?: Array<{ message: string; path?: string }>;
 
-  constructor(errors: Array<{ message: string; path: string }>) {
+  constructor(errors: Array<{ message: string; path?: string }>) {
     super(
       {
         statusCode: common.HttpStatus.BAD_REQUEST,

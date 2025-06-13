@@ -292,7 +292,6 @@ export class UnifiedApiClient {
     withAml: boolean;
     ongoingMonitoring: boolean;
     callbackUrl: string;
-
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
@@ -306,12 +305,44 @@ export class UnifiedApiClient {
       withAml,
       ongoingMonitoring,
       callbackUrl,
-
       firstName,
       lastName,
       dateOfBirth,
-
       projectId,
+    });
+  }
+
+  public async runAml({
+    clientId,
+    endUserId,
+    vendor,
+    immediateResults,
+    ongoingMonitoring,
+    callbackUrl,
+    firstName,
+    lastName,
+    dateOfBirth,
+  }: {
+    clientId: string;
+    endUserId: string;
+    vendor: 'veriff';
+    immediateResults: boolean;
+    ongoingMonitoring: boolean;
+    callbackUrl: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string;
+  }) {
+    return await this.axiosInstance.post(`/aml-sessions`, {
+      clientId,
+      endUserId,
+      vendor,
+      immediateResults,
+      ongoingMonitoring,
+      callbackUrl,
+      firstName,
+      lastName,
+      dateOfBirth,
     });
   }
 }

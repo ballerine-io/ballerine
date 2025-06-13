@@ -27,8 +27,6 @@ import * as common from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 import { CollectionFlowStateService } from '../services/collection-flow-state.service';
-import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
-import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @UseWorkflowAuthGuard()
@@ -159,94 +157,42 @@ export class CollectionFlowController {
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
-      const beginTransaction = beginTransactionIfNotExistCurry({
-        prismaService: this.prismaService,
-        options: defaultPrismaTransactionOptions,
-      });
+      await this.collectionFlowStateService.updateCollectionFlowState(
+        tokenScope.workflowRuntimeDataId,
+        {
+          ...((body.context.collectionFlow as AnyRecord).state as TCollectionFlowState),
+          steps: (
+            (body.context.collectionFlow as AnyRecord).state as TCollectionFlowState
+          ).steps.map((step: TCollectionFlowStep) => ({
+            ...step,
+            state: CollectionFlowStepStatesEnum.completed,
+          })),
+          status: CollectionFlowStatusesEnum.completed,
+        },
+        [tokenScope.projectId],
+      );
 
-      return beginTransaction(async transaction => {
-        const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-          tokenScope.workflowRuntimeDataId,
-          {},
-          [tokenScope.projectId],
-          transaction,
-        );
+      await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: body.eventName,
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
 
-        const directors = await this.collectionFlowService.createEntitiesIfNeeded(
-          workflowRuntimeData.context.entity.data.additionalInfo.directors || [],
-          tokenScope.projectId,
-          transaction,
-        );
-
-        const ubos = await this.collectionFlowService.createEntitiesIfNeeded(
-          workflowRuntimeData.context.entity.data.additionalInfo.ubos || [],
-          tokenScope.projectId,
-          transaction,
-        );
-
-        await this.collectionFlowStateService.updateCollectionFlowState(
-          tokenScope.workflowRuntimeDataId,
-          {
-            ...((body.context.collectionFlow as AnyRecord).state as TCollectionFlowState),
-            steps: (
-              (body.context.collectionFlow as AnyRecord).state as TCollectionFlowState
-            ).steps.map((step: TCollectionFlowStep) => ({
-              ...step,
-              state: CollectionFlowStepStatesEnum.completed,
-            })),
-            status: CollectionFlowStatusesEnum.completed,
+      return await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: body.context,
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
           },
-          [tokenScope.projectId],
-          transaction,
-        );
-
-        await this.workflowService.event(
-          {
-            id: tokenScope.workflowRuntimeDataId,
-            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-            payload: {
-              newContext: {
-                entity: {
-                  data: {
-                    additionalInfo: {
-                      directors: directors?.length ? directors : undefined,
-                      ubos: ubos?.length ? ubos : undefined,
-                    },
-                  },
-                },
-              },
-              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
-            },
-          },
-          [tokenScope.projectId],
-          tokenScope.projectId,
-          transaction,
-        );
-
-        await this.workflowService.event(
-          {
-            id: tokenScope.workflowRuntimeDataId,
-            name: body.eventName,
-          },
-          [tokenScope.projectId],
-          tokenScope.projectId,
-          transaction,
-        );
-
-        return await this.workflowService.event(
-          {
-            id: tokenScope.workflowRuntimeDataId,
-            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-            payload: {
-              newContext: body.context,
-              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
-            },
-          },
-          [tokenScope.projectId],
-          tokenScope.projectId,
-          transaction,
-        );
-      });
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
     } catch (error) {
       if (error instanceof CollectionFlowMissingException) {
         throw error;

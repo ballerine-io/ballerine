@@ -218,8 +218,8 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
   if (isLoadingRevisionFields) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      <div className="flex min-h-[200px] items-center justify-center">
+        <div className="border-primary h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
       </div>
     );
   }

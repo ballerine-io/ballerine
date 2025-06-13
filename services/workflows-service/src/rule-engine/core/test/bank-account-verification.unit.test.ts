@@ -55,7 +55,7 @@ describe('Bank account verification operator', () => {
                     rules: [
                       { ruleId: 'CMM1069', ruleScore: 1 },
                       { ruleId: 'CMM1048', ruleScore: 0 },
-                      { ruleId: 'CMM1052', ruleScore: 0 },
+                      { ruleId: 'CMM1053', ruleScore: 0 },
                     ],
                   },
                 ],
@@ -87,7 +87,7 @@ describe('Bank account verification operator', () => {
                     rules: [
                       { ruleId: 'CMM1069', ruleScore: 1 },
                       { ruleId: 'CMM1048', ruleScore: 1 },
-                      { ruleId: 'CMM1052', ruleScore: 0 },
+                      { ruleId: 'CMM1053', ruleScore: 0 },
                     ],
                   },
                 ],
@@ -119,7 +119,7 @@ describe('Bank account verification operator', () => {
                     rules: [
                       { ruleId: 'CMM1069', ruleScore: 1 },
                       { ruleId: 'CMM1048', ruleScore: 1 },
-                      { ruleId: 'CMM1052', ruleScore: 1 },
+                      { ruleId: 'CMM1053', ruleScore: 1 },
                     ],
                   },
                 ],
@@ -153,7 +153,7 @@ describe('Bank account verification operator', () => {
                     rules: [
                       { ruleId: 'CMM1069', ruleScore: 0 },
                       { ruleId: 'CMM1048', ruleScore: 0 },
-                      { ruleId: 'CMM1052', ruleScore: 0 },
+                      { ruleId: 'CMM1053', ruleScore: 0 },
                     ],
                   },
                 ],
@@ -185,7 +185,7 @@ describe('Bank account verification operator', () => {
                     rules: [
                       { ruleId: 'CMM1069', ruleScore: 0 },
                       { ruleId: 'CMM1048', ruleScore: 0 },
-                      { ruleId: 'CMM1052', ruleScore: 0 },
+                      { ruleId: 'CMM1053', ruleScore: 0 },
                       { ruleId: 'CMM9999', ruleScore: 1 },
                       { ruleId: 'OTHER_RULE', ruleScore: 1 },
                     ],
@@ -219,7 +219,7 @@ describe('Bank account verification operator', () => {
                     rules: [
                       { ruleId: 'CMM1069', ruleScore: 0 },
                       { ruleId: 'CMM1048', ruleScore: 0 },
-                      { ruleId: 'CMM1052', ruleScore: 0 },
+                      { ruleId: 'CMM1053', ruleScore: 0 },
                     ],
                   },
                 ],
