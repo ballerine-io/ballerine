@@ -1,16 +1,19 @@
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
 
-export const EndUserSchema = ObjectWithIdSchema.extend({
-  firstName: z.string(),
-  lastName: z.string(),
-});
-
 export const EntityType = {
   BUSINESS: 'business',
   UBO: 'ubo',
   DIRECTOR: 'director',
 } as const;
+
+const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR, EntityType.BUSINESS]);
+
+export const EndUserSchema = ObjectWithIdSchema.extend({
+  firstName: z.string(),
+  lastName: z.string(),
+  variant: EndUserVariantSchema.optional().nullable(),
+});
 
 export const DocumentTrackerItemSchema = z.object({
   documentId: z.string().nullable(),

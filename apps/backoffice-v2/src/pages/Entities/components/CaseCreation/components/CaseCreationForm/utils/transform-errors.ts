@@ -5,6 +5,8 @@ export const transformErrors = (errors: RJSFValidationError[]): RJSFValidationEr
   return errors.map(error => {
     const errorCopy = structuredClone(error);
 
+    console.log('errorCopy', errorCopy);
+
     if (errorCopy.name === 'required') {
       errorCopy.message = 'This field is required.';
     }
@@ -48,8 +50,8 @@ export const transformErrors = (errors: RJSFValidationError[]): RJSFValidationEr
       }.`;
     }
 
-    if (errorCopy.params?.format === 'email') {
-      errorCopy.message = 'Please provide valid email address.';
+    if (errorCopy.params?.pattern) {
+      errorCopy.message = `Text must match the pattern ${errorCopy.params.pattern}`;
     }
 
     return errorCopy;
