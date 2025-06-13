@@ -265,7 +265,6 @@ export class BusinessReportService {
             websiteUrl: businessReportRequest.websiteUrl,
             countryCode: businessReportRequest.countryCode,
             parentCompanyName: businessReportRequest.parentCompanyName,
-            callbackUrl: `${env.APP_API_URL}/api/v1/internal/business-reports/hook?businessId=${businessId}`,
           })),
         });
       },
