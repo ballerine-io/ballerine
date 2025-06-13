@@ -30,6 +30,7 @@ import { z } from 'zod';
 import type { Business, EndUsersOnBusinesses, UiDefinition } from '@prisma/client';
 import { TranslationService } from '@/providers/translation/translation.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -63,7 +64,9 @@ export class CaseManagementController {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const result = await this.caseManagementService.create(body, projectIds!, currentProjectId);
+    assertIsValidProjectIds(projectIds);
+
+    const result = await this.caseManagementService.create(body, projectIds, currentProjectId);
 
     this.logger.log(
       `User ${authenticatedEntity?.user?.id} created workflow ${(await result).workflowRuntimeId}`,

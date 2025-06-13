@@ -38,6 +38,7 @@ export const EndUserSchema = z.object({
       }),
     })
     .optional(),
+  variant: z.enum(['director', 'ubo']).optional(),
   createdFrom: z.enum(['user', 'analyst', 'registry']).nullable().optional(),
 });
 

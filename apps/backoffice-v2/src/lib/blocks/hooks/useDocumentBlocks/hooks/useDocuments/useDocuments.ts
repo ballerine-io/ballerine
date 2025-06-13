@@ -36,6 +36,8 @@ export const useDocuments = (workflow: TWorkflowById) => {
     useUbosDocuments(workflow as TWorkflowById),
   ];
 
+  console.log('ubo documents', ubosDocuments);
+
   const businessDocumentsWithEntity = useMemo(
     () =>
       businessDocuments.map(document => ({

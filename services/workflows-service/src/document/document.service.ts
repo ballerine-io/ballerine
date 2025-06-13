@@ -13,7 +13,7 @@ import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto
 import { ValidationError } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
-import { PrismaTransactionClient, TProjectId } from '@/types';
+import { PrismaTransactionClient, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
@@ -25,10 +25,10 @@ import {
   DocumentDecision,
   DocumentFile,
   DocumentStatus,
+  EndUserVariant,
   File,
   Prisma,
   WorkflowDefinition,
-  WorkflowRuntimeData,
 } from '@prisma/client';
 import { Static } from '@sinclair/typebox';
 import { get } from 'lodash';
@@ -45,6 +45,7 @@ import {
 import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
 import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
 @Injectable()
 export class DocumentService {
@@ -311,6 +312,18 @@ export class DocumentService {
     });
 
     return this.getLatestDocumentVersions(formattedDocuments);
+  }
+
+  async getLatestDocumentsWithFilesByWorkflowId(workflowId: string, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
+
+    const documents = await this.repository.findManyWithFiles(projectIds, {
+      where: {
+        workflowRuntimeDataId: workflowId,
+      },
+    });
+
+    return this.getLatestDocumentVersions(documents);
   }
 
   async updateByIdWithFile(
@@ -813,49 +826,44 @@ export class DocumentService {
       };
     }
 
-    const uiSchema = uiSchemaValidation.data;
-
-    const workflowData = (await this.workflowService.getWorkflowRuntimeDataById(
+    const workflowDataWithEndUsers = await this.workflowService.getWorkflowByIdWithRelations(
       workflowId,
-      {
-        select: {
-          context: true,
-          childWorkflowsRuntimeData: true,
-        },
-      },
       [projectId],
-    )) as WorkflowRuntimeData & {
-      childWorkflowsRuntimeData: WorkflowRuntimeData[];
-    };
+    );
+
+    const uiSchema = uiSchemaValidation.data;
 
     const parsedUIDocuments = this.parseDocumentsFromUISchema(
       uiSchema.elements as IUIDefinitionPage[],
-      workflowData.context,
+      workflowDataWithEndUsers.context,
     );
+
+    const directors =
+      workflowDataWithEndUsers.endUsers?.filter(
+        endUser => endUser.variant === EndUserVariant.director,
+      ) ?? [];
+    const ubos =
+      workflowDataWithEndUsers.endUsers?.filter(
+        endUser => endUser.variant === EndUserVariant.ubo,
+      ) ?? [];
 
     const entities = {
       business: {
-        entityType: 'business',
-        id: workflowData.context.entity.ballerineEntityId,
-        companyName: workflowData.context.entity.data.companyName,
+        id: workflowDataWithEndUsers.context.entity.ballerineEntityId,
+        variant: 'business',
+        companyName: workflowDataWithEndUsers.context.entity.data.companyName,
       },
-      directors: (
-        (workflowData.context.entity.data.additionalInfo.directors ?? []) as Array<{
-          ballerineEntityId: string;
-          firstName: string;
-          lastName: string;
-        }>
-      ).map(director => ({
-        entityType: 'director',
-        id: director.ballerineEntityId,
+      directors: directors.map(director => ({
+        id: director.id,
+        variant: director.variant!,
         firstName: director.firstName,
         lastName: director.lastName,
       })),
-      ubos: workflowData.childWorkflowsRuntimeData.map(childWorkflow => ({
-        entityType: 'ubo',
-        id: childWorkflow.endUserId ?? '',
-        firstName: childWorkflow.context.entity.data.firstName,
-        lastName: childWorkflow.context.entity.data.lastName,
+      ubos: ubos.map(ubo => ({
+        id: ubo.id,
+        variant: ubo.variant!,
+        firstName: ubo.firstName,
+        lastName: ubo.lastName,
       })),
     } as const satisfies {
       business: z.infer<typeof EntitySchema>;
@@ -938,7 +946,7 @@ export class DocumentService {
         return generateDocumentTrackerItem(matchingDocument, expectedDoc, {
           id: entities.business.id,
           companyName: entities.business.companyName,
-          entityType: 'business',
+          variant: 'business',
         });
       }),
       individuals: {
@@ -958,7 +966,7 @@ export class DocumentService {
             id: ubo.id,
             firstName: ubo.firstName,
             lastName: ubo.lastName,
-            entityType: 'ubo',
+            variant: EndUserVariant.ubo,
           });
         }),
         directors: parsedUIDocuments.individuals.directors.map(parsedDocument => {
@@ -979,7 +987,7 @@ export class DocumentService {
             id: director.id,
             firstName: director.firstName,
             lastName: director.lastName,
-            entityType: 'director',
+            variant: EndUserVariant.director,
           });
         }),
       },

@@ -18,6 +18,7 @@ import {
   Document,
   DocumentDecision,
   DocumentStatus,
+  EndUserVariant,
   UiDefinition,
   WorkflowRuntimeData,
 } from '@prisma/client';
@@ -36,6 +37,7 @@ import {
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
 @Injectable()
 export class CollectionFlowStateService {
@@ -49,51 +51,41 @@ export class CollectionFlowStateService {
     protected readonly prismaService: PrismaService,
   ) {}
 
-  async getCollectionFlowState(
-    workflowId: string,
-    projectIds: TProjectIds,
-    transaction?: PrismaTransactionClient,
-  ) {
-    const workflowRuntimeData = (await this.workflowService.getWorkflowRuntimeDataById(
-      workflowId,
-      {
-        select: {
-          workflowDefinitionId: true,
-          context: true,
-          childWorkflowsRuntimeData: true,
-        },
-      },
-      projectIds,
-      transaction,
-    )) as WorkflowRuntimeData & {
-      childWorkflowsRuntimeData: WorkflowRuntimeData[];
-    };
+  async getCollectionFlowState(workflowId: string, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
 
-    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-      workflowRuntimeData.workflowDefinitionId,
-      'collection_flow',
+    const workflowWithRelations = await this.workflowService.getWorkflowByIdWithRelations(
+      workflowId,
       projectIds,
     );
 
-    const entities = this.getEntityIdsFromWorkflow(workflowRuntimeData);
-
-    const documents = (await this.documentService.getByEntityIdsAndWorkflowId(
-      entities.map(entity => entity.entityId),
-      workflowId,
-      projectIds!,
-    )) as Document[];
-
-    const collectionFlowState = getCollectionFlowState(workflowRuntimeData.context);
+    const collectionFlowState = getCollectionFlowState(workflowWithRelations.context);
 
     if (!collectionFlowState) {
       throw new CollectionFlowMissingException();
     }
 
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowWithRelations.workflowDefinitionId,
+      'collection_flow',
+      projectIds,
+    );
+
+    const entities = workflowWithRelations.endUsers || [];
+
+    const documents = await this.documentService.getLatestDocumentsWithFilesByWorkflowId(
+      workflowId,
+      projectIds,
+    );
+
     const computedCollectionFlowState = await this.computeCollectionFlowState(
       uiDefinition,
-      workflowRuntimeData.context,
+      workflowWithRelations.context,
       documents,
-      entities,
+      entities.map(entity => ({
+        entityId: entity.id,
+        variant: entity.variant || 'business',
+      })),
     );
 
     const isCollectionFlowStateEqual = isEqual(collectionFlowState, computedCollectionFlowState);
@@ -104,14 +96,14 @@ export class CollectionFlowStateService {
         workflowId,
         {
           context: {
-            ...workflowRuntimeData.context,
+            ...workflowWithRelations.context,
             collectionFlow: {
-              ...workflowRuntimeData.context.collectionFlow,
+              ...workflowWithRelations.context.collectionFlow,
               state: computedCollectionFlowState,
             },
           },
         },
-        projectIds![0]!,
+        projectIds[0]!,
       );
     }
 
@@ -122,14 +114,14 @@ export class CollectionFlowStateService {
     uiDefinition: UiDefinition,
     _context: AnyRecord,
     documents: Document[],
-    entities: Array<{ entityId: string; entityType: TEntityType }>,
+    entities: Array<{ entityId: string; variant: EndUserVariant | 'business' }>,
   ) {
     const context = structuredClone(_context);
     let documentsWithEntityTypes = documents.map(document => ({
       ...document,
-      entityType:
-        entities.find(entity => entity.entityId === document.endUserId)?.entityType ||
-        entities.find(entity => entity.entityId === document.businessId)?.entityType,
+      entityType: document.businessId
+        ? EntityType.business
+        : entities.find(entity => entity.entityId === document.endUserId)?.variant,
     })) as Array<Document & { entityType: TEntityType }>;
 
     if (!getCollectionFlowState(context)) {
@@ -346,6 +338,7 @@ export class CollectionFlowStateService {
           },
         },
         projectIds,
+        transaction,
       );
 
       const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
@@ -385,7 +378,7 @@ export class CollectionFlowStateService {
         transaction,
       );
 
-      const resolvedState = await this.getCollectionFlowState(workflowId, projectIds, transaction);
+      const resolvedState = await this.getCollectionFlowState(workflowId, projectIds);
 
       return resolvedState;
     });
