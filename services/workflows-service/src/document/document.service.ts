@@ -45,6 +45,7 @@ import {
 import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
 import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
 @Injectable()
 export class DocumentService {
@@ -314,7 +315,9 @@ export class DocumentService {
   }
 
   async getLatestDocumentsWithFilesByWorkflowId(workflowId: string, projectIds: TProjectIds) {
-    const documents = await this.repository.findManyWithFiles(projectIds!, {
+    assertIsValidProjectIds(projectIds);
+
+    const documents = await this.repository.findManyWithFiles(projectIds, {
       where: {
         workflowRuntimeDataId: workflowId,
       },
