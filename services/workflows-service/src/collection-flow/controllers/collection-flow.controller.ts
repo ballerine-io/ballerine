@@ -181,7 +181,7 @@ export class CollectionFlowController {
         tokenScope.projectId,
       );
 
-      return await this.workflowService.event(
+      return this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
           name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,

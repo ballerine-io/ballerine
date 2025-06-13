@@ -179,6 +179,8 @@ export class WorkflowRuntimeDataRepository {
                 e."endUserType",
                 'approvalState',
                 e."approvalState",
+                'variant',
+                e."variant",
                 'stateReason',
                 'variant',
                 e."variant",

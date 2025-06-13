@@ -25,16 +25,16 @@ export const DocumentTrackerItemSchema = z.object({
       issuingVersion: z.string(),
       version: z.string(),
     }),
-    entity: z.discriminatedUnion('entityType', [
+    entity: z.discriminatedUnion('variant', [
       ObjectWithIdSchema.extend({
-        entityType: z.literal(EntityType.BUSINESS),
+        variant: z.literal(EntityType.BUSINESS),
         companyName: z.string(),
       }),
       EndUserSchema.extend({
-        entityType: z.literal(EntityType.UBO),
+        variant: z.literal(EntityType.UBO),
       }),
       EndUserSchema.extend({
-        entityType: z.literal(EntityType.DIRECTOR),
+        variant: z.literal(EntityType.DIRECTOR),
       }),
     ]),
   }),
