@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.7.164",
+  "version": "0.7.167",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,7 +27,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ballerine/common": "^0.9.113",
+    "@ballerine/common": "^0.9.117",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@lukemorales/query-key-factory": "^1.0.3",
