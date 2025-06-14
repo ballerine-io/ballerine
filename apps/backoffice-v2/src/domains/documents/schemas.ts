@@ -7,7 +7,7 @@ export const EntityType = {
   DIRECTOR: 'director',
 } as const;
 
-const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR, EntityType.BUSINESS]);
+const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR]);
 
 export const EndUserSchema = ObjectWithIdSchema.extend({
   firstName: z.string(),
