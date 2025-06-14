@@ -1,13 +1,6 @@
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
-
-export const EntityType = {
-  BUSINESS: 'business',
-  UBO: 'ubo',
-  DIRECTOR: 'director',
-} as const;
-
-const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR]);
+import { EndUserVariantSchema, EntityType } from '../individuals/fetchers';
 
 export const EndUserSchema = ObjectWithIdSchema.extend({
   firstName: z.string(),

@@ -8,6 +8,14 @@ import { HitSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 
 import { apiClient } from '@/common/api-client/api-client';
 
+export const EntityType = {
+  BUSINESS: 'business',
+  UBO: 'ubo',
+  DIRECTOR: 'director',
+} as const;
+
+export const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR]);
+
 export const EndUserSchema = z.object({
   id: z.string(),
   firstName: z.string(),
