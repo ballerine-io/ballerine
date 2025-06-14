@@ -117,5 +117,5 @@ export const useEntityInfoBlock = ({
           .buildFlat(),
       })
       .build();
-  }, [entity, workflow]);
+  }, [entity, workflow, onEdit, isEditDisabled]);
 };
