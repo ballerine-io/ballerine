@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -54,6 +54,7 @@ import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
 import { AssessmentsModule } from './assessments/assessments.module';
 import { KycModule } from './kyc/kyc.module';
 import { QueueModule } from '@/common/queue/queue.module';
+import { MetricsAuthMiddleware } from '@/common/middlewares/metrics-auth.middleware';
 
 @Module({
   controllers: [SwaggerController],
@@ -136,6 +137,9 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(RequestIdMiddleware, UserSessionAuditMiddleware, AuthKeyMiddleware, AdminKeyMiddleware)
+      .exclude({ path: '/metrics', method: RequestMethod.ALL })
       .forRoutes('*');
+
+    consumer.apply(MetricsAuthMiddleware).forRoutes('/metrics');
   }
 }

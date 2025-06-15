@@ -62,14 +62,14 @@ export class QueueService implements OnModuleDestroy {
         host: env.REDIS_HOST || 'localhost',
         port: env.REDIS_PORT || 6379,
         password: env.REDIS_PASSWORD,
-        maxRetriesPerRequest: null,
+        maxRetriesPerRequest: 3,
       };
 
       this.redisClient = new IORedis({
         host: redisConfig.host,
         port: redisConfig.port,
         password: redisConfig.password,
-        maxRetriesPerRequest: null,
+        maxRetriesPerRequest: redisConfig.maxRetriesPerRequest,
       });
 
       this.redisClient.on('error', error => {

@@ -12,7 +12,11 @@ import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
 import type { BullBoardInjectedInstance } from '@/common/queue/types';
 import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
 import { env } from '@/env';
-import { type OutgoingWebhookJobData, type OutgoingWebhookPayloads } from './types/webhook';
+import {
+  WebhookError,
+  type OutgoingWebhookJobData,
+  type OutgoingWebhookPayloads,
+} from './types/webhook';
 
 const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) => {
   Sentry.captureException(
@@ -93,7 +97,12 @@ export class WebhooksService implements OnModuleInit {
           this.handleWebhookJobError(job, error);
 
           if (isAxiosError(error)) {
-            throw error.response?.data ?? error;
+            const webhookError = new WebhookError('Webhook request failed');
+            webhookError.cause = error;
+            webhookError.statusCode = error.response?.status;
+            webhookError.responseData = error.response?.data;
+            webhookError.headers = error.response?.headers;
+            throw webhookError;
           }
           throw error;
         }

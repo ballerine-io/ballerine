@@ -38,6 +38,6 @@ export class WebhooksModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(BullBoardAuthMiddleware, this.bullBoard.serverAdapter.getRouter())
-      .forRoutes('/queues');
+      .forRoutes('/api/queues');
   }
 }

@@ -179,6 +179,14 @@ export class MetricsController {
     return await this.metricsService.getHomeMetrics(currentProjectId);
   }
 
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns the status of Prometheus metrics collection. Note: This endpoint is under development.',
+    schema: Type.Object({
+      status: Type.String(),
+    }),
+  })
   @Get('/prometheus')
   async getPrometheusMetrics() {
     return { status: 'Metrics are being collected by OpenTelemetry' };

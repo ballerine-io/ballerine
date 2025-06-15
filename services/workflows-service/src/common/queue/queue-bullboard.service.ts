@@ -5,8 +5,6 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class QueueBullboardService {
-  private boardInstances: Map<string, any> = new Map();
-
   constructor(private readonly logger: AppLoggerService) {}
 
   registerQueue(bullBoardInstance: any, queue: Queue) {

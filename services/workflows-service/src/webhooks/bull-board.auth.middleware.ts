@@ -9,7 +9,7 @@ export class BullBoardAuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (
       this.config.get('NODE_ENV') === 'production' &&
-      req.session?.passport.user.type !== 'admin'
+      req.session?.passport?.user?.type !== 'admin'
     ) {
       return res.status(401).json({ message: 'Unauthorized' });
     }

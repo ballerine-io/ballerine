@@ -37,3 +37,16 @@ export type OutgoingWebhookJobData = {
   timeout?: number;
   secret?: string;
 };
+
+export class WebhookError extends Error {
+  statusCode?: number;
+  responseData?: any;
+  headers?: any;
+
+  constructor(message: string, statusCode?: number, responseData?: any, headers?: any) {
+    super(message);
+    this.statusCode = statusCode;
+    this.responseData = responseData;
+    this.headers = headers;
+  }
+}

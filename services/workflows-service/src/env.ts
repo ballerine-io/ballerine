@@ -22,8 +22,8 @@ const booleanSchema = z
   .transform(val => val === 'true' || val === true);
 
 const optionalBooleanSchema = z
-  .union([z.literal('true'), z.literal('false')])
-  .transform(val => val === 'true')
+  .union([z.literal('true'), z.literal('false'), z.boolean()])
+  .transform(val => val === 'true' || val === true)
   .optional();
 
 export const serverEnvSchema = {
@@ -64,6 +64,7 @@ export const serverEnvSchema = {
   SENTRY_DSN: z.string().nullable().optional(),
   RELEASE: z.string().nullable().optional(),
   ADMIN_API_KEY: z.string().optional(),
+  METRICS_TOKEN: z.string().optional(),
   MAIL_ADAPTER: z
     .enum(['sendgrid', 'log'])
     .default('sendgrid')
@@ -121,7 +122,7 @@ export const serverEnvSchema = {
 
   REDIS_HOST: z.string().optional(),
   REDIS_PORT: z.coerce.number().optional(),
-  REDIS_PASSWORD: z.string().optional().optional(),
+  REDIS_PASSWORD: z.string().optional(),
   IS_QUEUE_WORKER: optionalBooleanSchema.default('false'),
   QUEUE_SYSTEM_ENABLED: optionalBooleanSchema.default('false'),
 
