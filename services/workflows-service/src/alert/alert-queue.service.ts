@@ -7,6 +7,7 @@ import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
 import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
 import type { BullBoardInjectedInstance } from '@/common/queue/types';
+import { env } from '@/env';
 
 export interface AlertCheckJobData extends Record<string, unknown> {
   timestamp: number;
@@ -28,6 +29,9 @@ export class AlertQueueService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    if (!env.QUEUE_SYSTEM_ENABLED) {
+      return;
+    }
     await this.setupAlertQueue();
   }
 

@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { ClsMiddleware } from 'nestjs-cls';
 import { WorkerAppModule } from './app.worker.module';
+import { ConfigService } from '@nestjs/config';
 
 const workerMain = async () => {
   const app = await NestFactory.create(WorkerAppModule, {
@@ -30,8 +31,12 @@ const workerMain = async () => {
 
   process.once('SIGTERM', () => closeApp('SIGTERM'));
   process.once('SIGINT', () => closeApp('SIGINT'));
+  const configService = app.get(ConfigService);
 
-  await app.init();
+  const port = configService.getOrThrow<string>('PORT');
+  void app.listen(+port);
+
+  logger.log(`Listening on port ${port}`);
 
   logger.log('Worker started');
 

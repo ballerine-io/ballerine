@@ -51,7 +51,9 @@ export class WebhooksService implements OnModuleInit {
       this.logger.log('Queue system is disabled. Webhooks will be sent directly.');
       return;
     }
-
+    this.logger.log(
+      `Setting up queue system. env.QUEUE_SYSTEM_ENABLED: ${env.QUEUE_SYSTEM_ENABLED}`,
+    );
     await this.setupQueueSystem();
   }
 
@@ -74,9 +76,8 @@ export class WebhooksService implements OnModuleInit {
 
       if (this.queueService.isWorkerEnabled()) {
         this.queueBullboardService.registerQueue(this.bullBoard, queue);
+        this.registerWorker();
       }
-
-      this.registerWorker();
 
       this.queueInitialized = true;
       this.logger.log('Webhook queue system setup complete');

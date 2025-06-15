@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 
@@ -13,6 +13,7 @@ import { WebhooksModule } from '@/webhooks/webhooks.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AlertModule } from './alert/alert.module';
+import { MetricsAuthMiddleware } from './common/middlewares/metrics-auth.middleware';
 
 @Module({
   imports: [
@@ -36,4 +37,8 @@ import { AlertModule } from './alert/alert.module';
     AlertModule,
   ],
 })
-export class WorkerAppModule {}
+export class WorkerAppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(MetricsAuthMiddleware).forRoutes('*');
+  }
+}

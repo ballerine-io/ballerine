@@ -4,7 +4,6 @@ globs: ["services/workflows-service/**/*.{ts}"]
 alwaysApply: false
 ---
 ### Code Organization & Structure
-### Code Organization & Structure
 
 1. All service-related code must be organized in feature modules (e.g., workflow, alert, transaction)
 2. Each feature module should contain separate files for:
@@ -100,69 +99,4 @@ alwaysApply: false
 2. Use proper indexing for database queries
 3. Implement caching where appropriate
 4. Handle large datasets efficiently
-
-# Workflow Service Rules
-
-## Service Structure
-- All source code lives in `src/` directory
-- Common utilities are in `src/common/`
-- Domain-specific modules are in their respective directories like `src/workflow/`, `src/document/`, etc.
-- The service follows a NestJS architecture with modules, controllers, and services
-
-## Development Workflow
-- Always run commands in the `services/workflows-service` directory
-- Use `pnpm dev` to start the development server
-- Check `package.json` for available commands
-- The service requires Redis and PostgreSQL to run
-
-## File Organization
-- Group files by feature in their respective modules
-- Place shared utilities in `src/common/`
-- Keep database models in `prisma/schema.prisma`
-- Place migrations in `prisma/migrations/`
-
-## Queue System
-- The service uses BullMQ for queue management
-- Queues are registered in `QueueService` 
-- Queue workers should be registered using `registerWorker`
-- Queue implementations should be properly tracked with metrics
-
-## Metrics & Monitoring
-- The service uses Prometheus for metrics collection
-- BullMQ metrics are available through `BullMQPrometheusService`
-- OpenTelemetry is used for distributed tracing
-- Metrics are exposed on the `/metrics` endpoint
-
-## Environment Variables
-- Environment variables are defined in `.env`
-- Variables are validated and typed in `src/env.ts`
-- Different environments (dev, prod, test) use different env files
-
-## Testing
-- Test files should be placed alongside the files they test
-- Unit tests have the `.spec.ts` extension
-- Integration tests have the `.intg.test.ts` extension
-- E2E tests have the `.e2e.test.ts` extension
-
-## Error Handling
-- Use NestJS exception filters for HTTP exceptions
-- Log errors with appropriate context
-- Return consistent error responses
-
-## Database Access
-- Use Prisma for database access
-- Define repositories for database entities
-- Keep business logic out of repositories
-- Follow the pattern in existing repositories
-
-## Scripts
-- Place utility scripts in `src/scripts/`
-- Make scripts executable and properly documented
-- CLI scripts should handle process signals properly
-
-## Common Mistakes
-- Don't run commands from the root of the monorepo
-- Don't install dependencies in the wrong directory
-- Don't modify shared code without understanding dependencies
-- Always check for linting and type errors
 
