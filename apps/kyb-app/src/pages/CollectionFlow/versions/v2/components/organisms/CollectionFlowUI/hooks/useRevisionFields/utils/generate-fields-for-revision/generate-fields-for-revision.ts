@@ -27,7 +27,6 @@ export const generateFieldsForRevision = (
     const fieldDefinitions = getFieldDefinitionsFromSchema(page.elements) as Array<
       IFormElement<TBaseFields, any>
     >;
-
     if (isPageInRevision || isPageInEdit) {
       const granularRevisionFields = generateGranularRevisionFields({
         context,
