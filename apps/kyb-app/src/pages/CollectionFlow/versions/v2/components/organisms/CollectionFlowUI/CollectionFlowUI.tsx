@@ -194,7 +194,9 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
           });
         }
 
-        setCollectionFlowStatus(values, CollectionFlowStatusesEnum.inprogress);
+        if (values.collectionFlow?.state?.status === CollectionFlowStatusesEnum.pending) {
+          setCollectionFlowStatus(values, CollectionFlowStatusesEnum.inprogress);
+        }
 
         stateApi.setContext(values);
 
