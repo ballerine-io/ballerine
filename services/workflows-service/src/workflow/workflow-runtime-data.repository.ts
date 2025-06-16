@@ -182,6 +182,8 @@ export class WorkflowRuntimeDataRepository {
                 'variant',
                 e."variant",
                 'stateReason',
+                'variant',
+                e."variant",
                 e."stateReason",
                 'firstName',
                 e."firstName",
