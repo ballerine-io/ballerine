@@ -19,6 +19,8 @@ describe('Fetch Company Information Plugin', () => {
   let mockedEntity: any;
   let mockedContext: CollectionFlowContext;
   let mockedTransformedData: any;
+  let mockedIncorrectCompanyInformationData: any;
+  let mockedIncorrectTransformedData: any;
 
   beforeEach(() => {
     mockedCompanyInformationData = {
@@ -26,7 +28,7 @@ describe('Fetch Company Information Plugin', () => {
       companyNumber: '12345678',
       vat: 'GB123456789',
       numberOfEmployees: 42,
-      companyType: 'Private Limited Company',
+      companyType: 'Limited',
       currentStatus: 'Active',
       jurisdictionCode: 'gb',
       incorporationDate: '2020-01-01',
@@ -35,7 +37,7 @@ describe('Fetch Company Information Plugin', () => {
     mockedTransformedData = {
       companyName: 'Test Company Ltd',
       taxIdentificationNumber: 'GB123456789',
-      businessType: 'Private Limited Company',
+      businessType: mockedCompanyInformationData.companyType,
       additionalInfo: {
         status: 'Active',
         incorporationDate: '2020-01-01',
@@ -51,6 +53,28 @@ describe('Fetch Company Information Plugin', () => {
           state: 'London',
         },
       },
+    };
+
+    mockedIncorrectTransformedData = {
+      name: 'Test Company Ltd',
+      companyNumber: '12345678',
+      vat: 'GB123456789',
+      numberOfEmployees: 42,
+      companyType: 'Whatever',
+      currentStatus: 'Active',
+      jurisdictionCode: 'gb',
+      incorporationDate: '2020-01-01',
+    };
+
+    mockedIncorrectCompanyInformationData = {
+      name: 'Test Company Ltd',
+      companyNumber: '12345678',
+      vat: 'GB123456789',
+      numberOfEmployees: 42,
+      companyType: mockedIncorrectTransformedData.companyType,
+      currentStatus: 'Active',
+      jurisdictionCode: 'gb',
+      incorporationDate: '2020-01-01',
     };
 
     mockedContext = {
@@ -112,6 +136,22 @@ describe('Fetch Company Information Plugin', () => {
 
         expect(result).toMatchObject(contextCopy);
       });
+    });
+  });
+
+  describe('when company type is not valid', () => {
+    beforeEach(() => {
+      (fetchCompanyInformation as jest.Mock).mockResolvedValue(
+        mockedIncorrectCompanyInformationData,
+      );
+    });
+
+    it('should not provide company type', async () => {
+      const result = (await fetchCompanyInformationPlugin(mockedContext, {} as any, {
+        output: 'some.other.place',
+      })) as AnyObject;
+
+      expect(result.some.other.place.businessType).toBeUndefined();
     });
   });
 });
