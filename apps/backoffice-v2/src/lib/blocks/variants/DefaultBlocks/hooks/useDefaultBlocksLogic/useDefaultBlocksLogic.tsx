@@ -344,12 +344,13 @@ export const useDefaultBlocksLogic = () => {
     const {
       percentageOfOwnership: percentageOfOwnershipAdditionalInfo,
       ownershipPercentage: ownershipPercentageAdditionalInfo,
+      role: roleAdditionalInfo,
       ...collapsibleDataAdditionalInfo
     } = additionalInfo ?? {};
 
     return {
       name: [firstName, lastName].filter(Boolean).join(' '),
-      role,
+      role: role ?? roleAdditionalInfo,
       percentageOfOwnership:
         percentageOfOwnership ??
         percentageOfOwnershipAdditionalInfo ??
