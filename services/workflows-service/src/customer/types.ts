@@ -22,18 +22,10 @@ export type TOngoingMerchantReportOptions = {
   proxyViaCountry: string;
   workflowVersion: MerchantReportVersion;
   reportType: 'ONGOING_MERCHANT_REPORT_T1';
-} & (
-  | {
-      scheduleType: 'specific';
-      specificDates: {
-        dayInMonth: number;
-      };
-    }
-  | {
-      scheduleType: 'interval';
-      intervalInDays: number;
-    }
-);
+  scheduleType: 'specific';
+  dayInMonth: number;
+  monthInterval: number;
+};
 
 type FeaturesOptions = TOngoingMerchantReportOptions;
 
@@ -49,8 +41,9 @@ export const CUSTOMER_FEATURES = {
     name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
     enabled: true,
     options: {
-      scheduleType: 'interval',
-      intervalInDays: 30,
+      scheduleType: 'specific',
+      dayInMonth: 1,
+      monthInterval: 1,
       runByDefault: true,
       workflowVersion: '2',
       proxyViaCountry: 'GB',
