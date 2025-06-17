@@ -19,6 +19,7 @@ import {
   AnyRecord,
   CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
+  DefaultContextSchema,
   TCollectionFlowState,
   TCollectionFlowStep,
 } from '@ballerine/common';
@@ -157,38 +158,53 @@ export class CollectionFlowController {
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
+      const { eventName, context } = body;
+
+      const collectionFlowState = (context.collectionFlow as AnyRecord)
+        .state as TCollectionFlowState;
+
+      if (collectionFlowState?.status === CollectionFlowStatusesEnum.edit) {
+        const pluginsOutput = this.collectionFlowService.removePluginsOutput({
+          context: context as DefaultContextSchema,
+          plugins: [
+            'businessInformation',
+            'companySanctions',
+            'merchantScreening',
+            'merchantMonitoring',
+            'riskEvaluation',
+          ],
+        });
+
+        context.pluginsOutput = pluginsOutput;
+      }
+
+      await this.workflowService.updateWorkflowRuntimeData(
+        tokenScope.workflowRuntimeDataId,
+        {
+          context,
+        },
+        tokenScope.projectId,
+      );
+
       await this.collectionFlowStateService.updateCollectionFlowState(
         tokenScope.workflowRuntimeDataId,
         {
-          ...((body.context.collectionFlow as AnyRecord).state as TCollectionFlowState),
-          steps: (
-            (body.context.collectionFlow as AnyRecord).state as TCollectionFlowState
-          ).steps.map((step: TCollectionFlowStep) => ({
-            ...step,
-            state: CollectionFlowStepStatesEnum.completed,
-          })),
+          ...((context.collectionFlow as AnyRecord).state as TCollectionFlowState),
+          steps: ((context.collectionFlow as AnyRecord).state as TCollectionFlowState).steps.map(
+            (step: TCollectionFlowStep) => ({
+              ...step,
+              state: CollectionFlowStepStatesEnum.completed,
+            }),
+          ),
           status: CollectionFlowStatusesEnum.completed,
         },
         [tokenScope.projectId],
       );
 
-      await this.workflowService.event(
-        {
-          id: tokenScope.workflowRuntimeDataId,
-          name: body.eventName,
-        },
-        [tokenScope.projectId],
-        tokenScope.projectId,
-      );
-
       return this.workflowService.event(
         {
           id: tokenScope.workflowRuntimeDataId,
-          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-          payload: {
-            newContext: body.context,
-            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
-          },
+          name: eventName,
         },
         [tokenScope.projectId],
         tokenScope.projectId,
