@@ -139,12 +139,17 @@ export const DocumentsToolbar: FunctionComponent<{
         )}
 
         {/* Download Document Button */}
-        <div className="flex flex-col items-center">
+        <div
+          className={ctw('flex flex-col items-center', {
+            'pointer-events-none opacity-50': !shouldDownload,
+          })}
+        >
           <a
             className={ctw(toolbarButtonClass)}
             download={image?.fileName}
             href={fileToDownloadBase64}
             aria-label="Download document"
+            aria-disabled={!shouldDownload}
           >
             <Download className="p-0.5" />
           </a>
