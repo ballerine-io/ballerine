@@ -8,6 +8,7 @@
     "bradlc.vscode-tailwindcss",
     "github.vscode-github-actions",
     "streetsidesoftware.code-spell-checker",
-    "orta.vscode-jest"
+    "orta.vscode-jest",
+    "alefragnani.bookmarks"
   ]
 }

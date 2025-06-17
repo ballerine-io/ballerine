@@ -13,5 +13,7 @@
     "**/data-migrations": false
   },
   "search.followSymlinks": true,
-  "search.useIgnoreFiles": false
+  "search.useIgnoreFiles": false,
+  "bookmarks.saveBookmarksInProject": true,
+  "bookmarks.saveBookmarksInProjectFilePath": ".vscode/bookmarks.json"
 }
