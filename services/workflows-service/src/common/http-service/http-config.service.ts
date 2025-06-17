@@ -23,7 +23,7 @@ export class HttpConfigService implements HttpModuleOptionsFactory {
   }
 }
 
-export const initHttpMoudle = () =>
+export const initHttpModule = () =>
   HttpModule.registerAsync({
     imports: [ConfigModule],
     // useClass: HttpConfigService,

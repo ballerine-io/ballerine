@@ -34,7 +34,6 @@ import { PasswordService } from '@/auth/password/password.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { NotionService } from '@/notion/notion.service';
 import { FileRepository } from '@/storage/storage.repository';
-import { WebhookHttpService } from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
@@ -69,10 +68,6 @@ import { KycModule } from '@/kyc/kyc.module';
     FileRepository,
     UserService,
     UserRepository,
-    {
-      provide: WebhookHttpService,
-      useExisting: HttpService,
-    },
     SalesforceService,
     SalesforceIntegrationRepository,
     RiskRuleService,
