@@ -347,11 +347,18 @@ export const useTabsToBlocksMap = ({
     }: NonNullable<
       TWorkflowById['context']['entity']['data']['additionalInfo']['directors']
     >[number]) => {
-      const { id: _id, additionalInfo, dateOfBirth, gender, ...directorRest } = director ?? {};
+      const {
+        id: _id,
+        additionalInfo,
+        dateOfBirth,
+        gender,
+        role,
+        ...directorRest
+      } = director ?? {};
       const {
         gender: genderAdditionalInfo,
         dateOfBirth: dateOfBirthAdditionalInfo,
-        role,
+        role: roleAdditionalInfo,
         isAuthorizedSignatory,
         percentageOfOwnership,
         ...additionalInfoRest
@@ -367,7 +374,7 @@ export const useTabsToBlocksMap = ({
           additionalInfo: additionalInfoRest,
           gender: gender ?? genderAdditionalInfo,
           dateOfBirth: dateOfBirth ?? dateOfBirthAdditionalInfo,
-          role,
+          role: role ?? roleAdditionalInfo,
           isAuthorizedSignatory,
           percentageOfOwnership,
         },
@@ -432,7 +439,7 @@ export const useTabsToBlocksMap = ({
     [workflow?.childWorkflows, childWorkflowToIndividualAdapter],
   );
 
-  const deDupedDirectors = useMemo(
+  const dedupedDirectors = useMemo(
     () =>
       workflow?.context?.entity?.data?.additionalInfo?.directors
         ?.filter(
@@ -460,6 +467,122 @@ export const useTabsToBlocksMap = ({
           });
         }) ?? [],
     [workflow, endUsers, directorToIndividualAdapter, getStatusFromCheckStatus],
+  );
+
+  const uboToIndividualAdapter = useCallback(
+    ({
+      kycSession,
+      aml,
+      status,
+      ...ubo
+    }: NonNullable<
+      TWorkflowById['context']['entity']['data']['additionalInfo']['ubos']
+    >[number]) => {
+      const { id: _id, additionalInfo, dateOfBirth, gender, role, ...uboRest } = ubo ?? {};
+      const {
+        gender: genderAdditionalInfo,
+        dateOfBirth: dateOfBirthAdditionalInfo,
+        role: roleAdditionalInfo,
+        isAuthorizedSignatory,
+        percentageOfOwnership,
+        ...additionalInfoRest
+      } = additionalInfo ?? {};
+
+      return {
+        status,
+        documents: ubo?.documents,
+        kycSession,
+        aml,
+        entityData: {
+          ...uboRest,
+          additionalInfo: additionalInfoRest,
+          gender: gender ?? genderAdditionalInfo,
+          dateOfBirth: dateOfBirth ?? dateOfBirthAdditionalInfo,
+          role: role ?? roleAdditionalInfo,
+          isAuthorizedSignatory,
+          percentageOfOwnership,
+        },
+        isActionsDisabled: true,
+        isLoadingReuploadNeeded: false,
+        isLoadingApprove: false,
+        onInitiateKyc: () => {
+          if (!workflow?.id) {
+            console.error('No workflow id found');
+            toast.error('Something went wrong. Please try again later.');
+
+            return;
+          }
+
+          return mutateInitiateIndividualVerificationAndSendEmail({
+            endUserId: ubo.id,
+            ongoingMonitoring: false,
+            withAml: true,
+            workflowRuntimeDataId: workflow?.id,
+            vendor: 'veriff',
+            language: workflow?.workflowDefinition?.config?.language ?? 'en',
+          });
+        },
+        onInitiateSanctionsScreening: () => {},
+        onApprove:
+          ({ ids }: { ids: string[] }) =>
+          () => {},
+        onReuploadNeeded:
+          ({ reason, ids }: { reason: string; ids: string[] }) =>
+          () => {},
+        onEdit: onEditCompanyOwnership,
+        reasons: [],
+        isReuploadNeededDisabled: true,
+        isApproveDisabled: true,
+        isInitiateKycDisabled: [
+          !workflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
+        isInitiateSanctionsScreeningDisabled: true,
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+        ].some(Boolean),
+      } satisfies Parameters<typeof createKycBlocks>[0][number];
+    },
+    [
+      mutateInitiateIndividualVerificationAndSendEmail,
+      onEditCompanyOwnership,
+      workflow?.workflowDefinition?.config?.language,
+      workflow?.id,
+      caseState.actionButtonsEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+    ],
+  );
+
+  const dedupedUbos = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.ubos
+        ?.filter(
+          ubo =>
+            !workflow?.childWorkflows?.some(
+              childWorkflow =>
+                childWorkflow.context?.entity?.data?.ballerineEntityId === ubo.ballerineEntityId,
+            ),
+        )
+        ?.map(ubo => {
+          const { amlHits, individualVerificationsChecks, ...uboEndUser } =
+            endUsers?.find(endUser => endUser.id === ubo.ballerineEntityId) ?? {};
+          const status = getStatusFromCheckStatus(individualVerificationsChecks?.status);
+
+          return uboToIndividualAdapter({
+            ...uboEndUser,
+            kycSession: individualVerificationsChecks?.data ?? {},
+            aml: {
+              vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
+              hits: amlHits,
+            },
+            status,
+            documents: [...(ubo?.documents ?? []), ...(workflow?.context?.kycDocuments ?? [])],
+          });
+        }) ?? [],
+    [workflow, endUsers, uboToIndividualAdapter, getStatusFromCheckStatus],
   );
 
   const personOfInterestToIndividualAdapter = useCallback(
@@ -565,8 +688,8 @@ export const useTabsToBlocksMap = ({
   );
 
   const individuals = useMemo(
-    () => [...childWorkflows, ...deDupedDirectors, ...peopleOfInterest],
-    [childWorkflows, deDupedDirectors, peopleOfInterest],
+    () => [...childWorkflows, ...dedupedDirectors, ...dedupedUbos, ...peopleOfInterest],
+    [childWorkflows, dedupedDirectors, dedupedUbos, peopleOfInterest],
   );
 
   const kycBlocks = useKYCBlocks(individuals);
