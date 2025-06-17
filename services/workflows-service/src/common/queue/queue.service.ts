@@ -243,8 +243,6 @@ export class QueueService implements OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    this.logger.log('Closing all queues and workers');
-
     const workerClosePromises = Array.from(this.workers.values()).map(worker =>
       worker.close().catch(err => this.logger.error(`Error closing worker`, { err })),
     );
@@ -261,7 +259,5 @@ export class QueueService implements OnModuleDestroy {
         .catch(err => this.logger.error(`Error closing Redis connection`, { err }));
       this.redisClient = null;
     }
-
-    this.logger.log('All queues and workers closed');
   }
 }
