@@ -30,6 +30,7 @@ import { useReviseDocumentByIdMutation } from '@/domains/documents/hooks/mutatio
 import { useRemoveDocumentDecisionByIdMutation } from '@/domains/documents/hooks/mutations/useRemoveDocumentDecisionByIdMutation/useRemoveDocumentDecisionByIdMutation';
 import { useApproveDocumentByIdMutation } from '@/domains/documents/hooks/mutations/useApproveDocumentByIdMutation/useApproveDocumentByIdMutation';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
+import { EDIT_TEMPLATES } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -104,7 +105,9 @@ export const useKybExampleBlocksLogic = () => {
   );
 
   // Blocks
-  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { onEditCollectionFlow: onEditCompanyDetails } = useEditCollectionFlow(
+    EDIT_TEMPLATES.COMPANY_DETAILS,
+  );
 
   const businessInformation = useEntityInfoBlock({
     entity: workflow?.context?.entity,
@@ -114,7 +117,7 @@ export const useKybExampleBlocksLogic = () => {
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
-    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
+    onEdit: onEditCompanyDetails,
   });
 
   const isWorkflowLevelResolution =

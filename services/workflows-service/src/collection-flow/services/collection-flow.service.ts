@@ -227,4 +227,14 @@ export class CollectionFlowService {
       { shouldDownloadFromSource: false },
     );
   }
+
+  removePluginsOutput({ context, plugins }: { context: DefaultContextSchema; plugins: string[] }) {
+    const pluginsOutput = structuredClone(context.pluginsOutput || {});
+
+    plugins.forEach(pluginName => {
+      delete pluginsOutput[pluginName as keyof typeof pluginsOutput];
+    });
+
+    return pluginsOutput;
+  }
 }
