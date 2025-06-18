@@ -112,8 +112,9 @@ async function createCustomer(
           options: {
             reportType: 'ONGOING_MERCHANT_REPORT_T1',
             runByDefault: true,
-            scheduleType: 'interval',
-            intervalInDays: 30,
+            scheduleType: 'specific',
+            dayInMonth: 1,
+            monthInterval: 1,
             proxyViaCountry: 'GB',
             workflowVersion: '2',
           },
