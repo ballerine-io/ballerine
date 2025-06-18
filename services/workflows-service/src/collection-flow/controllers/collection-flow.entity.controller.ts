@@ -2,8 +2,9 @@ import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.de
 import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowEntityService } from '../services/collection-flow-entity.service';
-import { CreateEntityInputDto, EntityCreateDto } from '../dto/create-entity-input.dto';
+import { CreateEntityInputDto } from '../dto/create-entity-input.dto';
 import { UseWorkflowAuthGuard } from '@/common/guards/workflow-guard/workflow-auth.decorator';
+import { UpdateEntityInputDto } from '../dto/update-entity-input.dto';
 
 @UseWorkflowAuthGuard()
 @ApiExcludeController()
@@ -12,20 +13,23 @@ export class CollectionFlowEntityController {
   constructor(private readonly collectionFlowEntityService: CollectionFlowEntityService) {}
 
   @Post()
-  async createEntity(@TokenScope() tokenScope: ITokenScope, @Body() body: CreateEntityInputDto) {
-    const { entityType, entity } = body;
-
+  async createEntity(
+    @TokenScope() tokenScope: ITokenScope,
+    @Body() entityCreationPayload: CreateEntityInputDto,
+  ) {
     return this.collectionFlowEntityService.createEntity(
       tokenScope.workflowRuntimeDataId,
-      entityType,
-      entity,
+      entityCreationPayload,
       tokenScope.projectId,
     );
   }
 
   @Put(':entityId')
-  async updateEntity(@Param('entityId') entityId: string, @Body() body: EntityCreateDto) {
-    return this.collectionFlowEntityService.updateEntity(entityId, body);
+  async updateEntity(
+    @Param('entityId') entityId: string,
+    @Body() updateEntityPayload: UpdateEntityInputDto,
+  ) {
+    return this.collectionFlowEntityService.updateEntity(entityId, updateEntityPayload);
   }
 
   @Delete(':entityId')

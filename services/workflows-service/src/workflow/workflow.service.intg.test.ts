@@ -43,6 +43,7 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { KycService } from '@/kyc/kyc.service';
+import { Customer } from '@prisma/client';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -51,6 +52,7 @@ describe('WorkflowService', () => {
   let workflowRuntimeService: WorkflowService;
   let workflowDefinition: WorkflowDefinition;
   let business: Business;
+  let customer: Customer;
 
   beforeAll(async () => {
     await cleanupDatabase();
@@ -121,7 +123,7 @@ describe('WorkflowService', () => {
       PrismaModule,
     ])) as unknown as PrismaService;
 
-    const customer = await createCustomer(
+    customer = await createCustomer(
       prismaService,
       faker.datatype.uuid(),
       'secret',
@@ -175,7 +177,7 @@ describe('WorkflowService', () => {
   describe('event', () => {
     describe(BUILT_IN_EVENT.DEEP_MERGE_CONTEXT, () => {
       it('should merge the existing and new context data when event is called', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -223,7 +225,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should not change existing context when the new context is empty', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -260,7 +262,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should add new key from the new context to the existing context', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -298,7 +300,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should update the value of an existing key when the new context has a different value for that key', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -335,7 +337,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should merge nested objects in the context', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -376,7 +378,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should update values in nested objects in the context', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -417,7 +419,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should add a new element to an array in the context', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -454,7 +456,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should replace an element from an array in the context when the new context have it on the same index', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -495,7 +497,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should be able to handle large context objects', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -532,7 +534,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should concatenate array in a nested object when array_merge_option is "concat"', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -574,7 +576,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should concatenate array of objects in a nested object when array_merge_option is "concat"', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -621,7 +623,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should concatenate deeply nested arrays when array_merge_option is "concat"', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -663,7 +665,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should correctly merge context data with high nesting level', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -703,7 +705,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should correctly merge context data with mixed data types', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -746,7 +748,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should correctly merge deeply nested arrays with the by_id strategy', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -788,7 +790,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should correctly merge deeply nested arrays with the by_index strategy', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -824,7 +826,7 @@ describe('WorkflowService', () => {
         expect(updatedContext).toEqual(expectedContext);
       });
       it('should correctly merge deeply nested arrays with the concat strategy', async () => {
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -875,7 +877,7 @@ describe('WorkflowService', () => {
           documents: [],
         };
 
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -945,7 +947,7 @@ describe('WorkflowService', () => {
             },
           ],
         };
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -1020,7 +1022,7 @@ describe('WorkflowService', () => {
             },
           ],
         };
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,
@@ -1122,7 +1124,7 @@ describe('WorkflowService', () => {
             },
           ],
         };
-        const createRes = await workflowRuntimeRepository.create({
+        const createRes = await workflowRuntimeRepository.create(customer, {
           data: {
             workflowDefinitionId: workflowDefinition.id,
             workflowDefinitionVersion: 1,

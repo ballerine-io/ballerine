@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Project, WorkflowRuntimeDataToken } from '@prisma/client';
+import { Customer, Project, WorkflowRuntimeDataToken } from '@prisma/client';
 import { noop } from 'lodash';
 import request from 'supertest';
 import { ClsModule } from 'nestjs-cls';
@@ -50,8 +50,6 @@ import { CollectionFlowStateService } from '../services/collection-flow-state.se
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { KycService } from '@/kyc/kyc.service';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -65,6 +63,7 @@ describe('CollectionFlowSignupController', () => {
 
   let project: Project;
   let workflowRuntimeDataToken: WorkflowRuntimeDataToken;
+  let customer: Customer;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -83,7 +82,7 @@ describe('CollectionFlowSignupController', () => {
         { provide: UserService, useValue: noop },
         { provide: EventEmitter2, useValue: noop },
         { provide: AppLoggerService, useValue: { log: noop } },
-        { provide: AnalyticsService, useValue: { log: noop } },
+        { provide: AnalyticsService, useValue: { trackSafe: noop } },
         { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,
@@ -134,7 +133,7 @@ describe('CollectionFlowSignupController', () => {
   beforeEach(async () => {
     await cleanupDatabase();
 
-    const customer = await customerRepository.create({
+    customer = await customerRepository.create({
       data: {
         name: 'signup-test-customer',
         displayName: 'Signup Test Customer',
@@ -163,7 +162,7 @@ describe('CollectionFlowSignupController', () => {
       },
     });
 
-    const { id: workflowRuntimeDataId } = await workflowRuntimeDataRepository.create({
+    const { id: workflowRuntimeDataId } = await workflowRuntimeDataRepository.create(customer, {
       data: {
         workflowDefinitionId: workflowDefinition.id,
         projectId: project.id,

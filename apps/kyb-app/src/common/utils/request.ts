@@ -13,7 +13,7 @@ export const instance = ky.create({
     methods: ['get'],
   },
   credentials: 'include',
-  timeout: 30_000,
+  timeout: 75_000,
   hooks: {
     beforeRequest: [
       request => {

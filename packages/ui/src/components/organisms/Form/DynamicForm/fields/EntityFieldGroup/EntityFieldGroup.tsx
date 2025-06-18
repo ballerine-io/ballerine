@@ -116,12 +116,12 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
           ),
         );
         const createdEntitiesIds: string[] = await Promise.all(
-          entitiesToProcess.map(entity =>
-            entity.ballerineEntityId
-              ? updateEntity(entity.entity, {
-                  params: { entityId: entity.ballerineEntityId },
+          entitiesToProcess.map(entityToProcess =>
+            entityToProcess.ballerineEntityId
+              ? updateEntity(entityToProcess.entity, {
+                  params: { entityId: entityToProcess.ballerineEntityId },
                 })
-              : createEntity(entity),
+              : createEntity(entityToProcess.entity),
           ),
         );
 
