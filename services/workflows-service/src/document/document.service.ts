@@ -42,8 +42,10 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
-import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
+import {
+  defaultPrismaTransactionOptions,
+  beginTransactionIfNotExistCurry,
+} from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
@@ -950,25 +952,27 @@ export class DocumentService {
         });
       }),
       individuals: {
-        ubos: parsedUIDocuments.individuals.ubos.map(parsedDocument => {
-          const { ballerineEntityId } = parsedDocument;
-          const ubo = entitiesWithDocuments.ubos.find(ubo => ubo.id === ballerineEntityId);
+        ubos: parsedUIDocuments.individuals.ubos
+          .map(parsedDocument => {
+            const { ballerineEntityId } = parsedDocument;
+            const ubo = entitiesWithDocuments.ubos.find(ubo => ubo.id === ballerineEntityId);
 
-          if (!ubo) {
-            throw new Error('Ubo not found');
-          }
+            if (!ubo) {
+              return;
+            }
 
-          const matchingDocument = ubo.documents.find(doc =>
-            isMatchingDocument(doc, parsedDocument),
-          );
+            const matchingDocument = ubo.documents.find(doc =>
+              isMatchingDocument(doc, parsedDocument),
+            );
 
-          return generateDocumentTrackerItem(matchingDocument, parsedDocument, {
-            id: ubo.id,
-            firstName: ubo.firstName,
-            lastName: ubo.lastName,
-            variant: EndUserVariant.ubo,
-          });
-        }),
+            return generateDocumentTrackerItem(matchingDocument, parsedDocument, {
+              id: ubo.id,
+              firstName: ubo.firstName,
+              lastName: ubo.lastName,
+              variant: EndUserVariant.ubo,
+            });
+          })
+          .filter(Boolean),
         directors: parsedUIDocuments.individuals.directors.map(parsedDocument => {
           const { ballerineEntityId } = parsedDocument;
           const director = entitiesWithDocuments.directors.find(
