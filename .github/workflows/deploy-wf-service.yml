@@ -256,7 +256,7 @@ jobs:
   send-to-slack:
     runs-on: ubuntu-latest
     needs: [update-helm-chart,build-and-push-ee-image]
-    if: ${{ needs.update-helm-chart.result == 'success' }}
+    if: ${{ needs.update-helm-chart.result == 'failure' || needs.build-and-push-ee-image.result == 'failure' }}
     environment: ${{ inputs.environment }}
     permissions:
       contents: read
@@ -268,7 +268,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-          slack-message: "Test Wf-service Deployment in ${{ inputs.environment }} with tag ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }} build result: ${{ job.status }}. successfully updated the wf-service helm values for ${{ inputs.environment }}."
+          slack-message: "❌ Wf-service Deployment FAILED in ${{ inputs.environment }} with tag ${{ env.SHORT_HASH }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ inputs.environment }}. Failed jobs: ${{ needs.update-helm-chart.result == 'failure' && 'update-helm-chart' || '' }} ${{ needs.build-and-push-ee-image.result == 'failure' && 'build-and-push-ee-image' || '' }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
 
