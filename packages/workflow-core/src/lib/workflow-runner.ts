@@ -90,6 +90,7 @@ export class WorkflowRunner {
   #__secretsManager: SecretsManager | undefined;
   #__enableLogging: boolean;
   #__auditLogs: WorkflowLogEntry[] = [];
+  #__projectId: string | undefined;
 
   public get workflow() {
     return this.#__workflow;
@@ -113,6 +114,7 @@ export class WorkflowRunner {
       invokeWorkflowTokenAction,
       secretsManager,
       enableLogging = true,
+      projectId,
     }: WorkflowRunnerArgs,
     debugMode = false,
   ) {
@@ -136,6 +138,9 @@ export class WorkflowRunner {
       config,
       invokeChildWorkflowAction,
     );
+
+    // id of the project that the workflow is running in
+    this.#__projectId = projectId;
 
     this.__extensions.apiPlugins = this.initiateApiPlugins(this.__extensions.apiPlugins ?? []);
 
@@ -215,6 +220,7 @@ export class WorkflowRunner {
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
         secretsManager: this.#__secretsManager,
+        projectId: this.#__projectId,
       });
     });
   }
