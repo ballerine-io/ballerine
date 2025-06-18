@@ -21,7 +21,7 @@ import {
   beginTransactionIfNotExistCurry,
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { assertIsValidProjectIds, ProjectScopeService } from '@/project/project-scope.service';
 // eslint-disable-next-line import/no-cycle
 import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
@@ -964,6 +964,8 @@ export class WorkflowService {
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
+    assertIsValidProjectIds(projectIds);
+
     return await this.prismaService.$transaction(async transaction => {
       const workflow = await this.workflowRuntimeDataRepository.findByIdAndLock(
         workflowId,
@@ -1063,7 +1065,7 @@ export class WorkflowService {
           documentsUpdateContextMethod: documentsUpdateContextMethod,
         },
         documentWithDecision as unknown as DefaultContextSchema['documents'][number],
-        projectIds![0]!,
+        projectIds[0]!,
         transaction,
       );
 
@@ -1192,7 +1194,9 @@ export class WorkflowService {
           });
 
         if (allDocumentsResolved) {
+          const customer = await this.customerService.getByProjectId(projectId);
           updatedWorkflow = await this.workflowRuntimeDataRepository.updateStateById(
+            customer,
             workflowId,
             {
               data: {
@@ -1391,7 +1395,10 @@ export class WorkflowService {
       const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
       const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
+      const customer = await this.customerService.getByProjectId(projectId);
+
       const updatedResult = (await this.workflowRuntimeDataRepository.updateStateById(
+        customer,
         runtimeData.id,
         {
           data: {
@@ -1457,6 +1464,8 @@ export class WorkflowService {
       {},
       projectIds,
     );
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+
     const workflowCompleted =
       workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
@@ -1469,6 +1478,8 @@ export class WorkflowService {
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId, assignedAt: new Date(), projectId: currentProjectId } },
+      this.prismaService,
+      customer,
     );
 
     if (
@@ -1653,6 +1664,7 @@ export class WorkflowService {
         }
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
+          customer,
           {
             data: {
               ...entityConnect,
@@ -1762,6 +1774,7 @@ export class WorkflowService {
           });
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
+            customer,
             workflowRuntimeData.id,
             {
               data: {
@@ -1827,6 +1840,7 @@ export class WorkflowService {
         };
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
+          customer,
           existingWorkflowRuntimeData.id,
           {
             data: {
@@ -2321,6 +2335,7 @@ export class WorkflowService {
               },
             },
             transaction,
+            customer,
           );
 
           return {
@@ -2397,7 +2412,7 @@ export class WorkflowService {
         }
 
         const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
-        let peopleOfInterest: Array<{
+        const peopleOfInterest: Array<{
           ballerineEntityId: string;
           firstName: string;
           lastName: string;

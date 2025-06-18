@@ -66,6 +66,7 @@ import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditi
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
 import { useIndividualsRegistryProvidedBlock } from '@/lib/blocks/hooks/useIndividualsRegistryProvidedBlock/useIndividualsRegistryProvidedBlock';
+import { EDIT_TEMPLATES } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 const registryInfoWhitelist = ['open_corporates'] as const;
 
@@ -227,7 +228,7 @@ export const useDefaultBlocksLogic = () => {
     },
   });
 
-  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { onEditCollectionFlow } = useEditCollectionFlow(EDIT_TEMPLATES.COMPANY_DETAILS);
 
   const entityInfoBlock = useEntityInfoBlock({
     entity: workflow?.context?.entity,
@@ -237,7 +238,7 @@ export const useDefaultBlocksLogic = () => {
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
-    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
+    onEdit: onEditCollectionFlow,
   });
 
   const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({

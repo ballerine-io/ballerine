@@ -47,20 +47,22 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
 import { SentryService } from '@/sentry/sentry.service';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
-import { FileModule } from '@/providers/file/file.module';
-import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowLogRepository } from '@/workflow/workflow-log.repository';
 import { WorkflowLogController } from '@/workflow/workflow-log.controller';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
-// eslint-disable-next-line import/no-cycle
-import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { CustomerService } from '@/customer/customer.service';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
 import { AssessmentsModule } from '@/assessments/assessments.module';
 import { AssessmentsService } from '@/assessments/assessments.service';
 // eslint-disable-next-line import/no-cycle
 import { KycModule } from '@/kyc/kyc.module';
 import { EndUserModule } from '@/end-user/end-user.module';
+// eslint-disable-next-line import/no-cycle
+import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
+import { FileModule } from '@/providers/file/file.module';
+import { FileRepository } from '@/storage/storage.repository';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   controllers: [
@@ -88,6 +90,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
     forwardRef(() => CollectionFlowModule),
     forwardRef(() => KycModule),
     AssessmentsModule,
+    WebhooksModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -122,6 +125,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    CustomerService,
     AssessmentsService,
   ],
   exports: [
@@ -139,6 +143,7 @@ import { EndUserModule } from '@/end-user/end-user.module';
     WorkflowLogService,
     WorkflowLogRepository,
     WorkflowRuntimeDataActorService,
+    CustomerService,
   ],
 })
 export class WorkflowModule {}

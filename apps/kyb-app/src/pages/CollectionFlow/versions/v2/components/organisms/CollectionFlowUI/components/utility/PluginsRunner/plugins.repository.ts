@@ -10,7 +10,7 @@ import {
 import {
   FETCH_COMPANY_INFORMATION_PLUGIN_NAME,
   fetchCompanyInformationPlugin,
-} from '@/pages/CollectionFlow/versions/v2/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/plugins/fetch-company-information.plugin';
+} from '@/pages/CollectionFlow/versions/v2/components/organisms/CollectionFlowUI/components/utility/PluginsRunner/plugins/fetch-company-information/fetch-company-information.plugin';
 
 export const pluginsRepository = {
   [EVENT_PLUGIN_NAME]: eventPlugin,

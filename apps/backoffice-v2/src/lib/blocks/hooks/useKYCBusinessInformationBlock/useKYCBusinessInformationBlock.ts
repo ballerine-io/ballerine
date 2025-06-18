@@ -4,6 +4,7 @@ import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEnt
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { StateTag } from '@ballerine/common';
+import { EDIT_TEMPLATES } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export const useKYCBusinessInformationBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
@@ -19,7 +20,7 @@ export const useKYCBusinessInformationBlock = () => {
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
 
-  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { onEditCollectionFlow } = useEditCollectionFlow(EDIT_TEMPLATES.COMPANY_DETAILS);
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user ?? null, workflow);
 
@@ -31,7 +32,7 @@ export const useKYCBusinessInformationBlock = () => {
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
-    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
+    onEdit: onEditCollectionFlow,
   });
 
   return blocks;

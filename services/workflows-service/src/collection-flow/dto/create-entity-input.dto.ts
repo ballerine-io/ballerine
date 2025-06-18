@@ -1,9 +1,9 @@
+import { oneOf } from '@/common/decorators/one-of.decorator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BusinessPosition } from '@prisma/client';
-import { Type } from 'class-transformer';
-import { IsBoolean, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { EndUserVariant } from '@prisma/client';
+import { IsBoolean, IsObject, IsOptional, IsString } from 'class-validator';
 
-export class EntityCreateDto {
+export class CreateEntityInputDto {
   @ApiProperty({
     required: true,
     type: String,
@@ -71,14 +71,11 @@ export class EntityCreateDto {
   })
   @IsString()
   companyName?: string;
-}
 
-export class CreateEntityInputDto {
-  @IsString()
-  entityType!: BusinessPosition;
-
-  @IsObject()
-  @ValidateNested()
-  @Type(() => EntityCreateDto)
-  entity!: EntityCreateDto;
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+  })
+  @oneOf([EndUserVariant.director, EndUserVariant.ubo])
+  variant?: EndUserVariant;
 }

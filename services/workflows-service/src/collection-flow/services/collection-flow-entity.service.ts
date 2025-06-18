@@ -3,8 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectId } from '@/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { BusinessPosition } from '@prisma/client';
-import { EntityCreateDto } from '../dto/create-entity-input.dto';
+import { CreateEntityInputDto } from '../dto/create-entity-input.dto';
 
 @Injectable()
 export class CollectionFlowEntityService {
@@ -14,12 +13,7 @@ export class CollectionFlowEntityService {
     protected readonly endUserService: EndUserService,
   ) {}
 
-  async createEntity(
-    workflowId: string,
-    entityType: BusinessPosition,
-    entity: EntityCreateDto,
-    projectId: TProjectId,
-  ) {
+  async createEntity(workflowId: string, entity: CreateEntityInputDto, projectId: TProjectId) {
     return await this.prismaService.$transaction(async transaction => {
       const workflowRuntimeData =
         await this.workflowService.getWorkflowRuntimeDataByIdAndLockUnscoped({
@@ -57,7 +51,7 @@ export class CollectionFlowEntityService {
         data: {
           endUserId: endUser.id,
           businessId: workflowRuntimeData.businessId,
-          position: entityType,
+          position: entityRest.variant,
         },
       });
 
@@ -67,7 +61,7 @@ export class CollectionFlowEntityService {
     });
   }
 
-  async updateEntity(entityId: string, entity: EntityCreateDto) {
+  async updateEntity(entityId: string, entity: CreateEntityInputDto) {
     return await this.prismaService.$transaction(async transaction => {
       const { additionalInfo, dateOfBirth, gender, companyName, ...entityRest } = entity;
       const {
@@ -89,6 +83,15 @@ export class CollectionFlowEntityService {
           },
           gender: gender?.toLowerCase() ?? genderAdditionalInfo?.toLowerCase(),
           dateOfBirth: dateOfBirth ?? additionalDateOfBirth,
+        },
+      });
+
+      await transaction.endUsersOnBusinesses.updateMany({
+        where: {
+          endUserId: entityId,
+        },
+        data: {
+          position: entityRest.variant,
         },
       });
 
