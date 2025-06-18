@@ -172,6 +172,7 @@ export class CollectionFlowController {
             'merchantScreening',
             'merchantMonitoring',
             'riskEvaluation',
+            'ubo',
           ],
         });
 
