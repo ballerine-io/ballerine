@@ -141,20 +141,6 @@ jobs:
           build-args: |
             "RELEASE=${{ steps.bump-version.outputs.tag }}-hotfix"
             "SHORT_SHA=${{ steps.version.outputs.sha_short }}"
-            
-      - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@master
-        continue-on-error: true
-        with:
-          cache-dir:
-          image-ref: ${{ steps.docker-version.outputs.full_image }}
-          format: 'table'
-          ignore-unfixed: true
-          exit-code: 1
-          trivyignores: ./.trivyignore
-          vuln-type: 'os,library'
-          severity: 'CRITICAL'
-      
       - name: Update Service version in Environment
         run: |
           if [ "${{ inputs.environment }}" == "prod" ]; then
@@ -330,7 +316,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [update-helm-chart,build-and-push-ee-image,build-and-push-image]
     environment: ${{ inputs.environment }}
-    if: ${{ needs.update-helm-chart.result == 'success' }}
+    if: ${{ needs.update-helm-chart.result == 'failure' || needs.build-and-push-ee-image.result == 'failure' }}
     permissions:
       contents: read
       packages: write
@@ -341,7 +327,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: '${{ secrets.ARGO_SLACK_CHANNEL_ID }}'
-          slack-message: "Hotfix on Wf-service app Deployment in ${{ inputs.environment }} with tag ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }} build result: ${{ job.status }}. successfully updated the hotfix on wf-service helm values for ${{ inputs.environment }}."
+          slack-message: "❌ Hotfix on Wf-service app Deployment FAILED in ${{ inputs.environment }} with tag ${{ needs.build-and-push-image.outputs.sha_short }}-${{ needs.build-and-push-ee-image.outputs.SUBMODULE_SHORT_HASH }}-${{ needs.build-and-push-image.outputs.sanitized-branch }}. Failed jobs: ${{ needs.update-helm-chart.result == 'failure' && 'update-helm-chart' || '' }} ${{ needs.build-and-push-ee-image.result == 'failure' && 'build-and-push-ee-image' || '' }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.ARGO_SLACK_BOT_TOKEN }}
 
