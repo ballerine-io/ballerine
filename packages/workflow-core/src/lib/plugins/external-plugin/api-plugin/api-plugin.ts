@@ -39,6 +39,7 @@ export class ApiPlugin {
   memoizedSecrets: Record<string, string> | undefined;
   whitelistedInputProperties: string[] | undefined;
   includeInvokedAt: boolean;
+  projectId?: string;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -60,6 +61,7 @@ export class ApiPlugin {
     this.displayName = pluginParams.displayName;
     this.whitelistedInputProperties = pluginParams.whitelistedInputProperties;
     this.includeInvokedAt = pluginParams.includeInvokedAt ?? true;
+    this.projectId = pluginParams.projectId;
   }
 
   async invoke(context: TContext, additionalContext?: AnyRecord) {
@@ -95,7 +97,10 @@ export class ApiPlugin {
       const apiResponse = await this.makeApiRequest(
         _url,
         this.method,
-        requestPayload,
+        {
+          ...requestPayload,
+          projectId: this.projectId,
+        },
         await this.composeRequestHeaders(this.headers!, {
           ...context,
           ...additionalContext,

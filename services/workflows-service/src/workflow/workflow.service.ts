@@ -379,6 +379,7 @@ export class WorkflowService {
           // @ts-expect-error - error from Prisma types fix
           state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
         },
+        projectId: workflow.projectId,
       });
 
       nextEvents = service.getSnapshot().nextEvents;
@@ -2197,6 +2198,7 @@ export class WorkflowService {
           state: workflowRuntimeData.state,
         },
         extensions: workflowDefinition.extensions,
+        projectId: currentProjectId,
         helpers: {
           getEndUserById: async (endUserId: string) => {
             return await this.endUserService.getById(endUserId, {}, projectIds);
