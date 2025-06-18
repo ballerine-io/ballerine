@@ -79,10 +79,10 @@ export const useInitiateIndividualVerificationAndSendEmailMutation = () => {
   return useMutation({
     mutationFn: initiateIndividualVerificationAndSendEmail,
     onSuccess: () => {
-      toast.success(t('toast:approve_case.success'));
+      toast.success(t('toast:initiate_kyc.success'));
     },
     onError: () => {
-      toast.error(t('toast:approve_case.error'));
+      toast.error(t('toast:initiate_kyc.error'));
     },
   });
 };

@@ -160,5 +160,9 @@
     "success": "Assessment status updated successfully.",
     "unexpected_error": "Something went wrong while updating the status of the assessment.",
     "error": "Error occurred while updating assessment status."
+  },
+  "initiate_kyc": {
+    "success": "KYC initiated successfully.",
+    "error": "Error occurred while initiating KYC."
   }
 }
