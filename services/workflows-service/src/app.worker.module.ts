@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 
@@ -39,6 +39,12 @@ import { MetricsAuthMiddleware } from './common/middlewares/metrics-auth.middlew
 })
 export class WorkerAppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(MetricsAuthMiddleware).forRoutes('*');
+    consumer
+      .apply(MetricsAuthMiddleware)
+      .exclude(
+        { path: '/_health/ready', method: RequestMethod.GET },
+        { path: '/_health/live', method: RequestMethod.GET },
+      )
+      .forRoutes('*');
   }
 }
