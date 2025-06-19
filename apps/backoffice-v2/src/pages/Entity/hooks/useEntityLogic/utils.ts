@@ -1,4 +1,4 @@
-import { AnyArray, TypesafeOmit } from '../../../../common/types';
+import { TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
 import { titleCase } from 'string-ts';
 import { TDropdownOption } from '@/lib/blocks/components/EditableDetails/types';
@@ -34,8 +34,8 @@ export const composePickableCategoryType = (
     const isCategoryInDropdownOptions = documentCategoryDropdownOptions.some(
       option => option.value === category,
     );
-    const isTypeInDropdownOptions = documentTypesDropdownOptions.some(
-      option => option.value === type,
+    const isTypeWithCategoryInDropdownOptions = documentTypesDropdownOptions.some(
+      option => option.value === type && option.dependantValue === category,
     );
 
     if (category && !isCategoryInDropdownOptions) {
@@ -45,7 +45,7 @@ export const composePickableCategoryType = (
       });
     }
 
-    if (type && !isTypeInDropdownOptions) {
+    if (type && !isTypeWithCategoryInDropdownOptions) {
       documentTypesDropdownOptions.push({
         dependantOn: 'category',
         dependantValue: category,
