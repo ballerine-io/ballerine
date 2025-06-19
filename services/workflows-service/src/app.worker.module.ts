@@ -38,13 +38,4 @@ import { MetricsAuthMiddleware } from './common/middlewares/metrics-auth.middlew
   ],
 })
 export class WorkerAppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(MetricsAuthMiddleware)
-      .exclude(
-        { path: '/_health/ready', method: RequestMethod.GET },
-        { path: '/_health/live', method: RequestMethod.GET },
-      )
-      .forRoutes('*');
-  }
 }
