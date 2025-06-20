@@ -212,8 +212,9 @@ export class UnifiedApiClient {
       limit: number;
     },
   ) {
-    return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
+    return await this.axiosInstance.get(`/assessments`, {
       params: {
+        type: assessmentType,
         ...queryParams,
         projectId,
       },
@@ -221,7 +222,11 @@ export class UnifiedApiClient {
   }
 
   public async getAssessmentById(id: string, projectId: string) {
-    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
+    return await this.axiosInstance.get(`/assessments/${id}`, {
+      params: {
+        projectId,
+      },
+    });
   }
 
   public async createAssessment(
@@ -234,7 +239,7 @@ export class UnifiedApiClient {
       businessId?: string;
     },
   ) {
-    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+    return await this.axiosInstance.post(`/assessments`, { ...payload, type: assessmentType });
   }
 
   public async updateAssessmentStatus(
@@ -248,7 +253,7 @@ export class UnifiedApiClient {
     });
   }
 
-  public async getLatestAssessmentsByWorkflowRuntimeDataId({
+  public async getLatestAssessments({
     workflowRuntimeDataId,
     projectId,
   }: {
@@ -257,7 +262,7 @@ export class UnifiedApiClient {
   }) {
     try {
       const response = await this.axiosInstance.get<Array<Record<string, any>>>(
-        `/assessments/latest-by-workflow-runtime-data-id/${workflowRuntimeDataId}?projectId=${projectId}`,
+        `/assessments/latest?workflowRuntimeDataId=${workflowRuntimeDataId}&projectId=${projectId}`,
       );
 
       return response.data;
