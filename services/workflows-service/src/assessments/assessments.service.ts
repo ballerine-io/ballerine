@@ -95,7 +95,7 @@ export class AssessmentsService {
     workflowRuntimeDataId: string;
     projectId: string;
   }) {
-    return await this.unifiedApiClient.getLatestAssessmentsByWorkflowRuntimeDataId({
+    return await this.unifiedApiClient.getLatestAssessments({
       workflowRuntimeDataId,
       projectId,
     });
