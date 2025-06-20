@@ -22,7 +22,7 @@ export class AssessmentsService {
         limit: query.page.size,
       };
 
-      const result = await new UnifiedApiClient().getAssessmentsByType(
+      const result = await this.unifiedApiClient.getAssessmentsByType(
         'kyb_and_ownership',
         projectId,
         queryParams,
