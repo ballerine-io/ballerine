@@ -1,11 +1,29 @@
-import { useCallback } from 'react';
+import {useCallback, useEffect} from 'react';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 import { defaultSerializer } from '@/common/hooks/useZodSearchParams/utils/default-serializer';
 
 export const usePagination = ({ totalPages }: { totalPages: number }) => {
-  const [searchParams] = useSerializedSearchParams();
+  const [searchParams, setSearchParams] = useSerializedSearchParams();
+  const page = Number(searchParams.page);
 
-  const isLastPage = Number(searchParams.page) === totalPages || totalPages === 0;
+  useEffect(() => {
+    let redirectToPage;
+    if (page <= 0) {
+      redirectToPage = 1;
+    }
+    if (totalPages && page > totalPages) {
+      redirectToPage = totalPages;
+    }
+
+    if (!redirectToPage) return;
+
+    setSearchParams({
+      page: redirectToPage
+    })
+  }, [page, totalPages]);
+
+
+  const isLastPage = page === totalPages || totalPages === 0;
 
   const onPaginate = useCallback(
     (page: number) => {
@@ -25,18 +43,16 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
   }, [searchParams, totalPages]);
 
   const onNextPage = useCallback(() => {
-    const pageNumber = Number(searchParams.page);
-    const nextPage = pageNumber + 1;
+    const nextPage = Math.min(page + 1, totalPages);
 
     return defaultSerializer({
       ...searchParams,
       page: nextPage.toString(),
     });
-  }, [searchParams]);
+  }, [searchParams, totalPages]);
 
   const onPrevPage = useCallback(() => {
-    const pageNumber = Number(searchParams.page);
-    const nextPage = pageNumber - 1;
+    const nextPage = Math.max(page - 1, 1);
 
     return defaultSerializer({
       ...searchParams,
@@ -45,7 +61,7 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
   }, [searchParams]);
 
   return {
-    page: searchParams.page,
+    page,
     pageSize: searchParams.pageSize,
     isLastPage,
     onPaginate,
