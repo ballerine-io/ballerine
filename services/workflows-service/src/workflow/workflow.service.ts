@@ -607,14 +607,31 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
   ) {
-    const skip = (page.number - 1) * page.size;
+    let skip = (page.number - 1) * page.size;
+    const where = filters ? toPrismaWhere(filters) : {};
+
+    const workflowCount = await this.workflowRuntimeDataRepository.count({ where }, projectIds);
+    const totalPages = Math.max(Math.ceil(workflowCount / page.size), 1);
+
+    const meta = {
+      totalItems: workflowCount,
+      totalPages
+    };
+
+    if (page.number > 1 && workflowCount < skip + 1) {
+      return {
+        data: [],
+        meta,
+      }
+
+    }
 
     const query = this.projectScopeService.scopeFindMany(
       merge(
         args,
         {
           orderBy: toPrismaOrderBy(orderBy, entityType),
-          where: filters ? toPrismaWhere(filters) : {},
+          where,
           skip,
           take: page.size,
         },
@@ -663,28 +680,18 @@ export class WorkflowService {
       where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
     };
 
-    const [workflowCount, workflows] = await Promise.all([
-      this.workflowRuntimeDataRepository.count({ where: query.where }, projectIds),
-      this.workflowRuntimeDataRepository.findMany(
-        {
-          where: workflowsQuery.where,
-          select: workflowsQuery.select,
-          orderBy: workflowsQuery.orderBy,
-        },
-        projectIds,
-      ),
-    ]);
-
-    if (page.number > 1 && workflowCount < skip + 1) {
-      throw new NotFoundException('Page not found');
-    }
+    const workflows = await this.workflowRuntimeDataRepository.findMany(
+      {
+        where: workflowsQuery.where,
+        select: workflowsQuery.select,
+        orderBy: workflowsQuery.orderBy,
+      },
+      projectIds,
+    );
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
-      meta: {
-        totalItems: workflowCount,
-        totalPages: Math.max(Math.ceil(workflowCount / page.size), 1),
-      },
+      meta,
     };
   }
 
