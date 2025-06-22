@@ -29,11 +29,12 @@ export const Notes = ({
   const { form, users, onSubmit, isLoading } = useNotesLogic();
 
   return (
-    <div className={`flex h-full w-full flex-col bg-slate-50`}>
+    <div className={`flex size-full flex-col bg-slate-50`}>
       <div className={`h-12 flex-row items-center justify-between border-b p-4`}>
         <span className={`text-sm font-medium`}>Notes</span>
       </div>
-      <div className={`flex flex-col gap-1 border-none`}>
+
+      <div className={`p-b-4 flex h-[calc(100%-48px)] flex-col gap-1 border-none`}>
         <div className={`p-4`}>
           <Form {...form}>
             <form
@@ -85,7 +86,7 @@ export const Notes = ({
 
         <Separator />
 
-        <div className={`space-y-4 p-4`}>
+        <div className={`space-y-4 overflow-y-auto p-4`}>
           {(notes || []).map(note => (
             <Note
               key={note.id}
