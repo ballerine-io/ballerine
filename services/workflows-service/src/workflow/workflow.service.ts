@@ -21,7 +21,7 @@ import {
   beginTransactionIfNotExistCurry,
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { assertIsValidProjectIds, ProjectScopeService } from '@/project/project-scope.service';
 // eslint-disable-next-line import/no-cycle
 import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
@@ -964,6 +964,8 @@ export class WorkflowService {
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
+    assertIsValidProjectIds(projectIds);
+
     return await this.prismaService.$transaction(async transaction => {
       const workflow = await this.workflowRuntimeDataRepository.findByIdAndLock(
         workflowId,
@@ -1063,7 +1065,7 @@ export class WorkflowService {
           documentsUpdateContextMethod: documentsUpdateContextMethod,
         },
         documentWithDecision as unknown as DefaultContextSchema['documents'][number],
-        projectIds![0]!,
+        projectIds[0]!,
         transaction,
       );
 

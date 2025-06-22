@@ -1,16 +1,12 @@
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
+import { EndUserVariantSchema, EntityType } from '../individuals/fetchers';
 
 export const EndUserSchema = ObjectWithIdSchema.extend({
   firstName: z.string(),
   lastName: z.string(),
+  variant: EndUserVariantSchema.optional().nullable(),
 });
-
-export const EntityType = {
-  BUSINESS: 'business',
-  UBO: 'ubo',
-  DIRECTOR: 'director',
-} as const;
 
 export const DocumentTrackerItemSchema = z.object({
   documentId: z.string().nullable(),

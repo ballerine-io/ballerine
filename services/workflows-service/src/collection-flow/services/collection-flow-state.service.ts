@@ -37,6 +37,7 @@ import {
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
 @Injectable()
 export class CollectionFlowStateService {
@@ -51,6 +52,8 @@ export class CollectionFlowStateService {
   ) {}
 
   async getCollectionFlowState(workflowId: string, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
+
     const workflowWithRelations = await this.workflowService.getWorkflowByIdWithRelations(
       workflowId,
       projectIds,
@@ -100,7 +103,7 @@ export class CollectionFlowStateService {
             },
           },
         },
-        projectIds![0]!,
+        projectIds[0]!,
       );
     }
 

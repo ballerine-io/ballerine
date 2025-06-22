@@ -1,116 +1,243 @@
-import { Injectable } from '@nestjs/common';
-import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
-import { EndUserRepository } from '@/end-user/end-user.repository';
-import { CustomerService } from '@/customer/customer.service';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { WorkflowService } from '@/workflow/workflow.service';
+import { sign } from '@ballerine/common';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import * as Sentry from '@sentry/node';
+import { isAxiosError, RawAxiosRequestHeaders } from 'axios';
+import { Job } from 'bullmq';
+
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { EndUserService } from '@/end-user/end-user.service';
+import { QueueService } from '@/common/queue/queue.service';
+import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
+import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
+import type { BullBoardInjectedInstance } from '@/common/queue/types';
+import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
+import { env } from '@/env';
+import {
+  WebhookError,
+  type OutgoingWebhookJobData,
+  type OutgoingWebhookPayloads,
+} from './types/webhook';
+
+const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) => {
+  Sentry.captureException(
+    new Error('Failed to send a webhook', {
+      cause: errorPayload,
+    }),
+    { extra: errorPayload },
+  );
+};
 
 @Injectable()
-export class WebhooksService {
+export class WebhooksService implements OnModuleInit {
+  private readonly QUEUE_NAME = 'outgoing-webhooks';
+  private queueInitialized = false;
+
   constructor(
-    private readonly customerService: CustomerService,
-    private readonly workflowService: WorkflowService,
-    private readonly endUserRepository: EndUserRepository,
-    private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly logger: AppLoggerService,
-    private readonly endUserService: EndUserService,
-  ) {}
+    private readonly httpService: HttpService,
+    private readonly queueService: QueueService,
+    private readonly queueBullboardService: QueueBullboardService,
+    private readonly bullMQPrometheusService: BullMQPrometheusService,
+    @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
+    private bullBoard: BullBoardInjectedInstance,
+  ) {
+    this.logger.log('WebhooksService constructor');
+  }
 
-  async handleIndividualAmlHit({
-    endUserId,
-    data,
-  }: {
-    endUserId: string;
-    data: IndividualAmlWebhookInput['data'];
-  }) {
-    this.logger.log('Started handling individual AML hit', { endUserId });
+  async onModuleInit() {
+    this.logger.log('WebhooksService onModuleInit');
 
-    const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(endUserId, {
-      select: {
-        approvalState: true,
-        stateReason: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        country: true,
-        nationalId: true,
-        dateOfBirth: true,
-        additionalInfo: true,
-        createdAt: true,
-        updatedAt: true,
-        projectId: true,
-        businesses: {
-          select: {
-            address: true,
-            country: true,
-            website: true,
-            companyName: true,
-            businessType: true,
-            approvalState: true,
-            registrationNumber: true,
-            dateOfIncorporation: true,
-            countryOfIncorporation: true,
-          },
-        },
-      },
-    });
-
-    const { config } = await this.customerService.getByProjectId(projectId, {
-      select: { config: true },
-    });
-
-    if (!config?.ongoingWorkflowDefinitionId) {
-      this.logger.error('No ongoing workflow definition found for project', { projectId });
-
+    if (!env.QUEUE_SYSTEM_ENABLED) {
+      this.logger.log('Queue system is disabled. Webhooks will be sent directly.');
       return;
     }
-
-    const { id: workflowDefinitionId } = await this.workflowDefinitionService.getLatestVersion(
-      config.ongoingWorkflowDefinitionId,
-      [projectId],
+    this.logger.log(
+      `Setting up queue system. env.QUEUE_SYSTEM_ENABLED: ${env.QUEUE_SYSTEM_ENABLED}`,
     );
+    await this.setupQueueSystem();
+  }
 
-    const hits = data?.hits ?? [];
+  private async setupQueueSystem() {
+    try {
+      const queue = this.queueService.getQueue<OutgoingWebhookJobData>({
+        name: this.QUEUE_NAME,
+        jobOptions: {
+          attempts: 5,
+          backoff: {
+            type: 'exponential',
+            delay: 5_000,
+          },
+          removeOnComplete: { count: 1000, age: 3600 * 24 * 7 },
+          removeOnFail: false,
+        },
+      });
 
-    const amlHits = hits.map(hit => ({
-      ...hit,
-      vendor: data?.vendor,
-    }));
+      this.bullMQPrometheusService.registerQueue(queue);
 
-    await this.endUserService.updateById(endUserId, {
-      data: {
-        amlHits,
+      if (this.queueService.isWorkerEnabled()) {
+        this.queueBullboardService.registerQueue(this.bullBoard, queue);
+        this.registerWorker();
+      }
+
+      this.queueInitialized = true;
+      this.logger.log('Webhook queue system setup complete');
+    } catch (error) {
+      this.logger.error('Failed to initialize webhook queue system', { error });
+      this.queueInitialized = false;
+    }
+  }
+
+  private registerWorker() {
+    this.queueService.registerWorker<OutgoingWebhookJobData>(
+      this.QUEUE_NAME,
+      async (job: Job<OutgoingWebhookJobData>) => {
+        try {
+          const res = await this.httpService.axiosRef.request(job.data);
+          return res.data;
+        } catch (error) {
+          this.handleWebhookJobError(job, error);
+
+          if (isAxiosError(error)) {
+            const webhookError = new WebhookError('Webhook request failed');
+            webhookError.cause = error;
+            webhookError.statusCode = error.response?.status;
+            webhookError.responseData = error.response?.data;
+            webhookError.headers = error.response?.headers;
+            throw webhookError;
+          }
+          throw error;
+        }
       },
-    });
+      {
+        concurrency: 10,
+      },
+    );
+  }
 
-    if (hits.length === 0) {
-      this.logger.log('No AML hits found', { endUserId });
+  private handleWebhookJobError(job: Job<OutgoingWebhookJobData>, error: any) {
+    const isLastAttempt = job.attemptsMade >= (job.opts.attempts || 1);
 
-      return;
+    if (isLastAttempt) {
+      this.logger.error('Final webhook delivery attempt failed, giving up', {
+        jobId: job.id,
+        jobName: job.name,
+        url: job.data.url,
+        method: job.data.method,
+        attempts: job.attemptsMade,
+        error: isAxiosError(error)
+          ? {
+              response: error.response?.data,
+              status: error.response?.status,
+              message: error.message,
+            }
+          : error,
+      });
+
+      captureWebhookFailureWithSentry({
+        jobId: job.id,
+        jobName: job.name,
+        url: job.data.url,
+        method: job.data.method,
+        error: isAxiosError(error)
+          ? {
+              response: error.response?.data,
+              status: error.response?.status,
+              message: error.message,
+            }
+          : error,
+      });
+    } else {
+      this.logger.warn(
+        `Failed to send webhook. Will retry, ${
+          (job.opts.attempts || 1) - job.attemptsMade
+        } attempts left`,
+        {
+          jobId: job.id,
+          url: job.data.url,
+          method: job.data.method,
+          error: isAxiosError(error) ? error.message : error,
+        },
+      );
+    }
+  }
+
+  async invokeWebhook<T extends keyof OutgoingWebhookPayloads>(
+    name: T,
+    config: OutgoingWebhookJobData,
+    forceDirect?: boolean,
+  ) {
+    const { url, method, headers: argHeaders, data, secret, timeout } = config;
+
+    this.logger.log('Sending webhook...', { url, method });
+
+    const headers: RawAxiosRequestHeaders = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      ...argHeaders,
+    };
+
+    if (!secret) {
+      this.logger.warn('Secret is missing when sending a webhook', { url, method });
+    } else if (data) {
+      headers['X-Authorization'] = secret;
+      headers['X-HMAC-Signature'] = sign({ payload: data, key: secret });
     }
 
-    const workflow = await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId,
-      context: {
-        aml: data,
-        entity: {
-          // @ts-expect-error -- prisma date not compatible with typebox
-          data: {
-            ...rest,
-            additionalInfo: rest.additionalInfo ?? {},
+    const requestData: OutgoingWebhookJobData = {
+      url,
+      method,
+      headers,
+      data,
+      timeout: timeout ?? 15_000,
+    };
+    if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {
+      try {
+        const queue = this.queueService.getQueue<OutgoingWebhookJobData>({ name: this.QUEUE_NAME });
+        return await queue.add(name, requestData);
+      } catch (error) {
+        const enqueueErrorPayload = {
+          message: 'Failed to add webhook job to the queue',
+          jobName: name,
+          url: requestData.url,
+          method: requestData.method,
+          originalError: {
+            message: (error as Error).message,
+            stack: (error as Error).stack,
+            name: (error as Error).name,
           },
-          ballerineEntityId: endUserId,
-          type: 'individual',
-        },
-        documents: [],
-      },
-      projectIds: [projectId],
-      currentProjectId: projectId,
-    });
+          jobData: requestData,
+        };
 
-    this.logger.log(`Created workflow for AML hits`, { workflow });
+        this.logger.error(
+          'CRITICAL: Failed to add webhook job to the queue. Attempting direct send as fallback.',
+          enqueueErrorPayload,
+        );
+        Sentry.captureException(new Error(enqueueErrorPayload.message, { cause: error }), {
+          extra: enqueueErrorPayload,
+          tags: { failureType: 'enqueue_failure' },
+        });
+
+        this.logger.log('Attempting to send the request directly after enqueue failure...');
+      }
+    }
+
+    try {
+      return await this.httpService.axiosRef.request(requestData);
+    } catch (error) {
+      const { id, state, entityId, correlationId, runtimeData } = data as Record<string, any>;
+
+      const errorPayload = { ...(isAxiosError(error) ? error.response?.data : error), url, method };
+
+      this.logger.error('Failed to send webhook directly', {
+        id: runtimeData?.id ?? id,
+        error: errorPayload,
+        state,
+        entityId,
+        correlationId,
+      });
+
+      captureWebhookFailureWithSentry(errorPayload);
+    }
   }
 }
