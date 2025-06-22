@@ -615,15 +615,14 @@ export class WorkflowService {
 
     const meta = {
       totalItems: workflowCount,
-      totalPages
+      totalPages,
     };
 
     if (page.number > 1 && workflowCount < skip + 1) {
       return {
         data: [],
         meta,
-      }
-
+      };
     }
 
     const query = this.projectScopeService.scopeFindMany(

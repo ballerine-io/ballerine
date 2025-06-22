@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 import { defaultSerializer } from '@/common/hooks/useZodSearchParams/utils/default-serializer';
 
@@ -18,10 +18,9 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
     if (!redirectToPage) return;
 
     setSearchParams({
-      page: redirectToPage
-    })
+      page: redirectToPage,
+    });
   }, [page, totalPages]);
-
 
   const isLastPage = page === totalPages || totalPages === 0;
 
