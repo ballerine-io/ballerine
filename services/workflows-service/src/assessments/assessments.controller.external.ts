@@ -19,18 +19,18 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 export class AssessmentsControllerExternal {
   constructor(private readonly assessmentsService: AssessmentsService) {}
 
-  @common.Get('/latest-by-workflow-runtime-data-id/:workflowRuntimeDataId')
+  @common.Get('/latest')
   @swagger.ApiOperation({ summary: 'Get latest assessment by workflow runtime data id' })
   @swagger.ApiResponse({
     status: 200,
     description: 'Successfully returned latest assessment by workflow runtime data id',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
-  async getLatestAssessmentsByWorkflowRuntimeDataId(
-    @common.Param('workflowRuntimeDataId') workflowRuntimeDataId: string,
+  async getLatestAssessments(
+    @common.Query('workflowRuntimeDataId') workflowRuntimeDataId: string,
     @common.Query('projectId') projectId: string,
   ) {
-    const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId({
+    const assessments = await this.assessmentsService.getLatestAssessments({
       workflowRuntimeDataId,
       projectId,
     });
@@ -81,7 +81,7 @@ export class AssessmentsControllerExternal {
     return this.assessmentsService.createAssessment(body, projectId);
   }
 
-  @common.Put('/:id/status/:status')
+  @common.Put('/:id/status')
   @swagger.ApiOperation({ summary: 'Update assessment status' })
   @swagger.ApiResponse({
     status: 200,
@@ -90,7 +90,7 @@ export class AssessmentsControllerExternal {
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   updateKybAndOwnershipAssessmentStatus(
     @common.Param('id') id: string,
-    @common.Param('status') status: UpdateableAssessmentStatus,
+    @common.Body('status') status: UpdateableAssessmentStatus,
     @CurrentProject() projectId: TProjectId,
   ) {
     return this.assessmentsService.updateAssessmentStatus(id, status, projectId);

@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { env } from '@/env';
 import {
-  Logger,
   Injectable,
   ServiceUnavailableException,
   UnauthorizedException,
@@ -98,7 +97,6 @@ export const axiosErrorToHttpException = (error: AxiosError) => {
 @Injectable()
 export class UnifiedApiClient {
   private readonly axiosInstance: AxiosInstance;
-  private readonly logger = new Logger(UnifiedApiClient.name);
 
   constructor() {
     this.axiosInstance = axios.create({
