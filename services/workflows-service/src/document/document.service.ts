@@ -973,27 +973,29 @@ export class DocumentService {
             });
           })
           .filter(Boolean),
-        directors: parsedUIDocuments.individuals.directors.map(parsedDocument => {
-          const { ballerineEntityId } = parsedDocument;
-          const director = entitiesWithDocuments.directors.find(
-            director => director.id === ballerineEntityId,
-          );
+        directors: parsedUIDocuments.individuals.directors
+          .map(parsedDocument => {
+            const { ballerineEntityId } = parsedDocument;
+            const director = entitiesWithDocuments.directors.find(
+              director => director.id === ballerineEntityId,
+            );
 
-          if (!director) {
-            throw new Error('Director not found');
-          }
+            if (!director) {
+              return;
+            }
 
-          const matchingDocument = director.documents.find(doc =>
-            isMatchingDocument(doc, parsedDocument),
-          );
+            const matchingDocument = director.documents.find(doc =>
+              isMatchingDocument(doc, parsedDocument),
+            );
 
-          return generateDocumentTrackerItem(matchingDocument, parsedDocument, {
-            id: director.id,
-            firstName: director.firstName,
-            lastName: director.lastName,
-            variant: EndUserVariant.director,
-          });
-        }),
+            return generateDocumentTrackerItem(matchingDocument, parsedDocument, {
+              id: director.id,
+              firstName: director.firstName,
+              lastName: director.lastName,
+              variant: EndUserVariant.director,
+            });
+          })
+          .filter(Boolean),
       },
     };
 
