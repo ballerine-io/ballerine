@@ -16,6 +16,12 @@ export const EntityType = {
 
 export const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR]);
 
+export const EndUserIndividualVerificationChecksStatus = {
+  IN_PROGRESS: 'in-progress',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+
 export const EndUserSchema = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -30,7 +36,13 @@ export const EndUserSchema = z.object({
   amlHits: z.array(HitSchema.extend({ vendor: z.string().optional() })).optional(),
   individualVerificationsChecks: z
     .object({
-      status: z.string(),
+      status: z
+        .union([
+          z.literal(EndUserIndividualVerificationChecksStatus.IN_PROGRESS),
+          z.literal(EndUserIndividualVerificationChecksStatus.COMPLETED),
+          z.literal(EndUserIndividualVerificationChecksStatus.FAILED),
+        ])
+        .optional(),
       data: z.object({
         kyc_session_1: z.object({
           vendor: z.string(),

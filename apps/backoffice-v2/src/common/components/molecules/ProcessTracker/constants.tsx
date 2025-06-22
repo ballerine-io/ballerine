@@ -9,6 +9,7 @@ import { Pencil } from '../../atoms/Pencil/Pencil';
 import { COLLECTION_FLOW_PROCESS_NAME } from './trackers/collection-flow/consts';
 import { UBO_FLOW_PROCESS_NAME } from './trackers/ubo-flows/consts';
 import { THIRD_PARTY_PROCESS_NAME } from './trackers/third-party/consts';
+import { EndUserIndividualVerificationChecksStatus } from '@/domains/individuals/fetchers';
 
 export const tagToAccordionCardItem = {
   [StateTag.COLLECTION_FLOW]: 'Collection flow',
@@ -109,6 +110,13 @@ export const tagToIcon = {
   [StateTag.REJECTED]: Icon.CHECK,
   [StateTag.FAILURE]: Icon.X,
   [StateTag.REVISION]: Icon.REFRESH,
+} as const;
+
+export const endUserFlowStatusToIcon = {
+  [EndUserIndividualVerificationChecksStatus.IN_PROGRESS]: Icon.CLOCK,
+  [EndUserIndividualVerificationChecksStatus.COMPLETED]: Icon.CHECK,
+  [EndUserIndividualVerificationChecksStatus.FAILED]: Icon.X,
+  DEFAULT: Icon.INDICATOR,
 } as const;
 
 export const DEFAULT_PROCESS_TRACKER_PROCESSES = [
