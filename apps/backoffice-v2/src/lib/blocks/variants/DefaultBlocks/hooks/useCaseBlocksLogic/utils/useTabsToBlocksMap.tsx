@@ -21,7 +21,10 @@ import { z } from 'zod';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
+import {
+  EDIT_TEMPLATES,
+  useEditCollectionFlow,
+} from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -145,7 +148,9 @@ export const useTabsToBlocksMap = ({
   const { mutate: mutateInitiateIndividualVerificationAndSendEmail } =
     useInitiateIndividualVerificationAndSendEmailMutation();
 
-  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { onEditCollectionFlow: onEditCompanyOwnership } = useEditCollectionFlow(
+    EDIT_TEMPLATES.COMPANY_OWNERSHIP,
+  );
   const getInitiateKycEvent = (nextEvents: string[]) => {
     if (nextEvents?.includes('start')) {
       return 'start';
@@ -291,7 +296,7 @@ export const useTabsToBlocksMap = ({
               ids,
               workflowId: childWorkflow?.id,
             }),
-        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        onEdit: onEditCompanyOwnership,
         reasons:
           childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
             ({ enum: enum_ }) => !!enum_,
@@ -317,7 +322,6 @@ export const useTabsToBlocksMap = ({
     [
       getStatusFromCheckStatus,
       mutateInitiateIndividualVerificationAndSendEmail,
-      onEditCollectionFlow,
       getStatusFromTags,
       getInitiateKycEvent,
       getInitiateSanctionsScreeningEvent,
@@ -331,6 +335,7 @@ export const useTabsToBlocksMap = ({
       workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
       workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
       workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+      onEditCompanyOwnership,
     ],
   );
   const directorToIndividualAdapter = useCallback(
@@ -393,7 +398,7 @@ export const useTabsToBlocksMap = ({
         onReuploadNeeded:
           ({ reason, ids }: { reason: string; ids: string[] }) =>
           () => {},
-        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        onEdit: onEditCompanyOwnership,
         reasons: [],
         isReuploadNeededDisabled: true,
         isApproveDisabled: true,
@@ -411,7 +416,7 @@ export const useTabsToBlocksMap = ({
     },
     [
       mutateInitiateIndividualVerificationAndSendEmail,
-      onEditCollectionFlow,
+      onEditCompanyOwnership,
       workflow?.workflowDefinition?.config?.language,
       workflow?.id,
       caseState.actionButtonsEnabled,
@@ -519,7 +524,7 @@ export const useTabsToBlocksMap = ({
         onReuploadNeeded:
           ({ reason, ids }: { reason: string; ids: string[] }) =>
           () => {},
-        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        onEdit: onEditCompanyOwnership,
         reasons: [],
         isReuploadNeededDisabled: true,
         isApproveDisabled: true,
@@ -543,7 +548,7 @@ export const useTabsToBlocksMap = ({
       endUsers,
       getStatusFromCheckStatus,
       mutateInitiateIndividualVerificationAndSendEmail,
-      onEditCollectionFlow,
+      onEditCompanyOwnership,
       workflow?.workflowDefinition?.config?.language,
     ],
   );

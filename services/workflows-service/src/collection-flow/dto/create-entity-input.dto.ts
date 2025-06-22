@@ -1,3 +1,4 @@
+import { oneOf } from '@/common/decorators/one-of.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EndUserVariant } from '@prisma/client';
 import { IsBoolean, IsObject, IsOptional, IsString } from 'class-validator';
@@ -75,6 +76,6 @@ export class CreateEntityInputDto {
   @ApiProperty({
     type: String,
   })
-  @IsString()
+  @oneOf([EndUserVariant.director, EndUserVariant.ubo])
   variant?: EndUserVariant;
 }

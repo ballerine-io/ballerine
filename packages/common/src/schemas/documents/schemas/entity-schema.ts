@@ -17,6 +17,7 @@ export const IndividualDataSchema = Type.Object({
   avatarUrl: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   nationalId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
   additionalInfo: Type.Optional(Type.Union([Type.Object({}), Type.Null()])),
+  variant: Type.Optional(Type.Union([Type.Literal('director'), Type.Literal('ubo')])),
 });
 
 export const BusinessDataSchema = Type.Object({

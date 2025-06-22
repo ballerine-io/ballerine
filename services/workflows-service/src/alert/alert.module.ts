@@ -3,27 +3,26 @@ import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { UserService } from '@/user/user.service';
-import { forwardRef, HttpStatus, Module } from '@nestjs/common';
+import { forwardRef, HttpStatus, Module, OnModuleInit } from '@nestjs/common';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AlertControllerInternal } from '@/alert/alert.controller.internal';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertService } from '@/alert/alert.service';
 import { AlertControllerExternal } from '@/alert/alert.controller.external';
 import { PrismaModule } from '@/prisma/prisma.module';
-import {
-  WebhookHttpService,
-  WebhookManagerService,
-} from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import axiosRetry from 'axios-retry';
 import { isAxiosError } from 'axios';
 import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/http-service/utils';
-import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emitter.service';
 import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { SentryModule } from '@/sentry/sentry.module';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
+import { AlertQueueService } from './alert-queue.service';
+import { QueueModule } from '@/common/queue/queue.module';
+import { MonitoringModule } from '@/common/monitoring/monitoring.module';
 
 @Module({
   imports: [
@@ -32,6 +31,9 @@ import { SentryModule } from '@/sentry/sentry.module';
     PrismaModule,
     SentryModule,
     ProjectModule,
+    WebhooksModule,
+    QueueModule,
+    MonitoringModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 10,
@@ -48,30 +50,24 @@ import { SentryModule } from '@/sentry/sentry.module';
   ],
   controllers: [AlertControllerInternal, AlertControllerExternal],
   providers: [
-    {
-      provide: WebhookHttpService,
-      useExisting: HttpService,
-    },
     AlertService,
     AlertRepository,
     AlertDefinitionRepository,
-    WebhookManagerService,
-    WebhookEventEmitterService,
-    // TODO: Export to user module
+    AlertQueueService,
+    // TODO: Export to user modue
     UserService,
     UserRepository,
     PasswordService,
   ],
-  exports: [ACLModule, AlertRepository, AlertService, WebhookEventEmitterService],
+  exports: [ACLModule, AlertRepository, AlertService],
 })
-export class AlertModule {
+export class AlertModule implements OnModuleInit {
   constructor(
     private readonly httpService: HttpService,
     private readonly logger: AppLoggerService,
   ) {}
 
-  // Defining others configuration for our Axios instance
-  onModuleInit() {
+  async onModuleInit() {
     const _axios = this.httpService.axiosRef;
 
     interceptAxiosRequests(this.logger, _axios, AlertModule.name);
