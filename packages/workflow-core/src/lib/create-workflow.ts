@@ -13,6 +13,7 @@ export const createWorkflow: TCreateWorkflow = ({
   invokeChildWorkflowAction,
   invokeWorkflowTokenAction,
   secretsManager,
+  projectId,
 }) =>
   new WorkflowRunner({
     config,
@@ -26,4 +27,5 @@ export const createWorkflow: TCreateWorkflow = ({
     invokeChildWorkflowAction,
     invokeWorkflowTokenAction,
     secretsManager,
+    projectId,
   });

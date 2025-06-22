@@ -87,6 +87,7 @@ export interface WorkflowOptions {
   invokeWorkflowTokenAction?: WorkflowTokenPluginParams['action'];
   secretsManager?: SecretsManager;
   helpers?: TWorkflowHelpers;
+  projectId?: string;
 }
 
 export interface WorkflowRunnerArgs {
@@ -102,6 +103,7 @@ export interface WorkflowRunnerArgs {
   secretsManager?: SecretsManager;
   enableLogging?: boolean;
   helpers?: TWorkflowHelpers;
+  projectId?: string;
 }
 
 export type WorkflowEventWithoutState = Omit<WorkflowEvent, 'state'>;
