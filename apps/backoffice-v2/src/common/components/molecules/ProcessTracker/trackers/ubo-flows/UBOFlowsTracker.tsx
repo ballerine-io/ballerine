@@ -4,7 +4,7 @@ import { UBO_FLOW_PROCESS_NAME } from './consts';
 import { useUBOFlowsTrackerItems } from './hooks/useUBOFlowsTrackerItems';
 
 export const UBOFlowsTracker = ({ workflow, plugins, processes }: TTrackerComponentProps) => {
-  const items = useUBOFlowsTrackerItems(workflow?.childWorkflows);
+  const items = useUBOFlowsTrackerItems(workflow?.endUsers || []);
 
   return (
     <Tracker workflow={workflow} plugins={plugins} processes={processes}>
