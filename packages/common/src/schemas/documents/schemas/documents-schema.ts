@@ -423,6 +423,7 @@ export const DocumentsSchema = Type.Array(
         },
         { additionalProperties: true },
       ),
+      hiddenIn: Type.Optional(Type.String({ enum: ['backoffice'] })),
     },
     {
       additionalProperties: false,
