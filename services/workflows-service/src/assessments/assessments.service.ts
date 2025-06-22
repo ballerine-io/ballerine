@@ -88,7 +88,7 @@ export class AssessmentsService {
     }
   }
 
-  async getLatestAssessmentsByWorkflowRuntimeDataId({
+  async getLatestAssessments({
     workflowRuntimeDataId,
     projectId,
   }: {

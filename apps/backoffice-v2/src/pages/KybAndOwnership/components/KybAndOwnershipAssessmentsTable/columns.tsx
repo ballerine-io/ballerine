@@ -63,9 +63,9 @@ export const useColumns = () => {
         },
         header: 'Country / State',
       }),
-      columnHelper.accessor('input.businessId', {
+      columnHelper.accessor('input', {
         cell: info => {
-          const businessId = info.getValue();
+          const { businessId } = info.getValue() ?? {};
 
           return <TextWithNAFallback>{businessId}</TextWithNAFallback>;
         },

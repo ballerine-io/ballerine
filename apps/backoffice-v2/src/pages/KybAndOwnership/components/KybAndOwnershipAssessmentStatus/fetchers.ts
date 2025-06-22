@@ -13,8 +13,11 @@ export const updateAssessmentStatus = async ({
   status: UpdateableAssessmentStatus;
 }) => {
   const [data, error] = await apiClient({
-    endpoint: `../external/assessments/${assessmentId}/status/${status}`,
+    endpoint: `../external/assessments/${assessmentId}/status`,
     method: Method.PUT,
+    body: {
+      status,
+    },
     schema: z.object({
       id: z.string(),
       status: z.string(),

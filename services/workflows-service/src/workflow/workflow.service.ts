@@ -320,12 +320,10 @@ export class WorkflowService {
     projectId: string;
   }) {
     try {
-      const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId(
-        {
-          workflowRuntimeDataId,
-          projectId,
-        },
-      );
+      const assessments = await this.assessmentsService.getLatestAssessments({
+        workflowRuntimeDataId,
+        projectId,
+      });
 
       return assessments?.flatMap(assessment => assessment.individualVerificationsChecks) ?? [];
     } catch (error) {

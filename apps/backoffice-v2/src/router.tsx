@@ -34,6 +34,7 @@ import { KybAndOwnership } from '@/pages/KybAndOwnership/KybAndOwnership.page';
 import { KybAndOwnershipAssessmentPage } from '@/pages/KybAndOwnershipAssessmentPage';
 import { IdentityVerification } from '@/pages/IdentityVerification/IdentityVerification.page';
 import { IdentityVerificationAssessmentPage } from '@/pages/IdentityVerificationAssessment/IdentityVerificationAssessment.page';
+import { AssessmentsLayout } from './domains/assessments/components/AssessmentsLayout/AssessmentsLayout';
 
 const router = createBrowserRouter([
   {
@@ -113,6 +114,7 @@ const router = createBrowserRouter([
 
                   return true;
                 },
+                element: <AssessmentsLayout />,
                 errorElement: <RouteError />,
                 children: [
                   {
