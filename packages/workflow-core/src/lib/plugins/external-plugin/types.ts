@@ -29,6 +29,7 @@ export interface IApiPluginParams {
   secretsManager?: SecretsManager;
   whitelistedInputProperties?: string[];
   includeInvokedAt?: boolean;
+  projectId?: string;
   invoke?(...args: any[]): any;
 }
 
