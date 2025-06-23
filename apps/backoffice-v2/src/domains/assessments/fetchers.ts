@@ -6,60 +6,76 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import qs from 'qs';
 import { ASSESSMENT_STATUSES, ASSESSMENT_STATUSES_MAP } from '@ballerine/common';
 
-export const KybAndOwnershipAssessmentSchema = z
-  .object({
-    id: z.string(),
-    status: z.enum(ASSESSMENT_STATUSES).catch(ASSESSMENT_STATUSES_MAP['in-progress']),
-    type: z.literal('kyb_and_ownership'),
-    createdAt: z.string(),
-    input: z
-      .object({
-        companyName: z.string(),
-        country: z.string(),
-        registrationNumber: z.string(),
-        businessId: z.string().nullable().optional(),
-      })
-      .optional()
-      .nullable(),
-    companySanctions: z
-      .object({
-        createdAt: z.string().optional(),
-        updatedAt: z.string().optional(),
-        output: z
-          .object({
-            data: z.any().optional(),
-          })
-          .passthrough()
-          .nullable(),
-      })
-      .passthrough()
-      .nullable()
-      .optional(),
-    companyRegistryInformation: z
-      .object({
-        createdAt: z.string().optional(),
-        updatedAt: z.string().optional(),
-        output: z
-          .object({
-            data: z.any().optional(),
-          })
-          .passthrough()
-          .nullable(),
-      })
-      .passthrough()
-      .nullable()
-      .optional(),
-    companyStructure: z
-      .object({
-        createdAt: z.string().optional(),
-        updatedAt: z.string().optional(),
-        output: z.any().optional(),
-      })
-      .passthrough()
-      .nullable()
-      .optional(),
-  })
-  .passthrough();
+export const KybAndOwnershipAssessmentSchema = z.object({
+  id: z.string(),
+  status: z.enum(ASSESSMENT_STATUSES).catch(ASSESSMENT_STATUSES_MAP['in-progress']),
+  type: z.literal('kyb_and_ownership'),
+  createdAt: z.string(),
+  input: z
+    .object({
+      companyName: z.string(),
+      country: z.string(),
+      registrationNumber: z.string(),
+      businessId: z.string().nullable().optional(),
+    })
+    .optional()
+    .nullable(),
+  companySanctions: z
+    .object({
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      output: z
+        .object({
+          data: z.any().optional(),
+        })
+        .passthrough()
+        .nullable(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+  companyRegistryInformation: z
+    .object({
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      output: z
+        .object({
+          data: z.any().optional(),
+        })
+        .passthrough()
+        .nullable(),
+      errors: z.string().nullable(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+  companyStructure: z
+    .object({
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      output: z.any().optional(),
+      errors: z.string().nullable(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+  companyJurisdictionRisk: z
+    .object({
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      output: z
+        .object({
+          level: z.enum(['LOW', 'HIGH']).optional(),
+          jurisdictionCode: z.string().optional(),
+        })
+        .passthrough()
+        .nullable()
+        .optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+});
 
 export type TKybAndOwnershipAssessment = z.infer<typeof KybAndOwnershipAssessmentSchema>;
 

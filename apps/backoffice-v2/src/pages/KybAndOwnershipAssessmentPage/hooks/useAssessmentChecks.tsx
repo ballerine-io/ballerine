@@ -36,31 +36,25 @@ export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
 
   const registryData = assessment?.companyRegistryInformation?.output?.data;
 
+  const jurisdictionRiskData = assessment?.companyJurisdictionRisk?.output;
+
   const checks: CheckItem[] = [];
 
   // 1. Registry Information check
   checks.push(
     createCheck(
       'Registry Information',
-      assessment?.companyRegistryInformation
-        ? assessment.companyRegistryInformation.status === 'completed' && Boolean(registryData)
-        : null,
+      assessment?.companyRegistryInformation?.errors ? null : true,
       'Extracted',
       'Flagged',
     ),
   );
 
   // 2. Company Structure check
-  const hasStructureData = Boolean(
-    assessment?.companyStructure?.status === 'completed' &&
-      (assessment?.companyStructure?.output?.nodes?.length ||
-        assessment?.companyStructure?.output?.edges?.length),
-  );
-
   checks.push(
     createCheck(
       'Company Structure',
-      assessment?.companyStructure ? hasStructureData : null,
+      assessment?.companyStructure?.errors ? null : true,
       'Extracted',
     ),
   );
@@ -119,17 +113,16 @@ export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
     checks.push(createCheck('Registered Address', null));
   }
 
-  // comment for dummy commit
-
   // 7. Company Jurisdiction check
-  if (registryData?.incorporationJurisdiction?.original) {
-    // High-risk jurisdictions
-    // FIXME: In a real implementation, this would be from a configuration
-    const highRiskJurisdictions = ['RU', 'BY', 'IR', 'KP', 'SY', 'CU', 'VE'];
-    const jurisdiction = String(registryData.incorporationJurisdiction.original);
-    const isHighRisk = highRiskJurisdictions.includes(jurisdiction);
-
-    checks.push(createCheck('Company Jurisdiction', !isHighRisk, 'Clear', 'High Risk'));
+  if (jurisdictionRiskData) {
+    checks.push(
+      createCheck(
+        'Company Jurisdiction',
+        jurisdictionRiskData.level !== 'HIGH',
+        'Clear',
+        'High Risk',
+      ),
+    );
   } else if (hasRegistryData) {
     checks.push(createCheck('Company Jurisdiction', null));
   }
@@ -138,9 +131,7 @@ export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
 };
 
 export type WarningFlag = {
-  id: string;
   title: string;
-  description: string;
   severity: 'info' | 'warning' | 'error';
 };
 
@@ -151,73 +142,37 @@ export const getWarningFlags = (assessment: Assessment | undefined): WarningFlag
 
   const flags: WarningFlag[] = [];
 
-  const geographyInfo = assessment.input?.countryOfIncorporation || assessment.input?.country;
   const registryStatus = assessment.companyRegistryInformation?.status;
-  const registryError = assessment.companyRegistryInformation?.error;
+  const registryError = assessment.companyRegistryInformation?.errors;
 
   if (registryStatus === 'failed' || registryError) {
-    if (registryError?.includes('not supported') || registryError?.includes('unsupported')) {
-      flags.push({
-        id: 'registry-not-supported',
-        title: 'Registry Information Not Supported',
-        description: `Company registry information is not supported for ${
-          geographyInfo || 'the provided geography'
-        }.`,
-        severity: 'warning',
-      });
-    } else if (registryError?.includes('not found') || registryError?.includes('does not exist')) {
-      flags.push({
-        id: 'company-not-exist',
-        title: 'Company Does Not Exist in Registry',
-        description: 'The company could not be found in the registry database.',
-        severity: 'error',
-      });
-    } else {
-      flags.push({
-        id: 'registry-not-available',
-        title: 'Registry Information Not Available',
-        description: 'Registry information is temporarily unavailable.',
-        severity: 'info',
-      });
-    }
+    flags.push({
+      title: registryError ?? 'Registry Information Not Available At The Moment',
+      severity:
+        registryError?.toLowerCase().includes('not supported') ||
+        registryError?.toLowerCase().includes('does not exist')
+          ? 'error'
+          : 'info',
+    });
   }
 
   const structureStatus = assessment.companyStructure?.status;
-  const structureError = assessment.companyStructure?.error;
+  const structureError = assessment.companyStructure?.errors;
 
   if (structureStatus === 'failed' || structureError) {
-    if (structureError?.includes('not supported') || structureError?.includes('unsupported')) {
-      flags.push({
-        id: 'ownership-not-supported',
-        title: 'Ownership Information Not Supported',
-        description: `Ownership information is not supported for ${
-          geographyInfo || 'the provided geography'
-        }.`,
-        severity: 'warning',
-      });
-    } else {
-      flags.push({
-        id: 'ownership-not-available',
-        title: 'Ownership Information Not Available',
-        description: 'Ownership information is temporarily unavailable.',
-        severity: 'info',
-      });
-    }
+    flags.push({
+      title: structureError ?? 'Ownership Information Not Available At The Moment',
+      severity: structureError?.toLowerCase().includes('not supported') ? 'error' : 'info',
+    });
   }
 
-  const registryData = assessment.companyRegistryInformation?.output?.data;
-  if (registryData?.incorporationJurisdiction?.original) {
-    const highRiskJurisdictions = ['RU', 'BY', 'IR', 'KP', 'SY', 'CU', 'VE'];
-    const jurisdiction = String(registryData.incorporationJurisdiction.original);
+  const isHighRiskJurisdiction = assessment.companyJurisdictionRisk?.output?.level === 'HIGH';
 
-    if (highRiskJurisdictions.includes(jurisdiction)) {
-      flags.push({
-        id: 'high-risk-jurisdiction',
-        title: 'High Risk Company Jurisdiction',
-        description: `The company is registered in ${jurisdiction}, which is considered a high-risk jurisdiction.`,
-        severity: 'error',
-      });
-    }
+  if (isHighRiskJurisdiction) {
+    flags.push({
+      title: 'High Risk Company Jurisdiction',
+      severity: 'error',
+    });
   }
 
   return flags;
