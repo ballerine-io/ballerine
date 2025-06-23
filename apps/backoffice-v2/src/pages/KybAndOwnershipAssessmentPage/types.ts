@@ -1,4 +1,8 @@
 import type { LucideIcon } from 'lucide-react';
+import { z } from 'zod';
+import type { KybAndOwnershipAssessmentSchema } from '@/domains/assessments/fetchers';
+
+export type Assessment = z.infer<typeof KybAndOwnershipAssessmentSchema>;
 
 export type CheckStatus = 'positive' | 'neutral' | 'negative';
 
@@ -26,32 +30,6 @@ export interface NormalizedAddress {
   street: string;
   number: string;
   postalCode: string;
-}
-
-export interface Assessment {
-  id: string;
-  companyRegistryInformation?: {
-    status: string;
-    output?: {
-      data?: any;
-    };
-  };
-  companySanctions?: {
-    status: string;
-    output?: {
-      data?: any[];
-    };
-  };
-  companyStructure?: {
-    status: string;
-    output?: {
-      nodes?: any[];
-      edges?: any[];
-    };
-  };
-  input?: {
-    country?: string;
-  };
 }
 
 export interface SanctionsData {
