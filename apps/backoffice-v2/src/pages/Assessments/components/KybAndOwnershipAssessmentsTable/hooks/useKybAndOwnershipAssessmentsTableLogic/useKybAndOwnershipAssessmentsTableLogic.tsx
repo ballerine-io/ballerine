@@ -10,7 +10,7 @@ export const useKybAndOwnershipAssessmentsTableLogic = () => {
   const Cell: IDataTableProps<TKybAndOwnershipAssessment>['CellContentWrapper'] = ({
     cell,
     children,
-  }) => <Link to={`/${locale}/kyb-and-ownership/${cell.row.id}`}>{children}</Link>;
+  }) => <Link to={`/${locale}/assessments/kyb-and-ownership/${cell.row.id}`}>{children}</Link>;
 
   return { Cell };
 };

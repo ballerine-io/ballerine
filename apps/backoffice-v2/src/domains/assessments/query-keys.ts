@@ -2,14 +2,15 @@ import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 import {
   fetchIdentityVerificationAssessments,
-  fetchKybAndOwnershipAssessment,
-  fetchKybAndOwnershipAssessments,
+  fetchAssessment,
+  fetchAssessments,
   IIdentityVerificationAssessmentsParams,
-  IKybAndOwnershipAssessmentsParams,
+  IAssessmentsParams,
+  IAssessmentType,
 } from './fetchers';
 
-export const kybAndOwnershipAssessmentsQueryKey = createQueryKeys('kyb-and-ownership-assessments', {
-  list: ({ page, ...params }: IKybAndOwnershipAssessmentsParams) => ({
+export const assessmentsQueryKey = createQueryKeys('assessments', {
+  list: (type: IAssessmentType, { page, ...params }: IAssessmentsParams) => ({
     queryKey: [{ page, ...params }],
     queryFn: () => {
       const data = {
@@ -20,12 +21,12 @@ export const kybAndOwnershipAssessmentsQueryKey = createQueryKeys('kyb-and-owner
         },
       };
 
-      return fetchKybAndOwnershipAssessments(data);
+      return fetchAssessments(type, data);
     },
   }),
   findById: ({ id }: { id: string }) => ({
     queryKey: [{ id }],
-    queryFn: () => fetchKybAndOwnershipAssessment(id),
+    queryFn: () => fetchAssessment(id),
   }),
 });
 

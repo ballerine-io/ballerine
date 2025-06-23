@@ -38,43 +38,41 @@ export class AssessmentsControllerExternal {
     return assessments;
   }
 
-  @common.Get('/kyb_and_ownership')
-  @swagger.ApiOperation({ summary: 'Get KYB & Ownership assessments' })
+  @common.Get('/:type')
+  @swagger.ApiOperation({ summary: 'Get assessments' })
   @swagger.ApiResponse({
     status: 200,
-    description: 'Successfully retrieved KYB & Ownership assessments',
+    description: 'Successfully retrieved assessments',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   @common.UsePipes(new ZodValidationPipe(GetKybAndOwnershipAssessmentsSchema, 'query'))
-  getKybAndOwnershipAssessments(
+  getAssessments(
+    @common.Param() type: 'kyb_and_ownership' | 'company_sanctions',
     @common.Query() query: GetKybAndOwnershipAssessmentsDto,
     @CurrentProject() projectId: TProjectId,
   ) {
-    return this.assessmentsService.getKybAndOwnershipAssessments(query, projectId);
+    return this.assessmentsService.getAssessments(type, query, projectId);
   }
 
-  @common.Get('/kyb_and_ownership/:id')
-  @swagger.ApiOperation({ summary: 'Get a specific KYB & Ownership assessment' })
+  @common.Get('/by-id/:id')
+  @swagger.ApiOperation({ summary: 'Get a specific assessment' })
   @swagger.ApiResponse({
     status: 200,
-    description: 'Successfully retrieved KYB & Ownership assessment',
+    description: 'Successfully retrieved assessment',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
-  getKybAndOwnershipAssessment(
-    @common.Param('id') id: string,
-    @CurrentProject() projectId: TProjectId,
-  ) {
-    return this.assessmentsService.getKybAndOwnershipAssessment(id, projectId);
+  getAssessment(@common.Param('id') id: string, @CurrentProject() projectId: TProjectId) {
+    return this.assessmentsService.getAssessment(id, projectId);
   }
 
   @common.Post()
-  @swagger.ApiOperation({ summary: 'Create KYB & Ownership assessment' })
+  @swagger.ApiOperation({ summary: 'Create an assessment' })
   @swagger.ApiResponse({
     status: 201,
-    description: 'Successfully created KYB & Ownership assessment',
+    description: 'Successfully created an assessment',
   })
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
-  createKybAndOwnershipAssessment(
+  createAssessment(
     @common.Body() body: CreateAssessmentDto,
     @CurrentProject() projectId: TProjectId,
   ) {

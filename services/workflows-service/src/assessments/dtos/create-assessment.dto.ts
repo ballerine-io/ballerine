@@ -7,8 +7,8 @@ export class CreateAssessmentDto {
     description: 'Type of assessment',
     example: 'kyb_and_ownership',
   })
-  @oneOf(['kyb_and_ownership'])
-  type!: 'kyb_and_ownership';
+  @oneOf(['kyb_and_ownership', 'company_sanctions'])
+  type!: 'kyb_and_ownership' | 'company_sanctions';
 
   @ApiProperty({
     description: 'Business ID',
