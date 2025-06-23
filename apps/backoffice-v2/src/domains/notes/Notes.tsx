@@ -1,6 +1,5 @@
-import { ctw } from '@ballerine/ui';
-import { Loader2, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import { ctw, ScrollArea } from '@ballerine/ui';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
@@ -34,7 +33,7 @@ export const Notes = ({
         <span className={`text-sm font-medium`}>Notes</span>
       </div>
 
-      <div className={`p-b-4 flex h-[calc(100%-48px)] flex-col gap-1 border-none`}>
+      <div className={`flex h-[calc(100%-48px)] flex-col gap-1 border-none`}>
         <div className={`p-4`}>
           <Form {...form}>
             <form
@@ -77,7 +76,7 @@ export const Notes = ({
                   'mt-3 h-5 self-end p-4 text-sm font-medium enabled:bg-primary enabled:hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-50'
                 }
               >
-                <Loader2 className={ctw('me-2 h-4 w-4 animate-spin', { hidden: !isLoading })} />
+                <Loader2 className={ctw('me-2 size-4 animate-spin', { hidden: !isLoading })} />
                 Submit
               </Button>
             </form>
@@ -86,15 +85,17 @@ export const Notes = ({
 
         <Separator />
 
-        <div className={`space-y-4 overflow-y-auto p-4`}>
-          {(notes || []).map(note => (
-            <Note
-              key={note.id}
-              {...note}
-              user={(users || []).find(user => user.id === note.createdBy)}
-            />
-          ))}
-        </div>
+        <ScrollArea orientation="vertical" className={`p-4`}>
+          <div className={`flex flex-col gap-4`}>
+            {(notes || []).map(note => (
+              <Note
+                key={note.id}
+                {...note}
+                user={(users || []).find(user => user.id === note.createdBy)}
+              />
+            ))}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );
