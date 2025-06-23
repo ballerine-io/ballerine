@@ -22,6 +22,7 @@ export const CustomerConfigSchema = z.object({
   disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
   isDemoAccount: z.boolean().default(false).optional(),
   isKybAndOwnershipAssessmentEnabled: z.boolean().default(false).optional(),
+  isCompanySanctionsAssessmentEnabled: z.boolean().default(false).optional(),
   createIdentityVerification: z.boolean().default(false).optional(),
 });
 

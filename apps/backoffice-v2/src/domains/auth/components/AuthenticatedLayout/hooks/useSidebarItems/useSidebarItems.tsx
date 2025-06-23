@@ -72,8 +72,15 @@ export const useSidebarItems = () => {
   const kybAndOwnershipNavItem = {
     text: 'KYB & Ownership',
     icon: BuildingIcon,
-    href: `/${locale}/kyb-and-ownership`,
+    href: `/${locale}/assessments/kyb-and-ownership`,
     key: 'nav-item-kyb-and-ownership',
+  };
+
+  const companySanctionsNavItem = {
+    text: 'Company Sanctions',
+    icon: BuildingIcon,
+    href: `/${locale}/assessments/company-sanctions`,
+    key: 'nav-item-company-sanctions',
   };
 
   const navItems: TRoute[] = customer?.config?.isDemoAccount
@@ -165,6 +172,7 @@ export const useSidebarItems = () => {
           key: 'nav-item-individuals',
         },
         ...(customer?.config?.isKybAndOwnershipAssessmentEnabled ? [kybAndOwnershipNavItem] : []),
+        ...(customer?.config?.isCompanySanctionsAssessmentEnabled ? [companySanctionsNavItem] : []),
         // ...(customer?.config?.createIdentityVerification
         //   ? [
         //       {

@@ -13,10 +13,10 @@ import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPa
 import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapper/DemoAccessWrapper';
 import { KybAndOwnershipAssessmentsTable } from './components/KybAndOwnershipAssessmentsTable/KybAndOwnershipAssessmentsTable';
 import { NoKybAndOwnershipAssessments } from './components/NoKybAndOwnershipAssessments/NoKybAndOwnershipAssessments';
-import { useKybAndOwnershipLogic } from './hooks/useKybAndOwnershipLogic/useKybAndOwnershipLogic';
+import { useAssessmentsLogic } from './hooks/useAssessmentsLogic/useAssessmentsLogic';
 import { CreateKybAndOwnershipAssessmentDialog } from './components/CreateKybAndOwnershipAssessmentDialog/CreateKybAndOwnershipAssessmentDialog';
 
-export const KybAndOwnership: FunctionComponent = () => {
+export const AssessmentsPage: FunctionComponent = () => {
   const {
     assessments,
     isLoadingAssessments,
@@ -39,7 +39,7 @@ export const KybAndOwnership: FunctionComponent = () => {
     avatarUrl,
     open,
     toggleOpen,
-  } = useKybAndOwnershipLogic();
+  } = useAssessmentsLogic();
 
   return (
     <DemoAccessWrapper

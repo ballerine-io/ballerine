@@ -30,8 +30,8 @@ import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import type { FunctionComponent } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { KybAndOwnership } from '@/pages/KybAndOwnership/KybAndOwnership.page';
-import { KybAndOwnershipAssessmentPage } from '@/pages/KybAndOwnershipAssessmentPage';
+import { AssessmentsPage } from '@/pages/Assessments/Assessments.page';
+import { AssessmentPage } from '@/pages/Assessment/Assessment.page';
 import { IdentityVerification } from '@/pages/IdentityVerification/IdentityVerification.page';
 import { IdentityVerificationAssessmentPage } from '@/pages/IdentityVerificationAssessment/IdentityVerificationAssessment.page';
 
@@ -116,13 +116,13 @@ const router = createBrowserRouter([
                 errorElement: <RouteError />,
                 children: [
                   {
-                    path: '/:locale/kyb-and-ownership',
-                    element: <KybAndOwnership />,
+                    path: '/:locale/assessments/:assessmentType',
+                    element: <AssessmentsPage />,
                     errorElement: <RouteError />,
                   },
                   {
-                    path: '/:locale/kyb-and-ownership/:assessmentId',
-                    element: <KybAndOwnershipAssessmentPage />,
+                    path: '/:locale/assessments/:assessmentType/:assessmentId',
+                    element: <AssessmentPage />,
                     errorElement: <RouteError />,
                   },
                 ],

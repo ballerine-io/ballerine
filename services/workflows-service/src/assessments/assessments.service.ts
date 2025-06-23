@@ -4,6 +4,7 @@ import { GetKybAndOwnershipAssessmentsDto } from './dtos/get-kyb-and-ownership-a
 import { CustomerService } from '@/customer/customer.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
+import { CreateAssessmentDto } from './dtos/create-assessment.dto';
 
 @Injectable()
 export class AssessmentsService {
@@ -12,7 +13,8 @@ export class AssessmentsService {
     protected readonly customerService: CustomerService,
   ) {}
 
-  async getKybAndOwnershipAssessments(
+  async getAssessments(
+    type: 'kyb_and_ownership' | 'company_sanctions',
     query: GetKybAndOwnershipAssessmentsDto,
     projectId: TProjectId,
   ) {
@@ -23,7 +25,7 @@ export class AssessmentsService {
       };
 
       const result = await new UnifiedApiClient().getAssessmentsByType(
-        'kyb_and_ownership',
+        type,
         projectId,
         queryParams,
       );
@@ -34,7 +36,7 @@ export class AssessmentsService {
     }
   }
 
-  async getKybAndOwnershipAssessment(id: string, projectId: TProjectId) {
+  async getAssessment(id: string, projectId: TProjectId) {
     try {
       const result = await new UnifiedApiClient().getAssessmentById(id, projectId);
 
@@ -45,18 +47,7 @@ export class AssessmentsService {
   }
 
   async createAssessment(
-    {
-      country,
-      state,
-      ...payload
-    }: {
-      type: 'kyb_and_ownership';
-      registrationNumber: string;
-      companyName: string;
-      country: string;
-      state?: string;
-      businessId?: string;
-    },
+    { country, state, ...payload }: CreateAssessmentDto,
     projectId: TProjectId,
   ) {
     try {

@@ -17,6 +17,7 @@ export const useCreateKybAndOwnershipAssessmentDialogLogic = ({
       registrationNumber: '',
       country: '',
       state: '',
+      type: 'kyb_and_ownership',
       businessId: undefined,
     },
     resolver: zodResolver(CreateKybAndOwnershipAssessmentDialogSchema),

@@ -10,11 +10,14 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { IS_ALERT_TO_DISPLAY_TEXT } from '@/pages/MerchantMonitoring/schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { KybAndOwnershipAssessmentsSearchSchema } from '../../schemas';
-import { useKybAndOwnershipAssessmentsQuery } from '@/domains/assessments/hooks/queries/useKybAndOwnershipAssessmentsQuery/useKybAndOwnershipAssessmentsQuery';
+import { useAssessmentsQuery } from '@/domains/assessments/hooks/queries/useAssessmentsQuery/useAssessmentsQuery';
+import { useParams } from 'react-router-dom';
+import { IAssessmentType } from '@/domains/assessments/fetchers';
 
-export const useKybAndOwnershipLogic = () => {
+export const useAssessmentsLogic = () => {
   const locale = useLocale();
 
+  const { assessmentType } = useParams<{ assessmentType: string }>();
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
 
@@ -43,7 +46,10 @@ export const useKybAndOwnershipLogic = () => {
     [page, pageSize, from, to],
   );
 
-  const { data, isLoading: isLoadingAssessments } = useKybAndOwnershipAssessmentsQuery(reportQuery);
+  const { data, isLoading: isLoadingAssessments } = useAssessmentsQuery(
+    assessmentType,
+    reportQuery,
+  );
 
   const isClearAllButtonVisible = useMemo(
     () => !!(search !== '' || from || to),

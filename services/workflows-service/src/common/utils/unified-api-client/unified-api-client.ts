@@ -205,7 +205,7 @@ export class UnifiedApiClient {
   }
 
   public async getAssessmentsByType(
-    assessmentType: 'kyb_and_ownership',
+    assessmentType: 'kyb_and_ownership' | 'company_sanctions',
     projectId: string,
     queryParams: {
       page: number;
@@ -225,7 +225,7 @@ export class UnifiedApiClient {
   }
 
   public async createAssessment(
-    assessmentType: 'kyb_and_ownership',
+    assessmentType: 'kyb_and_ownership' | 'company_sanctions',
     payload: {
       registrationNumber: string;
       companyName: string;
