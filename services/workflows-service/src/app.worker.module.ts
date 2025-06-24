@@ -37,8 +37,4 @@ import { MetricsAuthMiddleware } from './common/middlewares/metrics-auth.middlew
     AlertModule,
   ],
 })
-export class WorkerAppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(MetricsAuthMiddleware).forRoutes('*');
-  }
-}
+export class WorkerAppModule {}
