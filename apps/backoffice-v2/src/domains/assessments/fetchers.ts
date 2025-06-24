@@ -7,6 +7,32 @@ import qs from 'qs';
 import { ASSESSMENT_STATUSES, ASSESSMENT_STATUSES_MAP } from '@ballerine/common';
 import { snakeCase } from 'lodash-es';
 
+export const CompanySanctionsAssessmentSchema = z
+  .object({
+    id: z.string(),
+    status: z.enum(ASSESSMENT_STATUSES).catch(ASSESSMENT_STATUSES_MAP['in-progress']),
+    type: z.literal('company_sanctions'),
+    createdAt: z.string(),
+    input: z
+      .object({
+        companyName: z.string(),
+        country: z.string(),
+        businessId: z.string().nullable().optional(),
+      })
+      .optional()
+      .nullable(),
+    companySanctions: z
+      .object({
+        createdAt: z.string().optional(),
+        updatedAt: z.string().optional(),
+        output: z.object({ data: z.any().optional() }).passthrough().nullable(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+  })
+  .passthrough();
+
 export const KybAndOwnershipAssessmentSchema = z
   .object({
     id: z.string(),
@@ -64,8 +90,13 @@ export const KybAndOwnershipAssessmentSchema = z
 
 export type TKybAndOwnershipAssessment = z.infer<typeof KybAndOwnershipAssessmentSchema>;
 
+export const AssessmentSchema = z.union([
+  KybAndOwnershipAssessmentSchema,
+  CompanySanctionsAssessmentSchema,
+]);
+
 export const AssessmentsSchema = z.object({
-  data: z.array(KybAndOwnershipAssessmentSchema),
+  data: z.array(z.union([KybAndOwnershipAssessmentSchema, CompanySanctionsAssessmentSchema])),
   totalItems: z.number().nonnegative(),
   totalPages: z.number().nonnegative(),
 });
@@ -82,13 +113,15 @@ export interface IKybAndOwnershipAssessmentParams {
   id: string;
 }
 
-export type TKybAndOwnershipAssessments = z.infer<typeof AssessmentsSchema>;
+export type TAssessments = z.infer<typeof AssessmentsSchema>;
+
+export type TAssessment = z.infer<typeof AssessmentSchema>;
 
 export const fetchAssessment = async (id: string) => {
   const [result, error] = await apiClient({
     endpoint: `../external/assessments/by-id/${id}`,
     method: Method.GET,
-    schema: KybAndOwnershipAssessmentSchema,
+    schema: AssessmentSchema,
     timeout: 30_000,
   });
 
@@ -110,7 +143,7 @@ export const fetchAssessments = async (type: IAssessmentType, params: IAssessmen
 
 export const assessmentEnumSchema = z.enum(['kyb_and_ownership', 'company_sanctions']);
 
-export const CreateKybAndOwnershipAssessmentSchema = z.object({
+export const CreateAssessmentSchema = z.object({
   type: assessmentEnumSchema,
   companyName: z.string(),
   registrationNumber: z.string(),
@@ -119,22 +152,16 @@ export const CreateKybAndOwnershipAssessmentSchema = z.object({
   businessId: z.string().optional(),
 });
 
-const CreateKybAndOwnershipAssessmentResponseSchema = z.object({
-  id: z.string(),
-});
+const CreateAssessmentResponseSchema = z.object({ id: z.string() });
 
-export type TCreateKybAndOwnershipAssessmentPayload = z.infer<
-  typeof CreateKybAndOwnershipAssessmentSchema
->;
+export type TCreateAssessmentPayload = z.infer<typeof CreateAssessmentSchema>;
 
-export const createKybAndOwnershipAssessment = async (
-  payload: TCreateKybAndOwnershipAssessmentPayload,
-) => {
+export const createAssessment = async (payload: TCreateAssessmentPayload) => {
   const [result, error] = await apiClient({
     endpoint: `../external/assessments`,
     method: Method.POST,
     body: payload,
-    schema: CreateKybAndOwnershipAssessmentResponseSchema,
+    schema: CreateAssessmentResponseSchema,
   });
 
   return handleZodError(error, result);

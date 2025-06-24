@@ -8,6 +8,9 @@ import {
 import { useMemo } from 'react';
 
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
+import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
+import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
 import { BlocksComponent } from '@ballerine/blocks';
 import { BlockCardWrapper } from '../components/BlockCardWrapper';
 import { ChecksSectionContent } from '../components/ChecksSectionContent';
@@ -17,10 +20,37 @@ import { AssessmentPageSection, SectionDataProps } from '../types';
 export const useSectionData = ({
   assessment,
   assessmentChecks,
-  companySanctionsBlock,
-  companyStructureBlock,
-  registryInfoBlock,
 }: SectionDataProps): AssessmentPageSection[] => {
+  const companySanctions = useMemo(() => {
+    return assessment?.companySanctions?.output?.data?.map(sanction => ({
+      sources: sanction?.entity?.sources,
+      officialLists: sanction?.entity?.officialLists,
+      fullReport: sanction,
+      linkedIndividuals: sanction?.entity?.linkedIndividuals,
+      lastReviewed: sanction?.entity?.lastReviewed,
+      primaryName: sanction?.entity?.name,
+      labels: sanction?.entity?.categories,
+      reasonsForMatch: sanction?.matchedFields,
+      furtherInformation: sanction?.entity?.furtherInformation,
+      alternativeNames: sanction?.entity?.otherNames,
+      places: sanction?.entity?.places,
+    }));
+  }, [assessment?.companySanctions?.output?.data]);
+  const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
+
+  const registryInfoBlock = useKybRegistryInfoBlock({
+    pluginsOutput: {
+      businessInformation: { data: [assessment?.companyRegistryInformation?.output?.data] },
+    },
+    workflow: {},
+  });
+
+  const companyStructureBlock = useUbosRegistryProvidedBlock(
+    assessment?.companyStructure?.output?.nodes && assessment?.companyStructure?.output.edges
+      ? assessment?.companyStructure?.output
+      : { nodes: [], edges: [] },
+  );
+
   return useMemo(() => {
     const registryData = assessment?.companyRegistryInformation?.output?.data;
     const getRegisteredAddress = () => {
@@ -39,6 +69,30 @@ export const useSectionData = ({
 
     const registeredAddress = getRegisteredAddress();
 
+    // Company sanctions section
+    const companySanctionsSection = {
+      id: 'company-sanctions',
+      title: 'Company Sanctions',
+      Icon: AlertTriangleIcon,
+      hasViolations: Boolean(assessment?.companySanctions?.output?.data?.length),
+      Component: (
+        <BlockCardWrapper
+          status={assessment?.companySanctions?.status}
+          errorMessage="Company Sanctions check failed"
+          emptyMessage="Company Sanctions data is not available"
+          showContent={assessment?.companySanctions?.status === 'completed'}
+        >
+          <BlocksComponent blocks={[...companySanctionsBlock]} cells={cells}>
+            {(Cell: any, cell: any) => <Cell {...cell} />}
+          </BlocksComponent>
+        </BlockCardWrapper>
+      ),
+    };
+
+    if (assessment?.type === 'company_sanctions') {
+      return [companySanctionsSection];
+    }
+
     return [
       {
         id: 'checks',
@@ -47,24 +101,7 @@ export const useSectionData = ({
         hasViolations: assessmentChecks.some(check => check.status === 'negative'),
         Component: <ChecksSectionContent assessmentChecks={assessmentChecks} />,
       },
-      {
-        id: 'company-sanctions',
-        title: 'Company Sanctions',
-        Icon: AlertTriangleIcon,
-        hasViolations: Boolean(assessment?.companySanctions?.output?.data?.length),
-        Component: (
-          <BlockCardWrapper
-            status={assessment?.companySanctions?.status}
-            errorMessage="Company Sanctions check failed"
-            emptyMessage="Company Sanctions data is not available"
-            showContent={assessment?.companySanctions?.status === 'completed'}
-          >
-            <BlocksComponent blocks={[...companySanctionsBlock]} cells={cells}>
-              {(Cell: any, cell: any) => <Cell {...cell} />}
-            </BlocksComponent>
-          </BlockCardWrapper>
-        ),
-      },
+      companySanctionsSection,
       {
         id: 'registry-information',
         title: 'Registry Information',

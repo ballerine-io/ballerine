@@ -205,18 +205,14 @@ export class UnifiedApiClient {
   }
 
   public async getAssessmentsByType(
-    assessmentType: 'kyb_and_ownership' | 'company_sanctions',
     projectId: string,
     queryParams: {
       page: number;
       limit: number;
     },
   ) {
-    return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
-      params: {
-        ...queryParams,
-        projectId,
-      },
+    return await this.axiosInstance.get(`/assessments`, {
+      params: { ...queryParams, projectId },
     });
   }
 
@@ -224,17 +220,15 @@ export class UnifiedApiClient {
     return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
   }
 
-  public async createAssessment(
-    assessmentType: 'kyb_and_ownership' | 'company_sanctions',
-    payload: {
-      registrationNumber: string;
-      companyName: string;
-      country: string;
-      projectId: string;
-      businessId?: string;
-    },
-  ) {
-    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+  public async createAssessment(payload: {
+    type: 'kyb_and_ownership' | 'company_sanctions';
+    companyName: string;
+    country: string;
+    projectId: string;
+    registrationNumber?: string;
+    businessId?: string;
+  }) {
+    return await this.axiosInstance.post(`/assessments`, payload);
   }
 
   public async updateAssessmentStatus(

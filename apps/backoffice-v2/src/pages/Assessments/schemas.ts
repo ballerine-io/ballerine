@@ -50,3 +50,35 @@ export const CreateKybAndOwnershipAssessmentDialogSchema = z
       });
     }
   });
+
+export type CreateCompanySanctionsAssessmentDialogInput = z.input<
+  typeof CreateCompanySanctionsAssessmentDialogSchema
+>;
+
+export const CreateCompanySanctionsAssessmentDialogSchema = z
+  .object({
+    companyName: z
+      .string({
+        required_error: 'Company name is required',
+        invalid_type_error: 'Company name must be a string',
+      })
+      .min(1, { message: 'Company name is required' })
+      .max(255),
+    country: z
+      .string({
+        required_error: 'Country is required',
+      })
+      .min(1, { message: 'Country is required' })
+      .max(255),
+    state: z.string().optional(),
+    businessId: z.string().max(255).optional(),
+  })
+  .superRefine((val, ctx) => {
+    if (val.country?.toLowerCase() === 'us' && !val.state) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'State is required for US',
+        path: ['state'],
+      });
+    }
+  });

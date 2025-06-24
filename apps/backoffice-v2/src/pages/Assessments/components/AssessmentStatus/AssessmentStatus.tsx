@@ -28,19 +28,16 @@ import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { KybAndUboChecksStatusButton } from './KybAndOwnershipAssessmentStatusButton';
-import { useKybAndOwnershipStatusDialog } from './hooks/useKybAndOwnershipStatusDialog/useKybAndOwnershipStatusDialog';
-import { useUpdateKybAndOwnershipAssessmentStatus } from './hooks/useUpdateKybAndOwnershipAssessmentStatus/useUpdateKybAndOwnershipAssessmentStatus';
-import {
-  KybAndOwnershipAssessmentStatusBadge,
-  statusToData,
-} from './KybAndOwnershipAssessmentStatusBadge';
+import { KybAndUboChecksStatusButton } from './AssessmentStatusButton';
+import { useStatusDialog } from './hooks/useStatusDialog/useStatusDialog';
+import { useUpdateAssessmentStatus } from './hooks/useUpdateAssessmentStatus/useUpdateAssessmentStatus';
+import { AssessmentStatusBadge, statusToData } from './AssessmentStatusBadge';
 
 const AssessmentCompletedStatusFormSchema = z.object({
   text: z.string().min(1, { message: 'Please provide additional details' }),
 });
 
-export const KybAndOwnershipAssessmentStatus = ({
+export const AssessmentStatus = ({
   status,
   assessmentId,
   className,
@@ -50,7 +47,7 @@ export const KybAndOwnershipAssessmentStatus = ({
   status?: keyof typeof statusToData;
 }) => {
   const { mutate: mutateUpdateAssessmentStatus, isLoading: isUpdatingAssessmentStatus } =
-    useUpdateKybAndOwnershipAssessmentStatus();
+    useUpdateAssessmentStatus();
 
   const formDefaultValues = {
     text: '',
@@ -62,7 +59,7 @@ export const KybAndOwnershipAssessmentStatus = ({
   });
 
   const [isStatusDropdownOpen, toggleStatusDropdownOpen] = useToggle(false);
-  const { dialogState, toggleDialogOpenState, closeDialog } = useKybAndOwnershipStatusDialog();
+  const { dialogState, toggleDialogOpenState, closeDialog } = useStatusDialog();
 
   const onSubmit: SubmitHandler<z.infer<typeof AssessmentCompletedStatusFormSchema>> = async ({
     text,
@@ -108,7 +105,7 @@ export const KybAndOwnershipAssessmentStatus = ({
           disabled={disabled}
           className={ctw(`flex items-center pr-1 focus-visible:outline-none`, className)}
         >
-          <KybAndOwnershipAssessmentStatusBadge disabled={disabled} status={status} />
+          <AssessmentStatusBadge disabled={disabled} status={status} />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
@@ -171,7 +168,7 @@ export const KybAndOwnershipAssessmentStatus = ({
               <div className="flex flex-col gap-2">
                 <span className="text-sm">Resolution Status</span>
                 <div>
-                  <KybAndOwnershipAssessmentStatusBadge status={dialogState.status} />
+                  <AssessmentStatusBadge status={dialogState.status} />
                 </div>
               </div>
             )}

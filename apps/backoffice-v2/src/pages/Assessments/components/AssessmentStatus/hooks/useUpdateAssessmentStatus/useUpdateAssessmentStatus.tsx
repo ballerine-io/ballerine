@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HttpError } from '@/common/errors/http-error';
 import { updateAssessmentStatus } from '../../fetchers';
 
-export const useUpdateKybAndOwnershipAssessmentStatus = ({
+export const useUpdateAssessmentStatus = ({
   onSuccess,
   onError,
 }: {

@@ -6,14 +6,11 @@ import { z } from 'zod';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
 import { useAssessmentQuery } from '@/domains/assessments/hooks/queries/useAssessmentQuery/useAssessmentQuery';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
-import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
 import { useAssessmentChecks, useAssessmentWarningFlags } from './useAssessmentChecks';
 import { useSectionData } from './useSectionData';
 
 export const useAssessmentPageLogic = () => {
-  const { assessmentId, assessmentType } = useParams<{
+  const { assessmentId } = useParams<{
     assessmentId: string;
     assessmentType: string;
   }>();
@@ -38,46 +35,12 @@ export const useAssessmentPageLogic = () => {
     [setSearchParams],
   );
 
-  const companySanctions = useMemo(() => {
-    return assessment?.companySanctions?.output?.data?.map(sanction => ({
-      sources: sanction?.entity?.sources,
-      officialLists: sanction?.entity?.officialLists,
-      fullReport: sanction,
-      linkedIndividuals: sanction?.entity?.linkedIndividuals,
-      lastReviewed: sanction?.entity?.lastReviewed,
-      primaryName: sanction?.entity?.name,
-      labels: sanction?.entity?.categories,
-      reasonsForMatch: sanction?.matchedFields,
-      furtherInformation: sanction?.entity?.furtherInformation,
-      alternativeNames: sanction?.entity?.otherNames,
-      places: sanction?.entity?.places,
-    }));
-  }, [assessment?.companySanctions?.output?.data]);
-
-  const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
-
-  const registryInfoBlock = useKybRegistryInfoBlock({
-    pluginsOutput: {
-      businessInformation: { data: [assessment?.companyRegistryInformation?.output?.data] },
-    },
-    workflow: {},
-  });
-
-  const companyStructureBlock = useUbosRegistryProvidedBlock(
-    assessment?.companyStructure?.output?.nodes && assessment?.companyStructure?.output.edges
-      ? assessment?.companyStructure?.output
-      : { nodes: [], edges: [] },
-  );
-
   const assessmentChecks = useAssessmentChecks(assessment);
   const warningFlags = useAssessmentWarningFlags(assessment);
 
   const sections = useSectionData({
     assessment,
     assessmentChecks,
-    companySanctionsBlock,
-    companyStructureBlock,
-    registryInfoBlock,
   });
 
   return {

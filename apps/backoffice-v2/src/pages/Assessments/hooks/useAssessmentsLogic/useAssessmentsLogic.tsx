@@ -12,12 +12,27 @@ import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthe
 import { KybAndOwnershipAssessmentsSearchSchema } from '../../schemas';
 import { useAssessmentsQuery } from '@/domains/assessments/hooks/queries/useAssessmentsQuery/useAssessmentsQuery';
 import { useParams } from 'react-router-dom';
-import { IAssessmentType } from '@/domains/assessments/fetchers';
+import { assessmentEnumSchema, IAssessmentType } from '@/domains/assessments/fetchers';
+import { snakeCase } from 'lodash-es';
+
+const titleMap: Record<IAssessmentType, { page: string; create: string }> = {
+  kyb_and_ownership: {
+    page: 'KYB & Ownership',
+    create: 'Create a Case',
+  },
+  company_sanctions: {
+    page: 'Company Sanctions',
+    create: 'Create a Check',
+  },
+};
 
 export const useAssessmentsLogic = () => {
   const locale = useLocale();
 
-  const { assessmentType } = useParams<{ assessmentType: string }>();
+  const { assessmentType: type } = useParams<{ assessmentType: string }>();
+  const parsedType = assessmentEnumSchema.safeParse(snakeCase(type));
+  const assessmentType = parsedType.success ? parsedType.data : 'kyb_and_ownership';
+
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
 
@@ -146,5 +161,8 @@ export const useAssessmentsLogic = () => {
     avatarUrl,
     open,
     toggleOpen,
+    pageTitle: titleMap[assessmentType].page || 'Assessments',
+    createActionTitle: titleMap[assessmentType].create || 'Create a Case',
+    assessmentType,
   };
 };

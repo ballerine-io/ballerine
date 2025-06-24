@@ -11,10 +11,10 @@ import { DateRangePicker } from '@/common/components/organisms/DateRangePicker/D
 import { Search } from '@/common/components/molecules/Search';
 import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
 import { DemoAccessWrapper } from '@/common/components/organisms/DemoAccessWrapper/DemoAccessWrapper';
-import { KybAndOwnershipAssessmentsTable } from './components/KybAndOwnershipAssessmentsTable/KybAndOwnershipAssessmentsTable';
-import { NoKybAndOwnershipAssessments } from './components/NoKybAndOwnershipAssessments/NoKybAndOwnershipAssessments';
+import { AssessmentsTable } from './components/AssessmentsTable/AssessmentsTable';
+import { NoAssessments } from './components/NoAssessments/NoAssessments';
 import { useAssessmentsLogic } from './hooks/useAssessmentsLogic/useAssessmentsLogic';
-import { CreateKybAndOwnershipAssessmentDialog } from './components/CreateKybAndOwnershipAssessmentDialog/CreateKybAndOwnershipAssessmentDialog';
+import { CreateAssessmentDialog } from './components/CreateAssessmentDialog/CreateAssessmentDialog';
 
 export const AssessmentsPage: FunctionComponent = () => {
   const {
@@ -39,6 +39,9 @@ export const AssessmentsPage: FunctionComponent = () => {
     avatarUrl,
     open,
     toggleOpen,
+    pageTitle,
+    assessmentType,
+    createActionTitle,
   } = useAssessmentsLogic();
 
   return (
@@ -50,13 +53,14 @@ export const AssessmentsPage: FunctionComponent = () => {
     >
       <div className="space-y-4 px-6 pb-6">
         <div className={`flex justify-between pb-2`}>
-          <h1 className="text-2xl font-bold">KYB & Ownership</h1>
+          <h1 className="text-2xl font-bold">{pageTitle}</h1>
           <div className={`flex space-x-3`}>
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger className={`flex items-center`}>
-                  <CreateKybAndOwnershipAssessmentDialog
+                  <CreateAssessmentDialog
                     open={open}
+                    type={assessmentType}
                     toggleOpen={toggleOpen}
                     trigger={
                       <Button
@@ -64,7 +68,7 @@ export const AssessmentsPage: FunctionComponent = () => {
                         className="flex items-center gap-2 font-semibold"
                       >
                         <Plus />
-                        <span>Create a Case</span>
+                        <span>{createActionTitle}</span>
                       </Button>
                     }
                   />
@@ -103,10 +107,10 @@ export const AssessmentsPage: FunctionComponent = () => {
             </div>
           )}
           {!isLoadingAssessments && isNonEmptyArray(assessments) && (
-            <KybAndOwnershipAssessmentsTable data={assessments} />
+            <AssessmentsTable data={assessments} type={assessmentType} />
           )}
           {!isLoadingAssessments && Array.isArray(assessments) && !assessments.length && (
-            <NoKybAndOwnershipAssessments />
+            <NoAssessments />
           )}
           <div className={`flex items-center gap-x-2`}>
             <div className={`flex h-full w-[12ch] items-center text-sm`}>

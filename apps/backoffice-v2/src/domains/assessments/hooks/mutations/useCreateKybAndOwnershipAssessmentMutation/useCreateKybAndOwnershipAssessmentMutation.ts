@@ -4,12 +4,9 @@ import { isObject } from '@ballerine/common';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';
-import {
-  createKybAndOwnershipAssessment,
-  TCreateKybAndOwnershipAssessmentPayload as TCreateKybAndOwnershipAssessmentPayload,
-} from '@/domains/assessments/fetchers';
+import { createAssessment, TCreateAssessmentPayload } from '@/domains/assessments/fetchers';
 
-export const useCreateKybAndOwnershipAssessmentMutation = ({
+export const useCreateAssessmentMutation = ({
   onSuccess,
 }: {
   onSuccess?: <TData>(data: TData) => void;
@@ -17,8 +14,8 @@ export const useCreateKybAndOwnershipAssessmentMutation = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: TCreateKybAndOwnershipAssessmentPayload) => {
-      await createKybAndOwnershipAssessment(payload);
+    mutationFn: async (payload: TCreateAssessmentPayload) => {
+      await createAssessment(payload);
     },
     onSuccess: data => {
       void queryClient.invalidateQueries();

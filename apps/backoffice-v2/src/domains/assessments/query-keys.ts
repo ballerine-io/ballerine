@@ -11,7 +11,7 @@ import {
 
 export const assessmentsQueryKey = createQueryKeys('assessments', {
   list: (type: IAssessmentType, { page, ...params }: IAssessmentsParams) => ({
-    queryKey: [{ page, ...params }],
+    queryKey: [{ type, page, ...params }],
     queryFn: () => {
       const data = {
         ...params,

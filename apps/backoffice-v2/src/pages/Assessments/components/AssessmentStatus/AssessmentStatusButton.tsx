@@ -2,10 +2,7 @@ import { ctw } from '@ballerine/ui';
 import { ComponentProps } from 'react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
-import {
-  KybAndOwnershipAssessmentStatusBadge,
-  statusToData,
-} from './KybAndOwnershipAssessmentStatusBadge';
+import { AssessmentStatusBadge, statusToData } from './AssessmentStatusBadge';
 
 export const KybAndUboChecksStatusButton = ({
   status,
@@ -28,7 +25,7 @@ export const KybAndUboChecksStatusButton = ({
       '!cursor-not-allowed': disabled,
     })}
   >
-    <KybAndOwnershipAssessmentStatusBadge status={status} disabled={disabled} />
+    <AssessmentStatusBadge status={status} disabled={disabled} />
     <span className={`text-start text-xs font-semibold leading-5 text-[#94A3B8]`}>
       {statusToData[status].text}
     </span>
