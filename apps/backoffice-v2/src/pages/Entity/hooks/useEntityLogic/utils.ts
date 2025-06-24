@@ -1,4 +1,4 @@
-import { AnyArray, TypesafeOmit } from '../../../../common/types';
+import { TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
 import { titleCase } from 'string-ts';
 import { TDropdownOption } from '@/lib/blocks/components/EditableDetails/types';
@@ -30,7 +30,7 @@ export const composePickableCategoryType = (
   const documentTypesDropdownOptions: TDropdownOption[] = [];
 
   documentsSchemas.forEach(document => {
-    const { type, category } = document;
+    const { type, category, hiddenIn } = document;
     const isCategoryInDropdownOptions = documentCategoryDropdownOptions.some(
       option => option.value === category,
     );
@@ -51,6 +51,7 @@ export const composePickableCategoryType = (
         dependantValue: category,
         value: type,
         label: titleCase(type),
+        hidden: hiddenIn === 'backoffice',
       });
     }
   });

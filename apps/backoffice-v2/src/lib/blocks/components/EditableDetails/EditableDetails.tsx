@@ -384,17 +384,24 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                           >
                             <FormControl>
                               <SelectTrigger className="w-full">
-                                <SelectValue />
+                                <SelectValue>
+                                  {
+                                    dropdownOptions?.find(option => option.value === field.value)
+                                      ?.label
+                                  }
+                                </SelectValue>
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {dropdownOptions?.map(({ label, value }, index) => {
+                              {dropdownOptions?.map(({ label, value, hidden }, index) => {
                                 const selectKey = keyFactory(
                                   'select',
                                   valueId,
                                   value,
                                   index?.toString(),
                                 );
+
+                                if (hidden) return null;
 
                                 return (
                                   <SelectItem key={selectKey} value={selectKey}>

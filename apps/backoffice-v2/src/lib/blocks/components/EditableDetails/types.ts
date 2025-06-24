@@ -3,4 +3,5 @@ export type TDropdownOption = {
   label: string;
   dependantValue?: string;
   dependantOn?: string;
+  hidden?: boolean;
 };
