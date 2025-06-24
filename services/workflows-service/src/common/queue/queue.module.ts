@@ -12,6 +12,7 @@ import { ExpressAdapter } from '@bull-board/express';
   imports: [MonitoringModule],
   providers: [
     QueueService,
+    { provide: 'IQueueService', useExisting: QueueService },
     QueueBullboardService,
     QueueOtelService,
     redisProvider,
@@ -28,6 +29,7 @@ import { ExpressAdapter } from '@bull-board/express';
   ],
   exports: [
     QueueService,
+    'IQueueService',
     QueueBullboardService,
     QueueOtelService,
     redisProvider,

@@ -1,10 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Job } from 'bullmq';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AlertService } from './alert.service';
-import { QueueService } from '@/common/queue/queue.service';
-import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
-import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
+import type { IQueueService } from '@/common/queue/queue.interface';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
 import type { BullBoardInjectedInstance } from '@/common/queue/types';
 import { env } from '@/env';
@@ -19,11 +16,9 @@ export class AlertQueueService implements OnModuleInit {
   private readonly SCHEDULER_ID = 'transaction-monitoring-alert-check';
 
   constructor(
-    private readonly logger: AppLoggerService,
-    private readonly alertService: AlertService,
-    private readonly queueService: QueueService,
-    private readonly queueBullboardService: QueueBullboardService,
-    private readonly bullMQPrometheusService: BullMQPrometheusService,
+    @Inject(AppLoggerService) private readonly logger: AppLoggerService,
+    @Inject(AlertService) private readonly alertService: AlertService,
+    @Inject('IQueueService') private readonly queueService: IQueueService,
     @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
     private bullBoard: BullBoardInjectedInstance,
   ) {}
@@ -38,29 +33,13 @@ export class AlertQueueService implements OnModuleInit {
 
   private async setupAlertQueue() {
     try {
-      const queue = this.queueService.getQueue<AlertCheckJobData>({
+      this.queueService.createQueue<AlertCheckJobData>(this.QUEUE_NAME, {
         name: this.QUEUE_NAME,
         jobOptions: {
           attempts: 10,
-          backoff: {
-            type: 'exponential',
-            delay: 10_000,
-          },
+          backoff: { type: 'exponential', delay: 10000 },
           removeOnComplete: { count: 100, age: 3600 * 24 },
           removeOnFail: false,
-        },
-      });
-
-      await this.queueService.setupJobScheduler(queue, this.SCHEDULER_ID, {
-        every: 60 * 60 * 1000,
-        jobName: 'check-transaction-monitoring-alerts',
-        data: { timestamp: Date.now() },
-        jobOptions: {
-          attempts: 10,
-          backoff: {
-            type: 'exponential',
-            delay: 10_000,
-          },
         },
       });
 
@@ -73,22 +52,21 @@ export class AlertQueueService implements OnModuleInit {
   }
 
   private registerWorker() {
-    this.queueService.registerWorker<AlertCheckJobData>(
-      this.QUEUE_NAME,
-      async (job: Job<AlertCheckJobData>) => {
-        this.logger.log('Processing transaction monitoring alerts check job', {
-          jobId: job.id,
-        });
+    this.queueService.registerWorker(this.QUEUE_NAME, this.processAlertCheckJob.bind(this), {
+      concurrency: 1,
+    });
+  }
 
-        await this.alertService.checkAllAlerts();
+  private async processAlertCheckJob(job: any) {
+    this.logger.log('Processing transaction monitoring alerts check job', { jobId: job.id });
+    try {
+      await this.alertService.checkAllAlerts();
+      this.logger.log('Completed transaction monitoring alerts check', { jobId: job.id });
 
-        this.logger.log('Completed transaction monitoring alerts check', {
-          jobId: job.id,
-        });
-
-        return { success: true, timestamp: Date.now() };
-      },
-      { concurrency: 1 },
-    );
+      return { success: true, timestamp: Date.now() };
+    } catch (error) {
+      this.logger.error('Alert check job failed', { jobId: job.id, error });
+      throw error;
+    }
   }
 }
