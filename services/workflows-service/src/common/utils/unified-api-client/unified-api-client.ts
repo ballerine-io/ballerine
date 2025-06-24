@@ -212,7 +212,7 @@ export class UnifiedApiClient {
       limit: number;
     },
   ) {
-    return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
+    return await this.axiosInstance.get(`/assessments?type=${assessmentType}`, {
       params: {
         ...queryParams,
         projectId,
@@ -221,7 +221,7 @@ export class UnifiedApiClient {
   }
 
   public async getAssessmentById(id: string, projectId: string) {
-    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
+    return await this.axiosInstance.get(`/assessments/${id}?projectId=${projectId}`);
   }
 
   public async createAssessment(
@@ -234,7 +234,7 @@ export class UnifiedApiClient {
       businessId?: string;
     },
   ) {
-    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+    return await this.axiosInstance.post(`/assessments`, { ...payload, type: assessmentType });
   }
 
   public async updateAssessmentStatus(
