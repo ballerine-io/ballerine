@@ -20,7 +20,7 @@ import { Validate } from 'ballerine-nestjs-typebox';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { DocumentFileJsonSchema } from '@/document-file/dtos/document-file.dto';
-import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
+import { FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import type { TProjectId } from '@/types';
 import * as z from 'zod';
@@ -31,6 +31,7 @@ import {
   UpdateDocumentDecisionSchema,
   UpdateDocumentSchema,
 } from './dtos/document.dto';
+import { FILE_MAX_SIZE_IN_BYTE } from '@ballerine/common';
 
 const RequestUploadSchema = Type.Object({
   workflowId: Type.String(),

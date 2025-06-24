@@ -17,7 +17,7 @@ import {
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenScope, type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CollectionFlowDocumentsService } from '../services/collection-flow-documents.service';
-import { FILE_MAX_SIZE_IN_BYTE, FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
+import { FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
@@ -27,6 +27,7 @@ import { CollectionFlowDocumentModel } from '../models/collection-flow-document.
 import { ReuploadDocumentDtoSchema } from '../dto/re-upload-document.dto';
 import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { ReuploadDocumentDto } from '../dto/reupload-document.dto';
+import { FILE_MAX_SIZE_IN_BYTE } from '@ballerine/common';
 
 const fileParsePipe = new ParseFilePipeBuilder()
   .addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE })
