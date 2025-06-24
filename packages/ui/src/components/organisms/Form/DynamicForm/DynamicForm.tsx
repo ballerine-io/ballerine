@@ -20,8 +20,10 @@ import { DocumentsService } from '../DocumentsService';
 import { ValidatorWrapper } from './providers/ValidatorWrapper';
 import { registerValidator } from '../Validator/utils/register-validator';
 import { documentValidator } from './validators/document';
+import { documentSizeValidator } from './validators/document-size';
 
 registerValidator('document', documentValidator);
+registerValidator('documentSize', documentSizeValidator);
 
 export const DynamicFormV2 = forwardRef(
   <TValues extends object>(

@@ -124,6 +124,10 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       removeTask(id);
 
+      if (document) {
+        void deleteDocumentFiles(document.id);
+      }
+
       setFile(e.target?.files?.[0] as File);
 
       if (uploadOn === 'change' && entityId) {
@@ -149,6 +153,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
       reuploadDocument,
       createDocument,
       setFile,
+      deleteDocumentFiles,
       value,
       entityId,
     ],
