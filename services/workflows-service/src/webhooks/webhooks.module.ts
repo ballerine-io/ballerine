@@ -8,7 +8,6 @@ import { QueueModule } from '@/common/queue/queue.module';
 import { MonitoringModule } from '@/common/monitoring/monitoring.module';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
 import type { BullBoardInjectedInstance } from '@/common/queue/types';
-import { BullBoardAuthMiddleware } from './bull-board.auth.middleware';
 import { WebhooksService } from './webhooks.service';
 
 @Module({
@@ -36,8 +35,6 @@ export class WebhooksModule {
   ) {}
 
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(BullBoardAuthMiddleware, this.bullBoard.serverAdapter.getRouter())
-      .forRoutes('/api/queues');
+    consumer.apply(this.bullBoard.serverAdapter.getRouter()).forRoutes('/api/queues');
   }
 }
