@@ -27,6 +27,10 @@ interface ISearchableDropdownProps {
   disablePortal?: boolean;
 }
 
+const strictFilter = (value: string, search: string) => {
+  return +value.toLowerCase().includes(search.toLowerCase());
+};
+
 export const SearchableDropdown = ({
   options,
   value,
@@ -111,7 +115,7 @@ export const SearchableDropdown = ({
         disablePortal={disablePortal}
         collisionBoundary={typeof window !== 'undefined' ? document.body : undefined}
       >
-        <Command>
+        <Command filter={strictFilter}>
           <CommandInput
             placeholder={placeholder}
             className="h-9"
