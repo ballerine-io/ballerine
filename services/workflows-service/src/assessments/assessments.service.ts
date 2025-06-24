@@ -20,15 +20,12 @@ export class AssessmentsService {
   ) {
     try {
       const queryParams = {
+        type,
         page: query.page.number,
         limit: query.page.size,
       };
 
-      const result = await new UnifiedApiClient().getAssessmentsByType(
-        type,
-        projectId,
-        queryParams,
-      );
+      const result = await new UnifiedApiClient().getAssessmentsByType(projectId, queryParams);
 
       return result.data;
     } catch (error) {
@@ -57,7 +54,7 @@ export class AssessmentsService {
         projectId,
       };
 
-      const result = await new UnifiedApiClient().createAssessment(payload.type, data);
+      const result = await new UnifiedApiClient().createAssessment(data);
 
       return result.data;
     } catch (error) {

@@ -47,7 +47,7 @@ export class AssessmentsControllerExternal {
   @swagger.ApiResponse({ status: 500, description: 'Internal server error' })
   @common.UsePipes(new ZodValidationPipe(GetKybAndOwnershipAssessmentsSchema, 'query'))
   getAssessments(
-    @common.Param() type: 'kyb_and_ownership' | 'company_sanctions',
+    @common.Param('type') type: 'kyb_and_ownership' | 'company_sanctions',
     @common.Query() query: GetKybAndOwnershipAssessmentsDto,
     @CurrentProject() projectId: TProjectId,
   ) {

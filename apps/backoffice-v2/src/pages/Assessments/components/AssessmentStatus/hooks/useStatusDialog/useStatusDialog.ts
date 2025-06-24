@@ -6,7 +6,7 @@ interface IAssessmentStatusDialogState {
   status: UpdateableAssessmentStatus | null;
 }
 
-export const useKybAndOwnershipStatusDialog = () => {
+export const useStatusDialog = () => {
   const [dialogState, setDialogState] = useState<IAssessmentStatusDialogState>({
     isOpen: false,
     status: null,

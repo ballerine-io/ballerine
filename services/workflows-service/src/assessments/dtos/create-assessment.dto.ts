@@ -23,8 +23,9 @@ export class CreateAssessmentDto {
     description: 'Registration number of the company',
     example: 'REG123456',
   })
+  @IsOptional()
   @IsString()
-  registrationNumber!: string;
+  registrationNumber?: string;
 
   @ApiProperty({
     description: 'Name of the company',

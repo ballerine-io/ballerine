@@ -1,7 +1,13 @@
 import { Input, SearchableDropdown } from '@ballerine/ui';
-import { CheckIcon, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
+import { Select } from '@/common/components/atoms/Select/Select';
+import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
+import { SelectGroup } from '@/common/components/atoms/Select/Select.Group';
+import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
+import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
 import { DialogContent } from '@/common/components/organisms/Dialog/Dialog.Content';
 import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
@@ -12,32 +18,20 @@ import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
 import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { useCreateKybAndOwnershipAssessmentDialogLogic } from './hooks/useCreateKybAndOwnershipAssessmentDialogLogic';
-import { Select } from '@/common/components/atoms/Select/Select';
-import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
-import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
-import { SelectGroup } from '@/common/components/atoms/Select/Select.Group';
-import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
-import { getCountries, getCountryStates } from '@ballerine/common';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { getCountries, getCountryStates } from '@ballerine/common';
+import { useCreateCompanySanctionsAssessmentDialogLogic } from '../hooks/useCreateCompanySanctionsAssessmentDialogLogic';
+import { CreateAssessmentDialogProps } from '../types';
+import { CreateCheckDialogSuccessContent } from './CreateCheckDialogSuccessContent';
 
-type CreateKybAndOwnershipAssessmentDialogProps = {
-  open: boolean;
-  toggleOpen: (val?: boolean) => void;
-  disabled?: boolean;
-  trigger: React.ReactNode;
-};
-
-export const CreateKybAndOwnershipAssessmentDialog = ({
+export const CreateCompanySanctionsCheckDialog = ({
   disabled,
   trigger,
   open,
   toggleOpen: toggleOpenProps,
-}: CreateKybAndOwnershipAssessmentDialogProps) => {
+}: Omit<CreateAssessmentDialogProps, 'type'>) => {
   const { form, showSuccess, isSubmitting, onSubmit, toggleOpen } =
-    useCreateKybAndOwnershipAssessmentDialogLogic({ toggleOpen: toggleOpenProps });
+    useCreateCompanySanctionsAssessmentDialogLogic({ toggleOpen: toggleOpenProps });
 
   return (
     <Dialog open={open} onOpenChange={toggleOpen}>
@@ -46,13 +40,13 @@ export const CreateKybAndOwnershipAssessmentDialog = ({
       </DialogTrigger>
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">
-          <h2 className={`text-2xl font-bold`}>Create a KYB & Ownership Case</h2>
+          <h2 className={`text-2xl font-bold`}>Create a Company Sanctions Check</h2>
         </DialogHeader>
 
         {showSuccess ? (
-          <CreateKybAndUboCheckDialogSuccessContent />
+          <CreateCheckDialogSuccessContent subject="Company Sanctions check" />
         ) : (
-          <CreateKybAndUboCheckDialogFormContent
+          <CreateCompanySanctionsDialogContent
             form={form}
             onSubmit={onSubmit}
             isSubmitting={isSubmitting}
@@ -63,37 +57,16 @@ export const CreateKybAndOwnershipAssessmentDialog = ({
   );
 };
 
-const CreateKybAndUboCheckDialogSuccessContent = () => {
-  const { data: customer } = useCustomerQuery();
-  const isDemoAccount = customer?.config?.isDemoAccount;
-
-  return (
-    <div className="mx-6 text-center">
-      <div className="my-12 space-y-2">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500">
-          <CheckIcon className="text-white d-12" />
-        </div>
-
-        <p className="mt-2">Your KYB & Ownership check is being generated.</p>
-      </div>
-
-      <div className="mb-16 rounded-md border border-gray-200 bg-gray-50 px-1 py-2">
-        {isDemoAccount && <p className="font-semibold">Ready in up to 24 hours</p>}
-        <span>Your case is being generated.</span>
-      </div>
-    </div>
-  );
-};
-
-type CreateKybAndUboCheckDialogFormContentProps = Pick<
-  ReturnType<typeof useCreateKybAndOwnershipAssessmentDialogLogic>,
+export type CreateCompanySanctionsDialogContentProps = Pick<
+  ReturnType<typeof useCreateCompanySanctionsAssessmentDialogLogic>,
   'form' | 'onSubmit' | 'isSubmitting'
 >;
-const CreateKybAndUboCheckDialogFormContent = ({
+
+export const CreateCompanySanctionsDialogContent = ({
   form,
   onSubmit,
   isSubmitting,
-}: CreateKybAndUboCheckDialogFormContentProps) => {
+}: CreateCompanySanctionsDialogContentProps) => {
   return (
     <div>
       <Form {...form}>
@@ -113,19 +86,6 @@ const CreateKybAndUboCheckDialogFormContent = ({
                         {...field}
                         disabled={isSubmitting}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="registrationNumber"
-                render={({ field }) => (
-                  <FormItem className="w-1/2 space-y-1">
-                    <FormLabel>Registration Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="1234567890" {...field} disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

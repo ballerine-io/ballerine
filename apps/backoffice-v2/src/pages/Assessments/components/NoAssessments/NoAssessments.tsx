@@ -1,7 +1,7 @@
 import { NoItems } from '@/common/components/molecules/NoItems/NoItems';
 import { NoCasesSvg } from '@/common/components/atoms/icons';
 
-export const NoKybAndOwnershipAssessments = () => {
+export const NoAssessments = () => {
   return (
     <NoItems
       resource="KYB & Ownership Assessments"

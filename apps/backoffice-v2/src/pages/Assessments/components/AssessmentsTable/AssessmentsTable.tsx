@@ -1,15 +1,16 @@
 import type { FunctionComponent } from 'react';
 
 import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
-import { useKybAndOwnershipAssessmentsTableLogic } from './hooks/useKybAndOwnershipAssessmentsTableLogic/useKybAndOwnershipAssessmentsTableLogic';
+import { useAssessmentsTableLogic } from './hooks/useAssessmentsTableLogic/useAssessmentsTableLogic';
 import { useColumns } from './columns';
-import { TKybAndOwnershipAssessments } from '@/domains/assessments/fetchers';
+import { IAssessmentType, TAssessments } from '@/domains/assessments/fetchers';
 
-export const KybAndOwnershipAssessmentsTable: FunctionComponent<{
-  data: TKybAndOwnershipAssessments['data'];
-}> = ({ data }) => {
-  const { Cell } = useKybAndOwnershipAssessmentsTableLogic();
-  const columns = useColumns();
+export const AssessmentsTable: FunctionComponent<{
+  data: TAssessments['data'];
+  type: IAssessmentType;
+}> = ({ data, type }) => {
+  const { Cell } = useAssessmentsTableLogic(type);
+  const columns = useColumns(type);
 
   return (
     <UrlDataTable

@@ -165,7 +165,9 @@ export const AssessmentPage = () => {
             })}
           </div>
         </div>
-        <SectionObserver sections={sections} sectionRefs={sectionRefs} />
+        {assessment?.type === 'kyb_and_ownership' && (
+          <SectionObserver sections={sections} sectionRefs={sectionRefs} />
+        )}
       </div>
     </div>
   );

@@ -1,8 +1,5 @@
+import type { TAssessment } from '@/domains/assessments/fetchers';
 import type { LucideIcon } from 'lucide-react';
-import { z } from 'zod';
-import type { KybAndOwnershipAssessmentSchema } from '@/domains/assessments/fetchers';
-
-export type Assessment = z.infer<typeof KybAndOwnershipAssessmentSchema>;
 
 export type CheckStatus = 'positive' | 'neutral' | 'negative';
 
@@ -47,9 +44,7 @@ export interface SanctionsData {
 }
 
 export interface SectionDataProps {
-  assessment: Assessment | undefined;
+  assessment: TAssessment | undefined;
   assessmentChecks: CheckItem[];
-  companySanctionsBlock: any[];
-  companyStructureBlock: any[];
-  registryInfoBlock: any[];
+  type?: string;
 }

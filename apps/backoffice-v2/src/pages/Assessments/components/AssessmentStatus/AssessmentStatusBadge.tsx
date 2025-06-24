@@ -7,7 +7,7 @@ import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEll
 export const statusToData = {
   [ASSESSMENT_STATUSES_MAP['in-progress']]: {
     variant: 'gray',
-    title: 'Case in progress',
+    title: 'In progress',
     text: '',
   },
   [ASSESSMENT_STATUSES_MAP['pending-review']]: {
@@ -32,7 +32,7 @@ export const statusToData = {
   },
 } as const;
 
-export const KybAndOwnershipAssessmentStatusBadge = ({
+export const AssessmentStatusBadge = ({
   status,
   disabled = false,
   ...props
@@ -77,4 +77,4 @@ export const KybAndOwnershipAssessmentStatusBadge = ({
   );
 };
 
-KybAndOwnershipAssessmentStatusBadge.displayName = 'KybAndOwnershipAssessmentStatusBadge';
+AssessmentStatusBadge.displayName = 'AssessmentStatusBadge';
