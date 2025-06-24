@@ -32,6 +32,7 @@ export class AlertQueueService implements OnModuleInit {
     if (!env.QUEUE_SYSTEM_ENABLED) {
       return;
     }
+
     await this.setupAlertQueue();
   }
 
