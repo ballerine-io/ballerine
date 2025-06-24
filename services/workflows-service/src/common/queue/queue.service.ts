@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, Inject } from '@nestjs/common';
-import { Queue, Worker, Job } from 'bullmq';
+import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
@@ -8,8 +8,6 @@ import { REDIS_CLIENT } from './redis.provider';
 import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
 import type { BullBoardInjectedInstance } from './types';
 import { QueueBullboardService } from './queue-bullboard.service';
-
-export type JobProcessor<T = any> = (job: Job<T>) => Promise<any>;
 
 export interface QueueOptions<T = any> {
   name: string;
@@ -62,16 +60,16 @@ export class QueueService implements OnModuleDestroy {
     return this.shouldProcessJobs;
   }
 
-  getQueue<T = any, R = any, N extends string = string>(options: QueueOptions<T>): Queue<T, R, N> {
+  private getQueue<T = any>(options: QueueOptions<T>): Queue<T> {
     if (!this.redisClient) {
       throw new Error('Redis client not initialized');
     }
 
     if (this.queues.has(options.name)) {
-      return this.queues.get(options.name) as unknown as Queue<T, R, N>;
+      return this.queues.get(options.name) as unknown as Queue<T>;
     }
 
-    const queue = new Queue<T, R, N>(options.name, {
+    const queue = new Queue<T>(options.name, {
       connection: this.redisClient as any,
       defaultJobOptions: {
         attempts: options.jobOptions?.attempts ?? 3,
@@ -98,50 +96,32 @@ export class QueueService implements OnModuleDestroy {
     return queue;
   }
 
-  registerWorker<T = any, R = any, N extends string = string>(
+  registerWorker<T = any>(
     queueName: string,
-    processor: JobProcessor<T>,
-    options: {
-      concurrency?: number;
-      forceLocalProcessing?: boolean;
-    } = {},
-  ): Worker<T, R, N> | null {
+    processor: (job: any) => Promise<any>,
+    options: { concurrency?: number } = {},
+  ): void {
     if (!this.redisClient) {
       throw new Error('Redis client not initialized');
     }
 
-    if (!this.shouldProcessJobs && !options.forceLocalProcessing) {
+    if (!this.shouldProcessJobs) {
       this.logger.debug(
         `Skipping worker registration for queue ${queueName} (not a worker instance)`,
       );
 
-      return null;
+      return;
     }
 
     if (this.workers.has(queueName)) {
-      return this.workers.get(queueName) as unknown as Worker<T, R, N>;
+      return;
     }
 
-    const worker = new Worker<T, R, N>(
-      queueName,
-      async job => {
-        try {
-          return await processor(job);
-        } catch (error) {
-          this.logger.error(`Error processing job ${job.id} in queue ${queueName}`, {
-            error,
-            jobId: job.id,
-            queueName,
-          });
-          throw error;
-        }
-      },
-      {
-        connection: this.redisClient as any,
-        concurrency: options.concurrency ?? 1,
-        autorun: true,
-      },
-    );
+    const worker = new Worker<T, any, string>(queueName, processor, {
+      connection: this.redisClient as any,
+      concurrency: options.concurrency ?? 1,
+      autorun: true,
+    });
 
     worker.on('failed', (job, error) => {
       this.logger.error(`Job ${job?.id} failed in queue ${queueName}`, {
@@ -161,69 +141,34 @@ export class QueueService implements OnModuleDestroy {
       });
     });
 
-    this.workers.set(queueName, worker as unknown as Worker);
+    this.workers.set(queueName, worker as unknown as Worker<T, any, string>);
     this.logger.log(`Worker registered for queue: ${queueName}`);
-
-    return worker;
   }
 
-  async setupJobScheduler<T = any>(
-    queue: Queue,
-    schedulerId: string,
-    options: {
-      every: number;
-      data?: T;
-      jobName?: string;
-      jobOptions?: {
-        attempts?: number;
-        backoff?: {
-          type: 'exponential' | 'fixed';
-          delay: number;
-        };
-      };
-    },
-  ) {
-    try {
-      const schedulers = await queue.getJobSchedulers();
-      const existingScheduler = schedulers.find(s => s.id === schedulerId);
+  createQueue<T = any>(queueName: string, options?: QueueOptions<T>): void {
+    if (this.queues.has(queueName)) {
+      // Optionally update options if needed
+      return;
+    }
 
-      if (existingScheduler) {
-        this.logger.log(`Job scheduler already exists: ${schedulerId}`, {
-          schedulerId,
-          pattern: existingScheduler.pattern,
-          every: existingScheduler.every,
-        });
+    const queue = new Queue<T, any, string>(queueName, {
+      connection: this.redisClient as any,
+      defaultJobOptions: options?.jobOptions ?? {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: { count: 100, age: 3600 * 24 },
+        removeOnFail: false,
+      },
+    });
+    this.queues.set(queueName, queue as Queue);
+    this.logger.log(`Queue created: ${queueName}`);
 
-        return existingScheduler;
-      }
+    if (this.bullMQPrometheusService) {
+      this.bullMQPrometheusService.registerQueue(queue);
+    }
 
-      const jobName = options.jobName || 'scheduled-job';
-      const firstJob = await queue.upsertJobScheduler(
-        schedulerId,
-        { every: options.every, jobId: schedulerId },
-        {
-          name: jobName,
-          data: options.data || { timestamp: Date.now() },
-          opts: {
-            attempts: options.jobOptions?.attempts || 10,
-            backoff: options.jobOptions?.backoff || {
-              type: 'exponential',
-              delay: 10000,
-            },
-          },
-        },
-      );
-
-      this.logger.log(`Created job scheduler: ${schedulerId}`, {
-        schedulerId,
-        every: options.every,
-        firstJobId: firstJob?.id,
-      });
-
-      return firstJob;
-    } catch (error) {
-      this.logger.error(`Failed to set up job scheduler: ${schedulerId}`, { error });
-      throw error;
+    if (this.shouldProcessJobs && this.bullBoard && this.queueBullboardService) {
+      this.queueBullboardService.registerQueue(this.bullBoard, queue);
     }
   }
 
