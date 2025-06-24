@@ -1,9 +1,10 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, Inject } from '@nestjs/common';
 import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
 import { QueueOtelService } from './otel.service';
+import { REDIS_CLIENT } from './redis.provider';
 
 export type JobProcessor<T = any> = (job: Job<T>) => Promise<any>;
 
@@ -24,7 +25,7 @@ export interface QueueOptions<T = any> {
 
 @Injectable()
 export class QueueService implements OnModuleDestroy {
-  private redisClient: IORedis | null = null;
+  private redisClient: IORedis | null;
   private queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
   private readonly shouldProcessJobs: boolean;
@@ -32,12 +33,11 @@ export class QueueService implements OnModuleDestroy {
   constructor(
     private readonly logger: AppLoggerService,
     private readonly queueOtelService: QueueOtelService,
+    @Inject(REDIS_CLIENT) redisClient: IORedis | null,
   ) {
     this.shouldProcessJobs = this.determineIfShouldProcessJobs();
     this.logger.log(`Queue worker mode: ${this.shouldProcessJobs ? 'ENABLED' : 'DISABLED'}`);
-    if (env.QUEUE_SYSTEM_ENABLED) {
-      this.initRedisConnection();
-    }
+    this.redisClient = redisClient;
   }
 
   private determineIfShouldProcessJobs(): boolean {
@@ -54,37 +54,6 @@ export class QueueService implements OnModuleDestroy {
 
   public isWorkerEnabled(): boolean {
     return this.shouldProcessJobs;
-  }
-
-  private initRedisConnection() {
-    try {
-      const redisConfig = {
-        host: env.REDIS_HOST || 'localhost',
-        port: env.REDIS_PORT || 6379,
-        password: env.REDIS_PASSWORD,
-        maxRetriesPerRequest: null,
-      };
-
-      this.redisClient = new IORedis({
-        host: redisConfig.host,
-        port: redisConfig.port,
-        password: redisConfig.password,
-        maxRetriesPerRequest: redisConfig.maxRetriesPerRequest,
-      });
-
-      this.redisClient.on('error', error => {
-        this.logger.error('Redis connection error', { error });
-      });
-
-      this.redisClient.on('connect', () => {
-        this.logger.log('Redis connected successfully');
-      });
-
-      this.logger.log('Redis client initialized');
-    } catch (error) {
-      this.logger.error('Failed to initialize Redis client', { error });
-      throw error;
-    }
   }
 
   getQueue<T = any, R = any, N extends string = string>(options: QueueOptions<T>): Queue<T, R, N> {
@@ -131,6 +100,7 @@ export class QueueService implements OnModuleDestroy {
       this.logger.debug(
         `Skipping worker registration for queue ${queueName} (not a worker instance)`,
       );
+
       return null;
     }
 
@@ -209,6 +179,7 @@ export class QueueService implements OnModuleDestroy {
           pattern: existingScheduler.pattern,
           every: existingScheduler.every,
         });
+
         return existingScheduler;
       }
 
