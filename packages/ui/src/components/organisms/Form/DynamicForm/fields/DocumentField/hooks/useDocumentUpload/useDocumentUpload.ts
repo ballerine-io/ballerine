@@ -10,6 +10,7 @@ import { useElementId } from '../../../../hooks/external';
 import { useStack } from '../../../FieldList';
 import { useCreateDocument } from '../useCreateDocument';
 import { useReuploadDocument } from '../useReuploadDocument';
+import { useDeleteDocumentFiles } from '../useDeleteDocument';
 
 export const useDocumentUpload = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
@@ -42,6 +43,7 @@ export const useDocumentUpload = (
     entityType: 'business',
     entityId: metadata.businessId!,
   });
+  const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +52,10 @@ export const useDocumentUpload = (
       const file = e.target?.files?.[0] as File;
 
       setFile(file);
+
+      if (document) {
+        void deleteDocumentFiles(document.id);
+      }
 
       if (uploadOn === 'change') {
         try {
@@ -98,11 +104,12 @@ export const useDocumentUpload = (
       document,
       createDocument,
       reuploadDocument,
+      deleteDocumentFiles,
     ],
   );
 
   return {
-    isUploading: isCreatingDocument || isReuploadingDocument,
+    isUploading: isCreatingDocument || isReuploadingDocument || isDeletingDocumentFiles,
     handleChange,
   };
 };
