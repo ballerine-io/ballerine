@@ -51,12 +51,6 @@ export class AlertQueueService implements OnModuleInit {
         },
       });
 
-      this.bullMQPrometheusService.registerQueue(queue);
-
-      if (this.queueService.isWorkerEnabled()) {
-        this.queueBullboardService.registerQueue(this.bullBoard, queue);
-      }
-
       await this.queueService.setupJobScheduler(queue, this.SCHEDULER_ID, {
         every: 60 * 60 * 1000,
         jobName: 'check-transaction-monitoring-alerts',

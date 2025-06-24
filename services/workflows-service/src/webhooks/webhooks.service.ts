@@ -49,8 +49,10 @@ export class WebhooksService implements OnModuleInit {
 
     if (!env.QUEUE_SYSTEM_ENABLED) {
       this.logger.log('Queue system is disabled. Webhooks will be sent directly.');
+
       return;
     }
+
     this.logger.log(
       `Setting up queue system. env.QUEUE_SYSTEM_ENABLED: ${env.QUEUE_SYSTEM_ENABLED}`,
     );
@@ -72,10 +74,7 @@ export class WebhooksService implements OnModuleInit {
         },
       });
 
-      this.bullMQPrometheusService.registerQueue(queue);
-
       if (this.queueService.isWorkerEnabled()) {
-        this.queueBullboardService.registerQueue(this.bullBoard, queue);
         this.registerWorker();
       }
 
@@ -93,6 +92,7 @@ export class WebhooksService implements OnModuleInit {
       async (job: Job<OutgoingWebhookJobData>) => {
         try {
           const res = await this.httpService.axiosRef.request(job.data);
+
           return res.data;
         } catch (error) {
           this.handleWebhookJobError(job, error);
@@ -105,6 +105,7 @@ export class WebhooksService implements OnModuleInit {
             webhookError.headers = error.response?.headers;
             throw webhookError;
           }
+
           throw error;
         }
       },
@@ -191,9 +192,11 @@ export class WebhooksService implements OnModuleInit {
       data,
       timeout: timeout ?? 15_000,
     };
+
     if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {
       try {
         const queue = this.queueService.getQueue<OutgoingWebhookJobData>({ name: this.QUEUE_NAME });
+
         return await queue.add(name, requestData);
       } catch (error) {
         const enqueueErrorPayload = {

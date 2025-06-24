@@ -5,6 +5,9 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
 import { QueueOtelService } from './otel.service';
 import { REDIS_CLIENT } from './redis.provider';
+import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
+import type { BullBoardInjectedInstance } from './types';
+import { QueueBullboardService } from './queue-bullboard.service';
 
 export type JobProcessor<T = any> = (job: Job<T>) => Promise<any>;
 
@@ -34,6 +37,9 @@ export class QueueService implements OnModuleDestroy {
     private readonly logger: AppLoggerService,
     private readonly queueOtelService: QueueOtelService,
     @Inject(REDIS_CLIENT) redisClient: IORedis | null,
+    private readonly bullMQPrometheusService: BullMQPrometheusService,
+    @Inject('BULLBOARD_INSTANCE') private readonly bullBoard?: BullBoardInjectedInstance,
+    private readonly queueBullboardService?: QueueBullboardService,
   ) {
     this.shouldProcessJobs = this.determineIfShouldProcessJobs();
     this.logger.log(`Queue worker mode: ${this.shouldProcessJobs ? 'ENABLED' : 'DISABLED'}`);
@@ -80,6 +86,14 @@ export class QueueService implements OnModuleDestroy {
 
     this.queues.set(options.name, queue as Queue);
     this.logger.log(`Queue created: ${options.name}`);
+
+    if (this.bullMQPrometheusService) {
+      this.bullMQPrometheusService.registerQueue(queue);
+    }
+
+    if (this.shouldProcessJobs && this.bullBoard && this.queueBullboardService) {
+      this.queueBullboardService.registerQueue(this.bullBoard, queue);
+    }
 
     return queue;
   }
