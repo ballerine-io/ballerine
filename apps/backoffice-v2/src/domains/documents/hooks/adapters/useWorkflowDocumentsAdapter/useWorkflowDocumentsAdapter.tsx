@@ -83,10 +83,7 @@ export const useWorkflowDocumentsAdapter = ({
 
   const issuerCountryCode = extractCountryCodeFromDocuments(documents ?? []);
   const documentsSchemas = useMemo(
-    () =>
-      getDocumentsSchemas(issuerCountryCode, workflow)?.filter(
-        ({ hiddenIn }) => hiddenIn !== 'backoffice',
-      ),
+    () => getDocumentsSchemas(issuerCountryCode, workflow),
     [issuerCountryCode, workflow],
   );
   const isSomeFilesLoading = useMemo(
