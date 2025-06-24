@@ -7,3 +7,39 @@ export interface BullBoardInjectedInstance {
   boardInstance: ReturnType<typeof createBullBoard>;
   serverAdapter: ExpressAdapter;
 }
+
+export interface IQueueService {
+  addJob<T = any>(queueName: string, job_name: string, data: T, opts?: any): Promise<any>;
+
+  registerWorker(
+    queueName: string,
+    processor: (job: any) => Promise<any>,
+    options?: { concurrency?: number },
+  ): void;
+
+  isWorkerEnabled(): boolean;
+  createQueue(queueName: string, options?: QueueOptions): void;
+  setupJobScheduler<T = any>(
+    queueName: string,
+    schedulerId: string,
+    scheduleOpts: { every: number },
+    jobOpts: {
+      name: string;
+      data: T;
+    },
+    queueOptions?: QueueOptions,
+  ): Promise<any>;
+}
+
+export interface QueueOptions {
+  jobOptions?: {
+    attempts?: number;
+    backoff?: {
+      type: 'exponential' | 'fixed';
+      delay: number;
+    };
+    removeOnComplete?: boolean | number | { count: number; age: number };
+    removeOnFail?: boolean | number | { count: number; age: number };
+    priority?: number;
+  };
+}

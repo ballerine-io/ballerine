@@ -6,11 +6,8 @@ import { isAxiosError, RawAxiosRequestHeaders } from 'axios';
 import { Job } from 'bullmq';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { QueueService } from '@/common/queue/queue.service';
-import { QueueBullboardService } from '@/common/queue/queue-bullboard.service';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
-import type { BullBoardInjectedInstance } from '@/common/queue/types';
-import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
+import type { BullBoardInjectedInstance, IQueueService } from '@/common/queue/types';
 import { env } from '@/env';
 import {
   WebhookError,
@@ -35,9 +32,7 @@ export class WebhooksService implements OnModuleInit {
   constructor(
     private readonly logger: AppLoggerService,
     private readonly httpService: HttpService,
-    private readonly queueService: QueueService,
-    private readonly queueBullboardService: QueueBullboardService,
-    private readonly bullMQPrometheusService: BullMQPrometheusService,
+    @Inject('IQueueService') private readonly queueService: IQueueService,
     @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
     private bullBoard: BullBoardInjectedInstance,
   ) {
@@ -49,8 +44,10 @@ export class WebhooksService implements OnModuleInit {
 
     if (!env.QUEUE_SYSTEM_ENABLED) {
       this.logger.log('Queue system is disabled. Webhooks will be sent directly.');
+
       return;
     }
+
     this.logger.log(
       `Setting up queue system. env.QUEUE_SYSTEM_ENABLED: ${env.QUEUE_SYSTEM_ENABLED}`,
     );
@@ -59,25 +56,9 @@ export class WebhooksService implements OnModuleInit {
 
   private async setupQueueSystem() {
     try {
-      const queue = this.queueService.getQueue<OutgoingWebhookJobData>({
-        name: this.QUEUE_NAME,
-        jobOptions: {
-          attempts: 5,
-          backoff: {
-            type: 'exponential',
-            delay: 5_000,
-          },
-          removeOnComplete: { count: 1000, age: 3600 * 24 * 7 },
-          removeOnFail: false,
-        },
-      });
+      this.queueService.createQueue(this.QUEUE_NAME);
 
-      this.bullMQPrometheusService.registerQueue(queue);
-
-      if (this.queueService.isWorkerEnabled()) {
-        this.queueBullboardService.registerQueue(this.bullBoard, queue);
-        this.registerWorker();
-      }
+      this.registerWorker();
 
       this.queueInitialized = true;
       this.logger.log('Webhook queue system setup complete');
@@ -88,30 +69,30 @@ export class WebhooksService implements OnModuleInit {
   }
 
   private registerWorker() {
-    this.queueService.registerWorker<OutgoingWebhookJobData>(
-      this.QUEUE_NAME,
-      async (job: Job<OutgoingWebhookJobData>) => {
-        try {
-          const res = await this.httpService.axiosRef.request(job.data);
-          return res.data;
-        } catch (error) {
-          this.handleWebhookJobError(job, error);
+    this.queueService.registerWorker(this.QUEUE_NAME, this.processWebhookJob.bind(this), {
+      concurrency: 10,
+    });
+  }
 
-          if (isAxiosError(error)) {
-            const webhookError = new WebhookError('Webhook request failed');
-            webhookError.cause = error;
-            webhookError.statusCode = error.response?.status;
-            webhookError.responseData = error.response?.data;
-            webhookError.headers = error.response?.headers;
-            throw webhookError;
-          }
-          throw error;
-        }
-      },
-      {
-        concurrency: 10,
-      },
-    );
+  private async processWebhookJob(job: Job<OutgoingWebhookJobData>) {
+    try {
+      const res = await this.httpService.axiosRef.request(job.data);
+
+      return res.data;
+    } catch (error) {
+      this.handleWebhookJobError(job, error);
+
+      if (isAxiosError(error)) {
+        const webhookError = new WebhookError('Webhook request failed');
+        webhookError.cause = error;
+        webhookError.statusCode = error.response?.status;
+        webhookError.responseData = error.response?.data;
+        webhookError.headers = error.response?.headers;
+        throw webhookError;
+      }
+
+      throw error;
+    }
   }
 
   private handleWebhookJobError(job: Job<OutgoingWebhookJobData>, error: any) {
@@ -191,10 +172,10 @@ export class WebhooksService implements OnModuleInit {
       data,
       timeout: timeout ?? 15_000,
     };
+
     if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {
       try {
-        const queue = this.queueService.getQueue<OutgoingWebhookJobData>({ name: this.QUEUE_NAME });
-        return await queue.add(name, requestData);
+        return await this.queueService.addJob(this.QUEUE_NAME, name, requestData);
       } catch (error) {
         const enqueueErrorPayload = {
           message: 'Failed to add webhook job to the queue',

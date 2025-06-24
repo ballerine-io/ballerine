@@ -33,7 +33,7 @@ const workerMain = async () => {
   process.once('SIGINT', () => closeApp('SIGINT'));
   const configService = app.get(ConfigService);
 
-  const port = configService.getOrThrow<string>('PORT');
+  const port = configService.getOrThrow<string>('WORKER_PORT');
   void app.listen(+port);
 
   logger.log(`Listening on port ${port}`);
