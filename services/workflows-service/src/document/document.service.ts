@@ -42,10 +42,12 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
-import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
+import {
+  beginTransactionIfNotExistCurry,
+  defaultPrismaTransactionOptions,
+} from '@/prisma/prisma.util';
 
 @Injectable()
 export class DocumentService {
@@ -91,7 +93,7 @@ export class DocumentService {
 
     const entityId = getEntityId(data);
 
-    const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
+    await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -103,6 +105,7 @@ export class DocumentService {
         )?.mimeType ||
         '',
     });
+
     const createdDocument = await this.repository.create(
       {
         ...data,

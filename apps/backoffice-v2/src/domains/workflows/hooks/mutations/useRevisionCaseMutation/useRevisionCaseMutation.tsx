@@ -1,35 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Action } from '../../../../../common/enums';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-import { fetchWorkflowEvent } from '../../../fetchers';
+import { fetchCaseRevisionForDocuments } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 import { collectionFlowQueryKeys } from '@/domains/collection-flow/query-keys';
+import { documentsQueryKeys } from '@/domains/documents/hooks/query-keys';
 
-export const useRevisionCaseMutation = ({
-  onSelectNextCase,
-}: {
-  onSelectNextCase?: VoidFunction;
-}) => {
+export const useRevisionCaseMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ workflowId }: { workflowId: string }) =>
-      fetchWorkflowEvent({
+    mutationFn: ({ workflowId, documentIds }: { workflowId: string; documentIds: string[] }) =>
+      fetchCaseRevisionForDocuments({
         workflowId,
-        body: {
-          name: Action.REVISION,
-        },
+        documentIds,
       }),
     onSuccess: () => {
-      // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
       void queryClient.invalidateQueries(collectionFlowQueryKeys._def);
+      void queryClient.invalidateQueries(documentsQueryKeys._def);
 
       toast.success(t(`toast:ask_revision_case.success`));
-
-      // TODO: Re-implement
-      // onSelectNextEntity();
     },
     onError: () => {
       toast.error(t(`toast:ask_revision_case.error`));

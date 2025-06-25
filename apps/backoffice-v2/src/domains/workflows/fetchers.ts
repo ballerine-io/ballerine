@@ -398,3 +398,24 @@ export const fetchWorkflowDocumentOCRResult = async ({
 
   return handleZodError(error, workflow);
 };
+
+export const fetchCaseRevisionForDocuments = async ({
+  workflowId,
+  documentIds,
+}: {
+  workflowId: string;
+  documentIds: string[];
+}) => {
+  const [workflow, error] = await apiClient({
+    method: Method.POST,
+    url: `${getOriginUrl(
+      env.VITE_API_URL,
+    )}/api/v1/case-management/workflows/${workflowId}/revision`,
+    schema: z.any(),
+    body: {
+      documentIds,
+    },
+  });
+
+  return handleZodError(error, workflow);
+};

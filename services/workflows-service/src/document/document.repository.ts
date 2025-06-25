@@ -39,7 +39,16 @@ export class DocumentRepository {
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
     return await transaction.document.findMany(
-      this.projectScopeService.scopeFindMany(args, projectIds),
+      this.projectScopeService.scopeFindMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            deletedAt: null,
+          },
+        },
+        projectIds,
+      ),
     );
   }
 
@@ -56,6 +65,7 @@ export class DocumentRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             id,
           },
         },
@@ -77,6 +87,7 @@ export class DocumentRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             OR: [{ businessId: entityId }, { endUserId: entityId }],
             workflowRuntimeDataId,
           },
@@ -92,7 +103,16 @@ export class DocumentRepository {
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
     return await transaction.document.updateMany(
-      this.projectScopeService.scopeUpdateMany(args, projectIds),
+      this.projectScopeService.scopeUpdateMany(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            deletedAt: null,
+          },
+        },
+        projectIds,
+      ),
     );
   }
 
@@ -135,10 +155,14 @@ export class DocumentRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             id,
           },
           include: {
             files: {
+              where: {
+                deletedAt: null,
+              },
               include: {
                 file: true,
               },
@@ -173,12 +197,16 @@ export class DocumentRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             OR: [{ businessId: entityId }, { endUserId: entityId }],
             workflowRuntimeDataId,
           },
           include: {
             ...args?.include,
             files: {
+              where: {
+                deletedAt: null,
+              },
               include: {
                 file: true,
               },
@@ -207,12 +235,16 @@ export class DocumentRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             OR: [{ businessId: { in: entityIds } }, { endUserId: { in: entityIds } }],
             workflowRuntimeDataId,
           },
           include: {
             ...args?.include,
             files: {
+              where: {
+                deletedAt: null,
+              },
               include: {
                 file: true,
               },
@@ -239,9 +271,13 @@ export class DocumentRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
           },
           include: {
             files: {
+              where: {
+                deletedAt: null,
+              },
               include: {
                 file: true,
               },
@@ -263,13 +299,32 @@ export class DocumentRepository {
     args?: Prisma.DocumentDeleteManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return await transaction.document.deleteMany(
-      this.projectScopeService.scopeDelete(
+    await transaction.documentFile.updateMany(
+      this.projectScopeService.scopeUpdateMany(
+        {
+          where: {
+            deletedAt: null,
+            documentId: { in: ids },
+          },
+          data: {
+            deletedAt: new Date(),
+          },
+        },
+        projectIds,
+      ),
+    );
+
+    return transaction.document.updateMany(
+      this.projectScopeService.scopeUpdateMany(
         {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             id: { in: ids },
+          },
+          data: {
+            deletedAt: new Date(),
           },
         },
         projectIds,
@@ -287,6 +342,7 @@ export class DocumentRepository {
       ...args,
       where: {
         ...args?.where,
+        deletedAt: null,
         documentId: id,
         projectId: { in: projectIds },
       },

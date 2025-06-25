@@ -1,5 +1,5 @@
 import { ValidationError } from '@/errors';
-import { TProjectId, TProjectIds } from '@/types';
+import { PrismaTransaction, TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { ajv } from '@/common/ajv/ajv.validator';
@@ -12,6 +12,12 @@ import { randomUUID } from 'crypto';
 import { BusinessPosition } from '@prisma/client';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { UboToEntityAdapter } from './types';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
+import { DocumentFileService } from '@/document-file/document-file.service';
+import {
+  beginTransactionIfNotExistCurry,
+  defaultPrismaTransactionOptions,
+} from '@/prisma/prisma.util';
 
 @Injectable()
 export class CaseManagementService {
@@ -20,6 +26,7 @@ export class CaseManagementService {
     protected readonly workflowService: WorkflowService,
     protected readonly prismaService: PrismaService,
     protected readonly endUserService: EndUserService,
+    protected readonly documentFileService: DocumentFileService,
   ) {}
 
   async create(
@@ -257,5 +264,56 @@ export class CaseManagementService {
         },
       });
     });
+  }
+
+  async caseRevision(
+    workflowId: string,
+    documentIds: string[],
+    projectIds: TProjectIds,
+    transaction: PrismaTransaction = this.prismaService,
+  ) {
+    assertIsValidProjectIds(projectIds);
+
+    const beginTransaction = beginTransactionIfNotExistCurry({
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+      transaction,
+    });
+
+    return beginTransaction(async transaction => {
+      const deletedDocumentFiles = await this.removeFilesFromDocuments(
+        documentIds,
+        projectIds,
+        transaction,
+      );
+
+      await this.workflowService.event(
+        {
+          id: workflowId,
+          name: 'revision',
+        },
+        projectIds,
+        projectIds[0]!,
+        transaction,
+      );
+
+      return deletedDocumentFiles;
+    });
+  }
+
+  private async removeFilesFromDocuments(
+    documentIds: string[],
+    projectIds: TProjectIds,
+    transaction: PrismaTransaction,
+  ) {
+    assertIsValidProjectIds(projectIds);
+
+    const deletedDocumentFiles = await this.documentFileService.deleteManyByDocumentIds(
+      documentIds,
+      projectIds,
+      transaction,
+    );
+
+    return deletedDocumentFiles;
   }
 }

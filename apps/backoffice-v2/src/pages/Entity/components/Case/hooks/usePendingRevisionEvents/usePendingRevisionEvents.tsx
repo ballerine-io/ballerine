@@ -4,16 +4,21 @@ import { buildCollectionFlowUrl, CommonWorkflowEvent } from '@ballerine/common';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 
-export const usePendingRevisionEvents = (
-  mutateRevisionCase: ReturnType<typeof useRevisionCaseMutation>['mutate'],
-  workflow?: TWorkflowById,
-) => {
+export const usePendingRevisionEvents = ({
+  mutateRevisionCase,
+  workflow,
+  documentIds,
+}: {
+  mutateRevisionCase: ReturnType<typeof useRevisionCaseMutation>['mutate'];
+  workflow?: TWorkflowById;
+  documentIds: string[];
+}) => {
   const onMutateRevisionCase = useCallback(() => {
     if (!workflow?.nextEvents?.some(nextEvent => nextEvent === CommonWorkflowEvent.REVISION)) {
       return;
     }
 
-    mutateRevisionCase({ workflowId: workflow?.id });
+    mutateRevisionCase({ workflowId: workflow?.id!, documentIds });
 
     const isKybExampleVariant = checkIsKybExampleVariant(workflow?.workflowDefinition);
 
@@ -27,7 +32,7 @@ export const usePendingRevisionEvents = (
         token: workflow?.context?.metadata?.token,
       }),
     );
-  }, [mutateRevisionCase, workflow]);
+  }, [mutateRevisionCase, workflow, documentIds]);
 
   return { onMutateRevisionCase };
 };
