@@ -59,7 +59,7 @@ export class WebhooksService implements OnModuleInit {
       this.queueService.createQueue<OutgoingWebhookJobData>(this.QUEUE_NAME, {
         name: this.QUEUE_NAME,
         jobOptions: {
-          attempts: 5,
+          attempts: 3,
           backoff: { type: 'exponential', delay: 5000 },
           removeOnComplete: { count: 1000, age: 3600 * 24 * 7 },
           removeOnFail: false,
@@ -185,7 +185,7 @@ export class WebhooksService implements OnModuleInit {
 
     if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {
       try {
-        return await this.queueService.addJob(this.QUEUE_NAME, requestData);
+        return await this.queueService.addJob(this.QUEUE_NAME, name, requestData);
       } catch (error) {
         const enqueueErrorPayload = {
           message: 'Failed to add webhook job to the queue',

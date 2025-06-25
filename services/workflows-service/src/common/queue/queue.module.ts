@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { QueueService } from './queue.service';
+import { BullMQQueueService } from './queue.service';
 import { QueueBullboardService } from './queue-bullboard.service';
 import { QueueOtelService } from './otel.service';
 import { MonitoringModule } from '@/common/monitoring/monitoring.module';
@@ -11,8 +11,8 @@ import { RedisModule } from '../redis/redis.module';
 @Module({
   imports: [MonitoringModule, RedisModule],
   providers: [
-    QueueService,
-    { provide: 'IQueueService', useExisting: QueueService },
+    BullMQQueueService,
+    { provide: 'IQueueService', useExisting: BullMQQueueService },
     QueueBullboardService,
     QueueOtelService,
     {
@@ -27,7 +27,7 @@ import { RedisModule } from '../redis/redis.module';
     },
   ],
   exports: [
-    QueueService,
+    BullMQQueueService,
     'IQueueService',
     QueueBullboardService,
     QueueOtelService,
