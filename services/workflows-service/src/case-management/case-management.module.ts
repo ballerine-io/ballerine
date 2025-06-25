@@ -7,6 +7,7 @@ import { Module } from '@nestjs/common';
 import { AlertModule } from '@/alert/alert.module';
 import { EndUserModule } from '@/end-user/end-user.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
+import { DocumentFileModule } from '@/document-file/document-file.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
     EndUserModule,
     AlertModule,
     UiDefinitionModule,
+    DocumentFileModule,
   ],
   providers: [CaseManagementService],
   controllers: [CaseManagementController],

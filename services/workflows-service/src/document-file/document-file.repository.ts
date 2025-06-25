@@ -45,6 +45,7 @@ export class DocumentFileRepository {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             documentId,
           },
         },
@@ -81,13 +82,17 @@ export class DocumentFileRepository {
     args?: Prisma.DocumentFileDeleteManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.deleteMany(
-      this.projectScopeService.scopeDelete(
+    return transaction.documentFile.updateMany(
+      this.projectScopeService.scopeUpdateMany(
         {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             id,
+          },
+          data: {
+            deletedAt: new Date(),
           },
         },
         projectIds,
@@ -101,13 +106,38 @@ export class DocumentFileRepository {
     args?: Prisma.DocumentFileDeleteManyArgs,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    return transaction.documentFile.deleteMany(
-      this.projectScopeService.scopeDelete(
+    return transaction.documentFile.updateMany(
+      this.projectScopeService.scopeUpdateMany(
         {
           ...args,
           where: {
             ...args?.where,
+            deletedAt: null,
             documentId,
+          },
+          data: {
+            deletedAt: new Date(),
+          },
+        },
+        projectIds,
+      ),
+    );
+  }
+
+  async deleteManyByDocumentIds(
+    documentIds: string[],
+    projectIds: TProjectId[],
+    transaction: PrismaTransactionClient = this.prismaService,
+  ) {
+    return transaction.documentFile.updateMany(
+      this.projectScopeService.scopeUpdateMany(
+        {
+          where: {
+            deletedAt: null,
+            documentId: { in: documentIds },
+          },
+          data: {
+            deletedAt: new Date(),
           },
         },
         projectIds,

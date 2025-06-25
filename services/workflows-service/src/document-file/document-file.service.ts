@@ -59,4 +59,12 @@ export class DocumentFileService {
   ) {
     return await this.repository.deleteByDocumentId(documentId, projectIds, args, transaction);
   }
+
+  async deleteManyByDocumentIds(
+    documentIds: string[],
+    projectIds: TProjectId[],
+    transaction?: PrismaTransactionClient,
+  ) {
+    return await this.repository.deleteManyByDocumentIds(documentIds, projectIds, transaction);
+  }
 }

@@ -1016,8 +1016,9 @@ model Document {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([businessId])
   @@index([endUserId])
@@ -1062,8 +1063,9 @@ model DocumentFile {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([documentId])
   @@index([fileId])
