@@ -46,7 +46,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
         <Card className={'flex h-full flex-col px-3'}>
           <CardHeader className={'pb-1 font-bold'}>Web Presence Risk</CardHeader>
           <CardContent>
-            <p className={'mb-8'}>Risk levels of all merchant monitoring reports.</p>
+            <p className={'mb-8'}>Risk levels of all web presence reports.</p>
             <div className={'flex flex-col items-center space-y-4 pt-3'}>
               <PieChart width={184} height={184}>
                 <text
