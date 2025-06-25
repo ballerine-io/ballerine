@@ -3,8 +3,7 @@ import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
-import { QueueOtelService } from './otel.service';
-import { REDIS_CLIENT } from './redis.provider';
+import { RedisService } from '../redis/redis.service';
 import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
 import type { BullBoardInjectedInstance } from './types';
 import { QueueBullboardService } from './queue-bullboard.service';
@@ -33,15 +32,14 @@ export class QueueService implements OnModuleDestroy {
 
   constructor(
     private readonly logger: AppLoggerService,
-    private readonly queueOtelService: QueueOtelService,
-    @Inject(REDIS_CLIENT) redisClient: IORedis | null,
+    private readonly redisService: RedisService,
     private readonly bullMQPrometheusService: BullMQPrometheusService,
     @Inject('BULLBOARD_INSTANCE') private readonly bullBoard?: BullBoardInjectedInstance,
     private readonly queueBullboardService?: QueueBullboardService,
   ) {
     this.shouldProcessJobs = this.determineIfShouldProcessJobs();
     this.logger.log(`Queue worker mode: ${this.shouldProcessJobs ? 'ENABLED' : 'DISABLED'}`);
-    this.redisClient = redisClient;
+    this.redisClient = this.redisService.client;
   }
 
   private determineIfShouldProcessJobs(): boolean {
@@ -147,7 +145,6 @@ export class QueueService implements OnModuleDestroy {
 
   createQueue<T = any>(queueName: string, options?: QueueOptions<T>): void {
     if (this.queues.has(queueName)) {
-      // Optionally update options if needed
       return;
     }
 
@@ -182,12 +179,51 @@ export class QueueService implements OnModuleDestroy {
     );
 
     await Promise.all([...workerClosePromises, ...queueClosePromises]);
+  }
 
-    if (this.redisClient) {
-      await this.redisClient
-        .quit()
-        .catch(err => this.logger.error(`Error closing Redis connection`, { err }));
-      this.redisClient = null;
+  async setupJobScheduler<T = any>(
+    queue: Queue,
+    schedulerId: string,
+    options: {
+      every: number;
+      data?: T;
+      jobName?: string;
+      jobOptions?: {
+        attempts?: number;
+        backoff?: {
+          type: 'exponential' | 'fixed';
+          delay: number;
+        };
+      };
+    },
+  ) {
+    try {
+      const jobName = options.jobName || 'scheduled-job';
+      const firstJob = await queue.upsertJobScheduler(
+        schedulerId,
+        { every: options.every, jobId: schedulerId },
+        {
+          name: jobName,
+          data: options.data || { timestamp: Date.now() },
+          opts: {
+            attempts: options.jobOptions?.attempts || 10,
+            backoff: options.jobOptions?.backoff || {
+              type: 'exponential',
+              delay: 10000,
+            },
+          },
+        },
+      );
+      this.logger.log(`Created job scheduler: ${schedulerId}`, {
+        schedulerId,
+        every: options.every,
+        jobId: firstJob?.id,
+      });
+
+      return firstJob;
+    } catch (error) {
+      this.logger.error(`Failed to set up job scheduler: ${schedulerId}`, { error });
+      throw error;
     }
   }
 }

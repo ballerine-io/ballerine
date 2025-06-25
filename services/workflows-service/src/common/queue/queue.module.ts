@@ -2,20 +2,19 @@ import { Module } from '@nestjs/common';
 import { QueueService } from './queue.service';
 import { QueueBullboardService } from './queue-bullboard.service';
 import { QueueOtelService } from './otel.service';
-import { redisProvider } from './redis.provider';
 import { MonitoringModule } from '@/common/monitoring/monitoring.module';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from './types';
 import { createBullBoard } from '@bull-board/api';
 import { ExpressAdapter } from '@bull-board/express';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
-  imports: [MonitoringModule],
+  imports: [MonitoringModule, RedisModule],
   providers: [
     QueueService,
     { provide: 'IQueueService', useExisting: QueueService },
     QueueBullboardService,
     QueueOtelService,
-    redisProvider,
     {
       provide: BULLBOARD_INSTANCE_INJECTION_TOKEN,
       useFactory: () => {
@@ -32,7 +31,6 @@ import { ExpressAdapter } from '@bull-board/express';
     'IQueueService',
     QueueBullboardService,
     QueueOtelService,
-    redisProvider,
     BULLBOARD_INSTANCE_INJECTION_TOKEN,
   ],
 })
