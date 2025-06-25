@@ -1,8 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AlertService } from './alert.service';
-import type { IQueueService, BullBoardInjectedInstance } from '@/common/queue/types';
-import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
+import type { IQueueService } from '@/common/queue/types';
 import { env } from '@/env';
 
 export interface AlertCheckJobData extends Record<string, unknown> {
@@ -15,11 +14,9 @@ export class AlertQueueService implements OnModuleInit {
   private readonly SCHEDULER_ID = 'transaction-monitoring-alert-check';
 
   constructor(
-    @Inject(AppLoggerService) private readonly logger: AppLoggerService,
-    @Inject(AlertService) private readonly alertService: AlertService,
+    private readonly logger: AppLoggerService,
+    private readonly alertService: AlertService,
     @Inject('IQueueService') private readonly queueService: IQueueService,
-    @Inject(BULLBOARD_INSTANCE_INJECTION_TOKEN)
-    private bullBoard: BullBoardInjectedInstance,
   ) {}
 
   async onModuleInit() {
@@ -35,19 +32,21 @@ export class AlertQueueService implements OnModuleInit {
       this.queueService.createQueue<AlertCheckJobData>(this.QUEUE_NAME, {
         name: this.QUEUE_NAME,
         jobOptions: {
-          attempts: 10,
+          attempts: 3,
           backoff: { type: 'exponential', delay: 10000 },
           removeOnComplete: { count: 100, age: 3600 * 24 },
           removeOnFail: false,
         },
       });
-
-      const queue = (this.queueService as any).getQueue({ name: this.QUEUE_NAME });
-      await (this.queueService as any).setupJobScheduler(queue, this.SCHEDULER_ID, {
-        every: 60 * 60 * 1000,
-        jobName: 'alert-check',
-        data: { timestamp: Date.now() },
-      });
+      await this.queueService.setupJobScheduler(
+        this.QUEUE_NAME,
+        this.SCHEDULER_ID,
+        { every: 60 * 60 * 1000 },
+        {
+          name: 'alert-check',
+          data: { timestamp: Date.now() },
+        },
+      );
 
       this.registerWorker();
 

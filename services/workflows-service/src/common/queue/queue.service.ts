@@ -5,30 +5,23 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
 import { RedisService } from '../redis/redis.service';
 import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.service';
-import type { BullBoardInjectedInstance } from './types';
+import type { BullBoardInjectedInstance, IQueueService, QueueOptions } from './types';
 import { QueueBullboardService } from './queue-bullboard.service';
 
-export interface QueueOptions<T = any> {
-  name: string;
-  concurrency?: number;
-  jobOptions?: {
-    attempts?: number;
-    backoff?: {
-      type: 'exponential' | 'fixed';
-      delay: number;
-    };
-    removeOnComplete?: boolean | number | { count: number; age: number };
-    removeOnFail?: boolean | number | { count: number; age: number };
-    priority?: number;
-  };
-}
-
 @Injectable()
-export class QueueService implements OnModuleDestroy {
+export class BullMQQueueService implements OnModuleDestroy, IQueueService {
   private redisClient: IORedis | null;
   private queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
   private readonly shouldProcessJobs: boolean;
+
+  async addJob<T = any>(queueName: string, job_name: string, data: T, opts?: any): Promise<any> {
+    const queue = this.getQueue(queueName);
+
+    return queue.add(job_name, data, {
+      priority: opts?.priority,
+    });
+  }
 
   constructor(
     private readonly logger: AppLoggerService,
@@ -58,40 +51,16 @@ export class QueueService implements OnModuleDestroy {
     return this.shouldProcessJobs;
   }
 
-  private getQueue<T = any>(options: QueueOptions<T>): Queue<T> {
+  public getQueue(queueName: string): Queue {
     if (!this.redisClient) {
       throw new Error('Redis client not initialized');
     }
 
-    if (this.queues.has(options.name)) {
-      return this.queues.get(options.name) as unknown as Queue<T>;
+    if (this.queues.has(queueName)) {
+      return this.queues.get(queueName) as Queue;
     }
 
-    const queue = new Queue<T>(options.name, {
-      connection: this.redisClient as any,
-      defaultJobOptions: {
-        attempts: options.jobOptions?.attempts ?? 3,
-        backoff: options.jobOptions?.backoff ?? {
-          type: options.jobOptions?.backoff?.type ?? 'exponential',
-          delay: options.jobOptions?.backoff?.delay ?? 5000,
-        },
-        removeOnComplete: options.jobOptions?.removeOnComplete ?? { count: 100, age: 3600 * 24 },
-        removeOnFail: options.jobOptions?.removeOnFail ?? false,
-      },
-    });
-
-    this.queues.set(options.name, queue as Queue);
-    this.logger.log(`Queue created: ${options.name}`);
-
-    if (this.bullMQPrometheusService) {
-      this.bullMQPrometheusService.registerQueue(queue);
-    }
-
-    if (this.shouldProcessJobs && this.bullBoard && this.queueBullboardService) {
-      this.queueBullboardService.registerQueue(this.bullBoard, queue);
-    }
-
-    return queue;
+    throw new Error(`Queue with name '${queueName}' does not exist. Please create it first.`);
   }
 
   registerWorker<T = any>(
@@ -115,8 +84,8 @@ export class QueueService implements OnModuleDestroy {
       return;
     }
 
-    const worker = new Worker<T, any, string>(queueName, processor, {
-      connection: this.redisClient as any,
+    const worker = new Worker(queueName, processor, {
+      connection: this.redisClient,
       concurrency: options.concurrency ?? 1,
       autorun: true,
     });
@@ -139,17 +108,17 @@ export class QueueService implements OnModuleDestroy {
       });
     });
 
-    this.workers.set(queueName, worker as unknown as Worker<T, any, string>);
+    this.workers.set(queueName, worker);
     this.logger.log(`Worker registered for queue: ${queueName}`);
   }
 
-  createQueue<T = any>(queueName: string, options?: QueueOptions<T>): void {
+  createQueue(queueName: string, options?: QueueOptions): void {
     if (this.queues.has(queueName)) {
       return;
     }
 
-    const queue = new Queue<T, any, string>(queueName, {
-      connection: this.redisClient as any,
+    const queue = new Queue(queueName, {
+      connection: this.redisClient as IORedis,
       defaultJobOptions: options?.jobOptions ?? {
         attempts: 3,
         backoff: { type: 'exponential', delay: 5000 },
@@ -157,7 +126,7 @@ export class QueueService implements OnModuleDestroy {
         removeOnFail: false,
       },
     });
-    this.queues.set(queueName, queue as Queue);
+    this.queues.set(queueName, queue);
     this.logger.log(`Queue created: ${queueName}`);
 
     if (this.bullMQPrometheusService) {
@@ -182,41 +151,36 @@ export class QueueService implements OnModuleDestroy {
   }
 
   async setupJobScheduler<T = any>(
-    queue: Queue,
+    queueName: string,
     schedulerId: string,
-    options: {
-      every: number;
-      data?: T;
-      jobName?: string;
-      jobOptions?: {
-        attempts?: number;
-        backoff?: {
-          type: 'exponential' | 'fixed';
-          delay: number;
-        };
-      };
+    scheduleOpts: { every: number },
+    jobOpts: {
+      name: string;
+      data: T;
+      opts?: any;
     },
-  ) {
+  ): Promise<any> {
     try {
-      const jobName = options.jobName || 'scheduled-job';
+      const queue = this.getQueue(queueName);
+      const jobName = jobOpts.name;
       const firstJob = await queue.upsertJobScheduler(
         schedulerId,
-        { every: options.every, jobId: schedulerId },
+        { every: scheduleOpts.every, jobId: schedulerId },
         {
           name: jobName,
-          data: options.data || { timestamp: Date.now() },
+          data: jobOpts.data || { timestamp: Date.now() },
           opts: {
-            attempts: options.jobOptions?.attempts || 10,
-            backoff: options.jobOptions?.backoff || {
+            attempts: jobOpts.opts?.attempts || 3,
+            backoff: jobOpts.opts?.backoff || {
               type: 'exponential',
-              delay: 10000,
+              delay: 3000,
             },
           },
         },
       );
       this.logger.log(`Created job scheduler: ${schedulerId}`, {
         schedulerId,
-        every: options.every,
+        every: scheduleOpts.every,
         jobId: firstJob?.id,
       });
 
