@@ -256,7 +256,7 @@ export class WorkflowControllerExternal {
     },
   })
   @swagger.ApiOperation({
-    summary: `The /run endpoint initiates and executes various workflows based on initial data and configurations. Supported workflows include KYB, KYC, KYB with UBOs, KYB with Associated Companies, Ongoing Sanctions, and Merchant Monitoring. To start a workflow, provide workflowId, context (with entity and documents), and config (with checks) in the request body. Customization is possible through the config object. The response includes workflowDefinitionId, workflowRuntimeId, ballerineEntityId, and entities. Workflow execution is asynchronous, with progress tracked via webhook notifications.`,
+    summary: `The /run endpoint initiates and executes various workflows based on initial data and configurations. Supported workflows include KYB, KYC, KYB with UBOs, KYB with Associated Companies, Ongoing Sanctions, and Web Presence. To start a workflow, provide workflowId, context (with entity and documents), and config (with checks) in the request body. Customization is possible through the config object. The response includes workflowDefinitionId, workflowRuntimeId, ballerineEntityId, and entities. Workflow execution is asynchronous, with progress tracked via webhook notifications.`,
   })
   @UseCustomerAuthGuard()
   @common.HttpCode(200)
@@ -302,7 +302,7 @@ export class WorkflowControllerExternal {
           },
         },
       },
-      'Merchant Monitoring': {
+      'Web Presence': {
         value: {
           workflowId: '0k3j3k3g3h3i3j3k3g3h3i3',
           context: {

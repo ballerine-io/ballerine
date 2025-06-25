@@ -13,7 +13,7 @@ export const MerchantMonitoringTracker = ({
   return (
     <Tracker workflow={workflow} plugins={plugins} processes={processes}>
       <Tracker.Item
-        title="Merchant Monitoring"
+        title="Web Presence"
         value={MERCHANT_MONITORING_PROCESS_NAME}
         subitems={items}
       />

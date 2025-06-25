@@ -263,7 +263,7 @@ export const generateWorkflowDefinition = ({
           name: 'merchantMonitoring',
           pluginKind: 'merchant-monitoring',
           vendor: 'ballerine',
-          displayName: 'Merchant Monitoring',
+          displayName: 'Web Presence',
           stateNames: ['run_merchant_monitoring', 'rerun_vendor_data'],
           successAction: 'VENDOR_DONE',
           errorAction: 'VENDOR_DONE',
@@ -279,7 +279,7 @@ export const generateWorkflowDefinition = ({
         },
         {
           name: 'merchantScreening',
-          displayName: 'Merchant Screening',
+          displayName: 'MATCH Screening',
           pluginKind: 'mastercard-merchant-screening',
           stateNames: ['run_vendor_data', 'rerun_vendor_data'],
           successAction: 'VENDOR_DONE',
