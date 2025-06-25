@@ -32,7 +32,7 @@ export const configuration: IAppConfiguration = {
       getVerificationStatus: '/v2/enduser/verify/status/{verificationId}',
       processStepData: '/v2/enduser/verify/partial',
       getConfig: '/v2/clients/{clientId}/config',
-      uploadFile: '/collection-flow/files',
+      uploadFile: '/collection-flow/documents',
       updateContext: '/collection-flow/sync/context',
     },
   },

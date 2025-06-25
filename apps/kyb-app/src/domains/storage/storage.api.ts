@@ -6,7 +6,7 @@ export const uploadFile = async (dto: UploadFileDto): Promise<{ id: string }> =>
   formData.append('file', dto.file);
 
   const { id: fileId } = await request
-    .post('collection-flow/files/old', {
+    .post('collection-flow/documents', {
       body: formData,
     })
     .json<{
@@ -19,7 +19,7 @@ export const uploadFile = async (dto: UploadFileDto): Promise<{ id: string }> =>
 };
 
 export const fetchFile = async (fileId: string): Promise<IFile> => {
-  const result = await request.get(`collection-flow/files/${fileId}`);
+  const result = await request.get(`collection-flow/documents/${fileId}`);
 
   return result.json<IFile>();
 };

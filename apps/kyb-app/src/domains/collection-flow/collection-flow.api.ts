@@ -158,7 +158,7 @@ export const finalSubmissionRequest = async (context?: CollectionFlowContext) =>
 };
 
 export const fetchDocumentsByIds = async (ids: string[]) => {
-  const result = await request.get('collection-flow/files', {
+  const result = await request.get('collection-flow/documents', {
     searchParams: {
       ids: ids.join(','),
     },
