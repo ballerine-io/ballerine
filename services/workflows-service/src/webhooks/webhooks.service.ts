@@ -7,10 +7,13 @@ import { Job } from 'bullmq';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
-import type { BullBoardInjectedInstance } from '@/common/queue/types';
+import type { BullBoardInjectedInstance, IQueueService } from '@/common/queue/types';
 import { env } from '@/env';
-import { type OutgoingWebhookJobData, type OutgoingWebhookPayloads } from './types/webhook';
-import type { IQueueService } from '@/common/queue/queue.interface';
+import {
+  WebhookError,
+  type OutgoingWebhookJobData,
+  type OutgoingWebhookPayloads,
+} from './types/webhook';
 
 const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) => {
   Sentry.captureException(
@@ -88,6 +91,16 @@ export class WebhooksService implements OnModuleInit {
       return res.data;
     } catch (error) {
       this.handleWebhookJobError(job, error);
+
+      if (isAxiosError(error)) {
+        const webhookError = new WebhookError('Webhook request failed');
+        webhookError.cause = error;
+        webhookError.statusCode = error.response?.status;
+        webhookError.responseData = error.response?.data;
+        webhookError.headers = error.response?.headers;
+        throw webhookError;
+      }
+
       throw error;
     }
   }

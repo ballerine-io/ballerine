@@ -1,9 +1,8 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AlertService } from './alert.service';
-import type { IQueueService } from '@/common/queue/queue.interface';
+import type { IQueueService, BullBoardInjectedInstance } from '@/common/queue/types';
 import { BULLBOARD_INSTANCE_INJECTION_TOKEN } from '@/common/queue/types';
-import type { BullBoardInjectedInstance } from '@/common/queue/types';
 import { env } from '@/env';
 
 export interface AlertCheckJobData extends Record<string, unknown> {
@@ -41,6 +40,13 @@ export class AlertQueueService implements OnModuleInit {
           removeOnComplete: { count: 100, age: 3600 * 24 },
           removeOnFail: false,
         },
+      });
+
+      const queue = (this.queueService as any).getQueue({ name: this.QUEUE_NAME });
+      await (this.queueService as any).setupJobScheduler(queue, this.SCHEDULER_ID, {
+        every: 60 * 60 * 1000,
+        jobName: 'alert-check',
+        data: { timestamp: Date.now() },
       });
 
       this.registerWorker();
