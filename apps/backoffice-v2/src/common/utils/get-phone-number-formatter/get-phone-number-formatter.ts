@@ -6,11 +6,9 @@ import { parsePhoneNumber } from 'libphonenumber-js';
  */
 export const getPhoneNumberFormatter = (value: string) => {
   try {
-    if (!/^(?!-)(?!\+?$)(?!-+$)(?!.*-\+)(?!.*--)\+?[\d-]+(?<!-)$/.test(value)) {
-      return;
-    }
-
-    return parsePhoneNumber(value);
+    return parsePhoneNumber(value, {
+      extract: false,
+    });
   } catch {
     return;
   }
