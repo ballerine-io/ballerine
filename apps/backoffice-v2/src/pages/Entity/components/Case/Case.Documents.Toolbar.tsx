@@ -51,7 +51,7 @@ export const DocumentsToolbar: FunctionComponent<{
   hideOpenExternalButton?: boolean;
   onRotateDocument: () => void;
   onOpenDocumentInNewTab: (id: string) => void;
-  shouldDownload: boolean;
+  isDocumentWithoutViewer: boolean;
   onOcrPressed?: () => void;
   isOCREnabled: boolean;
   isLoadingOCR: boolean;
@@ -63,7 +63,7 @@ export const DocumentsToolbar: FunctionComponent<{
   onRotateDocument,
   onOpenDocumentInNewTab,
   onOcrPressed,
-  shouldDownload,
+  isDocumentWithoutViewer,
   isLoadingOCR,
   isOCREnabled,
   fileToDownloadBase64,
@@ -109,7 +109,7 @@ export const DocumentsToolbar: FunctionComponent<{
               type="button"
               className={ctw(toolbarButtonClass)}
               onClick={onOpenInNewTabClick}
-              disabled={shouldDownload}
+              disabled={isDocumentWithoutViewer}
               aria-label="Open in new tab"
             >
               <ExternalLinkIcon className="p-0.5" />
@@ -127,7 +127,7 @@ export const DocumentsToolbar: FunctionComponent<{
               type="button"
               className={ctw(toolbarButtonClass)}
               onClick={onRotateDocument}
-              disabled={shouldDownload}
+              disabled={isDocumentWithoutViewer}
               aria-label="Rotate document"
             >
               <FileText className="rotate-90 p-0.5" />
@@ -139,12 +139,20 @@ export const DocumentsToolbar: FunctionComponent<{
         )}
 
         {/* Download Document Button */}
-        <div className="flex flex-col items-center">
+        <div
+          className={ctw('flex flex-col items-center', {
+            'pointer-events-none opacity-50': !fileToDownloadBase64,
+          })}
+        >
           <a
             className={ctw(toolbarButtonClass)}
             download={image?.fileName}
             href={fileToDownloadBase64}
             aria-label="Download document"
+            aria-disabled={!fileToDownloadBase64}
+            {...(!fileToDownloadBase64 && {
+              tabIndex: -1,
+            })}
           >
             <Download className="p-0.5" />
           </a>
@@ -157,7 +165,10 @@ export const DocumentsToolbar: FunctionComponent<{
         {/* Zoom Document Button */}
         {!isLoading && (
           <div className="flex flex-col items-center">
-            <ImageViewer.ZoomButton disabled={shouldDownload} className={ctw(toolbarButtonClass)} />
+            <ImageViewer.ZoomButton
+              disabled={isDocumentWithoutViewer}
+              className={ctw(toolbarButtonClass)}
+            />
             <span className="mt-1 whitespace-nowrap text-[11px] font-extrabold text-black">
               Zoom
             </span>
