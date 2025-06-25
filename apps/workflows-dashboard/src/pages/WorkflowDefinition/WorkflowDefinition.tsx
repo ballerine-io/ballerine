@@ -136,7 +136,7 @@ export const VENDOR_DETAILS = {
       },
     },
     'merchant-monitoring': {
-      title: 'Merchant Monitoring',
+      title: 'Web Presence',
       description: 'Ongoing merchant monitoring and risk assessment',
       vendors: {
         ballerine: {
@@ -147,7 +147,7 @@ export const VENDOR_DETAILS = {
             vendor: 'ballerine',
             pluginKind: 'merchant-monitoring',
             stateNames: ['run_merchant_monitoring'],
-            displayName: 'Merchant Monitoring',
+            displayName: 'Web Presence',
             errorAction: 'MERCHANT_MONITORING_FAILED',
             successAction: 'MERCHANT_MONITORING_SUCCESS',
             merchantMonitoringQualityControl: false,
@@ -167,7 +167,7 @@ export const VENDOR_DETAILS = {
             vendor: 'mastercard',
             pluginKind: 'mastercard-merchant-screening',
             stateNames: ['run_vendor_data'],
-            displayName: 'Merchant Screening',
+            displayName: 'MATCH Screening',
             errorAction: 'VENDOR_DONE',
             successAction: 'VENDOR_DONE',
           },

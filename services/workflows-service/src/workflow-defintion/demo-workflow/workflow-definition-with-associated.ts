@@ -278,7 +278,7 @@ export const generateWorkflowDefinitionWithAssociated = ({
           name: 'merchantMonitoring',
           pluginKind: 'merchant-monitoring',
           vendor: 'ballerine',
-          displayName: 'Merchant Monitoring',
+          displayName: 'Web Presence',
           stateNames: ['run_merchant_monitoring'],
           successAction: 'MERCHANT_MONITORING_SUCCESS',
           errorAction: 'MERCHANT_MONITORING_FAILED',

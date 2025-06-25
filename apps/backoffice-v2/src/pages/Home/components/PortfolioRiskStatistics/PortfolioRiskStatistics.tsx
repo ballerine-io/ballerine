@@ -44,7 +44,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
     <div className={'grid grid-cols-3 gap-6'}>
       <div className={'min-h-[27.5rem] rounded-xl bg-[#F6F6F6] p-2'}>
         <Card className={'flex h-full flex-col px-3'}>
-          <CardHeader className={'pb-1 font-bold'}>Merchant Monitoring Risk</CardHeader>
+          <CardHeader className={'pb-1 font-bold'}>Web Presence Risk</CardHeader>
           <CardContent>
             <p className={'mb-8'}>Risk levels of all merchant monitoring reports.</p>
             <div className={'flex flex-col items-center space-y-4 pt-3'}>

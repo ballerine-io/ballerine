@@ -36,7 +36,7 @@ export const DynamicMetricsSection = ({
       <Separator className="h-[1px] w-full bg-gray-300" />
 
       <div className="flex items-center justify-between">
-        <h3 className={'text-xl font-medium'}>Merchant Monitoring Risk Analytics</h3>
+        <h3 className={'text-xl font-medium'}>Web Presence Risk Analytics</h3>
 
         <DateRangePicker
           toDate={new Date()}
