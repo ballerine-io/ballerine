@@ -58,9 +58,8 @@ export const useDocumentsLogic = (_initialDocuments: IDocumentsProps['documents'
     [filterId],
   );
 
-  const shouldDownload = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
+  const isDocumentWithoutViewer = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
   const { data: fileToDownloadBase64 } = useStorageFileByIdQuery(selectedImage?.id, {
-    isEnabled: shouldDownload,
     withSignedUrl: false,
   });
 
@@ -80,7 +79,7 @@ export const useDocumentsLogic = (_initialDocuments: IDocumentsProps['documents'
     onOpenDocumentInNewTab,
     isRotatedOrTransformed,
     onTransformed,
-    shouldDownload,
+    isDocumentWithoutViewer,
     fileToDownloadBase64,
   };
 };

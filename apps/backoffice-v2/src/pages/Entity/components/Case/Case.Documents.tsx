@@ -47,7 +47,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     onOpenDocumentInNewTab,
     onTransformed,
     isRotatedOrTransformed,
-    shouldDownload,
+    isDocumentWithoutViewer,
     isOCREnabled,
     fileToDownloadBase64,
   } = useDocumentsLogic(documents);
@@ -56,7 +56,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
     <ImageViewer selectedImage={selectedImage} onSelectImage={onSelectImage}>
       <div className={`flex w-full flex-col items-center`}>
         <div className={ctw(`d-full relative flex rounded-md`, wrapperClassName)}>
-          {!shouldDownload && (
+          {!isDocumentWithoutViewer && (
             <ImageEditor
               image={selectedImage}
               crop={crop}
@@ -73,8 +73,8 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
               />
             </ImageEditor>
           )}
-          {shouldDownload && (
-            <div className={`w-[441px]`}>
+          {isDocumentWithoutViewer && (
+            <div className={`h-[600px] w-full`}>
               <DownloadFile heading={selectedImage?.fileName} />
             </div>
           )}
@@ -85,7 +85,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
             onRotateDocument={onRotateDocument}
             onOpenDocumentInNewTab={onOpenDocumentInNewTab}
             // isRotatedOrTransformed={isRotatedOrTransformed}
-            shouldDownload={shouldDownload}
+            shouldDownload={isDocumentWithoutViewer}
             isOCREnabled={!!isDocumentEditable && isOCREnabled}
             onOcrPressed={onOcrPressed}
             isLoadingOCR={!!isLoadingOCR}
