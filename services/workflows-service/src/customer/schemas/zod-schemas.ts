@@ -27,6 +27,18 @@ export const CustomerConfigSchema = z.object({
 
 export type TCustomerConfig = z.infer<typeof CustomerConfigSchema>;
 
+const basicReportFeatureSchema = z
+  .object({
+    enabled: z.boolean(),
+    options: z
+      .object({
+        type: z.string(),
+        version: z.string(),
+      })
+      .optional(),
+  })
+  .optional();
+
 export const CustomerFeaturesSchema = z.object({
   // OCR Features
   isDocumentOcrEnabled: z.boolean().optional(),
@@ -36,33 +48,12 @@ export const CustomerFeaturesSchema = z.object({
 
   // Report Features
   enableWebPresenceReportExport: z.boolean().optional(),
-  createBusinessReport: z
-    .object({
-      enabled: z.boolean(),
-      options: z
-        .object({
-          type: z.string(),
-          version: z.string(),
-        })
-        .optional(),
-    })
-    .optional(),
-  createBusinessReportBatch: z
-    .object({
-      enabled: z.boolean(),
-      options: z
-        .object({
-          type: z.string(),
-          version: z.string(),
-        })
-        .optional(),
-    })
-    .optional(),
+  createBusinessReport: basicReportFeatureSchema,
+  createBusinessReportBatch: basicReportFeatureSchema,
 
   // Monitoring Features
   ONGOING_MERCHANT_REPORT: z
     .object({
-      name: z.string(),
       enabled: z.boolean(),
       options: z
         .object({

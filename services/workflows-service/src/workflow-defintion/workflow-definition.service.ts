@@ -1,4 +1,3 @@
-import { CustomerService } from '@/customer/customer.service';
 import { FilterService } from '@/filter/filter.service';
 import { InputJsonValue, NullableJsonNullValueInput, TProjectId, TProjectIds } from '@/types';
 import {
@@ -19,7 +18,6 @@ import { upsertDemoUsKybFlow } from './demo-workflow/us/create-demo-workflow-us'
 export class WorkflowDefinitionService {
   constructor(
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
-    protected readonly customerService: CustomerService,
     protected readonly filterService: FilterService,
   ) {}
 

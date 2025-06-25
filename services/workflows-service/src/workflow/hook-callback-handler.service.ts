@@ -10,7 +10,6 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import { get, isObject, set } from 'lodash';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
-import { SentryService } from '@/sentry/sentry.service';
 import {
   formatIndividualVerification,
   handleIndividualVerificationDocuments,
@@ -60,7 +59,6 @@ export class HookCallbackHandlerService {
     protected readonly customerService: CustomerService,
     protected readonly businessService: BusinessService,
     private readonly endUserService: EndUserService,
-    private readonly sentryService: SentryService,
   ) {}
 
   async handleHookResponse({

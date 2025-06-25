@@ -4,7 +4,6 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
-import { WebhooksService } from '@/webhooks/webhooks.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { IndividualAmlWebhookInput } from './types/individual-aml-webhook-input.dto';
@@ -18,7 +17,6 @@ export class IncomingWebhooksService {
     private readonly endUserRepository: EndUserRepository,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly endUserService: EndUserService,
-    private readonly webhooksService: WebhooksService,
   ) {}
 
   async handleIndividualAmlHit({

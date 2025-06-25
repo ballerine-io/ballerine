@@ -1,16 +1,12 @@
 import { TProjectId } from '@/types';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GetKybAndOwnershipAssessmentsDto } from './dtos/get-kyb-and-ownership-assessments.dto';
-import { CustomerService } from '@/customer/customer.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
 
 @Injectable()
 export class AssessmentsService {
-  constructor(
-    protected readonly unifiedApiClient: UnifiedApiClient,
-    protected readonly customerService: CustomerService,
-  ) {}
+  constructor(protected readonly unifiedApiClient: UnifiedApiClient) {}
 
   async getKybAndOwnershipAssessments(
     query: GetKybAndOwnershipAssessmentsDto,

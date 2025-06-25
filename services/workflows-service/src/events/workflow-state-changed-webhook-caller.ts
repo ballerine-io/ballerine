@@ -1,7 +1,6 @@
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
@@ -14,7 +13,6 @@ export class WorkflowStateChangedWebhookCaller {
   constructor(
     workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
-    private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
     private readonly webhooksService: WebhooksService,
   ) {
