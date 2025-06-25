@@ -22,14 +22,14 @@ import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 @common.Controller('internal/customers')
 export class CustomerControllerInternal {
   constructor(
-    protected readonly service: CustomerService,
+    protected readonly customerService: CustomerService,
     protected readonly prisma: PrismaService,
   ) {}
 
   @common.Get()
   @UseGuards(AdminAuthGuard)
   async list() {
-    return await this.service.list({ include: { projects: true } });
+    return await this.customerService.list({ include: { projects: true } });
   }
 
   @common.Get(':id')
@@ -37,7 +37,7 @@ export class CustomerControllerInternal {
   @swagger.ApiOkResponse({ type: CustomerModel })
   @swagger.ApiForbiddenResponse()
   async getById(@common.Param('id') id: string) {
-    const customer = await this.service.getById(id, {
+    const customer = await this.customerService.getById(id, {
       include: { projects: true },
     });
 
@@ -58,7 +58,7 @@ export class CustomerControllerInternal {
       throw new NotFoundException('Customer not found');
     }
 
-    return this.service.getByProjectId(projectId, {
+    return this.customerService.getByProjectId(projectId, {
       select: {
         id: true,
         name: true,
@@ -90,7 +90,7 @@ export class CustomerControllerInternal {
 
     const apiKey = customer.authenticationConfiguration?.authValue ?? randomUUID();
 
-    const createdCustomer = (await this.service.create({
+    const createdCustomer = (await this.customerService.create({
       data: {
         ...customer,
         config: parsedConfig as InputJsonValue,
@@ -134,13 +134,13 @@ export class CustomerControllerInternal {
   async edit(@common.Param('id') id: string, @common.Body() payload: CustomerUpdateDto) {
     const { config, features, ...customer } = payload;
 
-    const existingCustomer = await this.service.getById(id);
+    const existingCustomer = await this.customerService.getById(id);
 
     if (!existingCustomer) {
       throw new NotFoundException('Customer not found');
     }
 
-    return this.service.updateById(id, {
+    return this.customerService.updateById(id, {
       data: cleanUndefinedValues({
         ...(config && {
           config: merge(existingCustomer.config, CustomerConfigSchema.parse(config)),

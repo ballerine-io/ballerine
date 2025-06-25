@@ -15,7 +15,6 @@ import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { lastValueFrom } from 'rxjs';
 import { BusinessRepository } from './business.repository';
-import { CustomerService } from '@/customer/customer.service';
 import {
   BusinessPayload,
   UnifiedApiClient,
@@ -31,7 +30,6 @@ export class BusinessService {
     protected readonly repository: BusinessRepository,
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
-    protected readonly customerService: CustomerService,
     private readonly prisma: PrismaService,
   ) {}
 

@@ -27,8 +27,6 @@ import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 export class StorageControllerExternal {
   constructor(
     protected readonly service: StorageService,
-    // @nestAccessControl.InjectRolesBuilder()
-    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly scopeService: ProjectScopeService,
     protected readonly customerService: CustomerService,
   ) {}
