@@ -1,16 +1,14 @@
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider/hooks/useStateManagerContext';
-import { UIPage, UISchema } from '@/domains/collection-flow';
+import { finalSubmissionRequest, UIPage, UISchema } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
   CollectionFlowStatusesEnum,
   CollectionFlowStepStatesEnum,
   getCollectionFlowState,
-  setCollectionFlowStatus,
   updateCollectionFlowStep,
 } from '@ballerine/common';
 import { DynamicFormV2, IDynamicFormValidationParams, IFormRef } from '@ballerine/ui';
-import { cloneDeep } from 'lodash';
-import { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useGlobalUIState } from '../../providers/GlobalUIState';
 import { RevisionBlock } from './components/shared/RevisionBlock';
@@ -19,11 +17,17 @@ import { usePlugins } from './components/utility/PluginsRunner/hooks/external/us
 import { TPluginListener } from './components/utility/PluginsRunner/hooks/internal/usePluginsRunner/usePluginListeners';
 import { useAppMetadata } from './hooks/useAppMetadata';
 import { useAppSync } from './hooks/useAppSync';
-import { useFinalSubmission } from './hooks/useFinalSubmission/useFinalSubmission';
 import { usePluginsHandler } from './hooks/usePluginsHandler/usePluginsHandler';
 import { useRevisionFields } from './hooks/useRevisionFields';
 import { formElementsExtends } from './ui-elemenets.extends';
 import { useCommonHttpParams } from './hooks/useCommonHttpParams/useCommonHttpParams';
+import { getNextRevisionOrEditStep } from './helpers/get-next-not-completed-step';
+import { getNextStep } from './helpers/get-next-step';
+import { getCurrentStep } from './helpers/get-current-step';
+import { useRedirectUrls } from '@/hooks/useRedirectUrls';
+import { useFlowTracking } from '@/hooks/useFlowTracking';
+import { CollectionFlowEvents } from '@/hooks/useFlowTracking/enums';
+import { completePreviousSteps } from './helpers/complete-previous-steps';
 
 interface ICollectionFlowUIProps<TValues = CollectionFlowContext> {
   page: UIPage<'v2'>;
@@ -46,16 +50,17 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
   pages,
   metadata: _uiSchemaMetadata,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { stateApi, state } = useStateManagerContext();
-  const { updateUIState, state: uiState } = useGlobalUIState();
+  const { state: uiState } = useGlobalUIState();
+  const { trackEvent } = useFlowTracking();
+  const redirectUrls = useRedirectUrls();
   const { handleEvent } = usePluginsHandler();
   const { sync, syncStateless, setIsSyncing } = useAppSync();
   const appMetadata = useAppMetadata();
   const commonHttpParams = useCommonHttpParams();
   const { pluginStatuses } = usePlugins();
   const { revisionFields, isLoadingRevisionFields } = useRevisionFields(pages, context);
-  const { isFinalSubmissionAvailable, isFinalSubmitted, handleFinalSubmission } =
-    useFinalSubmission(context, state);
   const validationParams: IDynamicFormValidationParams = useMemo(
     () => ({ ...DEFAULT_VALIDATION_PARAMS, globalValidationRules: page.globalValidate }),
     [page.globalValidate],
@@ -79,20 +84,11 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
       _plugins: pluginStatuses,
       _appState: {
         isSyncing: uiState.isSyncing,
-        isFinalSubmitted: uiState.isFinalSubmitted,
       },
       $page: getCollectionFlowState(context)?.steps?.find(step => step.stepName === page.stateName),
       ..._uiSchemaMetadata,
     }),
-    [
-      appMetadata,
-      pluginStatuses,
-      uiState.isSyncing,
-      uiState.isFinalSubmitted,
-      _uiSchemaMetadata,
-      page,
-      context,
-    ],
+    [appMetadata, pluginStatuses, uiState.isSyncing, _uiSchemaMetadata, page, context],
   );
 
   useEffect(() => {
@@ -109,12 +105,6 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
     }
   }, [page, context, stateApi]);
 
-  useEffect(() => {
-    if (isFinalSubmitted) {
-      updateUIState({ isFinalSubmitted });
-    }
-  }, [isFinalSubmitted, updateUIState]);
-
   const handleChange = useCallback(
     (values: CollectionFlowContext) => {
       stateApi.setContext(values);
@@ -124,97 +114,70 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
 
   const handleSubmit = useCallback(
     async (values: CollectionFlowContext) => {
-      const steps = getCollectionFlowState(context)?.steps;
+      try {
+        setIsSubmitting(true);
+        const collectionFlowStatus = getCollectionFlowState(values)?.status;
+        let steps = getCollectionFlowState(values)?.steps;
 
-      if (isFinalSubmissionAvailable) {
-        try {
-          setIsSyncing(true);
+        const isEditOrRevision =
+          collectionFlowStatus === CollectionFlowStatusesEnum.edit ||
+          collectionFlowStatus === CollectionFlowStatusesEnum.revision;
+        const currentStep = getCurrentStep(steps || [], page.stateName);
 
-          const collectionFlowState = getCollectionFlowState(values);
-          if (collectionFlowState) {
-            collectionFlowState.steps = steps?.map(step => ({
-              ...step,
-              state: CollectionFlowStepStatesEnum.completed,
-            }));
-          }
+        steps = completePreviousSteps(steps || [], page.stateName);
 
-          stateApi.setContext(values);
+        const nextStep = isEditOrRevision
+          ? getNextRevisionOrEditStep(steps || [], page.stateName)
+          : getNextStep(steps || [], page.stateName);
 
-          // Create a separate object for syncing with last step as inProgress
-          const syncValues = cloneDeep(values);
-
-          if (
-            syncValues.collectionFlow?.state?.steps &&
-            syncValues.collectionFlow.state.steps.length >= 1
-          ) {
-            const lastIndex = syncValues.collectionFlow.state.steps.length - 1;
-
-            syncValues.collectionFlow.state.steps[lastIndex] = {
-              ...syncValues.collectionFlow.state.steps[lastIndex]!,
-              state: CollectionFlowStepStatesEnum.inProgress,
-            };
-          }
-
-          await syncStateless(syncValues);
-
-          // Use original values for final submission
-          await handleFinalSubmission(values);
-        } catch (error) {
-          toast.error('Failed to submit form.');
-          console.error(error);
-        } finally {
-          setIsSyncing(false);
-        }
-      } else {
-        const currentStep = getCollectionFlowState(context)?.steps?.find(
-          step => step.stepName === page.stateName,
-        );
-        const state = currentStep?.state;
-
-        if (!state) {
-          toast.error('Collection flow state property, cannot continue. Please contact support.');
-          throw new Error('Collection flow state property is missing in the context.');
-        }
-
-        // Transition to revised to avoid user visit same revision step again after revision
-        if (state === CollectionFlowStepStatesEnum.revision) {
-          updateCollectionFlowStep(values, page.stateName, {
-            state: CollectionFlowStepStatesEnum.revised,
-          });
-        }
-
-        // Completing step after submission
-        if (
-          [CollectionFlowStepStatesEnum.inProgress, CollectionFlowStepStatesEnum.edit].includes(
-            state,
-          )
-        ) {
-          updateCollectionFlowStep(values, page.stateName, {
-            state: CollectionFlowStepStatesEnum.completed,
-          });
-        }
-
-        if (values.collectionFlow?.state?.status === CollectionFlowStatusesEnum.pending) {
-          setCollectionFlowStatus(values, CollectionFlowStatusesEnum.inprogress);
-        }
+        currentStep.state = CollectionFlowStepStatesEnum.completed;
 
         stateApi.setContext(values);
 
         await sync(values);
-      }
 
-      handleEvent('onSubmit');
+        if (!nextStep) {
+          await finalSubmissionRequest(values);
+          stateApi.setCollectionFlowState('completed');
+        } else {
+          stateApi.setCollectionFlowState(nextStep?.stepName);
+        }
+
+        if (!redirectUrls?.success) {
+          setIsSubmitting(false);
+        } else {
+          location.href = redirectUrls.success;
+
+          console.info(`Redirecting to success url: ${redirectUrls.success}`);
+        }
+
+        trackEvent(CollectionFlowEvents.FLOW_COMPLETED);
+      } catch (error) {
+        trackEvent(CollectionFlowEvents.FLOW_FAILED);
+        toast.error('Failed to submit form.');
+        console.error(error);
+
+        if (redirectUrls?.failure) {
+          location.href = redirectUrls.failure;
+
+          console.info(`Redirecting to failure url: ${redirectUrls.failure}`);
+
+          return;
+        }
+
+        setIsSubmitting(false);
+      }
     },
     [
       handleEvent,
       sync,
       syncStateless,
       stateApi,
-      isFinalSubmissionAvailable,
-      handleFinalSubmission,
       setIsSyncing,
       page,
       context,
+      redirectUrls,
+      trackEvent,
     ],
   );
 
@@ -236,7 +199,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
         onChange={handleChange as (newValues: object) => void}
         onEvent={handleEvent}
         onSubmit={handleSubmit as (values: object) => void}
-        disabled={uiState.isSyncing}
+        disabled={uiState.isSyncing || isSubmitting}
         priorityFields={revisionFields}
         validationParams={validationParams}
         metadata={metadata}

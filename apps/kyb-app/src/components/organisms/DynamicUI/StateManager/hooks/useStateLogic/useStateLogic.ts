@@ -22,6 +22,15 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
   const { helpers } = useDynamicUIContext();
 
   useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      machineState: machineApi.getState(),
+      payload: machineApi.getContext() as CollectionFlowContext,
+    }));
+    console.log('new state', machineApi.getState());
+  }, [machineApi]);
+
+  useEffect(() => {
     const ctx = machineApi.getContext();
 
     machineApi.setContext({

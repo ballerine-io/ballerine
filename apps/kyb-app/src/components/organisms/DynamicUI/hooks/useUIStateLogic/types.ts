@@ -3,6 +3,5 @@ import { UIElementsState } from '@/components/organisms/DynamicUI/hooks/useUISta
 export interface UIState {
   isLoading: boolean;
   isRevision?: boolean;
-  isFinalSubmitted?: boolean;
   elements: UIElementsState;
 }
