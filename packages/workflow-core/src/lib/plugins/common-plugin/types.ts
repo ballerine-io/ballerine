@@ -88,6 +88,7 @@ export interface RiskRulesPluginParams {
       id: string;
       domain: string;
       indicator: string;
+      tab: string;
       riskLevel: 'critical' | 'high' | 'moderate' | 'positive';
       baseRiskScore: number;
       additionalRiskScore: number;

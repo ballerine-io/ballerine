@@ -52,6 +52,7 @@ export const RiskEvaluationPluginSchema = Type.Optional(
             Type.Object({
               name: Type.Optional(Type.String()),
               domain: Type.Optional(Type.String()),
+              tab: Type.Optional(Type.String()),
             }),
           ),
         ),
