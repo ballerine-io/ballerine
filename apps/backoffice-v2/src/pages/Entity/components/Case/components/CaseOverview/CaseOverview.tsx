@@ -37,7 +37,18 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     ?.map(([domain, riskIndicators]) => {
       const domainTitle = domain ?? '';
       const tabEntry = Object.entries(TabToLabel).find(([_, label]) => label === domainTitle);
-      const tab = tabEntry ? tabEntry[0] : camelCase(domainTitle.toLowerCase());
+      const indicatorTab = riskIndicators?.find(riskIndicator => riskIndicator.tab)?.tab;
+      const tab = (() => {
+        if (indicatorTab) {
+          return camelCase(indicatorTab);
+        }
+
+        if (tabEntry) {
+          return tabEntry[0];
+        }
+
+        return camelCase(domainTitle.toLowerCase());
+      })();
       const isValidCaseTab = CaseTabs.includes(tab as keyof typeof CaseTabs);
 
       return {

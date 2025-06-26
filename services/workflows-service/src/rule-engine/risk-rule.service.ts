@@ -30,6 +30,7 @@ const NotionRiskRuleRecordSchema = z
     'Additional risk score': z.number().min(0).max(100),
     'Min risk score': z.number().min(0).max(100),
     'Max risk score': z.number().min(0).max(100),
+    Tab: z.string().min(1),
   })
   .transform(value => ({
     id: value.ID,
@@ -40,6 +41,7 @@ const NotionRiskRuleRecordSchema = z
     additionalRiskScore: value['Additional risk score'],
     minRiskScore: value['Min risk score'],
     maxRiskScore: value['Max risk score'],
+    tab: value.Tab,
   }));
 
 export interface TFindAllRulesOptions {
