@@ -134,7 +134,7 @@ export class DocumentChangedWebhookCaller {
         oldDocuments,
         webhook,
         webhookSharedSecret,
-        forceDirect: !customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled,
+        forceDirect: customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled !== true,
       });
     }
   }
