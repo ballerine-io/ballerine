@@ -33,7 +33,7 @@ export const WebsiteMonitoringBusinessReportTab = ({
         ongoingMonitoringSummary={businessReport.data!.ongoingMonitoringSummary!}
         riskIndicators={riskIndicators}
         riskLevel={businessReport.data!.riskLevel!}
-        homepageScreenshotUrl={businessReport.data!.homepageScreenshotUrl}
+        homepageScreenshotUrl={businessReport.data!.homePageScreenshotUrl!}
         Link={RiskIndicatorLink}
       />
       <Tabs defaultValue={activeMonitoringTab} className="w-full" key={activeMonitoringTab}>
