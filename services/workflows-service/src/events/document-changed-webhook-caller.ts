@@ -84,6 +84,7 @@ export class DocumentChangedWebhookCaller {
       select: {
         authenticationConfiguration: true,
         subscriptions: true,
+        features: true,
       },
     });
 

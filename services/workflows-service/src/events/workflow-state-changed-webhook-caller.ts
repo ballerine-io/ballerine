@@ -33,6 +33,7 @@ export class WorkflowStateChangedWebhookCaller {
       select: {
         authenticationConfiguration: true,
         subscriptions: true,
+        features: true,
       },
     });
 
