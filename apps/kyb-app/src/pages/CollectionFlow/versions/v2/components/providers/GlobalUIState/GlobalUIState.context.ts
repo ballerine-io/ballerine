@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 
 export interface IGlobalUIState {
-  isFinalSubmitted: boolean;
   isSyncing: boolean;
 }
 

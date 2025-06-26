@@ -6,7 +6,36 @@ import {
   StateManagerContext,
   StateManagerProps,
 } from '@/components/organisms/DynamicUI/StateManager/types';
-import { useMemo } from 'react';
+import { WorkflowBrowserSDK } from '@ballerine/workflow-browser-sdk';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+const initializeStateMachine = ({
+  workflowId,
+  definition,
+  definitionType,
+  extensions,
+  additionalContext,
+  initialContext,
+  initialState,
+}: Omit<StateManagerProps, 'children'> & { initialState: string }) => {
+  const initialMachineState = {
+    ...initialContext,
+    state: initialState,
+  };
+
+  const machine = createStateMachine(
+    workflowId,
+    definition,
+    definitionType,
+    extensions,
+    initialMachineState,
+    additionalContext,
+  );
+
+  machine.overrideContext(initialMachineState);
+
+  return machine;
+};
 
 export const StateManager = ({
   definition,
@@ -18,27 +47,75 @@ export const StateManager = ({
   config,
   additionalContext,
 }: StateManagerProps) => {
-  const machine = useMemo(() => {
-    const initialMachineState = {
-      ...initialContext,
-      state: initialContext?.collectionFlow?.state?.currentStep,
-    };
-
-    const machine = createStateMachine(
+  const [stateMachine, setStateMachine] = useState<WorkflowBrowserSDK>(() =>
+    initializeStateMachine({
       workflowId,
       definition,
       definitionType,
       extensions,
-      initialMachineState,
       additionalContext,
-    );
+      initialContext,
+      initialState: initialContext?.collectionFlow?.state?.currentStep!,
+    }),
+  );
 
-    machine.overrideContext(initialMachineState);
+  const prevAdditionalContextRef = useRef(additionalContext);
 
-    return machine;
-  }, [additionalContext]);
+  useEffect(() => {
+    if (prevAdditionalContextRef.current !== additionalContext) {
+      setStateMachine(prev =>
+        initializeStateMachine({
+          workflowId,
+          definition,
+          definitionType,
+          extensions,
+          additionalContext,
+          initialContext: prev.getSnapshot().context,
+          initialState: prev.getSnapshot().value,
+        }),
+      );
 
-  const { machineApi } = useMachineLogic(machine, additionalContext);
+      prevAdditionalContextRef.current = additionalContext;
+    }
+  }, [
+    prevAdditionalContextRef,
+    additionalContext,
+    stateMachine,
+    workflowId,
+    definition,
+    definitionType,
+    extensions,
+    initialContext,
+  ]);
+
+  const reinitializeStateMachineWithNewState = useCallback(
+    (newState: string) => {
+      setStateMachine(prev => {
+        const prevContext = prev.getSnapshot().context;
+
+        return initializeStateMachine({
+          workflowId,
+          definition,
+          definitionType,
+          extensions,
+          additionalContext,
+          initialContext: prevContext,
+          initialState: newState,
+        });
+      });
+    },
+    [
+      additionalContext,
+      stateMachine,
+      workflowId,
+      definition,
+      definitionType,
+      extensions,
+      initialContext,
+    ],
+  );
+
+  const { machineApi } = useMachineLogic(stateMachine, additionalContext);
   const {
     contextPayload,
     isPluginLoading,
@@ -61,6 +138,7 @@ export const StateManager = ({
         setContext,
         getContext,
         getState,
+        setCollectionFlowState: reinitializeStateMachineWithNewState,
       },
       state,
       payload: contextPayload,
@@ -79,6 +157,7 @@ export const StateManager = ({
     invokePlugin,
     setContext,
     getContext,
+    reinitializeStateMachineWithNewState,
   ]);
 
   const child = useMemo(

@@ -25,7 +25,7 @@ export const Navigation = () => {
     ) + 1;
 
   const isFirstStep = currentPageNumber === 1;
-  const isDisabled = uiState.isFinalSubmitted || uiState.isSyncing;
+  const isDisabled = uiState.isSyncing;
 
   const onPrevious = useCallback(async () => {
     if (!isFirstStep) {

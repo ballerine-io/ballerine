@@ -10,7 +10,9 @@ import { MachineConfig } from 'xstate';
 export type State = MachineConfig<AnyObject, AnyObject, any>;
 
 export interface StateManagerContext {
-  stateApi: StateMachineAPI;
+  stateApi: StateMachineAPI & {
+    setCollectionFlowState: (state: string) => void;
+  };
   state: string;
   payload: CollectionFlowContext;
   config?: CollectionFlowConfig;

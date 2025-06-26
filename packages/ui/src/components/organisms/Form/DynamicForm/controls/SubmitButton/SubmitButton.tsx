@@ -21,7 +21,7 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   const { stack } = useStack();
   const { id } = useElement(element, stack);
   const { disabled: _disabled, onClick } = useControl(element, stack);
-  const { fieldHelpers, values, submit } = useDynamicForm();
+  const { fieldHelpers, values, disabled: disabledGlobally, submit } = useDynamicForm();
   const { runTasks, isRunning } = useTaskRunner();
   const { sendEvent } = useEvents(element);
   const { validate, isValid } = useValidator();
@@ -70,8 +70,8 @@ export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({
   }, [submit, touchAllFields, runTasks, sendEvent, onClick, values, fieldHelpers, validate]);
 
   const isShouldRenderLoader = useMemo(() => {
-    return disabled || isRunning;
-  }, [disabled, isRunning]);
+    return disabled || isRunning || disabledGlobally;
+  }, [disabled, isRunning, disabledGlobally]);
 
   return (
     <Button

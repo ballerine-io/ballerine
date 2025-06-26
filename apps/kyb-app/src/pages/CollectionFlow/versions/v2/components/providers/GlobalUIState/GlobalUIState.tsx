@@ -7,7 +7,6 @@ interface IGlobalUIStateProps {
 }
 
 const INITIAL_UI_STATE: IGlobalUIState = {
-  isFinalSubmitted: false,
   isSyncing: false,
 };
 
