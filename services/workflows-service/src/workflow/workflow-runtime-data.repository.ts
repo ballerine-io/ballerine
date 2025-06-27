@@ -7,6 +7,7 @@ import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+  Customer,
   Prisma,
   PrismaClient,
   WorkflowRuntimeData,
@@ -14,6 +15,8 @@ import {
 } from '@prisma/client';
 import { merge } from 'lodash';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
+import { AnalyticsService, EventNamesMap } from '@/common/analytics-logger/analytics.service';
+import { CustomerService } from '@/customer/customer.service';
 
 /**
  * Columns that are related to the state of the workflow runtime data.
@@ -27,13 +30,16 @@ export class WorkflowRuntimeDataRepository {
     protected readonly prismaService: PrismaService,
     protected readonly scopeService: ProjectScopeService,
     protected readonly actorService: WorkflowRuntimeDataActorService,
+    protected readonly analyticsService: AnalyticsService,
+    protected readonly customerService: CustomerService,
   ) {}
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
+    customer: Customer,
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
     transaction: PrismaTransaction | PrismaClient = this.prismaService,
   ): Promise<WorkflowRuntimeData> {
-    return await transaction.workflowRuntimeData.create<T>({
+    const runtimeData = await transaction.workflowRuntimeData.create<T>({
       ...args,
       data: this.actorService.addActorIds({
         ...args.data,
@@ -43,6 +49,10 @@ export class WorkflowRuntimeDataRepository {
         },
       }),
     } as any);
+
+    void trackChanges(this.analyticsService, customer, runtimeData);
+
+    return runtimeData;
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
@@ -169,6 +179,8 @@ export class WorkflowRuntimeDataRepository {
                 e."endUserType",
                 'approvalState',
                 e."approvalState",
+                'variant',
+                e."variant",
                 'stateReason',
                 e."stateReason",
                 'firstName',
@@ -256,6 +268,14 @@ export class WorkflowRuntimeDataRepository {
           FROM
             workflows
         ),
+        peopleOfInterest AS (
+          SELECT
+            jsonb_array_elements(
+              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'peopleOfInterest'
+            ) AS peopleOfInterest
+          FROM
+            workflows
+        ),
         individualBallerineIds AS (
           SELECT
             directors ->> 'ballerineEntityId' AS id
@@ -267,6 +287,12 @@ export class WorkflowRuntimeDataRepository {
             ubos ->> 'ballerineEntityId' AS id
           FROM
             ubos
+          UNION
+          ALL
+          SELECT
+            peopleOfInterest ->> 'ballerineEntityId' AS id
+          FROM
+            peopleOfInterest
         ),
         individuals AS (
           SELECT
@@ -280,7 +306,9 @@ export class WorkflowRuntimeDataRepository {
             eu."dateOfBirth",
             eu.phone,
             eu."additionalInfo",
-            eu."amlHits"
+            eu."amlHits",
+            eu."variant",
+            eu."createdFrom"
           FROM
             "EndUser" eu
             JOIN individualBallerineIds AS ibids ON ibids.id = eu.id
@@ -373,14 +401,28 @@ export class WorkflowRuntimeDataRepository {
       data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
     },
     transaction: PrismaTransaction | PrismaService = this.prismaService,
+    customer?: Customer,
   ): Promise<WorkflowRuntimeData> {
-    return await transaction.workflowRuntimeData.update({
+    const runtimeData = await transaction.workflowRuntimeData.update({
       where: { id },
       data: this.actorService.addActorIds(args.data),
     });
+
+    try {
+      if (!customer) {
+        customer = await this.customerService.getByProjectId(runtimeData.projectId);
+      }
+
+      void trackChanges(this.analyticsService, customer, runtimeData);
+    } catch (error) {
+      console.error('Error tracking changes', error);
+    }
+
+    return runtimeData;
   }
 
   async updateStateById(
+    customer: Customer,
     id: string,
     {
       data,
@@ -391,11 +433,15 @@ export class WorkflowRuntimeDataRepository {
     },
     transaction: PrismaTransaction = this.prismaService,
   ) {
-    return await transaction.workflowRuntimeData.update({
+    const runtimeData = await transaction.workflowRuntimeData.update({
       where: { id },
       data: this.actorService.addActorIds(data),
       include,
     });
+
+    void trackChanges(this.analyticsService, customer, runtimeData);
+
+    return runtimeData;
   }
 
   async updateRuntimeConfigById(
@@ -622,3 +668,26 @@ export class WorkflowRuntimeDataRepository {
     return (await this.prismaService.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
 }
+
+const trackChanges = async (
+  analyticsService: AnalyticsService,
+  customer: Customer,
+  workflowRuntimeData: WorkflowRuntimeData,
+): Promise<void> => {
+  const distinctId =
+    workflowRuntimeData.actorUserId || workflowRuntimeData.actorEndUserId || 'SYSTEM';
+
+  await analyticsService.trackSafe({
+    event: EventNamesMap.CASE_CHANGED,
+    distinctId,
+    customerId: customer.id,
+    properties: {
+      workflowRuntimeDataId: workflowRuntimeData.id,
+      endUserId: workflowRuntimeData.endUserId,
+      businessId: workflowRuntimeData.businessId,
+      projectId: workflowRuntimeData.projectId,
+      actorUserId: workflowRuntimeData.actorUserId,
+      actorEndUserId: workflowRuntimeData.actorEndUserId,
+    },
+  });
+};

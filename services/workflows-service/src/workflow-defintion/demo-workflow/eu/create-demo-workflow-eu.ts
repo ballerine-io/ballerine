@@ -82,6 +82,7 @@ export const upsertDemoEuKybFlow = async (customerId: string) => {
           });
 
         let workflowDefinition;
+
         if (existingWorkflowDefinition) {
           workflowDefinition = await transaction.workflowDefinition
             .update({
@@ -130,6 +131,7 @@ export const upsertDemoEuKybFlow = async (customerId: string) => {
           });
 
         let createdUiDefinition;
+
         if (existingUiDefinition) {
           createdUiDefinition = await transaction.uiDefinition
             .update({
@@ -193,6 +195,7 @@ export const upsertDemoEuKybFlow = async (customerId: string) => {
           });
 
         let createdFilter;
+
         if (existingFilter) {
           createdFilter = await transaction.filter
             .update({

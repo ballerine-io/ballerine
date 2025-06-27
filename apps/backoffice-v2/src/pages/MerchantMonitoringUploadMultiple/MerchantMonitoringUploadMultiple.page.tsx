@@ -1,4 +1,4 @@
-import { Input } from '@ballerine/ui';
+import { ErrorMessage, ErrorsList, Input } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
 import { ctw } from '@/common/utils/ctw/ctw';
 import React, { FunctionComponent } from 'react';
@@ -16,8 +16,15 @@ import { FormDescription } from '@/common/components/organisms/Form/Form.Descrip
 import { useMerchantMonitoringUploadMultiplePageLogic } from '@/pages/MerchantMonitoringUploadMultiple/hooks/useMerchantMonitoringUploadMultiplePageLogic/useMerchantMonitoringUploadMultiplePageLogic';
 
 export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
-  const { form, isCreateReportBatchReady, onSubmit, onChange, locale, csvTemplateUrl } =
-    useMerchantMonitoringUploadMultiplePageLogic();
+  const {
+    form,
+    createReportBatchErrors,
+    isCreateReportBatchReady,
+    onSubmit,
+    onChange,
+    locale,
+    csvTemplateUrl,
+  } = useMerchantMonitoringUploadMultiplePageLogic();
 
   return (
     <section className="flex h-full flex-col px-6 pb-6 pt-10">
@@ -80,6 +87,7 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
                   <span className={`text-sm font-medium leading-5`}>Download CSV template</span>
                 </a>
               </div>
+              {createReportBatchErrors && <ErrorsList errors={createReportBatchErrors} />}
             </form>
           </Form>
         </CardContent>

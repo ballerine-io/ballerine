@@ -61,15 +61,27 @@ enum Gender {
   other
 }
 
+enum EndUserVariant {
+  director
+  ubo
+}
+
+enum CreatedFrom {
+  analyst
+  user
+  registry
+}
+
 model EndUser {
   id              String  @id @default(cuid())
   isContactPerson Boolean @default(false)
 
   correlationId String? @db.VarChar
 
-  endUserType   String?       @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
-  approvalState ApprovalState @default(NEW)
-  stateReason   String?       @db.VarChar
+  variant       EndUserVariant?
+  endUserType   String?         @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
+  approvalState ApprovalState   @default(NEW)
+  stateReason   String?         @db.VarChar
 
   firstName         String    @db.VarChar
   lastName          String    @db.VarChar
@@ -87,7 +99,7 @@ model EndUser {
   activeMonitorings Json      @default("[]")
   amlHits           Json      @default("[]")
 
-  workflowRuntimeData WorkflowRuntimeData[]
+  workflowRuntimeData      WorkflowRuntimeData[]
   actorWorkflowRuntimeData WorkflowRuntimeData[] @relation("ActorEndUser")
 
   createdAt DateTime @default(now())
@@ -101,6 +113,7 @@ model EndUser {
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   Counterparty             Counterparty[]
   documents                Document[]
+  createdFrom              CreatedFrom?
 
   @@unique([projectId, correlationId])
   @@index([endUserType])
@@ -262,10 +275,10 @@ model WorkflowRuntimeData {
   businessId                String?
   assignee                  User?                     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
   assigneeId                String?
-  actorEndUser             EndUser?                  @relation("ActorEndUser", fields: [actorEndUserId], references: [id], onDelete: SetNull)
-  actorEndUserId           String?
-  actorUser                User?                     @relation("ActorUser", fields: [actorUserId], references: [id], onDelete: SetNull)
-  actorUserId              String?
+  actorEndUser              EndUser?                  @relation("ActorEndUser", fields: [actorEndUserId], references: [id], onDelete: SetNull)
+  actorEndUserId            String?
+  actorUser                 User?                     @relation("ActorUser", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorUserId               String?
   workflowDefinition        WorkflowDefinition        @relation(fields: [workflowDefinitionId], references: [id])
   workflowDefinitionId      String
   uiDefinitionId            String?

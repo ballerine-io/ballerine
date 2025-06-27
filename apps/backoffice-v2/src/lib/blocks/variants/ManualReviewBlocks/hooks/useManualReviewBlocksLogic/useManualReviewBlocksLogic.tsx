@@ -13,6 +13,7 @@ import { StateTag, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
 import { titleCase } from 'string-ts';
+import { EDIT_TEMPLATES } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -60,7 +61,9 @@ export const useManualReviewBlocksLogic = () => {
     [mutateRevisionTaskById],
   );
 
-  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { onEditCollectionFlow: onEditCompanyDetails } = useEditCollectionFlow(
+    EDIT_TEMPLATES.COMPANY_DETAILS,
+  );
 
   const businessInformation = useEntityInfoBlock({
     entity: workflow?.context?.entity,
@@ -70,7 +73,7 @@ export const useManualReviewBlocksLogic = () => {
       !workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
       !workflow?.workflowDefinition?.config?.editableContext?.entityInfo,
     ].some(Boolean),
-    onEdit: onEditCollectionFlow({ steps: ['company_details'] }),
+    onEdit: onEditCompanyDetails,
   });
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??

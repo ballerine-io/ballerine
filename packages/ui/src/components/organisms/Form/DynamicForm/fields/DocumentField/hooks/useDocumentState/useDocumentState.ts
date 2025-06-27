@@ -1,23 +1,22 @@
 import { useCallback, useState } from 'react';
 import { IFormElement } from '../../../../types';
-import { IDocumentFieldParams, IDocumentTemplate } from '../../DocumentField';
+import { IDocumentFieldParams } from '../../DocumentField';
+import { IDocument } from '@/components/organisms/Form/DocumentsService/types';
 
 export interface IDocumentState {
-  fileId?: string;
-  document?: IDocumentTemplate;
+  document?: IDocument;
   element: IFormElement<'documentfield', IDocumentFieldParams>;
 }
 
 export const useDocumentState = (element: IFormElement<'documentfield', IDocumentFieldParams>) => {
   const [documentState, setDocumentState] = useState<IDocumentState>({
-    fileId: undefined,
     document: undefined,
     element,
   });
 
   const updateState = useCallback(
-    (fileId?: string, document?: IDocumentTemplate) => {
-      setDocumentState({ element, fileId, document });
+    (document: IDocument | undefined) => {
+      setDocumentState({ element, document });
     },
     [element],
   );

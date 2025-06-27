@@ -11,7 +11,7 @@ export const useCommonHttpParams = () => {
 
     return {
       headers: {
-        Authorization: `Bearer ${accessToken || null}`,
+        ...(accessToken ? { Authorization: `Bearer ${accessToken || null}` } : {}),
       },
       params: {
         ...(workflowId && { workflowId }),

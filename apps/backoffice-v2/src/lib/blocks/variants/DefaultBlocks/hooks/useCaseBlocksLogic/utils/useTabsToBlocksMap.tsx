@@ -21,7 +21,10 @@ import { z } from 'zod';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { toast } from 'sonner';
 import { t } from 'i18next';
-import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
+import {
+  EDIT_TEMPLATES,
+  useEditCollectionFlow,
+} from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -100,6 +103,7 @@ export const useTabsToBlocksMap = ({
     kybRegistryInfoBlock,
     companySanctionsBlock,
     individualsUserProvidedBlock,
+    individualsRegistryProvidedBlock,
     ubosRegistryProvidedBlock,
     storeInfoBlock,
     websiteBasicRequirementBlock,
@@ -144,7 +148,9 @@ export const useTabsToBlocksMap = ({
   const { mutate: mutateInitiateIndividualVerificationAndSendEmail } =
     useInitiateIndividualVerificationAndSendEmailMutation();
 
-  const { onEditCollectionFlow } = useEditCollectionFlow();
+  const { onEditCollectionFlow: onEditCompanyOwnership } = useEditCollectionFlow(
+    EDIT_TEMPLATES.COMPANY_OWNERSHIP,
+  );
   const getInitiateKycEvent = (nextEvents: string[]) => {
     if (nextEvents?.includes('start')) {
       return 'start';
@@ -290,7 +296,7 @@ export const useTabsToBlocksMap = ({
               ids,
               workflowId: childWorkflow?.id,
             }),
-        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        onEdit: onEditCompanyOwnership,
         reasons:
           childWorkflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
             ({ enum: enum_ }) => !!enum_,
@@ -314,6 +320,8 @@ export const useTabsToBlocksMap = ({
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
     [
+      getStatusFromCheckStatus,
+      mutateInitiateIndividualVerificationAndSendEmail,
       getStatusFromTags,
       getInitiateKycEvent,
       getInitiateSanctionsScreeningEvent,
@@ -327,6 +335,7 @@ export const useTabsToBlocksMap = ({
       workflow?.workflowDefinition?.config?.isInitiateSanctionsScreeningEnabled,
       workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
       workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+      onEditCompanyOwnership,
     ],
   );
   const directorToIndividualAdapter = useCallback(
@@ -389,7 +398,7 @@ export const useTabsToBlocksMap = ({
         onReuploadNeeded:
           ({ reason, ids }: { reason: string; ids: string[] }) =>
           () => {},
-        onEdit: onEditCollectionFlow({ steps: ['company_ownership'] }),
+        onEdit: onEditCompanyOwnership,
         reasons: [],
         isReuploadNeededDisabled: true,
         isApproveDisabled: true,
@@ -406,6 +415,9 @@ export const useTabsToBlocksMap = ({
       } satisfies Parameters<typeof createKycBlocks>[0][number];
     },
     [
+      mutateInitiateIndividualVerificationAndSendEmail,
+      onEditCompanyOwnership,
+      workflow?.workflowDefinition?.config?.language,
       workflow?.id,
       caseState.actionButtonsEnabled,
       workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
@@ -447,12 +459,114 @@ export const useTabsToBlocksMap = ({
             documents: [...(director?.documents ?? []), ...(workflow?.context?.kycDocuments ?? [])],
           });
         }) ?? [],
-    [workflow, endUsers, directorToIndividualAdapter],
+    [workflow, endUsers, directorToIndividualAdapter, getStatusFromCheckStatus],
+  );
+
+  const personOfInterestToIndividualAdapter = useCallback(
+    ({
+      ballerineEntityId,
+      role,
+    }: NonNullable<
+      TWorkflowById['context']['entity']['data']['additionalInfo']['peopleOfInterest']
+    >[number]) => {
+      const {
+        id: _id,
+        amlHits,
+        individualVerificationsChecks,
+        ...personOfInterestEndUser
+      } = endUsers?.find(endUser => endUser.id === ballerineEntityId) ?? {};
+      const status = getStatusFromCheckStatus(individualVerificationsChecks?.status);
+      const kycSession = omitPropsFromObject(
+        individualVerificationsChecks?.data ?? {},
+        'invokedAt',
+        'error',
+        'name',
+        'status',
+        'isRequestTimedOut',
+      );
+
+      return {
+        status,
+        documents: [],
+        kycSession,
+        aml: {
+          vendor: amlHits?.find(aml => !!aml.vendor)?.vendor,
+          hits: amlHits,
+        },
+        entityData: {
+          ...personOfInterestEndUser,
+          role,
+        },
+        isActionsDisabled: true,
+        isLoadingReuploadNeeded: false,
+        isLoadingApprove: false,
+        onInitiateKyc: () => {
+          if (!workflow?.id) {
+            console.error('No workflow id found');
+            toast.error('Something went wrong. Please try again later.');
+
+            return;
+          }
+
+          return mutateInitiateIndividualVerificationAndSendEmail({
+            endUserId: ballerineEntityId,
+            ongoingMonitoring: false,
+            withAml: true,
+            workflowRuntimeDataId: workflow?.id,
+            vendor: 'veriff',
+            language: workflow?.workflowDefinition?.config?.language ?? 'en',
+          });
+        },
+        onInitiateSanctionsScreening: () => {},
+        onApprove:
+          ({ ids }: { ids: string[] }) =>
+          () => {},
+        onReuploadNeeded:
+          ({ reason, ids }: { reason: string; ids: string[] }) =>
+          () => {},
+        onEdit: onEditCompanyOwnership,
+        reasons: [],
+        isReuploadNeededDisabled: true,
+        isApproveDisabled: true,
+        isInitiateKycDisabled: [
+          !workflow?.id,
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+        ].some(Boolean),
+        isInitiateSanctionsScreeningDisabled: true,
+        isEditDisabled: [
+          !caseState.actionButtonsEnabled,
+          !workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+        ].some(Boolean),
+      } satisfies Parameters<typeof createKycBlocks>[0][number];
+    },
+    [
+      workflow?.id,
+      caseState.actionButtonsEnabled,
+      workflow?.workflowDefinition?.config?.isInitiateKycEnabled,
+      workflow?.workflowDefinition?.config?.isKycEndUserEditEnabled,
+      endUsers,
+      getStatusFromCheckStatus,
+      mutateInitiateIndividualVerificationAndSendEmail,
+      onEditCompanyOwnership,
+      workflow?.workflowDefinition?.config?.language,
+    ],
+  );
+
+  const peopleOfInterest = useMemo(
+    () =>
+      workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest?.map(
+        personOfInterestToIndividualAdapter,
+      ) ?? [],
+    [
+      workflow?.context?.entity?.data?.additionalInfo?.peopleOfInterest,
+      personOfInterestToIndividualAdapter,
+    ],
   );
 
   const individuals = useMemo(
-    () => [...childWorkflows, ...deDupedDirectors],
-    [childWorkflows, deDupedDirectors],
+    () => [...childWorkflows, ...deDupedDirectors, ...peopleOfInterest],
+    [childWorkflows, deDupedDirectors, peopleOfInterest],
   );
 
   const kycBlocks = useKYCBlocks(individuals);
@@ -490,6 +604,7 @@ export const useTabsToBlocksMap = ({
     [Tab.DOCUMENTS]: [...businessDocumentBlocks],
     [Tab.INDIVIDUALS]: [
       ...individualsUserProvidedBlock,
+      ...individualsRegistryProvidedBlock,
       ...amlWithContainerBlock,
       ...mainRepresentativeBlock,
       ...uboDocumentBlocks,

@@ -13,39 +13,28 @@ import { CreateDocumentFileSchema } from '@/document-file/dtos/document-file.dto
 import { ValidationError } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
-import { PrismaTransactionClient, TProjectId } from '@/types';
+import { PrismaTransactionClient, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
 import { WorkflowService } from '@/workflow/workflow.service';
-import {
-  AnyRecord,
-  CollectionFlowStatusesEnum,
-  CommonWorkflowEvent,
-  getDocumentId,
-  setCollectionFlowStatus,
-} from '@ballerine/common';
+import { AnyRecord, CommonWorkflowEvent, getDocumentId } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   Document,
   DocumentDecision,
   DocumentFile,
   DocumentStatus,
+  EndUserVariant,
   File,
   Prisma,
   WorkflowDefinition,
-  WorkflowRuntimeData,
 } from '@prisma/client';
 import { Static } from '@sinclair/typebox';
 import { get } from 'lodash';
-import set from 'lodash/set';
 import * as z from 'zod';
 import { DocumentRepository } from './document.repository';
 import { CreateDocumentSchema, UpdateDocumentSchema } from './dtos/document.dto';
-import { addRequestedDocumentToBusinessEntityDocuments } from './helpers/add-requested-document-to-business-entity-documents';
-import { addRequestedDocumentToIndividualDocuments } from './helpers/add-requested-document-to-individuals-documents';
-import { findBusinessDocumentsInContext } from './helpers/find-business-documents-in-context';
-import { findUboDocumentsInUIDefinition } from './helpers/find-ubo-documents-in-ui-definition';
 import { parseDocumentDefinition } from './helpers/parse-document-definition';
 import {
   DocumentTrackerDocumentSchema,
@@ -56,6 +45,7 @@ import {
 import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
 import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
 
 @Injectable()
 export class DocumentService {
@@ -124,9 +114,47 @@ export class DocumentService {
       transaction,
     );
 
-    await this.documentFileService.create(
+    await this.createDocumentFile(
+      createdDocument.id,
       {
-        documentId: createdDocument.id,
+        file,
+        metadata,
+      },
+      projectId,
+      transaction,
+    );
+
+    return this.repository.findByIdWithFiles(
+      createdDocument.id,
+      [projectId],
+      {} as Prisma.DocumentFindFirstArgs,
+      transaction,
+    );
+  }
+
+  async createDocumentFile(
+    documentId: string,
+    {
+      file,
+      metadata,
+    }: {
+      file: Express.Multer.File;
+      metadata: Omit<
+        Static<typeof CreateDocumentFileSchema>,
+        'documentId' | 'fileId' | 'projectId'
+      >;
+    },
+    projectId: TProjectId,
+    transaction?: PrismaTransactionClient,
+  ) {
+    const uploadedFile = await this.fileService.uploadNewFile(projectId, documentId, {
+      ...file,
+      mimetype: file.mimetype || '',
+    });
+
+    return await this.documentFileService.create(
+      {
+        documentId,
         fileId: uploadedFile.id,
         projectId,
         ...metadata,
@@ -134,18 +162,50 @@ export class DocumentService {
       undefined,
       transaction,
     );
+  }
 
-    const documents = await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [
-      projectId,
-    ]);
-
-    const createdAndFormattedDocument = documents.find(doc => createdDocument.id === doc.id);
-
-    if (!createdAndFormattedDocument) {
-      throw new BadRequestException(`Document with an id of "${createdDocument.id}" was not found`);
+  async checkDocumentUniqueness(
+    {
+      category,
+      type,
+      businessId,
+      endUserId,
+      version,
+    }: {
+      category: string;
+      type: string;
+      businessId?: string;
+      endUserId?: string;
+      version: number;
+    },
+    projectIds: TProjectId[],
+    transaction?: PrismaTransactionClient,
+  ) {
+    if ([businessId, endUserId].every(id => id === undefined)) {
+      throw new BadRequestException('Either business or end user id must be provided.');
     }
 
-    return createdAndFormattedDocument;
+    if (businessId && endUserId) {
+      throw new BadRequestException(
+        'Business and end user id cannot be provided at the same time.',
+      );
+    }
+
+    const document = await this.repository.findMany(
+      projectIds,
+      {
+        where: {
+          category,
+          type,
+          businessId,
+          endUserId,
+          version,
+        },
+      },
+      transaction,
+    );
+
+    return !(document.length > 0);
   }
 
   async getDocumentById(documentId: string, projectId: TProjectId) {
@@ -252,6 +312,18 @@ export class DocumentService {
     });
 
     return this.getLatestDocumentVersions(formattedDocuments);
+  }
+
+  async getLatestDocumentsWithFilesByWorkflowId(workflowId: string, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
+
+    const documents = await this.repository.findManyWithFiles(projectIds, {
+      where: {
+        workflowRuntimeDataId: workflowId,
+      },
+    });
+
+    return this.getLatestDocumentVersions(documents);
   }
 
   async updateByIdWithFile(
@@ -577,10 +649,6 @@ export class DocumentService {
 
       const documentsWithFiles = await this.repository.findManyWithFiles(projectIds);
 
-      for (const document of documentsWithFiles) {
-        await this.persistDocumentDecisionInContext(document, projectIds[0]!, transaction);
-      }
-
       return this.formatDocuments({
         documents: documentsWithFiles,
         documentSchema: null,
@@ -588,110 +656,13 @@ export class DocumentService {
     });
   }
 
-  private async persistDocumentDecisionInContext(
-    document: Document,
-    projectId: TProjectId,
-    transaction?: PrismaTransactionClient,
-  ) {
-    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
-      transaction,
-      prismaService: this.prismaService,
-      options: defaultPrismaTransactionOptions,
-    });
-
-    return await beginTransactionIfNotExist(async transaction => {
-      if (!document.workflowRuntimeDataId) {
-        throw new BadRequestException(
-          `Document with id ${document.id} has no workflow runtime data id`,
-        );
-      }
-
-      const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
-        document.workflowRuntimeDataId,
-        {
-          select: {
-            context: true,
-            parentRuntimeDataId: true,
-            workflowDefinitionId: true,
-          },
-        },
-        [projectId],
-      );
-
-      if (!workflowRuntime) {
-        throw new BadRequestException(
-          `Workflow runtime data not found for document with id ${document.id}`,
-        );
-      }
-
-      const isBusinessDocument = !!document.businessId;
-
-      if (isBusinessDocument) {
-        const businessDocuments = findBusinessDocumentsInContext(workflowRuntime.context);
-        const matchingDocumentIndex = businessDocuments.findIndex(
-          businessDocument =>
-            businessDocument.type === document.type &&
-            businessDocument.category === document.category,
-        );
-        const matchingDocument = businessDocuments[matchingDocumentIndex];
-
-        if (!matchingDocument) {
-          throw new BadRequestException(
-            `Document with id ${document.id} is not a business document`,
-          );
-        }
-
-        set(matchingDocument, '_document', document);
-
-        // TODO: This is templorary until document structure is reworked
-        // TODO: Remove this
-        set(matchingDocument, 'pages[0].ballerineFileId', document.id);
-
-        await this.workflowService.updateWorkflowRuntimeData(
-          workflowRuntime.id,
-          { context: workflowRuntime.context },
-          projectId,
-          transaction,
-        );
-      } else {
-        const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-          workflowRuntime.workflowDefinitionId,
-          'collection_flow',
-          [projectId],
-        );
-
-        const uboDocuments = findUboDocumentsInUIDefinition(workflowRuntime.context, uiDefinition);
-
-        uboDocuments.forEach(uboDocument => {
-          if (
-            uboDocument.ballerineEntityId === document.endUserId &&
-            uboDocument.type === document.type &&
-            uboDocument.category === document.category
-          ) {
-            set(uboDocument, '_document', document);
-            set(uboDocument, 'pages[0].ballerineFileId', document.id);
-
-            delete uboDocument.ballerineEntityId;
-          }
-        });
-
-        await this.workflowService.updateWorkflowRuntimeData(
-          workflowRuntime.id,
-          { context: workflowRuntime.context },
-          projectId,
-          transaction,
-        );
-      }
-    });
-  }
-
   private async peristDocumentsDesicions(
-    documents: {
+    documents: Array<{
       id: string;
       decision: DocumentDecision | null;
       decisionReason: string | null;
       comment: string | null;
-    }[],
+    }>,
     projectIds: TProjectId[] = [],
     transaction?: PrismaTransactionClient,
   ) {
@@ -855,49 +826,44 @@ export class DocumentService {
       };
     }
 
-    const uiSchema = uiSchemaValidation.data;
-
-    const workflowData = (await this.workflowService.getWorkflowRuntimeDataById(
+    const workflowDataWithEndUsers = await this.workflowService.getWorkflowByIdWithRelations(
       workflowId,
-      {
-        select: {
-          context: true,
-          childWorkflowsRuntimeData: true,
-        },
-      },
       [projectId],
-    )) as WorkflowRuntimeData & {
-      childWorkflowsRuntimeData: WorkflowRuntimeData[];
-    };
+    );
+
+    const uiSchema = uiSchemaValidation.data;
 
     const parsedUIDocuments = this.parseDocumentsFromUISchema(
       uiSchema.elements as IUIDefinitionPage[],
-      workflowData.context,
+      workflowDataWithEndUsers.context,
     );
+
+    const directors =
+      workflowDataWithEndUsers.endUsers?.filter(
+        endUser => endUser.variant === EndUserVariant.director,
+      ) ?? [];
+    const ubos =
+      workflowDataWithEndUsers.endUsers?.filter(
+        endUser => endUser.variant === EndUserVariant.ubo,
+      ) ?? [];
 
     const entities = {
       business: {
-        entityType: 'business',
-        id: workflowData.context.entity.ballerineEntityId,
-        companyName: workflowData.context.entity.data.companyName,
+        id: workflowDataWithEndUsers.context.entity.ballerineEntityId,
+        variant: 'business',
+        companyName: workflowDataWithEndUsers.context.entity.data.companyName,
       },
-      directors: (
-        (workflowData.context.entity.data.additionalInfo.directors ?? []) as Array<{
-          ballerineEntityId: string;
-          firstName: string;
-          lastName: string;
-        }>
-      ).map(director => ({
-        entityType: 'director',
-        id: director.ballerineEntityId,
+      directors: directors.map(director => ({
+        id: director.id,
+        variant: director.variant!,
         firstName: director.firstName,
         lastName: director.lastName,
       })),
-      ubos: workflowData.childWorkflowsRuntimeData.map(childWorkflow => ({
-        entityType: 'ubo',
-        id: childWorkflow.endUserId ?? '',
-        firstName: childWorkflow.context.entity.data.firstName,
-        lastName: childWorkflow.context.entity.data.lastName,
+      ubos: ubos.map(ubo => ({
+        id: ubo.id,
+        variant: ubo.variant!,
+        firstName: ubo.firstName,
+        lastName: ubo.lastName,
       })),
     } as const satisfies {
       business: z.infer<typeof EntitySchema>;
@@ -980,7 +946,7 @@ export class DocumentService {
         return generateDocumentTrackerItem(matchingDocument, expectedDoc, {
           id: entities.business.id,
           companyName: entities.business.companyName,
-          entityType: 'business',
+          variant: 'business',
         });
       }),
       individuals: {
@@ -1000,7 +966,7 @@ export class DocumentService {
             id: ubo.id,
             firstName: ubo.firstName,
             lastName: ubo.lastName,
-            entityType: 'ubo',
+            variant: EndUserVariant.ubo,
           });
         }),
         directors: parsedUIDocuments.individuals.directors.map(parsedDocument => {
@@ -1021,7 +987,7 @@ export class DocumentService {
             id: director.id,
             firstName: director.firstName,
             lastName: director.lastName,
-            entityType: 'director',
+            variant: EndUserVariant.director,
           });
         }),
       },
@@ -1045,113 +1011,51 @@ export class DocumentService {
         type: 'business' | 'ubo' | 'director';
       };
     }>,
+    transaction: PrismaTransactionClient = this.prismaService,
   ) {
-    const documentsToCreate = documents.map(document => ({
-      category: document.category,
-      type: document.type,
-      decisionReason: document.decisionReason,
-      issuingVersion: document.issuingVersion,
-      issuingCountry: document.issuingCountry,
-      version: parseInt(document.version),
-      status: DocumentStatus.requested,
-      properties: {},
-      projectId: projectId,
-      workflowRuntimeDataId: workflowId,
-      businessId: document.entity.type === 'business' ? document.entity.id : undefined,
-      endUserId: ['ubo', 'director'].includes(document.entity.type)
-        ? document.entity.id
-        : undefined,
-      entityType: document.entity.type,
-    }));
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+      transaction,
+    });
 
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-      workflowId,
-      {
-        select: {
-          workflowDefinition: true,
-          context: true,
-          workflowDefinitionId: true,
-        },
-      },
-      [projectId],
-    );
-
-    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-      workflowRuntimeData.workflowDefinitionId,
-      'collection_flow',
-      [projectId],
-    );
-
-    const createdDocuments = await Promise.all(
-      documentsToCreate.map(async ({ entityType, ...doc }) => {
-        const createdDocument = await this.repository.create(doc);
-
-        return {
-          ...createdDocument,
-          entityType,
-          entityId: entityType === 'business' ? undefined : createdDocument.endUserId,
-        };
-      }),
-    );
-
-    const contextWithDocuments = createdDocuments.reduce((context, document) => {
-      const createdDocument = document;
-
-      if (!createdDocument) {
-        return context;
-      }
-
-      const documentToInsert = {
-        id: createdDocument.id,
+    return beginTransactionIfNotExist(async transaction => {
+      const documentsToCreate = documents.map(document => ({
+        category: document.category,
+        type: document.type,
+        decisionReason: document.decisionReason,
+        issuingVersion: document.issuingVersion,
+        issuingCountry: document.issuingCountry,
+        version: parseInt(document.version),
         status: DocumentStatus.requested,
-        decision: null,
-        version: createdDocument.version.toString(),
-        type: createdDocument.type,
-        category: createdDocument.category,
-        issuingCountry: createdDocument.issuingCountry,
-        issuingVersion: createdDocument.issuingVersion,
-        entityId: createdDocument.entityId as string | undefined,
-      };
+        properties: {},
+        projectId: projectId,
+        workflowRuntimeDataId: workflowId,
+        businessId: document.entity.type === 'business' ? document.entity.id : undefined,
+        endUserId: ['ubo', 'director'].includes(document.entity.type)
+          ? document.entity.id
+          : undefined,
+      }));
 
-      return document.entityType === 'business'
-        ? addRequestedDocumentToBusinessEntityDocuments(
-            context,
-            document.entityType as 'business' | 'ubo' | 'director',
-            uiDefinition,
-            documentToInsert,
-          )
-        : addRequestedDocumentToIndividualDocuments(
-            context,
-            document.entityType as 'ubo' | 'director',
-            uiDefinition,
-            documentToInsert,
-          );
-    }, workflowRuntimeData.context);
+      await this.repository.createMany(
+        documentsToCreate,
+        {} as Prisma.DocumentCreateManyArgs,
+        transaction,
+      );
 
-    const contextWithRevision = setCollectionFlowStatus(
-      contextWithDocuments,
-      CollectionFlowStatusesEnum.revision,
-    );
+      await this.workflowService.event(
+        {
+          id: workflowId,
+          name: CommonWorkflowEvent.REVISION,
+          payload: {},
+        },
+        [projectId],
+        projectId,
+        transaction,
+      );
 
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowId,
-      {
-        context: contextWithRevision,
-      },
-      projectId,
-    );
-
-    await this.workflowService.event(
-      {
-        id: workflowId,
-        name: CommonWorkflowEvent.REVISION,
-        payload: {},
-      },
-      [projectId],
-      projectId,
-    );
-
-    return { message: 'Documents requested successfully', count: createdDocuments.length };
+      return { message: 'Documents requested successfully', count: documentsToCreate.length };
+    });
   }
 
   private parseDocumentsFromUISchema(
@@ -1313,7 +1217,17 @@ export class DocumentService {
           return curr;
         }
 
-        return (curr.version || 0) > (acc.version || 0) ? curr : acc;
+        // First compare by version
+        if ((curr.version || 0) > (acc.version || 0)) {
+          return curr;
+        }
+
+        // If versions are the same, compare by createdAt
+        if ((curr.version || 0) === (acc.version || 0)) {
+          return new Date(curr.createdAt) > new Date(acc.createdAt) ? curr : acc;
+        }
+
+        return acc;
       });
     });
   }

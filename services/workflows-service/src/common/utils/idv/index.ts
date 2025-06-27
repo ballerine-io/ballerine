@@ -107,7 +107,10 @@ export const formatIndividualVerificationDecision = ({
   }
 
   const riskLabels = insightValues
-    .filter(([label, result]) => IGNORED_DECISION_CHECKS.includes(label) && result !== 'yes')
+    .filter(
+      ([label, result]) =>
+        !IGNORED_DECISION_CHECKS.includes(label) && result !== 'yes' && result !== 'notApplicable',
+    )
     .map(([label]) => label);
 
   return {
@@ -130,14 +133,14 @@ export const handleIndividualVerificationDocuments = async ({
   kycDocumentImages: Array<{ context?: string; content: string }>;
   person: Pick<TIndividualVerificationData['person'], 'idNumber'>;
 }) => {
-  const documentPages: {
+  const documentPages: Array<{
     uri: string;
     provider: string;
     type: string | undefined;
     metadata: {
       side: string | undefined;
     };
-  }[] = [];
+  }> = [];
 
   for (const kycDocumentImage of kycDocumentImages) {
     const tmpFile = tmp.fileSync({ keep: false }).name;

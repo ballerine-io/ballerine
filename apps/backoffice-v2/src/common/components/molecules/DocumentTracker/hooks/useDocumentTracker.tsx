@@ -46,7 +46,7 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
           templateId: identifier.document.type,
           entity: {
             id: identifier.entity.id,
-            type: identifier.entity.entityType,
+            type: identifier.entity.variant,
           },
         })),
       }),

@@ -48,7 +48,7 @@ export const RuleSchema = z.discriminatedUnion('operator', [
   z.object({
     key: z.string(),
     operator: z.literal(OPERATION.BANK_ACCOUNT_VERIFICATION),
-    value: z.undefined(),
+    value: z.null(),
   }),
   z.object({
     key: z.string().optional(),

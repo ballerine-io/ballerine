@@ -2,6 +2,7 @@ import { UIPage } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import {
   getFieldDefinitionsFromSchema,
+  IDocument,
   IFormElement,
   IPriorityField,
   TBaseFields,
@@ -10,12 +11,15 @@ import { checkIfStepInRevision } from '../../../../helpers/check-if-step-in-revi
 import { generateGranularRevisionFields } from './helpers/generate-granular-revision-fields';
 import { generateRevisionFieldsForAllElements } from './helpers/generate-revision-fields-for-all-elements';
 import { checkIfStepInEdit } from '../../../../helpers/check-if-step-in-edit';
+import { CollectionFlowStatusesEnum, getCollectionFlowState } from '@ballerine/common';
 
 export const generateFieldsForRevision = (
   pages: Array<UIPage<'v2'>>,
   context: CollectionFlowContext,
+  documents: IDocument[],
 ): IPriorityField[] | undefined => {
   let fieldsForRevision: IPriorityField[] = [];
+  const collectionFlowState = getCollectionFlowState(context);
 
   pages.forEach(page => {
     const isPageInRevision = checkIfStepInRevision(page.stateName, context);
@@ -23,9 +27,12 @@ export const generateFieldsForRevision = (
     const fieldDefinitions = getFieldDefinitionsFromSchema(page.elements) as Array<
       IFormElement<TBaseFields, any>
     >;
-
     if (isPageInRevision || isPageInEdit) {
-      const granularRevisionFields = generateGranularRevisionFields(context, fieldDefinitions);
+      const granularRevisionFields = generateGranularRevisionFields({
+        context,
+        documents,
+        elements: fieldDefinitions,
+      });
 
       // If there specific fields to revise marking only them (Documents currently)
       if (granularRevisionFields.length) {
@@ -38,6 +45,10 @@ export const generateFieldsForRevision = (
       }
     }
   });
+
+  if (collectionFlowState?.status === CollectionFlowStatusesEnum.revision) {
+    return fieldsForRevision;
+  }
 
   return fieldsForRevision.length ? fieldsForRevision : undefined;
 };
