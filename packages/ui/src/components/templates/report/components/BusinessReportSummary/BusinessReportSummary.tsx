@@ -4,6 +4,7 @@ import {
   RiskIndicatorSchema,
 } from '@ballerine/common';
 import { ComponentProps, FunctionComponent } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { toTitleCase } from 'string-ts';
 import { z } from 'zod';
 
@@ -55,8 +56,31 @@ export const BusinessReportSummary: FunctionComponent<{
           <CardContent>
             <div>
               <h4 className={'mb-4 font-semibold'}>Ongoing Monitoring Summary</h4>
-              <TextWithNAFallback as={'p'} className="whitespace-pre-wrap">
-                {ongoingMonitoringSummary}
+              <TextWithNAFallback
+                as={'div'}
+                className="prose prose-sm max-w-none dark:prose-invert text-gray-700 dark:text-gray-300"
+              >
+                {ongoingMonitoringSummary && (
+                  <div className="space-y-3 leading-relaxed">
+                    <ReactMarkdown
+                      components={{
+                        p: ({ node, ...props }) => <p className="my-1.5" {...props} />,
+                        h3: ({ node, ...props }) => (
+                          <h3 className="text-lg font-semibold" {...props} />
+                        ),
+                        ul: ({ node, ...props }) => (
+                          <ul className="list-disc pl-5 my-2" {...props} />
+                        ),
+                        ol: ({ node, ...props }) => (
+                          <ol className="list-decimal pl-5 my-2" {...props} />
+                        ),
+                        li: ({ node, ...props }) => <li className="my-0.5" {...props} />,
+                      }}
+                    >
+                      {ongoingMonitoringSummary}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </TextWithNAFallback>
             </div>
           </CardContent>
@@ -66,7 +90,30 @@ export const BusinessReportSummary: FunctionComponent<{
             <h4 className={'mb-4 font-semibold'}>
               {ongoingMonitoringSummary && 'Onboarding '}Merchant Risk Summary
             </h4>
-            <TextWithNAFallback as={'p'}>{summary}</TextWithNAFallback>
+            <TextWithNAFallback
+              as={'div'}
+              className="prose prose-sm max-w-none dark:prose-invert text-gray-700 dark:text-gray-300"
+            >
+              {summary && (
+                <div className="space-y-3 leading-relaxed">
+                  <ReactMarkdown
+                    components={{
+                      p: ({ node, ...props }) => <p className="my-1.5" {...props} />,
+                      h3: ({ node, ...props }) => (
+                        <h3 className="text-lg font-semibold" {...props} />
+                      ),
+                      ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2" {...props} />,
+                      ol: ({ node, ...props }) => (
+                        <ol className="list-decimal pl-5 my-2" {...props} />
+                      ),
+                      li: ({ node, ...props }) => <li className="my-0.5" {...props} />,
+                    }}
+                  >
+                    {summary}
+                  </ReactMarkdown>
+                </div>
+              )}
+            </TextWithNAFallback>
           </div>
         </CardContent>
       </Card>
