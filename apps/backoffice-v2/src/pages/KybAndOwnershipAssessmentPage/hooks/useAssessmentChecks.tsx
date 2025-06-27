@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Assessment, CheckItem } from '../types';
 
+const includesAny = (text: string, values: string[]) => values.some(value => text.includes(value));
+
 /**
  * Generates check items based on assessment data
  * Status mapping:
@@ -9,7 +11,9 @@ import { Assessment, CheckItem } from '../types';
  * - negative (red): Flagged, Issues - when risks or issues are confirmed
  */
 export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
-  if (!assessment) return [];
+  if (!assessment) {
+    return [];
+  }
 
   const createCheck = (
     displayName: string,
@@ -65,11 +69,8 @@ export const getChecks = (assessment: Assessment | undefined): CheckItem[] => {
   if (registryData?.status?.normalized) {
     const companyStatus = String(registryData.status.normalized).toLowerCase();
     const isActive =
-      companyStatus.includes('active') ||
-      companyStatus.includes('live') ||
-      (!companyStatus.includes('inactive') &&
-        !companyStatus.includes('dissolved') &&
-        !companyStatus.includes('revoked'));
+      includesAny(companyStatus, ['active', 'live']) &&
+      !includesAny(companyStatus, ['inactive', 'dissolved', 'revoked']);
 
     checks.push(createCheck('Active Company', isActive));
   } else if (hasRegistryData) {

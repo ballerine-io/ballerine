@@ -11,3 +11,4 @@ export * from './RadioField';
 export * from './SelectField';
 export * from './TagsField';
 export * from './TextField';
+export * from './EntityFieldGroup';

@@ -45,6 +45,7 @@ import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitor
 import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { KycService } from '@/kyc/kyc.service';
 
 const API_KEY = faker.datatype.uuid();
 
@@ -96,6 +97,7 @@ describe('#EndUserControllerExternal', () => {
       WorkflowLogService,
       AssessmentsService,
       UnifiedApiClient,
+      KycService,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,

@@ -54,6 +54,15 @@ export const BusinessInformationPluginSchema = Type.Optional(
             ),
             lastAnnualReturnDate: Type.Optional(Type.String()),
             lastAnnualGeneralMeetingDate: Type.Optional(Type.String()),
+            peopleOfInterest: Type.Optional(
+              Type.Array(
+                Type.Object({
+                  firstName: Type.Optional(Type.String()),
+                  lastName: Type.Optional(Type.String()),
+                  role: Type.Optional(Type.String()),
+                }),
+              ),
+            ),
           }),
         ),
         Type.Array(Type.Record(Type.String(), Type.Unknown())),

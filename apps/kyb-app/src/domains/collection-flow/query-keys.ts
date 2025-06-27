@@ -1,6 +1,7 @@
 import {
   fetchCollectionFlowSchema,
   fetchCustomer,
+  fetchDocuments,
   fetchEndUser,
   fetchFlowContext,
   fetchUISchema,
@@ -37,5 +38,9 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
   getEndUser: () => ({
     queryKey: [{}],
     queryFn: () => fetchEndUser(),
+  }),
+  getDocuments: () => ({
+    queryKey: [{}],
+    queryFn: () => fetchDocuments(),
   }),
 });

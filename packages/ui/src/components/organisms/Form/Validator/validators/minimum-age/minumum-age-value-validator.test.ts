@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ICommonValidator } from '../../types';
+import { ICommonValidator, IValidationSchema, TBaseValidators } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message/format-error-message';
 import { minimumAgeValueValidator } from './minimum-age-value-validator';
 import { IMinimumAgeValidatorParams } from './types';
@@ -11,9 +11,17 @@ vi.mock('../../utils/format-error-message/format-error-message');
 describe('minimumAgeValueValidator', () => {
   // Use a fixed date for testing
   const testDate = new Date(2023, 0, 1); // January 1, 2023
+  let mockSchema: IValidationSchema<TBaseValidators, any>;
 
   beforeEach(() => {
     vi.resetAllMocks();
+
+    mockSchema = {
+      id: 'test',
+      validators: [],
+      metadata: {},
+      getThisContext: () => ({}),
+    };
 
     // Mock formatErrorMessage
     vi.mocked(formatErrorMessage).mockImplementation((message, key, value) =>
@@ -38,7 +46,9 @@ describe('minimumAgeValueValidator', () => {
     } as ICommonValidator<IMinimumAgeValidatorParams>;
 
     // Act & Assert
-    expect(() => minimumAgeValueValidator(invalidDate as any, params)).toThrow('Invalid date.');
+    expect(() => minimumAgeValueValidator(invalidDate as any, params, mockSchema)).toThrow(
+      'Invalid date.',
+    );
   });
 
   it('should throw error if minimum age is not specified', () => {
@@ -50,7 +60,9 @@ describe('minimumAgeValueValidator', () => {
     } as ICommonValidator<IMinimumAgeValidatorParams>;
 
     // Act & Assert
-    expect(() => minimumAgeValueValidator(date, params)).toThrow('Minimum age is not specified.');
+    expect(() => minimumAgeValueValidator(date, params, mockSchema)).toThrow(
+      'Minimum age is not specified.',
+    );
   });
 
   describe('Strict validation mode (default)', () => {
@@ -66,7 +78,9 @@ describe('minimumAgeValueValidator', () => {
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).toThrow('Minimum age is 18.');
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).toThrow(
+        'Minimum age is 18.',
+      );
       expect(formatErrorMessage).toHaveBeenCalledWith(
         'Minimum age is {minimumAge}.',
         'minimumAge',
@@ -83,7 +97,7 @@ describe('minimumAgeValueValidator', () => {
       } as ICommonValidator<IMinimumAgeValidatorParams>;
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).not.toThrow();
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
     });
 
     it('should not throw error if age is greater than minimum age', () => {
@@ -95,7 +109,7 @@ describe('minimumAgeValueValidator', () => {
       } as ICommonValidator<IMinimumAgeValidatorParams>;
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).not.toThrow();
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
     });
 
     it('should correctly calculate age when birth month is after current month', () => {
@@ -109,7 +123,9 @@ describe('minimumAgeValueValidator', () => {
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).toThrow('Minimum age is 18.');
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).toThrow(
+        'Minimum age is 18.',
+      );
     });
 
     it('should correctly calculate age when birth day is after current day', () => {
@@ -123,7 +139,9 @@ describe('minimumAgeValueValidator', () => {
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).toThrow('Minimum age is 18.');
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).toThrow(
+        'Minimum age is 18.',
+      );
     });
   });
 
@@ -140,7 +158,9 @@ describe('minimumAgeValueValidator', () => {
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).toThrow('Minimum age is 18.');
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).toThrow(
+        'Minimum age is 18.',
+      );
       expect(formatErrorMessage).toHaveBeenCalledWith(
         'Minimum age is {minimumAge}.',
         'minimumAge',
@@ -157,7 +177,7 @@ describe('minimumAgeValueValidator', () => {
       } as ICommonValidator<IMinimumAgeValidatorParams>;
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).not.toThrow();
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
     });
 
     it('should not throw error if birth year is more than required years from current year', () => {
@@ -169,7 +189,7 @@ describe('minimumAgeValueValidator', () => {
       } as ICommonValidator<IMinimumAgeValidatorParams>;
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).not.toThrow();
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
     });
 
     it('should ignore month and day in age calculation', () => {
@@ -181,7 +201,7 @@ describe('minimumAgeValueValidator', () => {
       } as ICommonValidator<IMinimumAgeValidatorParams>;
 
       // Act & Assert
-      expect(() => minimumAgeValueValidator(birthDate, params)).not.toThrow();
+      expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
     });
   });
 
@@ -197,7 +217,7 @@ describe('minimumAgeValueValidator', () => {
     vi.mocked(formatErrorMessage).mockReturnValueOnce('You must be at least 18 years old.');
 
     // Act & Assert
-    expect(() => minimumAgeValueValidator(birthDate, params)).toThrow(
+    expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).toThrow(
       'You must be at least 18 years old.',
     );
     expect(formatErrorMessage).toHaveBeenCalledWith(
@@ -216,7 +236,7 @@ describe('minimumAgeValueValidator', () => {
     } as ICommonValidator<IMinimumAgeValidatorParams>;
 
     // Act
-    const result = minimumAgeValueValidator(birthDate, params);
+    const result = minimumAgeValueValidator(birthDate, params, mockSchema);
 
     // Assert
     expect(result).toBe(true);

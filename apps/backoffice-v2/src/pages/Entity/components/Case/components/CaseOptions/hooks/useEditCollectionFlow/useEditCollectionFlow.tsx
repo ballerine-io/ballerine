@@ -10,8 +10,11 @@ import { useEditCaseStateMutation } from './hooks/useEditCaseStateMutation/useEd
 import { useIsCanEditCollectionFlow } from './hooks/useIsCanEditCollectionFlow';
 import { useCollectionFlowStateQuery } from '@/domains/collection-flow/hooks/queries/useCollectionFlowStateQuery/useCollectionFlowStateQuery';
 import { useUpdateCollectionFlowStateMutation } from '@/domains/collection-flow/hooks/mutations/useUpdateCollectionFlowStateMutation/useUpdateCollectionFlowStateMutation';
+import { EDIT_TEMPLATES } from './consts';
 
-export const useEditCollectionFlow = () => {
+export type TSteps = Parameters<typeof updateStateForEditing>[0]['steps'];
+
+export const useEditCollectionFlow = (steps: TSteps = EDIT_TEMPLATES.ALL) => {
   const { data: workflow, isLoading: isLoadingWorkflow } = useCurrentCaseQuery();
   const { mutateAsync: updateWorkflowById, isLoading: isUpdatingWorkflow } =
     useUpdateWorkflowByIdMutation({
@@ -36,61 +39,71 @@ export const useEditCollectionFlow = () => {
     tags,
     config: workflowConfig,
   });
-  const { data: collectionFlowState } = useCollectionFlowStateQuery(workflow?.id || '');
+  const { data: collectionFlowState, isLoading: isLoadingCollectionFlowState } =
+    useCollectionFlowStateQuery(workflow?.id || '');
   const { mutateAsync: updateCollectionFlowState } = useUpdateCollectionFlowStateMutation();
 
-  const onEditCollectionFlow = useCallback(
-    ({ steps }: { steps: Parameters<typeof updateStateForEditing>[0]['steps'] }) =>
-      async () => {
-        if (!collectionFlowState || !collectionFlowState.state) {
-          toast.error('Something went wrong. Please try again later.');
+  const onEditCollectionFlow = useCallback(async () => {
+    if (!collectionFlowState || !collectionFlowState.state) {
+      toast.error('Something went wrong. Please try again later.');
 
-          return;
-        }
+      return;
+    }
 
-        try {
-          // Updating case state first to avoid unnecessary collection flow state update in case this step fails
-          await editCaseState({ workflowId: workflow?.id || '' });
-        } catch (error) {
-          toast.error(t('toast:edit_collection_flow_state_transition.error'));
-          throw new Error('Failed move to edit collection flow. State missing.');
-        }
+    try {
+      // Updating case state first to avoid unnecessary collection flow state update in case this step fails
+      await editCaseState({ workflowId: workflow?.id || '' });
+    } catch (error) {
+      toast.error(t('toast:edit_collection_flow_state_transition.error'));
+      throw new Error('Failed move to edit collection flow. State missing.');
+    }
 
-        const updatedCollectionFlowState = updateStateForEditing({
-          collectionFlowState: collectionFlowState.state,
-          steps,
-        });
+    const updatedCollectionFlowState = updateStateForEditing({
+      collectionFlowState: collectionFlowState.state,
+      steps,
+    });
 
-        await updateCollectionFlowState({
-          workflowId: workflow?.id || '',
-          state: updatedCollectionFlowState,
-          action: 'step_request',
-        });
+    await updateCollectionFlowState({
+      workflowId: workflow?.id || '',
+      state: updatedCollectionFlowState,
+      action: 'step_request',
+    });
 
-        try {
-          const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
-            ?.collectionFlowUrl;
+    try {
+      const collectionFlowBaseUrl = (workflow as TWorkflowById)?.context?.metadata
+        ?.collectionFlowUrl;
 
-          if (!collectionFlowBaseUrl) {
-            throw new Error('Collection flow URL is missing.');
-          }
+      if (!collectionFlowBaseUrl) {
+        throw new Error('Collection flow URL is missing.');
+      }
 
-          const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
-            workflowId: workflow?.id,
-          });
+      const url = buildCollectionFlowUrl(collectionFlowBaseUrl, {
+        workflowId: workflow?.id,
+      });
 
-          window.open(url, '_blank');
-        } catch (error) {
-          toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
-          throw new Error('Failed to open collection flow in new tab.');
-        }
-      },
-    [updateWorkflowById, editCaseState, workflow, collectionFlowState, updateCollectionFlowState],
-  );
+      window.open(url, '_blank');
+    } catch (error) {
+      toast.error(t('toast:edit_collection_flow.error_opening_collection_flow'));
+      throw new Error('Failed to open collection flow in new tab.');
+    }
+  }, [
+    updateWorkflowById,
+    editCaseState,
+    workflow,
+    collectionFlowState,
+    updateCollectionFlowState,
+    steps,
+  ]);
 
   const isLoading = useMemo(
-    () => [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow].some(Boolean),
-    [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow],
+    () =>
+      [
+        isEditCaseStateLoading,
+        isUpdatingWorkflow,
+        isLoadingWorkflow,
+        isLoadingCollectionFlowState,
+      ].some(Boolean),
+    [isEditCaseStateLoading, isUpdatingWorkflow, isLoadingWorkflow, isLoadingCollectionFlowState],
   );
 
   return {

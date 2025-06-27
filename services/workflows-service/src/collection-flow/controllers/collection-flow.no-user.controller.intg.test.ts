@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Project, WorkflowRuntimeDataToken } from '@prisma/client';
+import { Customer, Project, WorkflowRuntimeDataToken } from '@prisma/client';
 import { noop } from 'lodash';
 import request from 'supertest';
 import { ClsModule } from 'nestjs-cls';
@@ -12,7 +12,7 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { MerchantMonitoringClient } from '@/merchant-monitoring/merchant-monitoring.client';
 import { BusinessRepository } from '@/business/business.repository';
 import { BusinessService } from '@/business/business.service';
-import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
+import { CollectionFlowService } from '@/collection-flow/services/collection-flow.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { CustomerRepository } from '@/customer/customer.repository';
@@ -46,9 +46,10 @@ import { WorkflowLogService } from '@/workflow/workflow-log.service';
 import { WorkflowRuntimeDataActorService } from '@/workflow/workflow-runtime-data-actor.service';
 import { mockClsService } from '@/test/helpers/cls-service-helper';
 
-import { CollectionFlowStateService } from '../collection-flow-state.service';
+import { CollectionFlowStateService } from '../services/collection-flow-state.service';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
+import { KycService } from '@/kyc/kyc.service';
 
 describe('CollectionFlowSignupController', () => {
   let app: INestApplication;
@@ -62,6 +63,7 @@ describe('CollectionFlowSignupController', () => {
 
   let project: Project;
   let workflowRuntimeDataToken: WorkflowRuntimeDataToken;
+  let customer: Customer;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -80,7 +82,7 @@ describe('CollectionFlowSignupController', () => {
         { provide: UserService, useValue: noop },
         { provide: EventEmitter2, useValue: noop },
         { provide: AppLoggerService, useValue: { log: noop } },
-        { provide: AnalyticsService, useValue: { log: noop } },
+        { provide: AnalyticsService, useValue: { trackSafe: noop } },
         { provide: WorkflowEventEmitterService, useValue: { emit: noop } },
         WorkflowService,
         EndUserService,
@@ -105,6 +107,7 @@ describe('CollectionFlowSignupController', () => {
         WorkflowRuntimeDataActorService,
         AssessmentsService,
         UnifiedApiClient,
+        { provide: KycService, useValue: noop },
         mockClsService(),
         { provide: CollectionFlowStateService, useValue: noop },
       ],
@@ -130,7 +133,7 @@ describe('CollectionFlowSignupController', () => {
   beforeEach(async () => {
     await cleanupDatabase();
 
-    const customer = await customerRepository.create({
+    customer = await customerRepository.create({
       data: {
         name: 'signup-test-customer',
         displayName: 'Signup Test Customer',
@@ -159,7 +162,7 @@ describe('CollectionFlowSignupController', () => {
       },
     });
 
-    const { id: workflowRuntimeDataId } = await workflowRuntimeDataRepository.create({
+    const { id: workflowRuntimeDataId } = await workflowRuntimeDataRepository.create(customer, {
       data: {
         workflowDefinitionId: workflowDefinition.id,
         projectId: project.id,

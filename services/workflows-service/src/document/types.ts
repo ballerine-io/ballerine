@@ -1,10 +1,9 @@
-import { DocumentDecision, DocumentStatus } from '@prisma/client';
+import { DocumentDecision, DocumentStatus, EndUserVariant } from '@prisma/client';
 import { z } from 'zod';
 
 const ParsedUIDocumentSchema = z.object({
   entityType: z.enum(['business', 'ubo', 'director']),
   type: z.string(),
-  templateId: z.string(),
   category: z.string(),
   issuingCountry: z.string(),
   issuingVersion: z.string(),
@@ -24,20 +23,20 @@ export type TParsedDocuments = {
   };
 };
 
-export const EntitySchema = z.discriminatedUnion('entityType', [
+export const EntitySchema = z.discriminatedUnion('variant', [
   z.object({
-    entityType: z.literal('business'),
+    variant: z.literal('business'),
     id: z.string(),
     companyName: z.string(),
   }),
   z.object({
-    entityType: z.literal('ubo'),
     id: z.string(),
+    variant: z.literal(EndUserVariant.director),
     firstName: z.string(),
     lastName: z.string(),
   }),
   z.object({
-    entityType: z.literal('director'),
+    variant: z.literal(EndUserVariant.ubo),
     id: z.string(),
     firstName: z.string(),
     lastName: z.string(),

@@ -9,6 +9,7 @@ export const useUbosDocuments = (workflow: TWorkflowById) => {
 
   const { documents, documentsSchemas, isLoading } = useWorkflowDocumentsAdapter({
     entityIds,
+    // TODO: Remove once documents v1 are deprecated
     documents: (workflow.childWorkflows
       ?.filter(childWorkflow => childWorkflow.context?.entity?.variant === 'ubo')
       ?.flatMap(childWorkflow => childWorkflow.context?.documents ?? []) ?? []) as TDocument[],

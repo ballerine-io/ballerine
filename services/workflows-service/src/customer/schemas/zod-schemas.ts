@@ -17,7 +17,7 @@ export const CustomerConfigSchema = z.object({
   isMerchantMonitoringEnabled: z.boolean().default(false).optional(),
   isOngoingMonitoringEnabled: z.boolean().default(false).optional(),
   isCasesOnboardingEnabled: z.boolean().default(false).optional(),
-  maxBusinessReports: z.number().default(10).optional(),
+  maxBusinessReports: z.number().default(10).optional().nullable(),
   withQualityControl: z.boolean().default(true).optional(),
   disableBusinessSyncToUnifiedApi: z.boolean().default(false).nullish(),
   isDemoAccount: z.boolean().default(false).optional(),
@@ -69,7 +69,8 @@ export const CustomerFeaturesSchema = z.object({
           reportType: z.string().optional(),
           runByDefault: z.boolean().optional(),
           scheduleType: z.string().optional(),
-          intervalInDays: z.number().optional(),
+          dayInMonth: z.number().optional(),
+          monthInterval: z.number().optional(),
           proxyViaCountry: z.string().optional(),
           workflowVersion: z.string().optional(),
         })

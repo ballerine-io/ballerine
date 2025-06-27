@@ -5,10 +5,11 @@ import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { BadRequestException, InternalServerErrorException, Injectable } from '@nestjs/common';
 import { EndUserService } from '@/end-user/end-user.service';
-import { TProjectId, type TProjectIds } from '@/types';
+import { TProjectId } from '@/types';
 import { CustomerService } from '@/customer/customer.service';
 import { isType } from '@ballerine/common';
 import z from 'zod';
+
 @Injectable()
 export class KycService {
   private readonly axiosClient: AxiosInstance;
@@ -29,12 +30,10 @@ export class KycService {
     workflowRuntimeDataId: string;
     sessionId: string | undefined;
     clientId: string;
-
     vendor: 'veriff';
     withAml: boolean;
     ongoingMonitoring: boolean;
     callbackUrl: string;
-
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
@@ -178,12 +177,10 @@ export class KycService {
       // TODO: Get from KYC check table
       sessionId: undefined,
       clientId: customer.name,
-
       vendor,
       withAml: withAml ?? true,
       ongoingMonitoring: ongoingMonitoring ?? false,
       callbackUrl,
-
       firstName: endUser.firstName,
       lastName: endUser.lastName,
       dateOfBirth: endUser.dateOfBirth?.toISOString().split('T')[0] ?? undefined,
@@ -205,5 +202,39 @@ export class KycService {
       sessionId,
       url: kycLink,
     };
+  }
+
+  async initiateAml({
+    endUserId,
+    clientId,
+    vendor,
+    ongoingMonitoring,
+    immediateResults,
+    callbackUrl,
+    firstName,
+    lastName,
+    dateOfBirth,
+  }: {
+    endUserId: string;
+    clientId: string;
+    vendor: 'veriff';
+    ongoingMonitoring: boolean;
+    immediateResults: boolean;
+    callbackUrl: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string;
+  }) {
+    return await this.unifiedApiClient.runAml({
+      endUserId,
+      clientId,
+      vendor,
+      ongoingMonitoring,
+      immediateResults,
+      callbackUrl,
+      firstName,
+      lastName,
+      dateOfBirth,
+    });
   }
 }
