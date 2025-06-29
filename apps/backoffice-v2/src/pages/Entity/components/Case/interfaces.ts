@@ -1,5 +1,3 @@
-import { ComponentProps } from 'react';
-
 import { TStateTags } from '@ballerine/common';
 import { TAssignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Actions } from './Case.Actions';
@@ -40,6 +38,7 @@ export interface IDocumentsProps {
   documents: Array<{
     id: string;
     imageUrl: string;
+    base64?: string;
     fileType: string;
     fileName: string;
     title: string;

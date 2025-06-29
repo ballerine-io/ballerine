@@ -4,8 +4,8 @@ import { IDocumentsProps } from '../../interfaces';
 
 export const convertCsvDocumentsToPdf = (documents: IDocumentsProps['documents']) => {
   return documents?.map(document => {
-    if (isCsv(document)) {
-      return { ...document, imageUrl: convertCsvToPdfBase64String(document.imageUrl) };
+    if (isCsv(document) && document.base64) {
+      return { ...document, imageUrl: convertCsvToPdfBase64String(document.base64) };
     }
 
     return document;
