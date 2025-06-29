@@ -43,7 +43,8 @@ export class RiskRulePlugin {
             name: rule.indicator,
             riskLevel: rule.riskLevel,
             domain: rule.domain,
-            tab: rule.tab,
+            tabTitle: rule.tabTitle,
+            tabLink: rule.tabLink,
           };
         });
 
