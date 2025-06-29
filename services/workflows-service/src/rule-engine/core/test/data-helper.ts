@@ -305,7 +305,7 @@ export const helpers = {
           {
             pep: [
               {
-                date: null,
+                date: '2023-09-06T00:00:00Z',
                 type: null,
                 sourceUrl: 'https://www.cia.gov/resources/world-leaders/foreign-governments/',
                 sourceName: 'Central Intelligence Agency Foreign Governments Leadership',
@@ -313,7 +313,15 @@ export const helpers = {
             ],
             other: [],
             vendor: 'veriff',
-            warnings: [],
+            warnings: [
+              {
+                date: '2023-09-06T00:00:00Z',
+                sourceUrl:
+                  'https://www.fsma.be/en/warnings-illegal-soliciting-savings-public-warnings-foreign-authorities-who-are-members-esma-pol',
+                sourceName:
+                  'Belgium Financial Services and Markets Authority Warnings from foreign authorities',
+              },
+            ],
             countries: ['Austria', 'Brazil', 'Germany', 'Switzerland', 'United Kingdom'],
             sanctions: [
               {
@@ -337,7 +345,7 @@ export const helpers = {
             ],
             fitnessProbity: [
               {
-                date: null,
+                date: '2023-09-06T00:00:00Z',
                 sourceUrl: 'http://example.gov/disqualifieddirectorslist.html',
                 sourceName:
                   'Example Ministry of Corporate Affairs List of Disqualified Directors Division XYZ (Suspended)',

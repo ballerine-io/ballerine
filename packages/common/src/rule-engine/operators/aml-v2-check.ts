@@ -52,7 +52,6 @@ class AmlCheckV2 extends BaseOperator<any, AmlCheckV2Params> {
       throw new ValidationFailedError('extract', `End Users not found: ${endUserIds.join(', ')}`);
     }
 
-    // TODO: In the future, AML data will not be in the endUser object
     const hits: Array<z.infer<typeof EndUserAmlHitsSchema>> = endUsers
       .map(endUser => endUser.amlHits)
       .flat(1)
@@ -62,28 +61,26 @@ class AmlCheckV2 extends BaseOperator<any, AmlCheckV2Params> {
       return false;
     }
 
-    const variable = hits.map(hit => get(hit, rule.key as string)).filter(Boolean);
-
-    return variable;
+    return hits.map(hit => get(hit, rule.key as string)).filter(Boolean);
   }
 
   evaluate = async (dataValue: any, conditionValue: AmlCheckV2Params) => {
-    const amlOperator = OperationHelpers[conditionValue.operator];
+    const operator = OperationHelpers[conditionValue.operator];
 
     const evaluateOperatorCheck = async (data: any) => {
-      const result = amlOperator.dataValueSchema?.safeParse(data);
+      const result = operator.dataValueSchema?.safeParse(data);
 
       if (result && !result.success) {
         return false;
       }
 
-      const conditionResult = amlOperator.conditionValueSchema?.safeParse(conditionValue.value);
+      const conditionResult = operator.conditionValueSchema?.safeParse(conditionValue.value);
 
       if ((conditionResult && !conditionResult.success) || !conditionResult?.data) {
         return false;
       }
 
-      return await amlOperator.execute(data, conditionResult.data);
+      return await operator.execute(data, conditionResult.data);
     };
 
     if (dataValue && Array.isArray(dataValue)) {
