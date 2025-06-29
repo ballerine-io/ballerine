@@ -56,15 +56,7 @@ export class WebhooksService implements OnModuleInit {
 
   private async setupQueueSystem() {
     try {
-      this.queueService.createQueue<OutgoingWebhookJobData>(this.QUEUE_NAME, {
-        name: this.QUEUE_NAME,
-        jobOptions: {
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 5000 },
-          removeOnComplete: { count: 1000, age: 3600 * 24 * 7 },
-          removeOnFail: false,
-        },
-      });
+      this.queueService.createQueue(this.QUEUE_NAME);
 
       this.registerWorker();
 
@@ -77,11 +69,9 @@ export class WebhooksService implements OnModuleInit {
   }
 
   private registerWorker() {
-    this.queueService.registerWorker<OutgoingWebhookJobData>(
-      this.QUEUE_NAME,
-      this.processWebhookJob.bind(this),
-      { concurrency: 10 },
-    );
+    this.queueService.registerWorker(this.QUEUE_NAME, this.processWebhookJob.bind(this), {
+      concurrency: 10,
+    });
   }
 
   private async processWebhookJob(job: Job<OutgoingWebhookJobData>) {

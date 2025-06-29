@@ -7,11 +7,15 @@ export const REDIS_CLIENT = Symbol('REDIS_CLIENT');
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
-  public readonly client: IORedis;
+  public readonly client!: IORedis;
 
   constructor(private readonly logger: AppLoggerService) {
     if (!env.QUEUE_SYSTEM_ENABLED) {
-      this.client = null as any;
+      Object.defineProperty(this, 'client', {
+        get: () => {
+          this.logger.warn('Redis client is not available when QUEUE_SYSTEM_ENABLED is false');
+        },
+      });
 
       return;
     }

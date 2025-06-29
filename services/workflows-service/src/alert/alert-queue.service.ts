@@ -29,15 +29,6 @@ export class AlertQueueService implements OnModuleInit {
 
   private async setupAlertQueue() {
     try {
-      this.queueService.createQueue<AlertCheckJobData>(this.QUEUE_NAME, {
-        name: this.QUEUE_NAME,
-        jobOptions: {
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 10000 },
-          removeOnComplete: { count: 100, age: 3600 * 24 },
-          removeOnFail: false,
-        },
-      });
       await this.queueService.setupJobScheduler(
         this.QUEUE_NAME,
         this.SCHEDULER_ID,
@@ -45,6 +36,12 @@ export class AlertQueueService implements OnModuleInit {
         {
           name: 'alert-check',
           data: { timestamp: Date.now() },
+        },
+        {
+          jobOptions: {
+            attempts: 2,
+            backoff: { type: 'exponential', delay: 10000 },
+          },
         },
       );
 
