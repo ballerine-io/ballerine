@@ -1,9 +1,12 @@
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { IMultiDocumentsProps } from './interfaces';
 import { Case } from '@/pages/Entity/components/Case/Case';
 
 export const MultiDocuments: FunctionComponent<IMultiDocumentsProps> = ({ value }) => {
-  const documents = value?.data?.filter(({ imageUrl }) => !!imageUrl);
+  const documents = useMemo(
+    () => value?.data?.filter(({ imageUrl, base64 }) => imageUrl || base64),
+    [value?.data],
+  );
 
   return (
     <div className={`m-2 rounded p-1`}>

@@ -51,7 +51,7 @@ export const useWorkflowDocumentsAdapter = ({
             country: issuingCountry,
           },
           details:
-            document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl }) => {
+            document?.files?.map(({ mimeType, fileName, variant, fileId, imageUrl, base64 }) => {
               const title = generateDocumentTitle({
                 category: document?.category ?? '',
                 type: document?.type ?? '',
@@ -64,6 +64,7 @@ export const useWorkflowDocumentsAdapter = ({
                 fileType: mimeType,
                 fileName,
                 imageUrl,
+                base64,
               };
             }) ?? [],
         })) ?? [];
