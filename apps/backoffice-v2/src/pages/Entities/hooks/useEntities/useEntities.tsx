@@ -1,5 +1,5 @@
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
-import { ChangeEventHandler, useCallback } from 'react';
+import {ChangeEventHandler, useCallback, useEffect, useRef} from 'react';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
@@ -7,13 +7,17 @@ import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-n
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useEntities = () => {
   const { search, onSearch } = useSearch();
   const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
     useSearchParamsByEntity();
 
-  const { data, isLoading } = useWorkflowsQuery({
+  const queryClient = useQueryClient();
+
+
+  const { data, isLoading, meta } = useWorkflowsQuery({
     filterId,
     filter,
     sortBy,
@@ -23,7 +27,7 @@ export const useEntities = () => {
     search,
   });
   const cases = data?.data;
-  const totalPages = data?.meta?.totalPages ?? 0;
+  const totalPages = meta?.totalPages ?? 0;
   const entity = useEntityType();
 
   const onSortDirToggle = useCallback(() => {
@@ -57,7 +61,7 @@ export const useEntities = () => {
   );
 
   const { onPaginate, onPrevPage, onNextPage, onLastPage, isLastPage } = usePagination({
-    totalPages: data?.meta?.totalPages ?? 0,
+    totalPages,
   });
 
   const onSearchChange: ChangeEventHandler<HTMLInputElement> = useCallback(

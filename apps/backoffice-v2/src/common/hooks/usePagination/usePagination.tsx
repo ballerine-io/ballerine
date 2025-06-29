@@ -42,16 +42,16 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
   }, [searchParams, totalPages]);
 
   const onNextPage = useCallback(() => {
-    const nextPage = Math.min(page + 1, totalPages);
+    const nextPage = page + 1
 
     return defaultSerializer({
       ...searchParams,
       page: nextPage.toString(),
-    });
+    });oa
   }, [searchParams, totalPages]);
 
   const onPrevPage = useCallback(() => {
-    const nextPage = Math.max(page - 1, 1);
+    const nextPage = page - 1;
 
     return defaultSerializer({
       ...searchParams,
