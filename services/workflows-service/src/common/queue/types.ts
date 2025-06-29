@@ -11,14 +11,14 @@ export interface BullBoardInjectedInstance {
 export interface IQueueService {
   addJob<T = any>(queueName: string, job_name: string, data: T, opts?: any): Promise<any>;
 
-  registerWorker<T = any>(
+  registerWorker(
     queueName: string,
     processor: (job: any) => Promise<any>,
     options?: { concurrency?: number },
   ): void;
 
   isWorkerEnabled(): boolean;
-  createQueue<T = any>(queueName: string, options?: QueueOptions<T>): void;
+  createQueue(queueName: string, options?: QueueOptions): void;
   setupJobScheduler<T = any>(
     queueName: string,
     schedulerId: string,
@@ -26,14 +26,12 @@ export interface IQueueService {
     jobOpts: {
       name: string;
       data: T;
-      opts?: any;
     },
+    queueOptions?: QueueOptions,
   ): Promise<any>;
 }
 
-export interface QueueOptions<T = any> {
-  name: string;
-  concurrency?: number;
+export interface QueueOptions {
   jobOptions?: {
     attempts?: number;
     backoff?: {

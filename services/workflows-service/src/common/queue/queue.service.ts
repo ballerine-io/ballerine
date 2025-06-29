@@ -8,6 +8,13 @@ import { BullMQPrometheusService } from '@/common/monitoring/bullmq-prometheus.s
 import type { BullBoardInjectedInstance, IQueueService, QueueOptions } from './types';
 import { QueueBullboardService } from './queue-bullboard.service';
 
+const defaultJobOptions = {
+  attempts: 3,
+  backoff: { type: 'exponential', delay: 2000 },
+  removeOnComplete: { count: 100, age: 3600 * 24 * 7 },
+  removeOnFail: false,
+};
+
 @Injectable()
 export class BullMQQueueService implements OnModuleDestroy, IQueueService {
   private redisClient: IORedis | null;
@@ -51,6 +58,12 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
     return this.shouldProcessJobs;
   }
 
+  private validateQueueName(queueName: string): void {
+    if (!queueName || typeof queueName !== 'string' || queueName.trim().length === 0) {
+      throw new Error('Queue name must be a non-empty string');
+    }
+  }
+
   public getQueue(queueName: string): Queue {
     if (!this.redisClient) {
       throw new Error('Redis client not initialized');
@@ -63,11 +76,13 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
     throw new Error(`Queue with name '${queueName}' does not exist. Please create it first.`);
   }
 
-  registerWorker<T = any>(
+  registerWorker(
     queueName: string,
     processor: (job: any) => Promise<any>,
     options: { concurrency?: number } = {},
   ): void {
+    this.validateQueueName(queueName);
+
     if (!this.redisClient) {
       throw new Error('Redis client not initialized');
     }
@@ -113,18 +128,16 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
   }
 
   createQueue(queueName: string, options?: QueueOptions): void {
+    this.validateQueueName(queueName);
+
     if (this.queues.has(queueName)) {
       return;
     }
 
+    const mergedJobOptions = { ...defaultJobOptions, ...(options?.jobOptions || {}) };
     const queue = new Queue(queueName, {
       connection: this.redisClient as IORedis,
-      defaultJobOptions: options?.jobOptions ?? {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 5000 },
-        removeOnComplete: { count: 100, age: 3600 * 24 },
-        removeOnFail: false,
-      },
+      defaultJobOptions: mergedJobOptions,
     });
     this.queues.set(queueName, queue);
     this.logger.log(`Queue created: ${queueName}`);
@@ -157,11 +170,17 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
     jobOpts: {
       name: string;
       data: T;
-      opts?: any;
     },
+    queueOptions?: QueueOptions,
   ): Promise<any> {
+    this.validateQueueName(queueName);
     try {
+      if (!this.queues.has(queueName)) {
+        this.createQueue(queueName, queueOptions);
+      }
+
       const queue = this.getQueue(queueName);
+
       const jobName = jobOpts.name;
       const firstJob = await queue.upsertJobScheduler(
         schedulerId,
@@ -169,13 +188,6 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
         {
           name: jobName,
           data: jobOpts.data || { timestamp: Date.now() },
-          opts: {
-            attempts: jobOpts.opts?.attempts || 3,
-            backoff: jobOpts.opts?.backoff || {
-              type: 'exponential',
-              delay: 3000,
-            },
-          },
         },
       );
       this.logger.log(`Created job scheduler: ${schedulerId}`, {
