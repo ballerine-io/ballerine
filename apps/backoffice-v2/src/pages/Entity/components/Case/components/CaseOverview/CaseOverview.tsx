@@ -37,25 +37,26 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     ?.map(([domain, riskIndicators]) => {
       const domainTitle = domain ?? '';
       const tabEntry = Object.entries(TabToLabel).find(([_, label]) => label === domainTitle);
-      const indicatorTab = riskIndicators?.find(riskIndicator => riskIndicator.tab)?.tab;
+      const tabTitle = riskIndicators?.find(riskIndicator => riskIndicator.tabTitle)?.tabTitle;
+      const tabLink = riskIndicators?.find(riskIndicator => riskIndicator.tabLink)?.tabLink;
       const tab = (() => {
-        if (indicatorTab) {
-          return camelCase(indicatorTab);
+        if (tabTitle) {
+          return camelCase(tabTitle.toLowerCase());
         }
 
         if (tabEntry) {
-          return tabEntry[0];
+          return camelCase(tabEntry[0].toLowerCase());
         }
 
         return camelCase(domainTitle.toLowerCase());
       })();
-      const isValidCaseTab = CaseTabs.includes(tab as keyof typeof CaseTabs);
+      const isValidCaseTab = CaseTabs.includes(tabLink ?? tab);
 
       return {
-        title: domain,
+        title: tabTitle ?? domain,
         search: isValidCaseTab
           ? getUpdatedSearchParamsWithActiveTab({
-              tab: tab,
+              tab: tabLink ?? tab,
             })
           : undefined,
         indicators:
