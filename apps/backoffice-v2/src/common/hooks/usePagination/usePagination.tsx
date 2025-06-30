@@ -47,7 +47,7 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
     return defaultSerializer({
       ...searchParams,
       page: nextPage.toString(),
-    });oa
+    });
   }, [searchParams, totalPages]);
 
   const onPrevPage = useCallback(() => {
