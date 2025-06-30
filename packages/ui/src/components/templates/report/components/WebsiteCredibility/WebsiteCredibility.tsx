@@ -670,7 +670,7 @@ const PricingAnalysisCard: FunctionComponent<{
           ))}
         {!pricingRiskIndicators?.length && (
           <li>
-            No indications of suspicious pricing or anomalies in the website's pricing were
+            No indications of suspicious pricing or anomalies in the website&apos;s pricing were
             detected.
           </li>
         )}
