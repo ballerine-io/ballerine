@@ -28,6 +28,10 @@ import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 import { systemCreatedIconCell, userCreatedIconCell } from '@/lib/blocks/utils/constants';
+import {
+  INDIVIDUAL_KYC_CHECK_STATUS_ENUM,
+  TIndividualKycCheckStatus,
+} from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/compute-individual-kyc-check-status';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -299,10 +303,8 @@ export const useKycBlock = ({
   const isDisabled = isActionsDisabled || noAction || isLoadingApprove || isLoadingReuploadNeeded;
   const badgeClassNames = 'text-sm font-bold';
 
-  const getDecisionStatusOrAction = (
-    status: 'revision' | 'approved' | 'rejected' | 'pending' | undefined,
-  ) => {
-    if (status === 'revision') {
+  const getDecisionStatusOrAction = (status: TIndividualKycCheckStatus | undefined) => {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.revision) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -317,7 +319,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === 'approved') {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.approved) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -332,7 +334,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === 'rejected') {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.rejected) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -347,7 +349,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === 'pending') {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.pending) {
       return createBlocksTyped()
         .addBlock()
         .addCell({

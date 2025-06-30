@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import type { PrismaTransaction, TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
+import { ApprovalState, Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
 import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@ballerine/common';
 
 @Injectable()
@@ -113,6 +113,26 @@ export class EndUserService {
         ...args.data,
         activeMonitorings,
         amlHits,
+      },
+    });
+  }
+
+  async updateDecisionById(id: string, decision: ApprovalState, projectIds: TProjectIds) {
+    const endUser = await this.repository.findById(id, {}, projectIds);
+
+    const isApprovedOrRejected = [ApprovalState.APPROVED, ApprovalState.REJECTED].includes(
+      endUser.approvalState,
+    );
+
+    if (isApprovedOrRejected) {
+      throw new BadRequestException(
+        `Cannot update decision. End user approval state is already set to ${endUser.approvalState}`,
+      );
+    }
+
+    return await this.repository.updateById(id, {
+      data: {
+        approvalState: decision,
       },
     });
   }

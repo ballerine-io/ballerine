@@ -16,6 +16,20 @@ export const EntityType = {
 
 export const EndUserVariantSchema = z.enum([EntityType.UBO, EntityType.DIRECTOR]);
 
+export const EndUserApprovalState = {
+  NEW: 'NEW',
+  PROCESSING: 'PROCESSING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export const EndUserApprovalStates = [
+  EndUserApprovalState.NEW,
+  EndUserApprovalState.PROCESSING,
+  EndUserApprovalState.APPROVED,
+  EndUserApprovalState.REJECTED,
+] as const;
+
 export const EndUserSchema = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -28,6 +42,7 @@ export const EndUserSchema = z.object({
   phone: z.string().nullable(),
   additionalInfo: z.record(z.string(), z.any()).nullable(),
   amlHits: z.array(HitSchema.extend({ vendor: z.string().optional() })).optional(),
+  approvalState: z.enum(EndUserApprovalStates).optional(),
   individualVerificationsChecks: z
     .object({
       status: z.string(),
@@ -49,6 +64,8 @@ export const EndUserSchema = z.object({
   variant: z.enum(['director', 'ubo']).optional().nullable(),
   createdFrom: z.enum(['user', 'analyst', 'registry']).nullable().optional(),
 });
+
+export type TEndUser = z.output<typeof EndUserSchema>;
 
 export const EndUsersSchema = z.array(EndUserSchema);
 
@@ -73,4 +90,28 @@ export const getEndUsersByIds = async ({ ids }: { ids: string[] }) => {
   });
 
   return handleZodError(error, endUsers);
+};
+
+export type TIndividualDecision =
+  | `${typeof EndUserApprovalState.APPROVED}`
+  | `${typeof EndUserApprovalState.REJECTED}`;
+
+export const updateIndividualApprovalDecision = async ({
+  endUserId,
+  decision,
+}: {
+  endUserId: string;
+  decision: TIndividualDecision;
+}) => {
+  const [response, error] = await apiClient({
+    endpoint: `end-users/${endUserId}/decision`,
+    method: Method.POST,
+    schema: EndUserSchema,
+    body: {
+      endUserId,
+      decision,
+    },
+  });
+
+  return handleZodError(error, response);
 };
