@@ -48,7 +48,7 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
       ...searchParams,
       page: nextPage.toString(),
     });
-  }, [searchParams, totalPages]);
+  }, [searchParams, page]);
 
   const onPrevPage = useCallback(() => {
     const nextPage = page - 1;
@@ -57,7 +57,7 @@ export const usePagination = ({ totalPages }: { totalPages: number }) => {
       ...searchParams,
       page: nextPage.toString(),
     });
-  }, [searchParams]);
+  }, [searchParams, page]);
 
   return {
     page,
