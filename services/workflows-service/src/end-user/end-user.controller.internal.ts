@@ -13,6 +13,7 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import type { InputJsonValue, TProjectIds } from '@/types';
 import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { EndUserDecisionDto } from './dtos/end-user-decision';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/end-users')
@@ -58,5 +59,17 @@ export class EndUserControllerInternal {
 
       throw err;
     }
+  }
+
+  @common.Post(':id/decision')
+  @swagger.ApiOkResponse({ type: EndUserModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse()
+  async updateDecisionById(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Param() params: EndUserWhereUniqueInput,
+    @common.Body() body: EndUserDecisionDto,
+  ) {
+    return this.service.updateDecisionById(params?.id, body.decision, projectIds);
   }
 }
