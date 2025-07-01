@@ -20,7 +20,6 @@ import {
   DocumentStatus,
   EndUserVariant,
   UiDefinition,
-  WorkflowRuntimeData,
 } from '@prisma/client';
 import { findEntityFieldsDefinition } from '../helpers/find-entity-fields-definition';
 import { findDocumentDefinitionByTypeAndCategory } from '../helpers/find-document-definition-by-type-and-category';
@@ -38,6 +37,7 @@ import {
 } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
+import { CollectionFlowUtilityService } from './сollection-flow-utility/collection-flow-utility.service';
 
 @Injectable()
 export class CollectionFlowStateService {
@@ -49,6 +49,7 @@ export class CollectionFlowStateService {
     protected readonly workflowService: WorkflowService,
     protected readonly appLogger: AppLoggerService,
     protected readonly prismaService: PrismaService,
+    protected readonly collectionFlowUtilityService: CollectionFlowUtilityService,
   ) {}
 
   async getCollectionFlowState(workflowId: string, projectIds: TProjectIds) {
@@ -60,6 +61,15 @@ export class CollectionFlowStateService {
     );
 
     const collectionFlowState = getCollectionFlowState(workflowWithRelations.context);
+    const isCollectionFlowStateSupported =
+      await this.collectionFlowUtilityService.isCollectionFlowStateSupported(
+        workflowId,
+        projectIds,
+      );
+
+    if (!isCollectionFlowStateSupported) {
+      return null;
+    }
 
     if (!collectionFlowState) {
       throw new CollectionFlowMissingException();
@@ -279,41 +289,6 @@ export class CollectionFlowStateService {
     }
 
     return collectionFlowState.status;
-  }
-
-  private getEntityIdsFromWorkflow(
-    workflow: WorkflowRuntimeData & {
-      childWorkflowsRuntimeData: WorkflowRuntimeData[];
-    },
-  ): Array<{ entityId: string; entityType: TEntityType }> {
-    const entityIds: Array<{ entityId: string; entityType: TEntityType }> = [
-      {
-        entityId: workflow.context.entity.ballerineEntityId,
-        entityType: EntityType.business,
-      },
-    ];
-
-    workflow.childWorkflowsRuntimeData?.forEach(childWorkflow => {
-      if (!childWorkflow.endUserId) {
-        throw new Error('End user ID not found on child workflow.');
-      }
-
-      entityIds.push({
-        entityId: childWorkflow.endUserId,
-        entityType: EntityType.ubo,
-      });
-    });
-
-    workflow.context?.entity?.data?.additionalInfo?.directors?.forEach(
-      (director: { ballerineEntityId: string }) => {
-        entityIds.push({
-          entityId: director.ballerineEntityId,
-          entityType: EntityType.director,
-        });
-      },
-    );
-
-    return entityIds;
   }
 
   async updateCollectionFlowState(

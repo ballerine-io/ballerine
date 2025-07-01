@@ -49,6 +49,7 @@ import { CollectionFlowStateService } from './services/collection-flow-state.ser
 import { CollectionFlowDocumentsController } from './controllers/collection-flow.documents.controller';
 import { CollectionFlowDocumentsService } from './services/collection-flow-documents.service';
 import { DocumentFileModule } from '@/document-file/document-file.module';
+import { CollectionFlowUtilityModule } from './services/сollection-flow-utility/collection-flow-utility.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { DocumentFileModule } from '@/document-file/document-file.module';
     forwardRef(() => WorkflowModule),
     DocumentModule,
     DocumentFileModule,
+    CollectionFlowUtilityModule,
   ],
   controllers: [
     CollectionFlowController,

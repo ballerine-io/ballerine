@@ -10,6 +10,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { CollectionFlowUtilityModule } from '@/collection-flow/services/сollection-flow-utility/collection-flow-utility.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProjectScopeService } from '@/project/project-scope.service';
     forwardRef(() => WorkflowModule),
     UiDefinitionModule,
     WorkflowDefinitionModule,
+    CollectionFlowUtilityModule,
   ],
   controllers: [DocumentControllerExternal],
   providers: [DocumentService, DocumentRepository, ProjectScopeService],
