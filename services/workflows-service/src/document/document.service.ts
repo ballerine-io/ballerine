@@ -42,10 +42,13 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-import { defaultPrismaTransactionOptions } from '@/prisma/prisma.util';
-import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
+import {
+  defaultPrismaTransactionOptions,
+  beginTransactionIfNotExistCurry,
+} from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
+import { CollectionFlowUtilityService } from '@/collection-flow/services/сollection-flow-utility/collection-flow-utility.service';
 
 @Injectable()
 export class DocumentService {
@@ -58,6 +61,7 @@ export class DocumentService {
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly workflowDefinitionService: WorkflowDefinitionService,
     protected readonly prismaService: PrismaService,
+    protected readonly collectionFlowUtilityService: CollectionFlowUtilityService,
   ) {}
 
   async create(
@@ -806,6 +810,23 @@ export class DocumentService {
   }
 
   async getDocumentTrackerByWorkflowId(projectId: TProjectId, workflowId: string) {
+    const defaultTrackerItems = {
+      business: [],
+      individuals: {
+        ubos: [],
+        directors: [],
+      },
+    };
+
+    const isCollectionFlowStateSupported =
+      await this.collectionFlowUtilityService.isCollectionFlowStateSupported(workflowId, [
+        projectId,
+      ]);
+
+    if (!isCollectionFlowStateSupported) {
+      return defaultTrackerItems;
+    }
+
     const uiDefinition = await this.uiDefinitionService.getByRuntimeId(
       workflowId,
       'collection_flow',
@@ -817,13 +838,7 @@ export class DocumentService {
       .safeParse(uiDefinition.uiSchema);
 
     if (!uiSchemaValidation.success) {
-      return {
-        business: [],
-        individuals: {
-          ubos: [],
-          directors: [],
-        },
-      };
+      return defaultTrackerItems;
     }
 
     const workflowDataWithEndUsers = await this.workflowService.getWorkflowByIdWithRelations(
