@@ -1797,15 +1797,22 @@ export class WorkflowService {
         }
 
         if (mergedConfig?.initialEvent) {
-          workflowRuntimeData = await this.event(
-            {
-              id: workflowRuntimeData.id,
-              name: mergedConfig?.initialEvent,
-            },
-            projectIds,
-            currentProjectId,
-            transaction,
-          );
+          const eventArgs = {
+            id: workflowRuntimeData.id,
+            name: mergedConfig.initialEvent,
+          };
+
+          void this.event(eventArgs, projectIds, currentProjectId)
+            .then(res => {
+              this.logger.log('Background event completed');
+              this.logger.log('Args:', { eventArgs, projectIds, currentProjectId });
+              this.logger.log('Result:', res);
+            })
+            .catch(err => {
+              // TODO: Add to queue
+              this.logger.error('Background event error:', err);
+              this.logger.error('Args:', { eventArgs, projectIds, currentProjectId });
+            });
         }
 
         if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
