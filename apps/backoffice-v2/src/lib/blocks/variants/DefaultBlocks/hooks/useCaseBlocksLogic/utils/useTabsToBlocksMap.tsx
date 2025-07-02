@@ -195,7 +195,7 @@ export const useTabsToBlocksMap = ({
         ...additionalInfoRest
       } = additionalInfo ?? {};
       const status = computeIndividualKycCheckStatus({
-        endUser: endUser,
+        endUser,
         tags: childWorkflow?.tags ?? [],
       });
       const kycSession = omitPropsFromObject(
@@ -262,7 +262,7 @@ export const useTabsToBlocksMap = ({
           ({ ids }: { ids: string[] }) =>
           () =>
             mutateIndividualApprovalDecision({
-              endUserId: childWorkflow?.context?.entity?.data?.ballerineEntityId,
+              endUserId: endUser?.id!,
               decision: EndUserApprovalState.APPROVED,
             }),
         onReuploadNeeded:
@@ -422,7 +422,7 @@ export const useTabsToBlocksMap = ({
           const endUser = endUsers?.find(endUser => endUser.id === director.ballerineEntityId);
           const { amlHits, individualVerificationsChecks, ...directorEndUser } = endUser ?? {};
           const status = computeIndividualKycCheckStatus({
-            endUser: endUser,
+            endUser,
             tags: [],
           });
 
@@ -455,7 +455,7 @@ export const useTabsToBlocksMap = ({
         ...personOfInterestEndUser
       } = endUser ?? {};
       const status = computeIndividualKycCheckStatus({
-        endUser: endUser,
+        endUser,
         tags: [],
       });
       const kycSession = omitPropsFromObject(

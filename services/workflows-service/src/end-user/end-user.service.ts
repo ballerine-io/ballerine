@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import type { PrismaTransaction, TProjectId, TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { assertIsValidProjectIds, ProjectScopeService } from '@/project/project-scope.service';
 import { ApprovalState, Business, BusinessPosition, EndUser, Prisma } from '@prisma/client';
 import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@ballerine/common';
 
@@ -118,6 +118,8 @@ export class EndUserService {
   }
 
   async updateDecisionById(id: string, decision: ApprovalState, projectIds: TProjectIds) {
+    assertIsValidProjectIds(projectIds);
+
     const endUser = await this.repository.findById(id, {}, projectIds);
 
     const isApprovedOrRejected = [ApprovalState.APPROVED, ApprovalState.REJECTED].includes(
