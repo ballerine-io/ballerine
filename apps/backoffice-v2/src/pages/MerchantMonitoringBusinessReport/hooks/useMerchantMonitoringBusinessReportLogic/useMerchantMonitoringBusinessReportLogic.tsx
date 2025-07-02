@@ -20,7 +20,7 @@ import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQu
 import { useNotesByNoteable } from '@/domains/notes/hooks/queries/useNotesByNoteable/useNotesByNoteable';
 import { useCreateNoteMutation } from '@/domains/notes/hooks/mutations/useCreateNoteMutation/useCreateNoteMutation';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
-import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
+import { useUpdateOngoingMonitoringStatusMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 
 const ZodDeboardingSchema = z
   .object({
@@ -85,12 +85,12 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
       throw new Error('Business ID is missing');
     }
 
-    return turnOffMonitoringMutation.mutate(businessReport.business.id);
+    return turnOffMonitoringMutation.mutate(businessReport.website.id);
   };
 
   const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
-  const turnOnMonitoringMutation = useToggleMonitoringMutation({
-    state: 'on',
+  const turnOnMonitoringMutation = useUpdateOngoingMonitoringStatusMutation({
+    status: 'active',
     onSuccess: () => {
       void mutateCreateNote({
         content: 'Monitoring turned on',
@@ -111,8 +111,8 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     },
   });
 
-  const turnOffMonitoringMutation = useToggleMonitoringMutation({
-    state: 'off',
+  const turnOffMonitoringMutation = useUpdateOngoingMonitoringStatusMutation({
+    status: 'inactive',
     onSuccess: () => {
       const { reason, userReason } = form.getValues();
       const content = [

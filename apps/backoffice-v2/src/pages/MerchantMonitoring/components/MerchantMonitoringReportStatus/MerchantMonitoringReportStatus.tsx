@@ -42,7 +42,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { getNoteContentForUnsubscribe } from './helpers/get-note-content-for-unsubscribe';
 import { getBaseNoteContent } from './helpers/get-base-note-content';
-import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
+import { useUpdateOngoingMonitoringStatusMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 
 /* TODO: Remove this filtering once completed status is removed */
 const UPDATEABLE_REPORT_STATUSES = _UPDATEABLE_REPORT_STATUSES.filter(
@@ -57,11 +57,11 @@ export const MerchantMonitoringReportStatus = ({
   status,
   reportId,
   className,
-  businessId,
+  websiteId,
 }: {
   reportId?: string;
   className?: string;
-  businessId?: string;
+  websiteId?: string;
   status?: keyof typeof statusToData;
 }) => {
   const { mutateAsync: mutateCreateNote } = useCreateNoteMutation({ disableToast: true });
@@ -69,8 +69,8 @@ export const MerchantMonitoringReportStatus = ({
   const { mutate: mutateUpdateReportStatus, isLoading: isUpdatingReportStatus } =
     useUpdateReportStatusMutation();
   const { mutateAsync: turnOffMonitoringMutation, isLoading: isTurningOffMonitoring } =
-    useToggleMonitoringMutation({
-      state: 'off',
+    useUpdateOngoingMonitoringStatusMutation({
+      status: 'inactive',
       onSuccess: () => {
         form.reset();
         toast.success(t(`toast:business_monitoring_off.success`));
@@ -119,14 +119,14 @@ export const MerchantMonitoringReportStatus = ({
       : getBaseNoteContent(statusReadableText, text);
 
     if (isShouldUnsubscribe) {
-      await turnOffMonitoringMutation(businessId ?? '');
+      await turnOffMonitoringMutation(websiteId ?? '');
     }
 
     mutateUpdateReportStatus({ reportId, status: dialogState.status, text });
 
     void mutateCreateNote({
       content: noteContent,
-      entityId: businessId ?? '',
+      entityId: websiteId ?? '',
       entityType: 'Business',
       noteableId: reportId ?? '',
       noteableType: 'Report',

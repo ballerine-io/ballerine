@@ -81,7 +81,9 @@ export const ReportSchema = z
     status: z.enum([MERCHANT_REPORT_STATUSES[0]!, ...MERCHANT_REPORT_STATUSES.slice(1)]),
     monitoringStatus: z.boolean().nullish(),
     website: z.object({
+      id: z.string(),
       url: z.string().url(),
+      unsubscribedMonitoringAt: z.string().datetime().nullable(),
     }),
     customer: z.object({
       id: z.string(),
@@ -91,7 +93,6 @@ export const ReportSchema = z
     business: z.object({
       id: z.string(),
       correlationId: z.string().nullish(),
-      unsubscribedMonitoringAt: z.string().datetime().nullable(),
     }),
     metadata: z.record(z.string(), z.unknown()).nullish(),
     companyName: z.string().nullish(),

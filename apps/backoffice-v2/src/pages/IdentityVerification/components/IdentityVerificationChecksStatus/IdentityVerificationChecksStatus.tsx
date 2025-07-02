@@ -40,7 +40,7 @@ import { toast } from 'sonner';
 import { t } from 'i18next';
 import { getNoteContentForUnsubscribe } from './helpers/get-note-content-for-unsubscribe';
 import { getBaseNoteContent } from './helpers/get-base-note-content';
-import { useToggleMonitoringMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
+import { useUpdateOngoingMonitoringStatusMutation } from '@/pages/MerchantMonitoringBusinessReport/hooks/useToggleMonitoringMutation/useToggleMonitoringMutation';
 import { IdentityVerificationChecksButton } from './IdentityVerificationChecksButton';
 import { useIdentityVerificationDialog } from './hooks/useIdentityVerificationDialog/useIdentityVerificationDialog';
 import { IdentityVerificationChecksBadge } from './IdentityVerificationChecksBadge';
@@ -70,8 +70,8 @@ export const IdentityVerificationChecksStatus = ({
   const { mutate: mutateUpdateReportStatus, isLoading: isUpdatingReportStatus } =
     useUpdateReportStatusMutation();
   const { mutateAsync: turnOffMonitoringMutation, isLoading: isTurningOffMonitoring } =
-    useToggleMonitoringMutation({
-      state: 'off',
+    useUpdateOngoingMonitoringStatusMutation({
+      status: 'inactive',
       onSuccess: () => {
         form.reset();
         toast.success(t(`toast:business_monitoring_off.success`));

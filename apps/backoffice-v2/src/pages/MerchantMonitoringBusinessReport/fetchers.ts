@@ -4,28 +4,26 @@ import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 
-export type TurnOngoingMonitoringBody = z.infer<typeof TurnOngoingMonitoringBodySchema>;
-export const TurnOngoingMonitoringBodySchema = z.object({
-  state: z.string(),
+export const UpdateOngoingMonitoringStatusBodySchema = z.object({
+  status: z.enum(['active', 'inactive']),
 });
 
-export type TurnOngoingMonitoringResponse = z.infer<typeof TurnOngoingMonitoringResponseSchema>;
-export const TurnOngoingMonitoringResponseSchema = z.object({
-  state: z.string(),
-});
+export type UpdateOngoingMonitoringStatusBody = z.infer<
+  typeof UpdateOngoingMonitoringStatusBodySchema
+>;
 
-export const turnOngoingMonitoring = async ({
-  merchantId,
+export const updateOngoingMonitoringStatus = async ({
+  websiteId,
   body,
 }: {
-  merchantId: string;
-  body: TurnOngoingMonitoringBody;
+  websiteId: string;
+  body: UpdateOngoingMonitoringStatusBody;
 }) => {
   const [data, error] = await apiClient({
-    endpoint: `../external/businesses/${merchantId}/monitoring`,
+    endpoint: `../external/business-reports/websites/${websiteId}/monitoring`,
     method: Method.PATCH,
     body,
-    schema: TurnOngoingMonitoringResponseSchema,
+    schema: z.undefined(),
     timeout: 300_000,
   });
 
