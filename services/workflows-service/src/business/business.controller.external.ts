@@ -5,7 +5,6 @@ import * as swagger from '@nestjs/swagger';
 import { ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import _ from 'lodash';
 
 import { BusinessInformation } from '@/business/dtos/business-information';
 import { BusinessDto } from '@/business/dtos/business.dto';
@@ -15,7 +14,6 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
-import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import type { TProjectId, TProjectIds } from '@/types';
@@ -29,7 +27,6 @@ import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
 import { BusinessCreateDto } from './dtos/business-create';
 import { BusinessFindManyArgs } from './dtos/business-find-many-args';
-import { BusinessMonitoringPatchDto } from './dtos/business-monitoring.patch.dto';
 import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 
 @ApiBearerAuth()
@@ -130,42 +127,6 @@ export class BusinessControllerExternal {
             ? JSON.stringify(data.shareholderStructure)
             : undefined,
         projectId: currentProjectId,
-      },
-    });
-  }
-
-  @common.Patch('/:id/monitoring')
-  @swagger.ApiForbiddenResponse()
-  @swagger.ApiOkResponse({ type: BusinessDto })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async updateOngoingMonitoringState(
-    @common.Param('id') businessId: string,
-    @common.Body() data: BusinessMonitoringPatchDto,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    const business = await this.businessService.getById(
-      businessId,
-      { select: { metadata: true } },
-      [currentProjectId],
-    );
-
-    const metadata = business?.metadata as {
-      featureConfig?: TCustomerWithFeatures['features'];
-    };
-
-    const isEnabled = data.state === 'on';
-    const updatedMetadata = _.merge({}, metadata, {
-      featureConfig: {
-        [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
-          enabled: isEnabled,
-          disabledAt: isEnabled ? null : new Date().getTime(),
-        },
-      },
-    });
-
-    await this.businessService.updateById(businessId, {
-      data: {
-        metadata: updatedMetadata,
       },
     });
   }
