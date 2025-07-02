@@ -26,7 +26,7 @@ import {
 } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 import { computeIndividualKycCheckStatus } from './compute-individual-kyc-check-status';
 import { useMutateIndividualApprovalDecision } from '@/domains/individuals/mutations/useMutateIndividualApprovalDecision/useMutateIndividualApprovalDecision';
-import { EndUserApprovalState } from '@/domains/individuals/fetchers';
+import { EndUserApprovalState, TEndUser } from '@/domains/individuals/fetchers';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -174,9 +174,10 @@ export const useTabsToBlocksMap = ({
       const initiateSanctionsScreeningEvent = getInitiateSanctionsScreeningEvent(
         childWorkflow?.nextEvents ?? [],
       );
-      const endUser = endUsers?.find(
-        endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
-      );
+      const endUser =
+        endUsers?.find(
+          endUser => endUser.id === childWorkflow?.context?.entity?.data?.ballerineEntityId,
+        ) || ({} as TEndUser);
       const {
         amlHits,
         id: _id,
@@ -185,7 +186,7 @@ export const useTabsToBlocksMap = ({
         gender,
         individualVerificationsChecks,
         ...endUserRest
-      } = endUser ?? {};
+      } = endUser;
       const {
         gender: genderAdditionalInfo,
         dateOfBirth: dateOfBirthAdditionalInfo,
@@ -419,8 +420,10 @@ export const useTabsToBlocksMap = ({
             ),
         )
         ?.map(director => {
-          const endUser = endUsers?.find(endUser => endUser.id === director.ballerineEntityId);
-          const { amlHits, individualVerificationsChecks, ...directorEndUser } = endUser ?? {};
+          const endUser =
+            endUsers?.find(endUser => endUser.id === director.ballerineEntityId) ||
+            ({} as TEndUser);
+          const { amlHits, individualVerificationsChecks, ...directorEndUser } = endUser;
           const status = computeIndividualKycCheckStatus({
             endUser,
             tags: [],
@@ -447,7 +450,8 @@ export const useTabsToBlocksMap = ({
     }: NonNullable<
       TWorkflowById['context']['entity']['data']['additionalInfo']['peopleOfInterest']
     >[number]) => {
-      const endUser = endUsers?.find(endUser => endUser.id === ballerineEntityId);
+      const endUser =
+        endUsers?.find(endUser => endUser.id === ballerineEntityId) || ({} as TEndUser);
       const {
         id: _id,
         amlHits,
