@@ -79,7 +79,7 @@ export class DocumentFileRepository {
   async deleteById(
     id: string,
     projectIds: TProjectId[],
-    args?: Prisma.DocumentFileDeleteManyArgs,
+    args?: Omit<Prisma.DocumentFileUpdateManyArgs, 'data'>,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
     return transaction.documentFile.updateMany(
@@ -103,7 +103,7 @@ export class DocumentFileRepository {
   async deleteByDocumentId(
     documentId: string,
     projectIds: TProjectId[],
-    args?: Prisma.DocumentFileDeleteManyArgs,
+    args?: Omit<Prisma.DocumentFileUpdateManyArgs, 'data'>,
     transaction: PrismaTransactionClient = this.prismaService,
   ) {
     return transaction.documentFile.updateMany(
