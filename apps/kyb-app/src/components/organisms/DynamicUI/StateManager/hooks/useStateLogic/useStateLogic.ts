@@ -27,7 +27,6 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
       machineState: machineApi.getState(),
       payload: machineApi.getContext() as CollectionFlowContext,
     }));
-    console.log('new state', machineApi.getState());
   }, [machineApi]);
 
   useEffect(() => {
