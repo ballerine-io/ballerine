@@ -28,7 +28,10 @@ interface ISearchableDropdownProps {
 }
 
 const strictFilter = (value: string, search: string) => {
-  return +value.toLowerCase().includes(search.toLowerCase());
+  const isFound = value.toLowerCase().includes(search.toLowerCase());
+
+  // Command expects filter to return 0 or 1
+  return Number(isFound);
 };
 
 export const SearchableDropdown = ({
