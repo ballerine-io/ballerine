@@ -49,6 +49,8 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
 import { HttpService } from '@nestjs/axios';
+import { isCsvMimetype } from './utils/is-csv-mimetype';
+import { fetchCsvFromUrlAndConvertToBase64 } from './utils/fetch-csv-from-url-and-convert-to-base-64';
 
 @Injectable()
 export class DocumentService {
@@ -1184,9 +1186,9 @@ export class DocumentService {
         files.map(async ({ imageUrl, file, ...fileData }) => {
           let base64: string | undefined;
 
-          if (this.isCsv(fileData) && imageUrl) {
+          if (isCsvMimetype(fileData.mimeType) && imageUrl) {
             try {
-              base64 = await this.fetchCsvFromUrlAndCovertToBase64(imageUrl);
+              base64 = await fetchCsvFromUrlAndConvertToBase64(imageUrl);
             } catch (error) {
               console.error(`Failed to fetch CSV and convert to base64 file ${file.id}:`, error);
             }
@@ -1210,23 +1212,6 @@ export class DocumentService {
     });
 
     return Promise.all(formatPromises);
-  }
-
-  private isCsv(file: { mimeType: string | null }) {
-    return file.mimeType === 'text/csv' || file.mimeType === 'application/csv';
-  }
-
-  private async fetchCsvFromUrlAndCovertToBase64(csvUrl: string) {
-    const response = await this.httpService.axiosRef.get(csvUrl, {
-      responseType: 'arraybuffer',
-    });
-    const buffer = response.data;
-    const base64 = Buffer.from(buffer).toString('base64');
-    const contentType = response.headers['content-type'];
-
-    const base64Result = `data:${contentType};base64,${base64}`;
-
-    return base64Result;
   }
 
   getLatestDocumentVersions(documents: Document[]) {
