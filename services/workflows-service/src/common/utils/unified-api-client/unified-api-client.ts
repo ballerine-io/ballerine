@@ -165,24 +165,11 @@ export class UnifiedApiClient {
   }
 
   public formatBusiness(business: BusinessPayload) {
-    const metadata = business.metadata as unknown as {
-      featureConfig: TCustomerWithFeatures['features'];
-      lastOngoingReportInvokedAt: number;
-    } | null;
-
-    const unsubscribedMonitoringAt = metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]
-      ?.disabledAt
-      ? new Date(metadata.featureConfig[FEATURE_LIST.ONGOING_MERCHANT_REPORT]!.disabledAt!)
-      : metadata?.featureConfig?.[FEATURE_LIST.ONGOING_MERCHANT_REPORT]?.enabled === false
-      ? new Date()
-      : null;
-
     return {
       id: business.id,
       correlationId: business.correlationId,
       companyName: business.companyName,
       customerId: business.project.customer.id,
-      unsubscribedMonitoringAt: unsubscribedMonitoringAt?.toISOString() ?? null,
       createdAt: business.createdAt.toISOString(),
       updatedAt: business.updatedAt.toISOString(),
     };

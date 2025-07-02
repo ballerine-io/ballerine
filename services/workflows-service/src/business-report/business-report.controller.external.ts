@@ -42,6 +42,7 @@ import {
 import { BusinessReportMetricsDto } from './dtos/business-report-metrics-dto';
 import { BusinessReportStatusUpdateRequestParamsDto } from '@/business-report/dtos/business-report-status-update.dto';
 import { UserData } from '@/user/user-data.decorator';
+import { OngoingMonitoringPatchDto } from './dtos/ongoing-monitoring.patch.dto';
 
 @ApiBearerAuth()
 @swagger.ApiTags('Business Reports')
@@ -441,5 +442,23 @@ export class BusinessReportControllerExternal {
     res.status(201);
     res.setHeader('content-type', 'application/json');
     res.send(result);
+  }
+
+  @common.Patch('/websites/:websiteId/monitoring')
+  @swagger.ApiForbiddenResponse()
+  @swagger.ApiOkResponse()
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  async updateOngoingMonitoringState(
+    @common.Param('websiteId') websiteId: string,
+    @common.Body() data: OngoingMonitoringPatchDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const { id: customerId } = await this.customerService.getByProjectId(currentProjectId);
+
+    await this.merchantMonitoringClient.updateOngoingMonitoring({
+      customerId,
+      websiteId,
+      status: data.status,
+    });
   }
 }

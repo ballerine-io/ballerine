@@ -273,6 +273,20 @@ export class MerchantMonitoringClient {
     });
   }
 
+  public async updateOngoingMonitoring({
+    customerId,
+    websiteId,
+    status,
+  }: {
+    customerId: string;
+    websiteId: string;
+    status: 'active' | 'inactive';
+  }) {
+    await this.axios.put(`customers/${customerId}/websites/${websiteId}`, {
+      unsubscribedMonitoringAt: status === 'active' ? null : new Date().toISOString(),
+    });
+  }
+
   public async getMetrics({
     customerId,
     from,
