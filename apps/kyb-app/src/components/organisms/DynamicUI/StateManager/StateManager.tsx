@@ -80,12 +80,10 @@ export const StateManager = ({
   }, [
     prevAdditionalContextRef,
     additionalContext,
-    stateMachine,
     workflowId,
     definition,
     definitionType,
     extensions,
-    initialContext,
   ]);
 
   const reinitializeStateMachineWithNewState = useCallback(
