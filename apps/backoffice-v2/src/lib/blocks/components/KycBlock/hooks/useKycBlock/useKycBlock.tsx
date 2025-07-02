@@ -29,7 +29,7 @@ import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
 import { systemCreatedIconCell, userCreatedIconCell } from '@/lib/blocks/utils/constants';
 import {
-  INDIVIDUAL_KYC_CHECK_STATUS_ENUM,
+  IndividualKycCheckStatus,
   TIndividualKycCheckStatus,
 } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/compute-individual-kyc-check-status';
 
@@ -304,7 +304,7 @@ export const useKycBlock = ({
   const badgeClassNames = 'text-sm font-bold';
 
   const getDecisionStatusOrAction = (status: TIndividualKycCheckStatus | undefined) => {
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.REVISION) {
+    if (status === IndividualKycCheckStatus.REVISION) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -319,7 +319,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.APPROVED) {
+    if (status === IndividualKycCheckStatus.APPROVED) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -334,7 +334,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.REJECTED) {
+    if (status === IndividualKycCheckStatus.REJECTED) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -349,7 +349,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING) {
+    if (status === IndividualKycCheckStatus.PENDING) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
