@@ -160,5 +160,8 @@
     "success": "Assessment status updated successfully.",
     "unexpected_error": "Something went wrong while updating the status of the assessment.",
     "error": "Error occurred while updating assessment status."
+  },
+  "common": {
+    "unexpected_error": "Something went wrong. Please try again later."
   }
 }
