@@ -1181,15 +1181,24 @@ export class DocumentService {
         documentSchema,
       );
       const filesWithBase64 = await Promise.all(
-        files.map(async ({ imageUrl, file, ...fileData }) => ({
-          ...fileData,
-          imageUrl,
-          fileName: file.fileName,
-          base64:
-            this.isCsv(fileData) && imageUrl
-              ? await this.fetchCsvFromUrlAndCovertToBase64(imageUrl)
-              : undefined,
-        })),
+        files.map(async ({ imageUrl, file, ...fileData }) => {
+          let base64: string | undefined;
+
+          if (this.isCsv(fileData) && imageUrl) {
+            try {
+              base64 = await this.fetchCsvFromUrlAndCovertToBase64(imageUrl);
+            } catch (error) {
+              console.error(`Failed to fetch CSV and convert to base64 file ${file.id}:`, error);
+            }
+          }
+
+          return {
+            ...fileData,
+            imageUrl,
+            fileName: file.fileName,
+            base64,
+          };
+        }),
       );
 
       return {
