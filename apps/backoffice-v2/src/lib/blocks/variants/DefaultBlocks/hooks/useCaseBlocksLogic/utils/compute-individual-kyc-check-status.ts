@@ -29,13 +29,7 @@ const getStatusFromTags = (tags: string[]) => {
   }
 };
 
-export const computeIndividualKycCheckStatus = ({
-  endUser,
-  tags,
-}: {
-  endUser?: TEndUser;
-  tags: TWorkflowById['tags'];
-}): TIndividualKycCheckStatus | undefined => {
+const getStatusFromEndUser = (endUser: TEndUser) => {
   if (endUser?.individualVerificationsChecks?.status === 'in-progress') {
     return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING;
   }
@@ -44,7 +38,7 @@ export const computeIndividualKycCheckStatus = ({
     !endUser?.approvalState ||
     [EndUserApprovalState.NEW, EndUserApprovalState.PROCESSING].includes(endUser?.approvalState)
   ) {
-    return getStatusFromTags(tags || []);
+    return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING;
   }
 
   if (endUser?.approvalState === EndUserApprovalState.APPROVED) {
@@ -52,6 +46,43 @@ export const computeIndividualKycCheckStatus = ({
   }
 
   if (endUser?.approvalState === EndUserApprovalState.REJECTED) {
+    return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.REJECTED;
+  }
+};
+
+export const computeIndividualKycCheckStatus = ({
+  endUser,
+  tags,
+}: {
+  endUser: TEndUser;
+  tags: TWorkflowById['tags'];
+}): TIndividualKycCheckStatus | undefined => {
+  if (endUser?.individualVerificationsChecks?.status === 'in-progress') {
+    return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING;
+  }
+
+  const statusFromTags = getStatusFromTags(tags || []);
+  const endUserStatus = getStatusFromEndUser(endUser);
+
+  const isPending = [endUserStatus, statusFromTags].includes(
+    INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING,
+  );
+  const isApproved = [endUser.approvalState, statusFromTags].includes(
+    EndUserApprovalState.APPROVED,
+  );
+  const isRejected = [endUser.approvalState, statusFromTags].includes(
+    EndUserApprovalState.REJECTED,
+  );
+
+  if (isPending) {
+    return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING;
+  }
+
+  if (isApproved) {
+    return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.APPROVED;
+  }
+
+  if (isRejected) {
     return INDIVIDUAL_KYC_CHECK_STATUS_ENUM.REJECTED;
   }
 };
