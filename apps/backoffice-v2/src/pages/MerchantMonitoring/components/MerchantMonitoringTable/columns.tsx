@@ -194,7 +194,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
           return (
             <ContentTooltip
               description={
-                <p>This merchant is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
+                <p>This website is {!value && 'not '}subscribed to recurring ongoing monitoring</p>
               }
               props={{
                 tooltipTrigger: { className: 'flex w-full justify-start' },
@@ -225,7 +225,7 @@ export const useColumns = ({ isDemoAccount = false }) => {
         },
         header: () => (
           <ContentTooltip
-            description={<p>Indicates whether the merchant is subscribed to ongoing monitoring</p>}
+            description={<p>Indicates whether the website is subscribed to ongoing monitoring</p>}
             props={{
               tooltipTrigger: { className: 'mx-auto' },
               tooltipContent: { align: 'center', side: 'top' },

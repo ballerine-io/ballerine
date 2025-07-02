@@ -183,7 +183,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             <MerchantMonitoringReportStatus
               reportId={businessReport?.id}
               status={businessReport?.status}
-              businessId={businessReport?.business.id}
+              websiteId={businessReport?.website.id}
             />
           </div>
           <div className={`text-sm`}>

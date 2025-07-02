@@ -2,22 +2,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { HttpError } from '@/common/errors/http-error';
-import { turnOngoingMonitoring } from '@/pages/MerchantMonitoringBusinessReport/fetchers';
+import { updateOngoingMonitoringStatus } from '@/pages/MerchantMonitoringBusinessReport/fetchers';
 
-export const useToggleMonitoringMutation = ({
-  state,
+export const useUpdateOngoingMonitoringStatusMutation = ({
+  status,
   onSuccess,
   onError,
 }: {
-  state: 'on' | 'off';
+  status: 'active' | 'inactive';
   onSuccess?: (data: unknown) => void;
   onError?: (error: unknown) => void;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (merchantId: string) =>
-      turnOngoingMonitoring({ merchantId, body: { state } }),
+    mutationFn: async (websiteId: string) =>
+      updateOngoingMonitoringStatus({ websiteId, body: { status } }),
     onSuccess: data => {
       void queryClient.invalidateQueries();
 

@@ -28,7 +28,7 @@ export const BusinessReportSchema = ReportSchema.transform(data => {
   return {
     ...data,
     status: data.status in statusOverrides ? statusOverrides[data.status] : data.status,
-    website: data.website.url,
+    website: data.website,
     riskLevel: isReportReady ? data.riskLevel : null,
     data: isReportReady ? data?.data : null,
     isExample: data.metadata?.isExample ?? false,

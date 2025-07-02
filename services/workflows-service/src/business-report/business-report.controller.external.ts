@@ -159,7 +159,7 @@ export class BusinessReportControllerExternal {
       data: data.map(report => ({
         ...report,
         monitoringStatus:
-          report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
+          report.customer.ongoingMonitoringEnabled && !report.website.unsubscribedMonitoringAt,
       })),
     };
   }
@@ -371,7 +371,7 @@ export class BusinessReportControllerExternal {
     return {
       ...report,
       monitoringStatus:
-        report.customer.ongoingMonitoringEnabled && !report.business.unsubscribedMonitoringAt,
+        report.customer.ongoingMonitoringEnabled && !report.website.unsubscribedMonitoringAt,
     };
   }
 

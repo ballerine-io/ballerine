@@ -221,7 +221,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
                   throw new Error('Business ID is missing');
                 }
 
-                turnOngoingMonitoringOn(businessReport.business.id, {
+                turnOngoingMonitoringOn(businessReport.website.id, {
                   onSuccess: () => {
                     setIsDeboardModalOpen(false);
                     setIsDropdownOpen(false);
