@@ -304,7 +304,7 @@ export const useKycBlock = ({
   const badgeClassNames = 'text-sm font-bold';
 
   const getDecisionStatusOrAction = (status: TIndividualKycCheckStatus | undefined) => {
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.revision) {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.REVISION) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -319,7 +319,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.approved) {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.APPROVED) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -334,7 +334,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.rejected) {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.REJECTED) {
       return createBlocksTyped()
         .addBlock()
         .addCell({
@@ -349,7 +349,7 @@ export const useKycBlock = ({
         .buildFlat();
     }
 
-    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.pending) {
+    if (status === INDIVIDUAL_KYC_CHECK_STATUS_ENUM.PENDING) {
       return createBlocksTyped()
         .addBlock()
         .addCell({

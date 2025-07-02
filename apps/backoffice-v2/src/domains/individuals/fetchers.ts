@@ -93,8 +93,8 @@ export const getEndUsersByIds = async ({ ids }: { ids: string[] }) => {
 };
 
 export type TIndividualDecision =
-  | `${typeof EndUserApprovalState.APPROVED}`
-  | `${typeof EndUserApprovalState.REJECTED}`;
+  | typeof EndUserApprovalState.APPROVED
+  | typeof EndUserApprovalState.REJECTED;
 
 export const updateIndividualApprovalDecision = async ({
   endUserId,
@@ -108,7 +108,6 @@ export const updateIndividualApprovalDecision = async ({
     method: Method.POST,
     schema: EndUserSchema,
     body: {
-      endUserId,
       decision,
     },
   });
