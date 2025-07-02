@@ -9,7 +9,7 @@ export const useUBOFlowsTrackerItems = (endUsers: TWorkflowById['endUsers']) => 
       endUsers?.map(endUser => {
         return {
           text: `${valueOrNA(endUser.firstName)} ${valueOrNA(endUser.lastName)}`,
-          leftIcon: getEndUserFlowStatus(endUser),
+          leftIcon: getEndUserFlowStatus(endUser.individualVerificationsChecks?.status),
         };
       }) || [],
     [endUsers],
