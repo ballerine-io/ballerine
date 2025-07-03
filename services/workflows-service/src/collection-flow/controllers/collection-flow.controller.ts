@@ -155,6 +155,34 @@ export class CollectionFlowController {
     );
   }
 
+  async handleFailedEvent({ tokenScope }: { tokenScope: ITokenScope }): Promise<void> {
+    try {
+      await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            newContext: {
+              collectionFlow: {
+                state: {
+                  status: CollectionFlowStatusesEnum.failed,
+                },
+              },
+            },
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+          },
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+    } catch (error) {
+      this.appLogger.error(error);
+      throw new common.InternalServerErrorException(
+        'Failed to set collection flow state as failed.',
+      );
+    }
+  }
+
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
@@ -201,46 +229,46 @@ export class CollectionFlowController {
         [tokenScope.projectId],
       );
 
-      return this.workflowService.event(
-        {
-          id: tokenScope.workflowRuntimeDataId,
-          name: eventName,
-        },
-        [tokenScope.projectId],
-        tokenScope.projectId,
-      );
+      void this.workflowService
+        .event(
+          { id: tokenScope.workflowRuntimeDataId, name: eventName },
+          [tokenScope.projectId],
+          tokenScope.projectId,
+        )
+        .then(res => {
+          this.appLogger.log('Background event completed');
+          this.appLogger.log('Args:', {
+            id: tokenScope.workflowRuntimeDataId,
+            name: eventName,
+            projectIds: [tokenScope.projectId],
+            currentProjectId: tokenScope.projectId,
+          });
+          this.appLogger.log('Result:', res);
+        })
+        .catch(async err => {
+          // TODO: Add to queue
+          if (err instanceof CollectionFlowMissingException) {
+            throw err;
+          }
+
+          this.appLogger.error('Background event error:', err);
+          this.appLogger.error('Args:', {
+            id: tokenScope.workflowRuntimeDataId,
+            name: eventName,
+            projectIds: [tokenScope.projectId],
+            currentProjectId: tokenScope.projectId,
+          });
+          await this.handleFailedEvent({ tokenScope });
+        });
+
+      return {};
     } catch (error) {
       if (error instanceof CollectionFlowMissingException) {
         throw error;
       }
 
-      try {
-        await this.workflowService.event(
-          {
-            id: tokenScope.workflowRuntimeDataId,
-            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-            payload: {
-              newContext: {
-                collectionFlow: {
-                  state: {
-                    status: CollectionFlowStatusesEnum.failed,
-                  },
-                },
-              },
-              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
-            },
-          },
-          [tokenScope.projectId],
-          tokenScope.projectId,
-        );
-      } catch (error) {
-        this.appLogger.error(error);
-        throw new common.InternalServerErrorException(
-          'Failed to set collection flow state as failed.',
-        );
-      }
+      await this.handleFailedEvent({ tokenScope });
 
-      this.appLogger.error(error);
       throw new common.InternalServerErrorException('Failed to update collection flow state.');
     }
   }
