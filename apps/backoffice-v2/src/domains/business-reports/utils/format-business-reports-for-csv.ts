@@ -168,7 +168,7 @@ export const formatBusinessReportsForCsv = (
       'Merchant ID': report.business?.correlationId || report.business?.id || null,
       'Report ID': report.id || null,
       'Merchant Name': report.companyName || null,
-      'Merchant URL': report.website,
+      'Merchant URL': report.website.url,
       'Risk Level': report.riskLevel || null,
       'Scan Type': REPORT_TYPE_TO_DISPLAY_TEXT[report.reportType] || report.reportType,
       'Monitoring Alert': report.isAlert ? 'Yes' : 'No',

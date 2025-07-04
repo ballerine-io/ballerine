@@ -166,7 +166,7 @@ export const useMerchantMonitoringBusinessReportLogic = () => {
     navigate(-1);
   }, [navigate]);
 
-  const websiteWithNoProtocol = safeUrl(businessReport?.website)?.hostname;
+  const websiteWithNoProtocol = safeUrl(businessReport?.website.url)?.hostname;
   const locale = useLocale();
 
   // Default SPA behavior preserves scroll position on navigation (react-router-dom)
