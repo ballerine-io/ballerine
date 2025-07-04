@@ -2,8 +2,8 @@ import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2019';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TRuleEngine } from '../../types';
 import { jsonSchemaEngineRunner } from './json-schema';
+import { TRule } from '@ballerine/common';
 
 vi.mock('ajv/dist/2019');
 vi.mock('ajv-formats');
@@ -11,8 +11,8 @@ vi.mock('ajv-errors');
 
 describe('jsonSchemaEngineRunner', () => {
   const mockContext = { foo: 'bar' };
-  const mockRule = {
-    engine: 'json-schema' as TRuleEngine,
+  const mockRule: TRule = {
+    engine: 'json-schema',
     value: { type: 'object' },
   };
 

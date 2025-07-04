@@ -1,3 +1,5 @@
+// TODO: Implement typed custom input extends
+//@ts-nocheck
 import { AnyObject } from '@/common';
 import { Input } from '@/components/atoms';
 import { useState } from 'react';

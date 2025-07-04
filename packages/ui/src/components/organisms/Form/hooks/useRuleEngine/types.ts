@@ -1,13 +1,8 @@
-export type TRuleEngineRunner = (context: object, rule: IRule) => boolean;
-export type TRuleEngine = 'json-logic' | 'json-schema';
+import { TRule } from '@ballerine/common';
 
-export interface IRule<TRuleEngines = TRuleEngine, TParams = any> {
-  engine: TRuleEngines;
-  value: unknown;
-  params?: TParams;
-}
+export type TRuleEngineRunner = (context: object, rule: TRule) => boolean;
 
 export interface IRuleExecutionResult {
-  rule: IRule<any, any>;
+  rule: TRule;
   result: boolean;
 }

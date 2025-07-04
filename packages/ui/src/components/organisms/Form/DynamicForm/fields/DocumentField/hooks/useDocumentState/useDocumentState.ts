@@ -1,14 +1,13 @@
 import { useCallback, useState } from 'react';
-import { IFormElement } from '../../../../types';
-import { IDocumentFieldParams } from '../../DocumentField';
 import { IDocument } from '@/components/organisms/Form/DocumentsService/types';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IDocumentState {
   document?: IDocument;
-  element: IFormElement<'documentfield', IDocumentFieldParams>;
+  element: GetUIElementByType<'documentfield'>;
 }
 
-export const useDocumentState = (element: IFormElement<'documentfield', IDocumentFieldParams>) => {
+export const useDocumentState = (element: GetUIElementByType<'documentfield'>) => {
   const [documentState, setDocumentState] = useState<IDocumentState>({
     document: undefined,
     element,

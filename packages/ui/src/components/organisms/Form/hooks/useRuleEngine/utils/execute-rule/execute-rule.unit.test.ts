@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getRuleEngineRunner } from '../../rule-engine.repository';
-import { IRule } from '../../types';
+import { TRule } from '@ballerine/common';
 import { executeRule } from './execute-rule';
 
 vi.mock('../../rule-engine.repository', () => ({
@@ -9,7 +9,7 @@ vi.mock('../../rule-engine.repository', () => ({
 
 describe('executeRule', () => {
   const mockContext = { foo: 'bar' };
-  const mockRule: IRule = {
+  const mockRule: TRule = {
     engine: 'json-logic',
     value: {},
   };

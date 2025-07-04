@@ -1,6 +1,7 @@
 import { jsonLogicEngineRunner } from './engines/json-logic/json-logic';
 import { jsonSchemaEngineRunner } from './engines/json-schema/json-schema';
-import { TRuleEngine, TRuleEngineRunner } from './types';
+import { TRuleEngineRunner } from './types';
+import { TRuleEngine } from '@ballerine/common';
 
 export const ruleEngineRepository: Record<TRuleEngine, TRuleEngineRunner> = {
   'json-logic': jsonLogicEngineRunner,

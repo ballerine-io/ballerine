@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
-import { IFormElement } from '../../../types';
 import { useElementId } from '../../external';
 import { isExactIdMatch } from '../../../helpers/is-exact-id-match/is-exact-id-match';
 import { isMatchAsWildcard } from '../../../helpers/is-match-as-wildcard/is-match-as-wildcard';
+import { TUIElement } from '@ballerine/common';
 
-export const usePriorityFields = (element: IFormElement<string, any>) => {
+export const usePriorityFields = (element: TUIElement) => {
   const { priorityFields, priorityFieldsParams = { behavior: 'disableOthers' } } = useDynamicForm();
 
   const { stack } = useStack();

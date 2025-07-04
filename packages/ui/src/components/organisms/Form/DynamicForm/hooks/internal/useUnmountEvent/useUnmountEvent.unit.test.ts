@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IFormElement } from '../../../types';
 import { useEvents } from '../useEvents';
 import { useUnmount } from '../useUnmount';
 import { useUnmountEvent } from './useUnmountEvent';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../useEvents');
 vi.mock('../useUnmount');
@@ -18,7 +18,7 @@ describe('useUnmountEvent', () => {
   });
 
   it('should call useEvents with provided element', () => {
-    const element = { id: 'test-id' } as IFormElement;
+    const element = { id: 'test-id' } as TUIElement;
 
     renderHook(() => useUnmountEvent(element));
 
@@ -26,7 +26,7 @@ describe('useUnmountEvent', () => {
   });
 
   it('should call sendEvent with onUnmount when unmounted', () => {
-    const element = { id: 'test-id' } as IFormElement;
+    const element = { id: 'test-id' } as TUIElement;
 
     renderHook(() => useUnmountEvent(element));
 
@@ -34,7 +34,7 @@ describe('useUnmountEvent', () => {
   });
 
   it('should call useUnmount with callback function', () => {
-    const element = { id: 'test-id' } as IFormElement;
+    const element = { id: 'test-id' } as TUIElement;
 
     renderHook(() => useUnmountEvent(element));
 

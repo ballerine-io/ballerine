@@ -2,16 +2,16 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
-import { IFormElement } from '../../../types';
 import { useElementId } from '../../external';
 import { usePriorityFields } from './usePriorityFields';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../../context');
 vi.mock('../../../fields/FieldList/providers/StackProvider');
 vi.mock('../../external');
 
 describe('usePriorityFields', () => {
-  const mockElement = { id: 'test-element' } as IFormElement<string, any>;
+  const mockElement = { id: 'test-element', element: 'textfield', params: {} } as TUIElement;
   const mockStack = [1, 2];
 
   beforeEach(() => {

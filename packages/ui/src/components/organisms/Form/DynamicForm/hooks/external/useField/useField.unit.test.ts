@@ -3,14 +3,14 @@ import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useValidator } from '../../../../Validator';
 import { IDynamicFormContext, useDynamicForm } from '../../../context';
-import { ICommonFieldParams, IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
-import { IFormEventElement } from '../../internal/useEvents/types';
+import { TFormEventElement } from '../../internal/useEvents/types';
 import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
 import { useField } from './useField';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('@/components/organisms/Form/hooks', () => ({
   useRuleEngine: vi.fn(),
@@ -49,8 +49,8 @@ describe('useField', () => {
     id: 'test-field',
     valueDestination: 'test.path',
     disable: [],
-    element: {} as IFormEventElement<string>,
-  } as unknown as IFormElement<string, ICommonFieldParams>;
+    element: {} as TFormEventElement,
+  } as unknown as TUIElement;
 
   const mockStack = [1, 2];
 
@@ -172,7 +172,7 @@ describe('useField', () => {
       const elementWithSyncEvents = {
         ...mockElement,
         params: { syncEvents: true },
-      };
+      } as unknown as TUIElement;
 
       const { result } = renderHook(() => useField(elementWithSyncEvents, mockStack));
 
@@ -341,7 +341,7 @@ describe('useField', () => {
       const element = {
         ...mockElement,
         disable: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-      } as IFormElement<string, any>;
+      } as TUIElement;
 
       renderHook(() => useField(element, mockStack));
 

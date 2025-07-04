@@ -1,4 +1,4 @@
-import { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents/types';
+import { TElementEvent, TFormEventElement } from '../hooks/internal/useEvents/types';
 import { IFieldHelpers } from '../hooks/internal/useFieldHelpers/types';
 import { ITouchedState } from '../hooks/internal/useTouched';
 import {
@@ -10,7 +10,7 @@ import {
 } from '../types';
 
 export interface IDynamicFormCallbacks {
-  onEvent?: (eventName: TElementEvent, element: IFormEventElement<any, any>) => void;
+  onEvent?: (eventName: TElementEvent, element: TFormEventElement) => void;
 }
 
 export interface IDynamicFormContext<TValues extends object> {

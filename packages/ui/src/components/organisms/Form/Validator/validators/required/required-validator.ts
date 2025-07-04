@@ -1,7 +1,7 @@
 import { TValidator } from '../../types';
-import { IRequiredValueValidatorParams } from './types';
+import { TRequiredValidatorParams } from '@ballerine/common';
 
-export const requiredValueValidator: TValidator<unknown, IRequiredValueValidatorParams> = (
+export const requiredValueValidator: TValidator<unknown, TRequiredValidatorParams> = (
   value,
   params,
 ) => {

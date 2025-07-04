@@ -7,9 +7,9 @@ import { useElement, useField } from '../../hooks/external';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { IRadioFieldParams, RadioField } from './RadioField';
+import { RadioField } from './RadioField';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('../../hooks/external', () => ({
   useField: vi.fn(),
@@ -41,15 +41,16 @@ vi.mock('../../context', () => ({
 }));
 
 describe('RadioField', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'radiofield'> = {
     id: 'test-radio',
+    element: 'radiofield',
     params: {
       options: [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
       ],
     },
-  } as IFormElement<string, IRadioFieldParams>;
+  }
 
   const mockStack = { stack: [] };
   const mockFieldProps = {

@@ -6,13 +6,13 @@ import {
   TValidators,
 } from '../../../Validator';
 import { contextBuilders } from '../../context-builders';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 export interface IContextBuildersMap {
   [key: string]: (context: AnyObject, metadata: AnyObject, stack: TDeepthLevelStack) => AnyObject;
 }
 
-const getValueDestination = (element: IFormElement<any>, parent?: IFormElement<any>) => {
+const getValueDestination = (element: TUIElement, parent?: TUIElement) => {
   if (parent?.element === 'entityfieldgroup' && element.element === 'documentfield') {
     return `${parent.valueDestination}[$0]`;
   }
@@ -25,9 +25,9 @@ const getValueDestination = (element: IFormElement<any>, parent?: IFormElement<a
 };
 
 export const buildValidationSchemaFromFormElements = (
-  elements: Array<IFormElement<any>>,
+  elements: Array<TUIElement>,
   schema: IValidationSchema[] = [],
-  parent?: IFormElement<any>,
+  parent?: TUIElement,
 ): IValidationSchema[] => {
   const filteredElements = elements.filter(
     element => element.valueDestination || element.children?.length,

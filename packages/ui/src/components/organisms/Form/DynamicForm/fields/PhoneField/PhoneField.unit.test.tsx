@@ -10,9 +10,9 @@ import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { IPhoneFieldParams, PhoneField } from './PhoneField';
+import { PhoneField } from './PhoneField';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('@/components/atoms', () => ({
   PhoneNumberInput: vi.fn(),
@@ -55,12 +55,12 @@ vi.mock('@/components/organisms/Renderer', () => ({
 }));
 
 describe('PhoneField', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'phonefield'> = {
     id: 'test-phone',
     params: {},
     valueDestination: 'test.path',
     element: 'phonefield',
-  } as unknown as IFormElement<string, IPhoneFieldParams>;
+  }
 
   const mockFieldValues = {
     value: '+1234567890',

@@ -1,8 +1,8 @@
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message';
-import { IMinLengthValueValidatorParams } from './types';
+import { TMinLengthValidatorParams } from '@ballerine/common';
 
-export const minLengthValidator: TValidator<string, IMinLengthValueValidatorParams> = (
+export const minLengthValidator: TValidator<string, TMinLengthValidatorParams> = (
   value,
   params,
 ) => {

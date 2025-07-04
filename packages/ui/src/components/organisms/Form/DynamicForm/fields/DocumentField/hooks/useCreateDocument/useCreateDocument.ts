@@ -1,15 +1,14 @@
 import { TDocumentEntityType } from '@/components/organisms/Form/DocumentsService/types';
-import { IDocumentFieldParams } from '../..';
-import { IFormElement } from '../../../../types';
 import {
   useCreateDocumentMutation,
   useDocument,
 } from '@/components/organisms/Form/DocumentsService';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { GetUIElementByType } from '@ballerine/common';
 
 interface IUseCreateDocumentParams {
-  element: IFormElement<'documentfield', IDocumentFieldParams>;
+  element: GetUIElementByType<'documentfield'>;
   entityType: TDocumentEntityType;
   entityId: string;
 }

@@ -3,17 +3,16 @@ import { useCallback } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
-import { IFormElement } from '../../../../types';
-import { IDocumentFieldParams } from '../../DocumentField';
 import { useDocument, useDocumentFile } from '@/components/organisms/Form/DocumentsService';
 import { useElementId } from '../../../../hooks/external';
 import { useStack } from '../../../FieldList';
 import { useCreateDocument } from '../useCreateDocument';
 import { useReuploadDocument } from '../useReuploadDocument';
+import { GetUIElementByType } from '@ballerine/common';
 
 export const useDocumentUpload = (
-  element: IFormElement<'documentfield', IDocumentFieldParams>,
-  params: IDocumentFieldParams,
+  element: GetUIElementByType<'documentfield'>,
+  params: GetUIElementByType<'documentfield'>['params'],
 ) => {
   const { metadata } = useDynamicForm();
   const { uploadOn = 'change' } = params;

@@ -1,6 +1,5 @@
-import { ICommonFieldParams } from '../../../../types';
+import { TUIElement } from '@ballerine/common';
 
-import { IFormElement } from '../../../../types';
 
 export type TElementEvent =
   | 'onChange'
@@ -11,8 +10,8 @@ export type TElementEvent =
   | 'onClick'
   | 'onUnmount';
 
-export interface IFormEventElement<TElements extends string, TParams = ICommonFieldParams>
-  extends IFormElement<TElements, TParams> {
+
+export type TFormEventElement = TUIElement & {
   formattedValueDestination: string;
   formattedId: string;
 }

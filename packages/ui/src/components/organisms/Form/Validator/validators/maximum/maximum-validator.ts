@@ -1,8 +1,8 @@
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message';
-import { IMaximumValueValidatorParams } from './types';
+import { TMaximumValidatorParams } from '@ballerine/common';
 
-export const maximumValueValidator: TValidator<number, IMaximumValueValidatorParams> = (
+export const maximumValueValidator: TValidator<number, TMaximumValidatorParams> = (
   value,
   params,
 ) => {

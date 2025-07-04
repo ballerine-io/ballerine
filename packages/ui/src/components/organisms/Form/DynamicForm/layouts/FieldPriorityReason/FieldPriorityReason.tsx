@@ -2,10 +2,10 @@ import { createTestId } from '@/components/organisms/Renderer';
 import { InfoIcon } from 'lucide-react';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 interface IFieldPriorityReasonProps {
-  element: IFormElement<any, any>;
+  element: TUIElement;
 }
 
 export const FieldPriorityReason: React.FC<IFieldPriorityReasonProps> = ({ element }) => {

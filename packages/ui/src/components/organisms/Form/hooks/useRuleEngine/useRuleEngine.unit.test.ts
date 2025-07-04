@@ -1,7 +1,8 @@
 import { renderHook } from '@testing-library/react';
 import { waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { IRule, IRuleExecutionResult } from './types';
+import { IRuleExecutionResult } from './types';
+import { TRule } from '@ballerine/common';
 import { useRuleEngine } from './useRuleEngine';
 import { executeRules } from './utils/execute-rules';
 
@@ -22,8 +23,8 @@ describe('useRuleEngine', () => {
   it('should execute rules synchronously when executeRulesSync is true', () => {
     // Arrange
     const context = { foo: 'bar' };
-    const rules: IRule[] = [{ engine: 'json-logic', value: true }];
-    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0] as IRule, result: true }];
+    const rules: TRule[] = [{ engine: 'json-logic', value: true }];
+    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0]!, result: true }];
 
     vi.mocked(executeRules).mockReturnValue(expectedResults);
 
@@ -37,8 +38,8 @@ describe('useRuleEngine', () => {
   it('should execute rules asynchronously when executeRulesSync is false', async () => {
     // Arrange
     const context = { foo: 'bar' };
-    const rules: IRule[] = [{ engine: 'json-logic', value: true }];
-    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0] as IRule, result: true }];
+    const rules: TRule[] = [{ engine: 'json-logic', value: true }];
+    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0]!, result: true }];
 
     vi.mocked(executeRules).mockReturnValue(expectedResults);
 
@@ -67,8 +68,8 @@ describe('useRuleEngine', () => {
   it('should execute rules on initialize when runOnInitialize is true', () => {
     // Arrange
     const context = { foo: 'bar' };
-    const rules: IRule[] = [{ engine: 'json-logic', value: true }];
-    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0] as IRule, result: true }];
+    const rules: TRule[] = [{ engine: 'json-logic', value: true }];
+    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0]!, result: true }];
 
     vi.mocked(executeRules).mockReturnValue(expectedResults);
 
@@ -83,7 +84,7 @@ describe('useRuleEngine', () => {
   it('should convert single rule to array', () => {
     // Arrange
     const context = { foo: 'bar' };
-    const rule: IRule = { engine: 'json-logic', value: true };
+    const rule: TRule = { engine: 'json-logic', value: true };
     const expectedResults: IRuleExecutionResult[] = [{ rule, result: true }];
 
     vi.mocked(executeRules).mockReturnValue(expectedResults);
@@ -100,9 +101,9 @@ describe('useRuleEngine', () => {
   it('should use custom execution delay', async () => {
     // Arrange
     const context = { foo: 'bar' };
-    const rules: IRule[] = [{ engine: 'json-logic', value: true }];
+    const rules: TRule[] = [{ engine: 'json-logic', value: true }];
     const customDelay = 1000;
-    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0] as IRule, result: true }];
+    const expectedResults: IRuleExecutionResult[] = [{ rule: rules[0]!, result: true }];
 
     vi.mocked(executeRules).mockReturnValue(expectedResults);
 

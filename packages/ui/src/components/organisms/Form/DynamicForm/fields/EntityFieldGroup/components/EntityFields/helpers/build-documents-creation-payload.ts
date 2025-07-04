@@ -1,9 +1,7 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { IDocumentFieldParams } from '../../../../DocumentField';
-import { IEntityFieldGroupParams } from '../../../EntityFieldGroup';
 import { IDocumentCreationData } from '@/components/organisms/Form/DocumentsService/types';
 import { formatDocumentId } from '@/components/organisms/Form/DynamicForm/utils/format-document-id';
 import { IEntity } from '../../../types';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IDocumentCreationPayload {
   documentData: IDocumentCreationData;
@@ -16,13 +14,13 @@ export const buildDocumentsCreationPayload = ({
   entities,
   files,
 }: {
-  element: IFormElement<any, IEntityFieldGroupParams>;
+  element: GetUIElementByType<'entityfieldgroup'>;
   entities: IEntity[];
   files: Record<string, File>;
 }): IDocumentCreationPayload[] => {
   const documentElements = element.children?.filter(
     child => child.element === 'documentfield',
-  ) as Array<IFormElement<'documentfield', IDocumentFieldParams>>;
+  ) as Array<GetUIElementByType<'documentfield'>>;
 
   if (!documentElements?.length) return [];
 

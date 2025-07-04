@@ -1,11 +1,11 @@
 import { AnyObject } from '@/common';
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
-import { IEntityFieldGroupParams, TEntityFieldGroupType } from '../../../EntityFieldGroup';
+import { TEntityFieldGroupType } from '../../../EntityFieldGroup';
 import { IEntity } from '../../../types';
 import { transform } from '../utils/transform';
+import { GetUIElementByType } from '@ballerine/common';
 
 export const buildEntityCreationPayload = async (
-  element: IFormElement<any, IEntityFieldGroupParams>,
+  element: GetUIElementByType<'entityfieldgroup'>,
   entity: IEntity,
   context: AnyObject,
 ): Promise<{ entity: IEntity; entityType: TEntityFieldGroupType; ballerineEntityId?: string }> => {

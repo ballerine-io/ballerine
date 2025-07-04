@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
-import { IFormElement } from '../../types';
 import { FieldPriorityReason } from './FieldPriorityReason';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../fields/FieldList/providers/StackProvider');
 vi.mock('../../hooks/internal/usePriorityFields');
@@ -13,8 +13,8 @@ vi.mock('@/components/organisms/Renderer');
 describe('FieldPriorityReason', () => {
   const mockElement = {
     id: 'test-field',
-    element: 'text',
-  } as IFormElement;
+    element: 'textfield',
+  } as TUIElement;
 
   const mockStack = [1, 2];
 

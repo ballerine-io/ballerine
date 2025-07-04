@@ -1,20 +1,20 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { buildValidationSchemaFromFormElements } from '../../../helpers/build-validation-schema-from-form-elements';
-import { IFormElement } from '../../../types';
 import { useValidationSchema } from './useValidationSchema';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../../helpers/build-validation-schema-from-form-elements', () => ({
   buildValidationSchemaFromFormElements: vi.fn(),
 }));
 
 describe('useValidationSchema', () => {
-  const mockElements: IFormElement[] = [
+  const mockElements: TUIElement[] = [
     {
       id: '1',
       valueDestination: 'test',
-      element: 'textinput',
-      validate: [],
+      element: 'textfield',
+      params: {},
     },
   ];
 
@@ -62,10 +62,10 @@ describe('useValidationSchema', () => {
       {
         id: '2',
         valueDestination: 'test2',
-        element: 'textinput',
-        validate: [],
+        element: 'textfield',
+        params: {},
       },
-    ] as IFormElement[];
+    ] as TUIElement[];
 
     const newValidationSchema = [
       {

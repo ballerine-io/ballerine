@@ -1,33 +1,15 @@
 import { AnyObject } from '@/common';
 import { FunctionComponent } from 'react';
-import { IRule } from '../../hooks/useRuleEngine';
-import {
-  ICommonValidator,
-  IValidationError,
-  IValidationParams,
-  TBaseValidators,
-  TValidators,
-} from '../../Validator';
+import { ICommonValidator, IValidationError, IValidationParams } from '../../Validator';
 import { IEventsProviderProps } from '../providers/EventsProvider';
 import { IHttpParams } from '@/common/hooks/useHttp';
+import { TUIElement, TUIElements } from '@ballerine/common';
 
 export interface ICommonFieldParams {
   label?: string;
   placeholder?: string;
   description?: string;
   syncEvents?: boolean;
-}
-
-export interface IFormElement<TElements = string, TParams = object> {
-  id: string;
-  valueDestination: string;
-  element: TElements;
-  defaultValue?: unknown;
-  validate?: TValidators<TBaseValidators | 'document'>;
-  disable?: IRule[];
-  hidden?: IRule[];
-  children?: IFormElement[];
-  params?: TParams;
 }
 
 export interface IFormRef<TValues = object> {
@@ -39,20 +21,17 @@ export interface IFormRef<TValues = object> {
   setFieldTouched: (fieldName: string, isTouched: boolean) => void;
 }
 
-export type TDynamicFormElement<
-  TElements extends string = string,
-  TParams = object,
-> = FunctionComponent<{
-  element: IFormElement<TElements, TParams>;
+export type TDynamicFormElement<TElement extends TUIElement> = FunctionComponent<{
+  element: TElement;
   children?: React.ReactNode | React.ReactNode[];
 }>;
 
-export type TDynamicFormField<TParams = object> = FunctionComponent<{
-  element: IFormElement<string, TParams>;
+export type TDynamicFormField<TElement extends TUIElement> = FunctionComponent<{
+  element: TElement;
   children?: React.ReactNode | React.ReactNode[];
 }>;
 
-export type TElementsMap = Record<string, TDynamicFormElement<any, any>>;
+export type TElementsMap = Record<TUIElements, TUIElement>;
 
 export interface IDynamicFormValidationParams extends IValidationParams {
   validateOnBlur?: boolean;
@@ -72,9 +51,9 @@ export type TCommonHttpParams = Partial<Pick<IHttpParams, 'params' | 'headers'>>
 
 export interface IDynamicFormProps<TValues extends object> {
   values: TValues;
-  elements: Array<IFormElement<string, any>>;
+  elements: Array<TUIElement>;
 
-  fieldExtends?: Record<string, TDynamicFormField<any> | TDynamicFormElement<any, any>>;
+  fieldExtends?: Record<string, TDynamicFormField<TUIElement>>;
   validationParams?: IDynamicFormValidationParams;
   priorityFields?: IPriorityField[];
   priorityFieldsParams?: IPriorityFieldParams;
@@ -92,5 +71,8 @@ export interface IDynamicFormProps<TValues extends object> {
   metadata?: AnyObject;
 }
 
-export type { IFormEventElement, TElementEvent } from '../hooks/internal/useEvents';
+export type {
+  TFormEventElement as IFormEventElement,
+  TElementEvent,
+} from '../hooks/internal/useEvents';
 export type { TBaseFields } from '../repositories';

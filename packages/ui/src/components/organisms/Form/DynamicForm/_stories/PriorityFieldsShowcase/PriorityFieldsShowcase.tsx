@@ -2,9 +2,10 @@ import { AnyObject } from '@/common';
 import { useState } from 'react';
 import { JSONEditorComponent } from '../../../Validator/_stories/components/JsonEditor/JsonEditor';
 import { DynamicFormV2 } from '../../DynamicForm';
-import { IDynamicFormProps, IFormElement } from '../../types';
+import { IDynamicFormProps } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
-const schema: Array<IFormElement<any, any>> = [
+const schema: Array<TUIElement> = [
   {
     id: 'TextField',
     element: 'textfield',
@@ -132,6 +133,22 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'File Field',
       placeholder: 'Select File',
       description: 'Upload a file from your device',
+      httpParams: {
+        createDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+        deleteDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+      },
     },
   },
   {
@@ -155,7 +172,6 @@ const schema: Array<IFormElement<any, any>> = [
         validate: [
           {
             type: 'required',
-            value: {},
             message: 'List item is required',
           },
         ],
@@ -167,7 +183,7 @@ const schema: Array<IFormElement<any, any>> = [
     element: 'submitbutton',
     valueDestination: 'submitbutton',
     params: {
-      label: 'Submit Button',
+      text: 'Submit Button',
     },
   },
 ];

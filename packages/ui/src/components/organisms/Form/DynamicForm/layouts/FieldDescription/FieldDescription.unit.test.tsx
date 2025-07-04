@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import DOMPurify from 'dompurify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IFormElement } from '../../types';
 import { FieldDescription } from './FieldDescription';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('dompurify', () => ({
   default: {
@@ -11,12 +11,11 @@ vi.mock('dompurify', () => ({
 }));
 
 describe('FieldDescription', () => {
-  const mockElement = {
+  const mockElement: TUIElement = {
     id: 'test-field',
-    params: {
-      description: 'Test description',
-    },
-  } as unknown as IFormElement;
+    element: 'textfield',
+    params: {},
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -37,8 +36,9 @@ describe('FieldDescription', () => {
   it('should not render anything when description is not provided', () => {
     const elementWithoutDescription = {
       id: 'test-field',
+      element: 'textfield',
       params: {},
-    } as unknown as IFormElement;
+    } as unknown as TUIElement;
 
     render(<FieldDescription element={elementWithoutDescription} />);
     expect(screen.queryByText(/Test description/)).not.toBeInTheDocument();
@@ -48,7 +48,8 @@ describe('FieldDescription', () => {
   it('should not render anything when params is undefined', () => {
     const elementWithoutParams = {
       id: 'test-field',
-    } as unknown as IFormElement;
+      element: 'textfield',
+    } as unknown as TUIElement;
 
     render(<FieldDescription element={elementWithoutParams} />);
     expect(screen.queryByRole('paragraph')).not.toBeInTheDocument();
@@ -58,10 +59,11 @@ describe('FieldDescription', () => {
   it('should sanitize HTML in description', () => {
     const elementWithHtml = {
       id: 'test-field',
+      element: 'textfield',
       params: {
         description: '<script>alert("xss")</script><p>Safe text</p>',
       },
-    } as unknown as IFormElement;
+    } as unknown as TUIElement;
 
     render(<FieldDescription element={elementWithHtml} />);
     expect(DOMPurify.sanitize).toHaveBeenCalledWith(

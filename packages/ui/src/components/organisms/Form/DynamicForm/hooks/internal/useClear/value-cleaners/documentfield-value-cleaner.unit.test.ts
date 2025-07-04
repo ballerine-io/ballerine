@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT_FIELD_TYPE, IDocumentFieldParams, IDocumentTemplate } from '../../../../fields';
 import { getDocumentObjectFromDocumentsList } from '../../../../fields';
 import { getFileOrFileIdFromDocumentsList } from '../../../../fields/DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
-import { IFormElement, TBaseFields } from '../../../../types';
 import { documentFieldValueCleaner } from './documentfield-value-cleaner';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('@/common/hooks/useHttp', () => ({
   request: vi.fn(),
@@ -30,7 +30,7 @@ vi.mock(
 );
 
 describe('documentFieldValueCleaner', () => {
-  const mockElement: IFormElement<TBaseFields, IDocumentFieldParams> = {
+  const mockElement = {
     id: 'documentfield-1',
     valueDestination: 'documentfield-1',
     element: DOCUMENT_FIELD_TYPE,
@@ -46,7 +46,7 @@ describe('documentFieldValueCleaner', () => {
         },
       } as IDocumentFieldParams['httpParams'],
     } as IDocumentFieldParams,
-  };
+  } as GetUIElementByType<'documentfield'>;
 
   const mockMetadata = { userId: '123' };
 

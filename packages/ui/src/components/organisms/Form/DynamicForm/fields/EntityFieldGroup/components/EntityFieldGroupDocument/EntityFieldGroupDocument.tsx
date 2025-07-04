@@ -11,7 +11,7 @@ import { FieldErrors } from '../../../../layouts/FieldErrors';
 import { FieldLayout } from '../../../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
-import { IFormElement, TDynamicFormElement } from '../../../../types';
+import { TDynamicFormField } from '../../../../types';
 import { IDocumentFieldParams } from '../../../DocumentField';
 import { useDocumentState } from '../../../DocumentField/hooks/useDocumentState/useDocumentState';
 import { useStack } from '../../../FieldList';
@@ -22,15 +22,15 @@ import { useDeleteDocumentFiles } from '../../../DocumentField/hooks/useDeleteDo
 import { useReuploadDocument } from '../../../DocumentField/hooks/useReuploadDocument';
 import { useDocumentFile } from '@/components/organisms/Form/DocumentsService';
 import { useDynamicDocumentDefinition } from '../../../DocumentField/hooks/useDynamicDocumentDefinition';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IEntityFieldGroupDocumentParams extends IDocumentFieldParams {
   type: TEntityFieldGroupType;
 }
 
-export const EntityFieldGroupDocument: TDynamicFormElement<
-  'documentfield',
-  IEntityFieldGroupDocumentParams
-> = ({ element: _element }) => {
+export const EntityFieldGroupDocument: TDynamicFormField<GetUIElementByType<'documentfield'>> = ({
+  element: _element,
+}) => {
   const { uploadOn = 'change' } = _element.params || {};
   const { values } = useDynamicForm();
   const { stack } = useStack();
@@ -46,7 +46,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   }, [values]);
 
   const { documentState, updateState } = useDocumentState(
-    _element as IFormElement<'documentfield', IDocumentFieldParams>,
+    _element,
   );
 
   const { createDocument, isCreatingDocument } = useCreateDocument({
@@ -78,7 +78,7 @@ export const EntityFieldGroupDocument: TDynamicFormElement<
   });
 
   const element = useDynamicDocumentDefinition({
-    element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
+    element: _element,
     document: document ?? undefined,
     entityId: entityId ?? undefined,
     valueDestination: `${entityFieldElement.valueDestination}[$0]`,

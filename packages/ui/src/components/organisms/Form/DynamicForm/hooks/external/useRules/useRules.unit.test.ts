@@ -1,5 +1,5 @@
-import { IRule } from '@/components/organisms/Form/hooks';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
+import { TRule } from '@ballerine/common';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { replaceTagsWithIndexesInRule } from './helpers';
@@ -26,7 +26,7 @@ describe('useRules', () => {
   });
 
   it('should call replaceTagsWithIndexesInRule with provided rules and stack', () => {
-    const rules: IRule[] = [
+    const rules: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -36,7 +36,7 @@ describe('useRules', () => {
     ];
     const stack: TDeepthLevelStack = [1];
 
-    const expectedResult: IRule[] = [
+    const expectedResult: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -55,7 +55,7 @@ describe('useRules', () => {
   });
 
   it('should memoize the result and not call replaceTagsWithIndexesInRule on re-renders if inputs have not changed', () => {
-    const rules: IRule[] = [
+    const rules: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -65,7 +65,7 @@ describe('useRules', () => {
     ];
     const stack: TDeepthLevelStack = [1];
 
-    const expectedResult: IRule[] = [
+    const expectedResult: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -87,7 +87,7 @@ describe('useRules', () => {
   });
 
   it('should call replaceTagsWithIndexesInRule again if rules change', () => {
-    const initialRules: IRule[] = [
+    const initialRules: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -95,7 +95,7 @@ describe('useRules', () => {
         },
       },
     ];
-    const newRules: IRule[] = [
+    const newRules: TRule[] = [
       {
         engine: 'json-logic',
         value: {

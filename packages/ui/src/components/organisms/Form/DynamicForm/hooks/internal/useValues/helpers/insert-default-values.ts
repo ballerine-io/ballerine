@@ -1,12 +1,12 @@
 import { AnyObject } from '@/common';
-import { IFormElement } from '../../../../types';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { formatValueDestination, TDeepthLevelStack } from '@/components/organisms/Form/Validator';
+import { TUIElement } from '@ballerine/common';
 
 export const insertDefaultValues = (
   values: AnyObject,
-  schema?: Array<IFormElement<string, any>>,
+  schema?: Array<TUIElement>,
 ) => {
   if (!Array.isArray(schema)) {
     return values;
@@ -16,7 +16,7 @@ export const insertDefaultValues = (
 
   const insertValuesRecursively = (
     values: AnyObject,
-    schema: Array<IFormElement<string, any>>,
+    schema: Array<TUIElement>,
     stack: TDeepthLevelStack = [],
   ) => {
     schema.forEach(element => {
@@ -24,10 +24,10 @@ export const insertDefaultValues = (
         return;
       }
 
-      const value = get(values, formatValueDestination(element.valueDestination, stack));
+      const value = get(values, formatValueDestination(element.valueDestination!, stack));
 
       if (value === undefined && element.defaultValue !== undefined) {
-        set(values, element.valueDestination, element.defaultValue);
+        set(values, element.valueDestination!, element.defaultValue);
       }
 
       if (element.children && !element.valueDestination) {

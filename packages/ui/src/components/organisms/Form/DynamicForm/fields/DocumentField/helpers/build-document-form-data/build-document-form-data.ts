@@ -1,8 +1,8 @@
-import { IFormElement } from '../../../../types';
-import { IDocumentFieldParams, IDocumentTemplate } from '../../DocumentField';
+import { GetUIElementByType } from '@ballerine/common';
+import { IDocumentTemplate } from '../../DocumentField';
 
 export const buildDocumentFormData = (
-  element: IFormElement<'documentfield', IDocumentFieldParams>,
+  element: GetUIElementByType<'documentfield'>,
   { entityId, businessId }: { entityId?: string; businessId?: string },
   file: File,
   document?: IDocumentTemplate,

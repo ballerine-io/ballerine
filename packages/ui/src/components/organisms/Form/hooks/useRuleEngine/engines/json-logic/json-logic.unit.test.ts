@@ -1,6 +1,6 @@
 import jsonLogic from 'json-logic-js';
 import { describe, expect, it, vi } from 'vitest';
-import { TRuleEngine } from '../../types';
+import { TRuleEngine } from '@ballerine/common';
 import { jsonLogicEngineRunner } from './json-logic';
 
 vi.mock('json-logic-js', () => ({

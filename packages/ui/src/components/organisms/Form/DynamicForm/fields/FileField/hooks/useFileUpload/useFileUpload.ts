@@ -4,14 +4,14 @@ import { useCallback } from 'react';
 import { useElement, useField } from '../../../../hooks/external';
 import { useTaskRunner } from '../../../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../../../providers/TaskRunner/types';
-import { IFormElement } from '../../../../types';
 import { DEFAULT_CREATION_PARAMS } from '../../../DocumentField/defaults';
 import { useStack } from '../../../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../../FileField';
 import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
+import { GetUIElementByType } from '@ballerine/common';
 
 export const useFileUpload = (
-  element: IFormElement<string, IFileFieldParams>,
+  element: GetUIElementByType<'filefield'>,
   params: IFileFieldParams,
 ) => {
   const { uploadOn = 'change' } = params;
@@ -59,7 +59,7 @@ export const useFileUpload = (
             formData.append('file', e.target?.files?.[0] as File);
 
             const result = await run(formData);
-            set(context, element.valueDestination, result);
+            set(context, element.valueDestination!, result);
 
             return context;
           } catch (error) {

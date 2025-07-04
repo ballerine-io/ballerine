@@ -1,8 +1,8 @@
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message';
-import { IPatternValidatorParams } from './types';
+import { TPatternValidatorParams } from '@ballerine/common';
 
-export const patternValueValidator: TValidator<string, IPatternValidatorParams> = (
+export const patternValueValidator: TValidator<string, TPatternValidatorParams> = (
   value,
   params,
 ) => {

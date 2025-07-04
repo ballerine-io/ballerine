@@ -7,9 +7,9 @@ import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { CheckboxListField, ICheckboxListFieldParams } from './CheckboxList';
+import { CheckboxListField } from './CheckboxList';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('@/components/organisms/Renderer', () => ({
   createTestId: vi.fn(),
@@ -76,7 +76,7 @@ describe('CheckboxListField', () => {
     params: {
       options: mockOptions,
     },
-  } as unknown as IFormElement<string, ICheckboxListFieldParams>;
+  } as unknown as GetUIElementByType<'checkboxlistfield'>;
 
   beforeEach(() => {
     cleanup();
@@ -196,7 +196,7 @@ describe('CheckboxListField', () => {
     const emptyElement = {
       ...mockElement,
       params: { options: [] },
-    } as unknown as IFormElement<string, ICheckboxListFieldParams>;
+    } as unknown as GetUIElementByType<'checkboxlistfield'>;
 
     render(<CheckboxListField element={emptyElement} />);
 

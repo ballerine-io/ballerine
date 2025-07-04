@@ -8,10 +8,10 @@ import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { ITextFieldParams, TextField } from './TextField';
+import { TextField } from './TextField';
 import { serializeTextFieldValue } from './helpers';
+import { GetUIElementByType } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('@/components/atoms', () => ({
@@ -77,14 +77,15 @@ vi.mock('../../hooks/internal/usePriorityFields', () => ({
 
 describe('TextField', () => {
   const mockStack = [0];
-  const mockElement = {
+  const mockElement: GetUIElementByType<'textfield'> = {
     id: 'test-field',
+    element: 'textfield',
     params: {
       valueType: 'string',
       style: 'text',
       placeholder: 'Enter text',
     },
-  } as unknown as IFormElement<string, ITextFieldParams>;
+  }
 
   const mockFieldProps = {
     value: '',
@@ -129,7 +130,7 @@ describe('TextField', () => {
     const textAreaElement = {
       ...mockElement,
       params: { ...mockElement.params, style: 'textarea' },
-    } as unknown as IFormElement<string, ITextFieldParams>;
+    } as unknown as GetUIElementByType<'textfield'>;
 
     render(<TextField element={textAreaElement} />);
 
@@ -141,7 +142,7 @@ describe('TextField', () => {
       const numberElement = {
         ...mockElement,
         params: { ...mockElement.params, valueType },
-      } as unknown as IFormElement<string, ITextFieldParams>;
+      } as unknown as GetUIElementByType<'textfield'>;
 
       render(<TextField element={numberElement} />);
 
@@ -224,7 +225,9 @@ describe('TextField', () => {
   it('should use default params when none provided', () => {
     const elementWithoutParams = {
       id: 'test-field',
-    } as unknown as IFormElement<string, ITextFieldParams>;
+      element: 'textfield',
+      params: {},
+    } as unknown as GetUIElementByType<'textfield'>;
 
     render(<TextField element={elementWithoutParams} />);
 
@@ -237,7 +240,7 @@ describe('TextField', () => {
     const textAreaElement = {
       ...mockElement,
       params: { ...mockElement.params, style: 'textarea' },
-    } as unknown as IFormElement<string, ITextFieldParams>;
+    } as unknown as GetUIElementByType<'textfield'>;
 
     render(<TextField element={textAreaElement} />);
 

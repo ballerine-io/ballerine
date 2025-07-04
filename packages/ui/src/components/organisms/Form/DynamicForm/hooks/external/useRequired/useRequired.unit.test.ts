@@ -2,9 +2,9 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
 import { useStack } from '../../../fields';
-import { IFormElement } from '../../../types';
 import { checkIfRequired } from './helpers/check-if-required';
 import { useRequired } from './useRequired';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../../context', () => ({
   useDynamicForm: vi.fn(),
@@ -51,7 +51,7 @@ describe('useRequired', () => {
           message: 'This field is required',
         },
       ],
-    } as unknown as IFormElement<string, object>;
+    } as unknown as TUIElement;
     const context = { someField: true };
     const stack = [1, 2];
     const metadata = { meta: 'data' };
@@ -91,7 +91,7 @@ describe('useRequired', () => {
     } as unknown as ReturnType<typeof useDynamicForm>);
     mockedCheckIfRequired.mockReturnValue(true);
 
-    const { result, rerender } = renderHook(() => useRequired(element, context));
+    const { result, rerender } = renderHook(() => useRequired(element as TUIElement, context));
 
     expect(mockedCheckIfRequired).toHaveBeenCalledTimes(1);
 
@@ -119,7 +119,7 @@ describe('useRequired', () => {
     mockedCheckIfRequired.mockReturnValue(true);
 
     const { result, rerender } = renderHook(
-      ({ element, context }) => useRequired(element, context),
+      ({ element, context }) => useRequired(element as TUIElement, context),
       {
         initialProps: { element, context },
       },
@@ -157,7 +157,7 @@ describe('useRequired', () => {
     } as unknown as ReturnType<typeof useDynamicForm>);
     mockedCheckIfRequired.mockReturnValue(true);
 
-    const { result, rerender } = renderHook(() => useRequired(element, context));
+    const { result, rerender } = renderHook(() => useRequired(element as TUIElement, context));
 
     expect(result.current).toBe(true);
     expect(mockedCheckIfRequired).toHaveBeenCalledTimes(1);
@@ -217,7 +217,7 @@ describe('useRequired', () => {
     } as unknown as ReturnType<typeof useDynamicForm>);
     mockedCheckIfRequired.mockReturnValue(true);
 
-    renderHook(() => useRequired(element, context));
+    renderHook(() => useRequired(element as TUIElement, context));
 
     expect(mockedCheckIfRequired).toHaveBeenCalledWith(
       element,

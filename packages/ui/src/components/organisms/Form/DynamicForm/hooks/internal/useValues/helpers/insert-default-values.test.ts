@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { IFormElement } from '../../../../types';
 import { insertDefaultValues } from './insert-default-values';
+import { TUIElement } from '@ballerine/common';
 
 describe('insertDefaultValues', () => {
   it('should insert default values', () => {
@@ -44,7 +44,7 @@ describe('insertDefaultValues', () => {
           },
         ],
       },
-    ] as Array<IFormElement<string, any>>;
+    ] as Array<TUIElement>;
 
     const result = insertDefaultValues(values, schema);
 
@@ -74,7 +74,7 @@ describe('insertDefaultValues', () => {
         valueDestination: 'firstName',
         defaultValue: 'Doe',
       },
-    ] as Array<IFormElement<string, any>>;
+    ] as Array<TUIElement>;
 
     const result = insertDefaultValues(values, schema);
 

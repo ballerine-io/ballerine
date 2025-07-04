@@ -3,15 +3,15 @@ import { useRuleEngine } from '@/components/organisms/Form/hooks';
 import { TDeepthLevelStack, useValidator } from '@/components/organisms/Form/Validator';
 import { useCallback, useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
-import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useValueDestination } from '../useValueDestination';
+import { GetUIElementByType, TUIElement } from '@ballerine/common';
 
 export const useField = <TValue>(
-  element: IFormElement<any, any>,
+  element: TUIElement,
   stack?: TDeepthLevelStack,
   elementState?: AnyObject,
 ) => {
@@ -56,7 +56,7 @@ export const useField = <TValue>(
       setValue(fieldId, valueDestination, resolvedValue);
 
       if (!ignoreEvent) {
-        if (element?.params?.syncEvents) {
+        if ((element as GetUIElementByType<'checkboxfield'>)?.params?.syncEvents) {
           sendEvent('onChange');
         } else {
           sendEventAsync('onChange');

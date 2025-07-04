@@ -13,6 +13,7 @@ import {
   FILE_FIELD_ELEMENT_TYPE,
   RADIO_FIELD_ELEMENT_TYPE,
   TAGS_FIELD_ELEMENT_TYPE,
+  GetUIElementByType,
 } from '@ballerine/common';
 import { SubmitButton } from '../controls/SubmitButton';
 import { AutocompleteField } from '../fields/AutocompleteField';
@@ -60,7 +61,7 @@ export const getField = <T extends keyof typeof fieldsRepository>(fieldType: T) 
 };
 
 export const extendFieldsRepository = <TNewFields extends string, TParams = unknown>(
-  fields: Record<TNewFields, TDynamicFormField<TParams>>,
+  fields: Record<TNewFields, TDynamicFormField<GetUIElementByType<TNewFields>>>,
 ) => {
   const updatedRepository = { ...fieldsRepository, ...fields };
   fieldsRepository = updatedRepository;
@@ -72,5 +73,5 @@ export const getFieldsRepository = <
   TElements extends string = TBaseFields,
   TParams = unknown,
 >() => {
-  return fieldsRepository as Record<TElements, TDynamicFormField<TParams>>;
+  return fieldsRepository as Record<TElements, TDynamicFormField<GetUIElementByType<TElements>>>;
 };

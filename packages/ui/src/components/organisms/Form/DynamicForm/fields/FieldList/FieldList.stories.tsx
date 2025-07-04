@@ -2,14 +2,14 @@ import { AnyObject } from '@/common';
 import { useState } from 'react';
 import { JSONEditorComponent } from '../../../Validator/_stories/components/JsonEditor/JsonEditor';
 import { DynamicFormV2 } from '../../DynamicForm';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 const initialContext = {
   firstName: 'John',
   lastName: 'Doe',
 };
 
-const schema: Array<IFormElement<any, any>> = [
+const schema: Array<TUIElement> = [
   {
     id: 'users',
     element: 'fieldlist',
@@ -35,7 +35,6 @@ const schema: Array<IFormElement<any, any>> = [
         validate: [
           {
             type: 'required',
-            value: {},
             message: 'Name is required',
           },
         ],
@@ -52,7 +51,6 @@ const schema: Array<IFormElement<any, any>> = [
         validate: [
           {
             type: 'required',
-            value: {},
             message: 'Last name is required',
           },
         ],
@@ -64,7 +62,7 @@ const schema: Array<IFormElement<any, any>> = [
     element: 'submitbutton',
     valueDestination: 'submitbutton',
     params: {
-      label: 'Submit Button',
+      text: 'Submit Button',
     },
   },
 ];

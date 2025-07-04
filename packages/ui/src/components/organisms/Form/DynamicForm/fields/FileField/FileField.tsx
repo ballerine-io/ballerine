@@ -16,7 +16,7 @@ import { ICommonFieldParams, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
-import { TFileFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IFileFieldParams extends ICommonFieldParams {
   uploadOn?: 'change' | 'submit';
@@ -27,7 +27,7 @@ export interface IFileFieldParams extends ICommonFieldParams {
   };
 }
 
-export const FileField: TDynamicFormField<TFileFieldParams> = ({ element }) => {
+export const FileField: TDynamicFormField<GetUIElementByType<'filefield'>> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

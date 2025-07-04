@@ -1,8 +1,8 @@
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message';
-import { IMinimumValueValidatorParams } from './types';
+import { TMinimumValidatorParams } from '@ballerine/common';
 
-export const minimumValueValidator: TValidator<number, IMinimumValueValidatorParams> = (
+export const minimumValueValidator: TValidator<number, TMinimumValidatorParams> = (
   value,
   params,
 ) => {

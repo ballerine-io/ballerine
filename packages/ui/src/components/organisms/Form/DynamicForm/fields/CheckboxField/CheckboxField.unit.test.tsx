@@ -7,9 +7,9 @@ import { useRequired } from '../../hooks/external/useRequired';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { CheckboxField } from './CheckboxField';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('../../context');
 vi.mock('../FieldList/providers/StackProvider');
@@ -26,7 +26,7 @@ describe('CheckboxField', () => {
     params: {
       label: 'Test Label',
     },
-  } as unknown as IFormElement<string, any>;
+  } as unknown as GetUIElementByType<'checkboxfield'>;
 
   const mockOnChange = vi.fn();
   const mockOnFocus = vi.fn();

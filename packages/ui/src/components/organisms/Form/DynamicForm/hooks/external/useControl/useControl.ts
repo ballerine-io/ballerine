@@ -2,11 +2,11 @@ import { useRuleEngine } from '@/components/organisms/Form/hooks/useRuleEngine';
 import { TDeepthLevelStack, useValidator } from '@/components/organisms/Form/Validator';
 import { useCallback, useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
-import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { useRules } from '../useRules';
+import { TUIElement } from '@ballerine/common';
 
-export const useControl = (element: IFormElement<any, any>, stack?: TDeepthLevelStack) => {
+export const useControl = (element: TUIElement, stack?: TDeepthLevelStack) => {
   const { values, validationParams, metadata } = useDynamicForm();
   const { sendEvent } = useEvents(element);
   const { validate } = useValidator();

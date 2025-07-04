@@ -8,10 +8,12 @@ import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { TCheckboxFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 import { TDynamicFormField } from '../../types';
 
-export const CheckboxField: TDynamicFormField<TCheckboxFieldParams> = ({ element }) => {
+export const CheckboxField: TDynamicFormField<GetUIElementByType<'checkboxfield'>> = ({
+  element,
+}) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

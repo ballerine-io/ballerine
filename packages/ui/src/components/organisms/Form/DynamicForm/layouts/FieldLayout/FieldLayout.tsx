@@ -5,10 +5,10 @@ import { useDynamicForm } from '../../context';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement } from '../../hooks/external';
 import { useRequired } from '../../hooks/external/useRequired';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 interface IFieldLayoutProps {
-  element: IFormElement<string, any>;
+  element: TUIElement;
   children: React.ReactNode;
   layout?: 'vertical' | 'horizontal';
   elementState?: AnyObject;
@@ -23,7 +23,7 @@ export const FieldLayout: FunctionComponent<IFieldLayoutProps> = ({
   const { values } = useDynamicForm();
   const { stack } = useStack();
   const { id, hidden } = useElement(element, stack, elementState);
-  const { label } = element.params || {};
+  const { label } = (element.params as { label?: string } | undefined) || {};
   const isRequired = useRequired(element, values);
 
   if (hidden) {

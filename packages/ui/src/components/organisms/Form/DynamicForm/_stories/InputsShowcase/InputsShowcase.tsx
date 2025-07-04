@@ -2,9 +2,9 @@ import { AnyObject } from '@/common';
 import { useState } from 'react';
 import { JSONEditorComponent } from '../../../Validator/_stories/components/JsonEditor/JsonEditor';
 import { DynamicFormV2 } from '../../DynamicForm';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
-const schema: Array<IFormElement<any, any>> = [
+const schema: Array<TUIElement> = [
   {
     id: 'TextField',
     element: 'textfield',
@@ -15,7 +15,7 @@ const schema: Array<IFormElement<any, any>> = [
       description: 'This is a text field for entering any text value',
     },
     validate: [
-      { type: 'required', value: {} },
+      { type: 'required' },
       {
         type: 'minLength',
         value: {
@@ -38,7 +38,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'CheckboxListField',
@@ -53,7 +53,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'DateField',
@@ -63,7 +63,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Date Field',
       description: 'Select a date from the calendar',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'MultiselectField',
@@ -78,7 +78,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'SelectField',
@@ -93,7 +93,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'CheckboxField',
@@ -103,7 +103,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Checkbox Field',
       description: 'Toggle this checkbox for a yes/no selection',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'PhoneField',
@@ -114,7 +114,7 @@ const schema: Array<IFormElement<any, any>> = [
       description: 'Enter a phone number with country code selection',
       defaultCountry: 'il',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'RadioField',
@@ -129,7 +129,7 @@ const schema: Array<IFormElement<any, any>> = [
         { value: 'option3', label: 'Option 3' },
       ],
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'TagsField',
@@ -139,7 +139,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Tags Field',
       description: 'Add multiple tags by typing and pressing enter',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'FileField',
@@ -149,8 +149,24 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'File Field',
       placeholder: 'Select File',
       description: 'Upload a file from your device',
+      httpParams: {
+        createDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+        deleteDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+      },
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'DocumentField-1',
@@ -163,16 +179,18 @@ const schema: Array<IFormElement<any, any>> = [
       pageIndex: 0,
       pageProperty: 'ballerineFileId',
       template: {
-        id: 'document-1',
-        pages: [],
+        type: 'passport',
+        category: 'passport',
+        properties: {},
+        issuer: { country: 'il' },
+        issuingVersion: 1,
+        version: 1,
       },
-      uploadSettings: {
-        url: 'http://localhost:3000/upload',
-        method: 'POST',
-        resultPath: 'filename',
-      },
+      documentType: 'passport',
+      documentVariant: 'passport',
+      uploadOn: 'submit',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'DocumentField-2',
@@ -185,17 +203,18 @@ const schema: Array<IFormElement<any, any>> = [
       pageIndex: 0,
       pageProperty: 'ballerineFileId',
       template: {
-        id: 'document-2',
-        pages: [],
+        type: 'passport',
+        category: 'passport',
+        properties: {},
+        issuer: { country: 'il' },
+        issuingVersion: 1,
+        version: 1,
       },
+      documentType: 'passport',
+      documentVariant: 'passport',
       uploadOn: 'submit',
-      uploadSettings: {
-        url: 'http://localhost:3000/upload',
-        method: 'POST',
-        resultPath: 'filename',
-      },
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
   {
     id: 'FieldList',
@@ -205,7 +224,7 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Field List',
       description: 'A list of repeatable form fields that can be added or removed',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
     children: [
       {
         id: 'Nested-TextField',
@@ -219,7 +238,6 @@ const schema: Array<IFormElement<any, any>> = [
         validate: [
           {
             type: 'required',
-            value: {},
             message: 'List item is required',
           },
         ],
@@ -231,9 +249,9 @@ const schema: Array<IFormElement<any, any>> = [
     element: 'submitbutton',
     valueDestination: 'submitbutton',
     params: {
-      label: 'Submit Button',
+      text: 'Submit Button',
     },
-    validate: [{ type: 'required', value: {} }],
+    validate: [{ type: 'required' }],
   },
 ];
 

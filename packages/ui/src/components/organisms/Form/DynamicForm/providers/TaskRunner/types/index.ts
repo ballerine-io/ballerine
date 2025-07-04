@@ -1,9 +1,9 @@
 import { AnyObject } from '@/common';
-import { IFormElement } from '../../../types';
+import { TUIElement } from '@ballerine/common';
 
 export interface ITask {
   id: string;
-  element: IFormElement;
+  element: TUIElement;
   run: <TContext extends AnyObject>(context: TContext) => Promise<TContext>;
 }
 

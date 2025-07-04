@@ -1,9 +1,8 @@
 import { toTitleCase } from 'string-ts';
-import { IDocumentFieldParams } from '../..';
-import { IFormElement } from '../../../../types';
 import { useMemo } from 'react';
 import { IDocument } from '@/components/organisms/Form/DocumentsService/types';
 import { ICommonValidator } from '@/components/organisms/Form/Validator';
+import { GetUIElementByType } from '@ballerine/common';
 
 export const useDynamicDocumentDefinition = ({
   element,
@@ -11,7 +10,7 @@ export const useDynamicDocumentDefinition = ({
   entityId,
   valueDestination,
 }: {
-  element: IFormElement<'documentfield', IDocumentFieldParams>;
+  element: GetUIElementByType<'documentfield'>;
   document: IDocument | undefined;
   entityId: string | undefined;
   valueDestination: string;
@@ -81,5 +80,5 @@ export const useDynamicDocumentDefinition = ({
     valueDestination,
   ]);
 
-  return elementDefinition as IFormElement<'documentfield', IDocumentFieldParams>;
+  return elementDefinition;
 };

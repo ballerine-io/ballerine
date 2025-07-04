@@ -1,13 +1,13 @@
 import DOMPurify from 'dompurify';
 import { FunctionComponent } from 'react';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 interface IFieldDescriptionProps {
-  element: IFormElement<string, any>;
+  element: TUIElement;
 }
 
 export const FieldDescription: FunctionComponent<IFieldDescriptionProps> = ({ element }) => {
-  const { description } = element.params || {};
+  const { description } = (element.params as { description?: string } | undefined) || {};
 
   if (!description) return null;
 

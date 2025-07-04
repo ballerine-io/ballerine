@@ -1,10 +1,10 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../../../../fields';
 import { useClear } from '../../../../internal/useClear';
 import { useField } from '../../../useField';
 import { useClearValueOnUnmount } from './useClearValueOnUnmount';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../../../internal/useClear');
 vi.mock('../../../../../fields');
@@ -12,7 +12,7 @@ vi.mock('../../../useField');
 
 describe('useClearValueOnUnmount', () => {
   const mockClean = vi.fn();
-  const mockElement = { id: 'test-element' } as IFormElement<any, any>;
+  const mockElement = { id: 'test-element' } as TUIElement;
 
   beforeEach(() => {
     vi.clearAllMocks();

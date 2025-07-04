@@ -13,7 +13,7 @@ import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
-import { IFormElement, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { IFileFieldParams } from '../FileField';
 import { useDocumentState } from './hooks/useDocumentState';
@@ -22,7 +22,7 @@ import { useDynamicForm } from '../../context';
 import { useDeleteDocumentFiles } from './hooks/useDeleteDocument';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { useDynamicDocumentDefinition } from './hooks/useDynamicDocumentDefinition';
-import { TDocumentFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
@@ -56,7 +56,9 @@ export interface IDocumentFieldParams extends Omit<IFileFieldParams, 'httpParams
 
 export const DOCUMENT_FIELD_TYPE = 'documentfield';
 
-export const DocumentField: TDynamicFormField<TDocumentFieldParams> = ({ element: _element }) => {
+export const DocumentField: TDynamicFormField<GetUIElementByType<'documentfield'>> = ({
+  element: _element,
+}) => {
   useMountEvent(_element);
   useUnmountEvent(_element);
 
@@ -76,7 +78,7 @@ export const DocumentField: TDynamicFormField<TDocumentFieldParams> = ({ element
   });
 
   const element = useDynamicDocumentDefinition({
-    element: _element as IFormElement<'documentfield', IDocumentFieldParams>,
+    element: _element,
     document: document ?? undefined,
     entityId: undefined,
     valueDestination: 'entity.ballerineEntityId',
@@ -88,13 +90,8 @@ export const DocumentField: TDynamicFormField<TDocumentFieldParams> = ({ element
   const { placeholder = 'Choose file', acceptFileFormats = ALLOWED_DOCUMENT_FILE_EXTENSIONS } =
     params || {};
   const { removeTask, getTaskById, isRunning } = useTaskRunner();
-  const { documentState, updateState } = useDocumentState(
-    element as IFormElement<'documentfield', IDocumentFieldParams>,
-  );
-  const { handleChange } = useDocumentUpload(
-    element as IFormElement<'documentfield', IDocumentFieldParams>,
-    element.params || ({} as IDocumentFieldParams),
-  );
+  const { documentState, updateState } = useDocumentState(element);
+  const { handleChange } = useDocumentUpload(element, element.params);
 
   useLayoutEffect(() => {
     if (document) {

@@ -1,8 +1,8 @@
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message';
-import { IMaxLengthValueValidatorParams } from './types';
+import { TMaxLengthValidatorParams } from '@ballerine/common';
 
-export const maxLengthValidator: TValidator<string, IMaxLengthValueValidatorParams> = (
+export const maxLengthValidator: TValidator<string, TMaxLengthValidatorParams> = (
   value,
   params,
 ) => {

@@ -1,10 +1,10 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { useChildrenDisabledOnLock } from './useChildrenDisabledOnLock';
+import { TUIElement } from '@ballerine/common';
 
 describe('useChildrenDisabledOnLock', () => {
-  const mockElement: IFormElement = {
+  const mockElement = {
     id: 'test',
     element: 'test',
     valueDestination: 'test',
@@ -28,7 +28,7 @@ describe('useChildrenDisabledOnLock', () => {
       },
     ],
     disable: [],
-  };
+  } as unknown as TUIElement;
 
   it('should return children as-is when not locked', () => {
     const { result } = renderHook(() => useChildrenDisabledOnLock(mockElement, false));
@@ -56,18 +56,18 @@ describe('useChildrenDisabledOnLock', () => {
   });
 
   it('should handle element with no children', () => {
-    const elementWithNoChildren: IFormElement = {
+    const elementWithNoChildren = {
       id: 'test',
       element: 'test',
       valueDestination: 'test',
-    };
+    } as unknown as TUIElement;
 
     const { result } = renderHook(() => useChildrenDisabledOnLock(elementWithNoChildren, true));
     expect(result.current).toEqual([]);
   });
 
   it('should preserve existing disable rules when locking', () => {
-    const elementWithExistingDisable: IFormElement = {
+    const elementWithExistingDisable = {
       id: 'test',
       element: 'test',
       valueDestination: 'test',
@@ -84,7 +84,7 @@ describe('useChildrenDisabledOnLock', () => {
           ],
         },
       ],
-    };
+    } as unknown as TUIElement;
 
     const { result } = renderHook(() =>
       useChildrenDisabledOnLock(elementWithExistingDisable, true),

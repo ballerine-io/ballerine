@@ -4,8 +4,8 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
 import { useEventsDispatcher } from '../../../providers/EventsProvider';
-import { IFormEventElement } from './types';
 import { useEvents } from './useEvents';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('@/components/organisms/Form/Validator/utils/format-id');
 vi.mock('@/components/organisms/Form/Validator/utils/format-value-destination');
@@ -21,8 +21,9 @@ describe('useEvents', () => {
   const mockElement = {
     id: 'test-id',
     valueDestination: 'test.destination',
-    element: 'textinput',
-  } as IFormEventElement<any, any>;
+    element: 'textfield',
+    params: {},
+  } as TUIElement;
 
   const mockOnEvent = vi.fn();
   const mockStack = [0, 0];

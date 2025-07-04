@@ -1,11 +1,11 @@
-import { IRule } from '@/components/organisms/Form/hooks';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
+import { TRule } from '@ballerine/common';
 import { describe, expect, it } from 'vitest';
 import { replaceTagsWithIndexesInRule } from './helpers';
 
 describe('replaceTagsWithIndexesInRule', () => {
   it('should return original rules if stack is empty', () => {
-    const rules: IRule[] = [
+    const rules: TRule[] = [
       {
         engine: 'json-logic',
         value: {},
@@ -17,7 +17,7 @@ describe('replaceTagsWithIndexesInRule', () => {
   });
 
   it('should return original rules if stack is undefined', () => {
-    const rules: IRule[] = [
+    const rules: TRule[] = [
       {
         engine: 'json-logic',
         value: {},
@@ -29,7 +29,7 @@ describe('replaceTagsWithIndexesInRule', () => {
   });
 
   it('should replace tags with stack indexes in rules', () => {
-    const rules: IRule[] = [
+    const rules: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -46,7 +46,7 @@ describe('replaceTagsWithIndexesInRule', () => {
 
     const stack = [1, 2];
 
-    const expected: IRule[] = [
+    const expected: TRule[] = [
       {
         engine: 'json-logic',
         value: {
@@ -66,7 +66,7 @@ describe('replaceTagsWithIndexesInRule', () => {
   });
 
   it('shold keep original rules if stack is empty', () => {
-    const rules: IRule[] = [
+    const rules: TRule[] = [
       {
         engine: 'json-logic',
         value: {
