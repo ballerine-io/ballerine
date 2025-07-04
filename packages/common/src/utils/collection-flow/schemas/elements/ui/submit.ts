@@ -5,7 +5,7 @@ export const SubmitButtonElementType = z.literal(SUBMIT_BUTTON_ELEMENT_TYPE);
 
 export const SubmitParamsSchema = z.object({
   text: z.string(),
-  disableWhenFormInvalid: z.boolean().optional(),
+  disableWhenFormIsInvalid: z.boolean().optional(),
 });
 
 export type TSubmitParams = z.infer<typeof SubmitParamsSchema>;

@@ -56,13 +56,18 @@ import {
   TextFieldElementType,
   TextFieldParamsSchema,
 } from './fields';
+import { ValidatorSchema } from '../validation/validator';
+import { CollectionFlowRuleSchema } from './common/rule';
+import { FieldSchema } from './common';
 
 export const BaseUIElement = z.object({
   id: z.string(),
   valueDestination: z.string().optional(),
   defaultValue: z.any().optional(),
-  validate: z.any(),
-  hidden: z.any(),
+  params: FieldSchema.optional(),
+  validate: z.array(ValidatorSchema).optional(),
+  hidden: z.array(CollectionFlowRuleSchema).optional(),
+  disable: z.array(CollectionFlowRuleSchema).optional(),
 });
 
 export const BaseUIElementSchema = z.discriminatedUnion('element', [
@@ -186,6 +191,12 @@ export const BaseUIElementSchema = z.discriminatedUnion('element', [
   }),
 ]);
 
+export type TUIElements = z.infer<typeof BaseUIElementSchema>['element'];
+
 export type TUIElement = z.infer<typeof BaseUIElementSchema> & {
   children?: TUIElement[];
 };
+
+export type GetElementByType<T, K extends string> = T extends { element: K } ? T : never;
+
+export type GetUIElementByType<T extends string> = GetElementByType<TUIElement, T>;
