@@ -93,7 +93,7 @@ export const MerchantMonitoringSearchSchema = BaseSearchSchema.extend({
     .enum([
       'createdAt',
       'updatedAt',
-      'business.website',
+      'business.website.url',
       'business.companyName',
       'business.country',
       'riskLevel',
