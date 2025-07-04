@@ -11,5 +11,4 @@ export * from './set-collection-flow-status';
 export * from './set-step-state';
 export * from './types';
 export * from './update-collection-flow-step';
-export * from './validators';
-export * from './schemas/elements';
+export * from './schemas';
