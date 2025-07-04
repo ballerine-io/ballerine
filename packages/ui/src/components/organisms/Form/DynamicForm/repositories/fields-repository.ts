@@ -12,6 +12,7 @@ import { PhoneField } from '../fields/PhoneField';
 import { RadioField } from '../fields/RadioField';
 import { SelectField } from '../fields/SelectField';
 import { TagsField } from '../fields/TagsField';
+import { TaxIdPickerField } from '../fields/TaxIdPickerField';
 import { TextField } from '../fields/TextField';
 import { TDynamicFormField } from '../types';
 
@@ -31,6 +32,7 @@ export const baseFields = {
   filefield: FileField,
   radiofield: RadioField,
   tagsfield: TagsField,
+  taxidpickerfield: TaxIdPickerField,
 } as const;
 
 export type TBaseFields = keyof typeof baseFields & string;
