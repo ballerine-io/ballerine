@@ -4,15 +4,15 @@ import debounce from 'lodash/debounce';
 import { useCallback } from 'react';
 import { useStack } from '../../../fields/FieldList/providers/StackProvider';
 import { useEventsDispatcher } from '../../../providers/EventsProvider';
-import { IFormElement } from '../../../types';
-import { IFormEventElement, TElementEvent } from './types';
+import { TFormEventElement, TElementEvent } from './types';
+import { TUIElement } from '@ballerine/common';
 
 export interface IUseEventParams {
   asyncEventDelay?: number;
 }
 
 export const useEvents = (
-  element: IFormElement<any, any>,
+  element: TUIElement,
   params: IUseEventParams = { asyncEventDelay: 500 },
 ) => {
   const onEvent = useEventsDispatcher();
@@ -21,9 +21,9 @@ export const useEvents = (
 
   const sendEvent = useCallback(
     (eventName: TElementEvent) => {
-      const eventElement: IFormEventElement<any, any> = {
+      const eventElement: TFormEventElement = {
         ...element,
-        formattedValueDestination: formatValueDestination(element.valueDestination, stack || []),
+        formattedValueDestination: formatValueDestination(element.valueDestination!, stack || []),
         formattedId: formatId(element.id, stack || []),
       };
 

@@ -5,10 +5,10 @@ import { useField } from '../../hooks/external';
 import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { FileField, IFileFieldParams } from './FileField';
+import { FileField } from './FileField';
 import { useFileUpload } from './hooks/useFileUpload';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('../../hooks/external');
 vi.mock('../../hooks/internal/useMountEvent');
@@ -35,13 +35,30 @@ vi.mock('../../layouts/FieldDescription', () => ({
 }));
 
 describe('FileField', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'filefield'> = {
     id: 'test-file',
+    element: 'filefield',
     params: {
       placeholder: 'Test Placeholder',
       acceptFileFormats: '.jpg,.png',
+      httpParams: {
+        createDocument: {
+          params: {},
+          url: '',
+          method: 'POST',
+          resultPath: '',
+          headers: {},
+        },
+        deleteDocument: {
+          params: {},
+          url: '',
+          method: 'POST',
+          resultPath: '',
+          headers: {},
+        },
+      },
     },
-  } as IFormElement<string, IFileFieldParams>;
+  }
 
   const mockFile = new File(['test'], 'test.txt', { type: 'text/plain' });
 

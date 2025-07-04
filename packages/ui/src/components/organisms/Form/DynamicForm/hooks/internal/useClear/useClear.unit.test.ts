@@ -8,6 +8,7 @@ import {
   DOCUMENT_FIELD_VALUE_CLEANER,
   documentFieldValueCleaner,
 } from './value-cleaners/documentfield-value-cleaner';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../../fields', () => ({
   useStack: vi.fn(),
@@ -39,10 +40,11 @@ describe('useClear', () => {
   });
 
   it('should return a function that calls onChange with undefined for unknown element types', async () => {
-    const element = {
+    const element: TUIElement = {
       id: 'test',
       valueDestination: 'test',
-      element: 'unknown-type',
+      element: 'textfield',
+      params: {}
     };
 
     const { result } = renderHook(() => useClear(element));
@@ -56,13 +58,14 @@ describe('useClear', () => {
       id: 'test',
       valueDestination: 'test',
       element: DOCUMENT_FIELD_VALUE_CLEANER,
+      params: {}
     };
     const mockValue = [{ id: '1' }];
     const mockCleanedValue = Promise.resolve([{ id: '2' }]);
 
     vi.mocked(documentFieldValueCleaner).mockReturnValue(mockCleanedValue);
 
-    const { result } = renderHook(() => useClear(element));
+    const { result } = renderHook(() => useClear(element as TUIElement));
     await result.current(mockValue);
 
     expect(documentFieldValueCleaner).toHaveBeenCalledWith(mockValue, element, {}, mockMetadata);
@@ -76,7 +79,7 @@ describe('useClear', () => {
       element: 'unknown-type',
     };
 
-    const { result, rerender } = renderHook(() => useClear(element));
+    const { result, rerender } = renderHook(() => useClear(element as TUIElement));
     const firstResult = result.current;
 
     rerender();
@@ -91,7 +94,7 @@ describe('useClear', () => {
       element: DOCUMENT_FIELD_VALUE_CLEANER,
     };
 
-    const { rerender } = renderHook(() => useClear(element));
+    const { rerender } = renderHook(() => useClear(element as TUIElement));
 
     const newMetadata = { someMetadata: 'updated' };
     vi.mocked(useDynamicForm).mockReturnValue({ metadata: newMetadata } as any);

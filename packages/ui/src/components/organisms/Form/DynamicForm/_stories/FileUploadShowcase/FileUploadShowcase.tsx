@@ -2,9 +2,9 @@ import { AnyObject } from '@/common';
 import { useState } from 'react';
 import { JSONEditorComponent } from '../../../Validator/_stories/components/JsonEditor/JsonEditor';
 import { DynamicFormV2 } from '../../DynamicForm';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
-const schema: Array<IFormElement<any, any>> = [
+const schema: Array<TUIElement> = [
   {
     id: 'FileField:Regular',
     element: 'filefield',
@@ -12,10 +12,21 @@ const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Regular Upload',
       placeholder: 'Select File',
-      uploadSettings: {
-        url: 'http://localhost:3000/upload',
-        resultPath: 'filename',
-        method: 'POST',
+      httpParams: {
+        createDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+        deleteDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
       },
     },
   },
@@ -26,12 +37,20 @@ const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Upload to protected endpoint',
       placeholder: 'Select File',
-      uploadSettings: {
-        url: 'http://localhost:3000/upload-protected',
-        resultPath: 'filename',
-        method: 'POST',
-        headers: {
-          Authorization: '{token}',
+      httpParams: {
+        createDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+        deleteDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
         },
       },
     },
@@ -44,14 +63,15 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Upload on Submit',
       placeholder: 'Select File',
       uploadOn: 'submit',
-      uploadSettings: {
-        url: 'http://localhost:3000/upload',
-        resultPath: 'filename',
-        method: 'POST',
-      },
+      documentType: 'passport',
+      documentVariant: 'passport',
       template: {
-        id: 'document-1',
-        pages: [],
+        type: 'passport',
+        category: 'passport',
+        properties: {},
+        issuer: { country: 'il' },
+        issuingVersion: 1,
+        version: 1,
       },
     },
   },
@@ -63,14 +83,15 @@ const schema: Array<IFormElement<any, any>> = [
       label: 'Upload on Submit-2',
       placeholder: 'Select File',
       uploadOn: 'submit',
-      uploadSettings: {
-        url: 'http://localhost:3000/upload',
-        resultPath: 'filename',
-        method: 'POST',
-      },
+      documentType: 'passport',
+      documentVariant: 'passport',
       template: {
-        id: 'document-2',
-        pages: [],
+        type: 'passport',
+        category: 'passport',
+        properties: {},
+        issuer: { country: 'il' },
+        issuingVersion: 1,
+        version: 1,
       },
     },
   },
@@ -79,7 +100,7 @@ const schema: Array<IFormElement<any, any>> = [
     element: 'submitbutton',
     valueDestination: 'submitbutton',
     params: {
-      label: 'Submit Button',
+      text: 'Submit Button',
     },
   },
 ];

@@ -11,7 +11,7 @@ import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useFieldList } from './hooks/useFieldList';
 import { StackProvider, useStack } from './providers/StackProvider';
-import { TFieldListParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IFieldListParams {
   // jsonata expression
@@ -21,7 +21,7 @@ export interface IFieldListParams {
   removeButtonLabel?: string;
 }
 
-export const FieldList: TDynamicFormField<TFieldListParams> = props => {
+export const FieldList: TDynamicFormField<GetUIElementByType<'fieldlist'>> = props => {
   useMountEvent(props.element);
   useUnmountEvent(props.element);
 

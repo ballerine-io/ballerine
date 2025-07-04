@@ -1,7 +1,7 @@
 import set from 'lodash/set';
-import { IDocumentFieldParams } from '../../../..';
-import { IFormElement } from '../../../../../../..';
+import { IDocumentFieldParams, IDocumentTemplate } from '../../../..';
 import { composePathToDocumentPageProperty } from '../compose-path-to-document-page-property';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface TDocument {
   id: string;
@@ -17,7 +17,7 @@ export interface TDocument {
 
 export const createOrUpdateDocumentInList = (
   _documents: Array<IDocumentFieldParams['template']> = [],
-  element: IFormElement<'documentfield', IDocumentFieldParams>,
+  element: GetUIElementByType<'documentfield'>,
   document: File | TDocument,
 ) => {
   const documents = structuredClone(_documents || []);
@@ -30,10 +30,12 @@ export const createOrUpdateDocumentInList = (
     return _documents;
   }
 
+  // TODO: fix template id
+  // @ts-expect-error
   const documentInListIndex = documents?.findIndex(document => document.id === template?.id);
 
   if (documentInListIndex === -1) {
-    documents.push(structuredClone(template));
+    documents.push(structuredClone(template) as IDocumentTemplate<any>);
     const pathToFileId = composePathToDocumentPageProperty(
       documents.length - 1,
       'ballerineFileId',
@@ -61,8 +63,13 @@ export const createOrUpdateDocumentInList = (
 
     return documents;
   } else {
+    // TODO: fix template id
+    // @ts-expect-error
     const existingDocumentIndex = documents.findIndex(document => document.id === template?.id);
-    documents[existingDocumentIndex] = { ...documents[existingDocumentIndex], ...template };
+    documents[existingDocumentIndex] = {
+      ...documents[existingDocumentIndex],
+      ...template,
+    } as IDocumentTemplate<any>;
     const existingDocument = documents[existingDocumentIndex];
     const pathToFileId = composePathToDocumentPageProperty(
       existingDocumentIndex,

@@ -2,15 +2,15 @@ import jsonata from 'jsonata';
 import { useCallback } from 'react';
 import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
-import { IFormElement } from '../../../../types';
 import { useStack } from '../../providers/StackProvider';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IUseFieldParams {
   // jsonata expression
   defaultValue?: string;
 }
 export interface IUseFieldListProps {
-  element: IFormElement<string, IUseFieldParams>;
+  element: GetUIElementByType<'fieldlist'>;
 }
 
 export const useFieldList = ({ element }: IUseFieldListProps) => {

@@ -1,13 +1,12 @@
 import { TDocumentEntityType } from '@/components/organisms/Form/DocumentsService/types';
-import { IFormElement } from '../../../../types';
-import { IDocumentFieldParams } from '../..';
 import { useDocument } from '@/components/organisms/Form/DocumentsService';
 import { useReuploadDocumentMutation } from '@/components/organisms/Form/DocumentsService/domains/documents/mutations/useReuploadDocumentMutation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { GetUIElementByType } from '@ballerine/common';
 
 interface IUseReuploadDocumentParams {
-  element: IFormElement<'documentfield', IDocumentFieldParams>;
+  element: GetUIElementByType<'documentfield'>;
   entityType: TDocumentEntityType;
   entityId: string;
 }

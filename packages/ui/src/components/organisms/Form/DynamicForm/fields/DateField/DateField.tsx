@@ -15,7 +15,7 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { TDateFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 // export interface IDateFieldParams {
 //   disableFuture?: boolean;
@@ -26,7 +26,7 @@ import { TDateFieldParams } from '@ballerine/common';
 //   inputFormat?: string;
 // }
 
-export const DateField: TDynamicFormField<TDateFieldParams> = ({ element }) => {
+export const DateField: TDynamicFormField<GetUIElementByType<'datefield'>> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

@@ -1,10 +1,10 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { useEffect, useRef } from 'react';
 import { useStack } from '../../../../../fields';
 import { useClear } from '../../../../internal/useClear';
 import { useField } from '../../../useField';
+import { TUIElement } from '@ballerine/common';
 
-export const useClearValueOnUnmount = (element: IFormElement<any, any>, hidden: boolean) => {
+export const useClearValueOnUnmount = (element: TUIElement, hidden: boolean) => {
   const clean = useClear(element);
   const { stack } = useStack();
   const { value } = useField(element, stack);

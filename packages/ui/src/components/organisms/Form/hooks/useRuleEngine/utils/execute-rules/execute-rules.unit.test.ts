@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { executeRule } from '../execute-rule';
 import { executeRules } from './execute-rules';
+import { TRule } from '@ballerine/common';
 
 vi.mock('../execute-rule', () => ({
   executeRule: vi.fn(),
@@ -10,9 +11,9 @@ describe('executeRules', () => {
   it('should execute each rule and return array of results', () => {
     // Arrange
     const context = { foo: 'bar' };
-    const rules = [
+    const rules: TRule[] = [
       { engine: 'json-logic', value: true },
-      { engine: 'json-schema', value: false },
+      { engine: 'json-logic', value: false },
     ];
 
     const mockResults = [true, false];

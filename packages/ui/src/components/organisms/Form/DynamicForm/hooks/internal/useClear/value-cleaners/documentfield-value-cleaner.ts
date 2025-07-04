@@ -2,19 +2,17 @@ import { AnyObject } from '@/common';
 import { IHttpParams, request } from '@/common/hooks/useHttp';
 import { toast } from 'sonner';
 import {
-  getDocumentObjectFromDocumentsList,
-  IDocumentFieldParams,
-  IDocumentTemplate,
+  getDocumentObjectFromDocumentsList, IDocumentTemplate
 } from '../../../../fields';
 import { getFileOrFileIdFromDocumentsList } from '../../../../fields/DocumentField/hooks/useDocumentUpload/helpers/get-file-or-fileid-from-documents-list';
-import { IFormElement, TBaseFields } from '../../../../types';
 import { DEFAULT_DELETION_PARAMS } from '../../../../fields/DocumentField/defaults';
+import { GetUIElementByType, TUIElement } from '@ballerine/common';
 
 export const DOCUMENT_FIELD_VALUE_CLEANER = 'documentfield';
 
 export const documentFieldValueCleaner = async <TValue extends Array<{ id: string }>>(
   value: TValue,
-  element: IFormElement<TBaseFields, IDocumentFieldParams>,
+  _element: TUIElement ,
   httpParams?: IHttpParams,
   metadata?: AnyObject,
 ): Promise<TValue | undefined> => {
@@ -22,7 +20,8 @@ export const documentFieldValueCleaner = async <TValue extends Array<{ id: strin
     return undefined;
   }
 
-  const defaultHttpParams = element.params?.httpParams?.deleteDocument || DEFAULT_DELETION_PARAMS;
+  const documentFieldElement = _element as GetUIElementByType<'documentfield'>;
+  const defaultHttpParams = documentFieldElement.params?.httpParams?.deleteDocument || DEFAULT_DELETION_PARAMS;
 
   const mergedHttpParams = {
     ...defaultHttpParams,
@@ -37,12 +36,12 @@ export const documentFieldValueCleaner = async <TValue extends Array<{ id: strin
 
   const document = getDocumentObjectFromDocumentsList(
     value as unknown as IDocumentTemplate[],
-    element as IFormElement<'documentfield', IDocumentFieldParams>,
+    documentFieldElement,
   );
 
   const fileOrFileId = getFileOrFileIdFromDocumentsList(
     value as unknown as IDocumentTemplate[],
-    element as IFormElement<'documentfield', IDocumentFieldParams>,
+    documentFieldElement,
   );
 
   if (!(fileOrFileId instanceof File) && document?._document?.id) {
@@ -55,5 +54,6 @@ export const documentFieldValueCleaner = async <TValue extends Array<{ id: strin
     }
   }
 
-  return value.filter(({ id }) => id !== element.params?.template?.id) as TValue;
+  // TODO: Fix cleanup
+  return value.filter(({ id }) => id !== (documentFieldElement.params?.template as any)?.id) as TValue;
 };

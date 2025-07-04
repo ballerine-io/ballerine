@@ -1,7 +1,7 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
+import { TUIElement } from '@ballerine/common';
 import { useMemo } from 'react';
 
-export const useChildrenDisabledOnLock = (element: IFormElement, isLocked: boolean) => {
+export const useChildrenDisabledOnLock = (element: TUIElement, isLocked: boolean) => {
   const { children: _children } = element;
 
   const children = useMemo(() => {
@@ -9,7 +9,7 @@ export const useChildrenDisabledOnLock = (element: IFormElement, isLocked: boole
       return _children;
     }
 
-    const lockChildren = (children: IFormElement[]) => {
+    const lockChildren = (children: TUIElement[]) => {
       return children.map(child => {
         const element = {
           ...child,

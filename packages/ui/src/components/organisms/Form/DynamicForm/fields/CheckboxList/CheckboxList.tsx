@@ -10,9 +10,11 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { TCheckboxListParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
-export const CheckboxListField: TDynamicFormField<TCheckboxListParams> = ({ element }) => {
+export const CheckboxListField: TDynamicFormField<GetUIElementByType<'checkboxlistfield'>> = ({
+  element,
+}) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

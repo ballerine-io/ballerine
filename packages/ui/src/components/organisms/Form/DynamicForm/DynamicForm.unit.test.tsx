@@ -11,7 +11,8 @@ import { useValidationSchema } from './hooks/internal/useValidationSchema';
 import { useValues } from './hooks/internal/useValues';
 import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
-import { ICommonFieldParams, IDynamicFormProps, IFormElement, IFormRef } from './types';
+import { IDynamicFormProps, IFormRef } from './types';
+import { TUIElement } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('../../Renderer');
@@ -115,9 +116,7 @@ describe('DynamicFormV2', () => {
   });
 
   it('should pass elements to useValidationSchema', () => {
-    const elements = [{ id: 'test', element: 'textfield' }] as unknown as Array<
-      IFormElement<string, ICommonFieldParams>
-    >;
+    const elements = [{ id: 'test', element: 'textfield' }] as unknown as Array<TUIElement>;
     render(<DynamicFormV2 {...mockProps} elements={elements} />);
     expect(useValidationSchema).toHaveBeenCalledWith(elements);
   });

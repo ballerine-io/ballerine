@@ -7,9 +7,9 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { TTagsFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
-export const TagsField: TDynamicFormField<TTagsFieldParams> = ({ element }) => {
+export const TagsField: TDynamicFormField<GetUIElementByType<'tagsfield'>> = ({ element }) => {
   const { stack } = useStack();
   const { value, onChange, onBlur, onFocus, disabled } = useField<string[] | undefined>(
     element,

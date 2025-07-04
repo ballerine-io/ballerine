@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message/format-error-message';
-import { IMinimumAgeValidatorParams } from './types';
+import { TMinimumAgeValidatorParams } from '@ballerine/common';
 
 const validateStrict = (value: string, requiredAge: number) => {
   const today = dayjs();
@@ -28,7 +28,7 @@ const validateNonStrict = (value: string, requiredAge: number) => {
   return true;
 };
 
-export const minimumAgeValueValidator: TValidator<string, IMinimumAgeValidatorParams> = (
+export const minimumAgeValueValidator: TValidator<string, TMinimumAgeValidatorParams> = (
   value,
   params,
 ) => {

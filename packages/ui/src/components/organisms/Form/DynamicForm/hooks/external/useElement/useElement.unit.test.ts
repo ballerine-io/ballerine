@@ -5,13 +5,13 @@ import {
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
-import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
 import { useElement } from './useElement';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
 vi.mock('../../../context');
@@ -59,7 +59,7 @@ describe('useElement', () => {
 
   describe('when stack not provided', () => {
     it('should return unmodified id and origin id', () => {
-      const element = { id: 'test-id' } as IFormElement<string, any>;
+      const element = { id: 'test-id' } as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -70,7 +70,7 @@ describe('useElement', () => {
 
   describe('when stack provided', () => {
     it('should format id with stack', () => {
-      const element = { id: 'test-id' } as IFormElement<string, any>;
+      const element = { id: 'test-id' } as TUIElement;
       const stack = [1, 2];
 
       const { result } = renderHook(() => useElement(element, stack));
@@ -84,7 +84,7 @@ describe('useElement', () => {
     it('should return hidden false when no hidden rules exist', () => {
       const element = {
         id: 'test-id',
-      } as IFormElement<string, any>;
+      } as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -96,7 +96,7 @@ describe('useElement', () => {
       const element = {
         id: 'test-id',
         hidden: [],
-      } as unknown as IFormElement<string, any>;
+      } as unknown as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -113,7 +113,7 @@ describe('useElement', () => {
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-      } as IFormElement<string, any>;
+      } as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -130,7 +130,7 @@ describe('useElement', () => {
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 5] } }],
-      } as IFormElement<string, any>;
+      } as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -147,7 +147,7 @@ describe('useElement', () => {
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-      } as IFormElement<string, any>;
+      } as TUIElement;
 
       renderHook(() => useElement(element));
 
@@ -166,7 +166,7 @@ describe('useElement', () => {
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-      } as IFormElement<string, any>;
+      } as TUIElement;
       const stack = [1, 2];
 
       renderHook(() => useElement(element, stack));
@@ -182,7 +182,7 @@ describe('useElement', () => {
       const element = {
         id: 'test-id',
         hidden: [{ engine: 'json-logic', value: { '==': [{ var: 'test' }, 1] } }],
-      } as IFormElement<string, any>;
+      } as TUIElement;
 
       const { result, rerender } = renderHook(() => useElement(element));
       const initialHidden = result.current.hidden;
@@ -200,7 +200,7 @@ describe('useElement', () => {
         priorityField: { id: 'test-id', reason: 'test-reason' },
       });
 
-      const element = { id: 'test-id' } as IFormElement<string, any>;
+      const element = { id: 'test-id' } as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -215,7 +215,7 @@ describe('useElement', () => {
         priorityField: { id: 'test-id', reason: 'test-reason' },
       });
 
-      const element = { id: 'test-id' } as IFormElement<string, any>;
+      const element = { id: 'test-id' } as TUIElement;
 
       const { result } = renderHook(() => useElement(element));
 
@@ -225,7 +225,7 @@ describe('useElement', () => {
 
   describe('lifecycle events', () => {
     it('should call useClearValueOnUnmount with element and hidden state', () => {
-      const element = { id: 'test-id' } as IFormElement<string, any>;
+      const element = { id: 'test-id' } as TUIElement;
       vi.mocked(useRuleEngine).mockReturnValue([
         { result: true, rule: {} },
       ] as IRuleExecutionResult[]);

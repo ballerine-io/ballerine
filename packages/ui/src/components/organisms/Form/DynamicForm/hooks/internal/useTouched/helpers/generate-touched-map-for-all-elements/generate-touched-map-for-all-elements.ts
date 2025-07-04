@@ -2,16 +2,16 @@ import { formatId } from '@/components/organisms/Form/Validator/utils/format-id'
 import { formatValueDestination } from '@/components/organisms/Form/Validator/utils/format-value-destination';
 import get from 'lodash/get';
 import { TDeepthLevelStack } from '../../../../../../Validator/types';
-import { IFormElement } from '../../../../../types';
 import { ITouchedState } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 export const generateTouchedMapForAllElements = (
-  elements: IFormElement[],
+  elements: TUIElement[],
   context: object,
 ): ITouchedState => {
   const touchedMap: ITouchedState = {};
 
-  const run = (elements: IFormElement[], stack: TDeepthLevelStack = []) => {
+  const run = (elements: TUIElement[], stack: TDeepthLevelStack = []) => {
     elements.forEach(element => {
       const { children, valueDestination, id } = element;
       const formattedId = formatId(id, stack);

@@ -8,7 +8,7 @@ import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { ICommonFieldParams, TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { TRadioFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IRadioFieldOption {
   label: string;
@@ -19,7 +19,7 @@ export interface IRadioFieldParams extends ICommonFieldParams {
   options: IRadioFieldOption[];
 }
 
-export const RadioField: TDynamicFormField<TRadioFieldParams> = ({ element }) => {
+export const RadioField: TDynamicFormField<GetUIElementByType<'radiofield'>> = ({ element }) => {
   const { stack } = useStack();
   const { value, onChange, onBlur, onFocus, disabled } = useField<any>(element, stack);
   const { options = [] } = element.params || {};

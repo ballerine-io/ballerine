@@ -1,8 +1,7 @@
-import { IDocumentFieldParams } from '../../..';
-import { IFormElement } from '../../../../types';
+import { GetUIElementByType, TUIElement } from '@ballerine/common';
 
 export const isDocumentFieldDefinition = (
-  element: IFormElement<any, any>,
-): element is IFormElement<'documentfield', IDocumentFieldParams> => {
+  element: TUIElement,
+): element is GetUIElementByType<'documentfield'> => {
   return element.element === 'documentfield';
 };

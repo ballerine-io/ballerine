@@ -6,9 +6,9 @@ import { useDynamicForm } from '../../context';
 import { useElement, useField } from '../../hooks/external';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { FieldDescription } from '../../layouts/FieldDescription';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { TagsField } from './TagsField';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('@/components/molecules', () => ({
   TagsInput: vi.fn(props => (
@@ -46,7 +46,7 @@ vi.mock('../../context', () => ({
 }));
 
 describe('TagsField', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'tagsfield'> = {
     id: 'test-tags',
     element: 'tagsfield',
     valueDestination: 'tags',
@@ -54,7 +54,7 @@ describe('TagsField', () => {
       label: 'Test Tags',
       placeholder: 'Test Placeholder',
     },
-  } as unknown as IFormElement;
+  }
 
   const mockStack = [] as unknown as TDeepthLevelStack;
   const mockFieldProps = {

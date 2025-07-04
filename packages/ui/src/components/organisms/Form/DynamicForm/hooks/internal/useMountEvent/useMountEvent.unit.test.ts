@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IFormElement } from '../../../types';
 import { useEvents } from '../useEvents';
 import { useMount } from '../useMount';
 import { useMountEvent } from './useMountEvent';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../useEvents');
 vi.mock('../useMount');
@@ -18,7 +18,7 @@ describe('useMountEvent', () => {
   });
 
   it('should call useEvents with provided element', () => {
-    const element = { id: 'test-id' } as IFormElement;
+    const element = { id: 'test-id' } as TUIElement;
 
     renderHook(() => useMountEvent(element));
 
@@ -26,7 +26,7 @@ describe('useMountEvent', () => {
   });
 
   it('should call sendEvent with onMount when mounted', () => {
-    const element = { id: 'test-id' } as IFormElement;
+    const element = { id: 'test-id' } as TUIElement;
 
     renderHook(() => useMountEvent(element));
 
@@ -34,7 +34,7 @@ describe('useMountEvent', () => {
   });
 
   it('should call useMount with callback function', () => {
-    const element = { id: 'test-id' } as IFormElement;
+    const element = { id: 'test-id' } as TUIElement;
 
     renderHook(() => useMountEvent(element));
 

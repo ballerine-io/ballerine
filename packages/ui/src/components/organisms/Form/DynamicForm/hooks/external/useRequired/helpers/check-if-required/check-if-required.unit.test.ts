@@ -1,9 +1,8 @@
 import { IRuleExecutionResult } from '@/components/organisms/Form/hooks';
 import { executeRules } from '@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules';
-import { TBaseValidators } from '@/components/organisms/Form/Validator';
 import { describe, expect, it, vi } from 'vitest';
-import { IFormElement } from '../../../../../types';
 import { checkIfRequired } from './check-if-required';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('@/components/organisms/Form/hooks/useRuleEngine/utils/execute-rules');
 
@@ -11,10 +10,11 @@ const mockedExecuteRules = vi.mocked(executeRules);
 
 describe('checkIfRequired', () => {
   it('should return false when there are no validators', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
       validate: [],
     };
 
@@ -24,14 +24,15 @@ describe('checkIfRequired', () => {
   });
 
   it('should return false when there are no required validators', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
       validate: [
         {
-          type: 'custom' as TBaseValidators,
-          value: {},
+          type: 'minimum',
+          value: { minimum: 1 },
           message: 'Custom message',
         },
       ],
@@ -43,14 +44,14 @@ describe('checkIfRequired', () => {
   });
 
   it('should return true when there is a required validator with no conditions', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
       validate: [
         {
           type: 'required',
-          value: {},
           message: 'Field is required',
         },
       ],
@@ -62,10 +63,11 @@ describe('checkIfRequired', () => {
   });
 
   it('should return true when there is a considerRequired validator with no conditions', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
       validate: [
         {
           type: 'custom',
@@ -73,7 +75,7 @@ describe('checkIfRequired', () => {
           value: {},
           message: 'Field is required',
         },
-      ] as unknown as IFormElement['validate'],
+      ] as unknown as TUIElement['validate'],
     };
 
     const result = checkIfRequired(element, {}, []);
@@ -82,14 +84,14 @@ describe('checkIfRequired', () => {
   });
 
   it('should evaluate applyWhen conditions when present', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
       validate: [
         {
           type: 'required',
-          value: {},
           message: 'Field is required',
           applyWhen: {
             engine: 'json-logic',
@@ -116,14 +118,14 @@ describe('checkIfRequired', () => {
   });
 
   it('should return false when applyWhen condition evaluates to false', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
       validate: [
         {
           type: 'required',
-          value: {},
           message: 'Field is required',
           applyWhen: {
             engine: 'json-logic',
@@ -150,10 +152,11 @@ describe('checkIfRequired', () => {
   });
 
   it('should return true only if globalValidationRules are present', () => {
-    const element: IFormElement = {
+    const element: TUIElement = {
       id: 'test',
-      element: 'test',
+      element: 'textfield',
       valueDestination: 'test',
+      params: {},
     };
 
     const globalValidationRules = [

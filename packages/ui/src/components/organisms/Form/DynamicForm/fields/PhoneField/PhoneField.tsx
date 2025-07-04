@@ -8,15 +8,16 @@ import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
-import { TDynamicFormElement } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { TPhoneFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IPhoneFieldParams {
   defaultCountry?: string;
 }
 
-export const PhoneField: TDynamicFormElement<string, TPhoneFieldParams> = ({ element }) => {
+
+export const PhoneField: TDynamicFormField<GetUIElementByType<'phonefield'>> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

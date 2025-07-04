@@ -3,14 +3,14 @@ import { useRuleEngine } from '@/components/organisms/Form/hooks/useRuleEngine';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
-import { IFormElement } from '../../../types';
 import { usePriorityFields } from '../../internal/usePriorityFields';
 import { useElementId } from '../useElementId';
 import { useRules } from '../useRules';
 import { useClearValueOnUnmount } from './hooks/useClearValueOnUnmount';
+import { TUIElement } from '@ballerine/common';
 
 export const useElement = <TElements extends string, TParams>(
-  element: IFormElement<TElements, TParams>,
+  element: TUIElement,
   stack?: TDeepthLevelStack,
   elementState?: AnyObject,
 ) => {

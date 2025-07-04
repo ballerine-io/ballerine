@@ -4,14 +4,13 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
-import { IFormElement } from '../../../../types';
 import { useStack } from '../../../FieldList';
-import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { IEntity } from '../../types';
 import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IUseFieldListProps {
-  element: IFormElement<string, IEntityFieldGroupParams>;
+  element: GetUIElementByType<'entityfieldgroup'>;
 }
 
 export const useEntityFieldGroupList = ({ element }: IUseFieldListProps) => {

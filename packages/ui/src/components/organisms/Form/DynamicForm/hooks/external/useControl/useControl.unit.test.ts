@@ -6,10 +6,10 @@ import { useValidator } from '@/components/organisms/Form/Validator';
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../context';
-import { IFormElement } from '../../../types';
 import { useEvents } from '../../internal/useEvents';
 import { useRules } from '../useRules';
 import { useControl } from './useControl';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('@/components/organisms/Form/hooks/useRuleEngine');
 vi.mock('@/components/organisms/Form/Validator');
@@ -18,12 +18,13 @@ vi.mock('../../internal/useEvents');
 vi.mock('../useRules');
 
 describe('useControl', () => {
-  const mockElement = {
+  const mockElement: TUIElement = {
     id: 'test-id',
-    element: 'test-type',
+    element: 'textfield',
     disable: [],
     valueDestination: 'test-value-destination',
-  } as IFormElement<any, any>;
+    params: {},
+  }
 
   const mockStack = [0, 1];
 

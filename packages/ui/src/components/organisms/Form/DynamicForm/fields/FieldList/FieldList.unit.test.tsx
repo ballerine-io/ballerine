@@ -7,10 +7,10 @@ import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
-import { IFormElement } from '../../types';
 import { FieldList } from './FieldList';
-import { IUseFieldParams, useFieldList } from './hooks/useFieldList';
+import { useFieldList } from './hooks/useFieldList';
 import { useStack } from './providers/StackProvider';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('../../context');
 vi.mock('../../hooks/external/useElement');
@@ -47,18 +47,16 @@ vi.mock('@/components/organisms/Renderer', async () => ({
 }));
 
 describe('FieldList', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'fieldlist'> = {
     id: 'test-field',
     valueDestination: 'test.path',
+    element: 'fieldlist',
     params: {
       addButtonLabel: 'Custom Add',
       removeButtonLabel: 'Custom Remove',
     },
     children: [],
-  } as unknown as IFormElement<
-    'fieldlist',
-    { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams
-  >;
+  }
 
   const mockItems = [{ id: 1 }, { id: 2 }];
   const mockAddItem = vi.fn();
@@ -136,10 +134,7 @@ describe('FieldList', () => {
     const elementWithoutLabels = {
       ...mockElement,
       params: {},
-    } as unknown as IFormElement<
-      'fieldlist',
-      { addButtonLabel: string; removeButtonLabel: string } & IUseFieldParams
-    >;
+    } as unknown as GetUIElementByType<'fieldlist'>;
 
     render(<FieldList element={elementWithoutLabels} />);
 

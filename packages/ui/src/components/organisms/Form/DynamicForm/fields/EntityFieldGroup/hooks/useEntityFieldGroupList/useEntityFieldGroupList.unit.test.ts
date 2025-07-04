@@ -3,9 +3,9 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useField } from '../../../../hooks/external';
 import { useStack } from '../../../FieldList';
-import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
 import { useEntityFieldGroupList } from './useEntityFieldGroupList';
 import { useFormHttp } from '../../../../hooks/internal/useFormHttp/useFormHttp';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('../../../../hooks/external', () => ({
   useField: vi.fn(),
@@ -35,8 +35,8 @@ describe('useEntityFieldGroupList', () => {
         },
       },
       type: 'entityFieldGroup',
-    } as unknown as IEntityFieldGroupParams,
-  };
+    }
+  } as unknown as GetUIElementByType<'entityfieldgroup'>;
 
   const mockStack: TDeepthLevelStack = [];
 

@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react';
-import { IFormEventElement, TElementEvent } from '../../hooks/internal/useEvents/types';
+import { TFormEventElement, TElementEvent } from '../../hooks/internal/useEvents/types';
 import { EventsProvierContext } from './context';
 import { useEventsPool } from './hooks/internal/useEventsPool';
 
 export interface IEventsProviderProps {
   children: React.ReactNode;
-  onEvent?: (eventName: TElementEvent, element: IFormEventElement<string, any>) => void;
+  onEvent?: (eventName: TElementEvent, element: TFormEventElement) => void;
 }
 
 export const EventsProvider: FunctionComponent<IEventsProviderProps> = ({ children, onEvent }) => {

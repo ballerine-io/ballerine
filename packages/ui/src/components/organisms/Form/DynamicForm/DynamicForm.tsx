@@ -11,7 +11,7 @@ import { useValues } from './hooks/internal/useValues';
 import { EventsProvider } from './providers/EventsProvider';
 import { TaskRunner } from './providers/TaskRunner';
 import { extendFieldsRepository, getFieldsRepository } from './repositories';
-import { IDynamicFormProps, IFormRef } from './types';
+import { IDynamicFormProps, IFormRef, TElementsMap } from './types';
 import { Toaster } from 'sonner';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { HttpClientProvider } from './providers/HttpClientProvider';
@@ -70,7 +70,9 @@ export const DynamicFormV2 = forwardRef(
         values: valuesApi.values,
         submit,
         fieldHelpers,
-        elementsMap: fieldExtends ? extendFieldsRepository(fieldExtends) : getFieldsRepository(),
+        elementsMap: fieldExtends
+          ? (extendFieldsRepository(fieldExtends) as unknown as TElementsMap)
+          : (getFieldsRepository() as unknown as TElementsMap),
         callbacks: {
           onEvent,
         },

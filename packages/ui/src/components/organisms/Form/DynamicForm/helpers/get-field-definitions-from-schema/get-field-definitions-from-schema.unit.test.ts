@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { IFormElement } from '../../types';
 import { getFieldDefinitionsFromSchema } from './get-field-definitions-from-schema';
+import { TUIElement } from '@ballerine/common';
 
 describe('getFieldDefinitionsFromSchema', () => {
   it('should return empty array when no elements provided', () => {
@@ -10,9 +10,9 @@ describe('getFieldDefinitionsFromSchema', () => {
 
   it('should filter out elements without valueDestination and no children', () => {
     const elements = [
-      { id: '1', element: 'test' },
-      { id: '2', valueDestination: 'test', element: 'test' },
-    ] as Array<IFormElement<any>>;
+      { id: '1', element: 'textfield' },
+      { id: '2', valueDestination: 'test', element: 'textfield' },
+    ] as Array<TUIElement>;
 
     const result = getFieldDefinitionsFromSchema(elements);
     expect(result).toHaveLength(1);
@@ -20,10 +20,10 @@ describe('getFieldDefinitionsFromSchema', () => {
   });
 
   it('should include elements with valueDestination', () => {
-    const elements: Array<IFormElement<any>> = [
-      { id: '1', valueDestination: 'test1', element: 'test' },
-      { id: '2', valueDestination: 'test2', element: 'test' },
-    ] as Array<IFormElement<any>>;
+    const elements: Array<TUIElement> = [
+      { id: '1', valueDestination: 'test1', element: 'textfield' },
+      { id: '2', valueDestination: 'test2', element: 'textfield' },
+    ] as Array<TUIElement>;
 
     const result = getFieldDefinitionsFromSchema(elements);
     expect(result).toHaveLength(2);
@@ -32,14 +32,15 @@ describe('getFieldDefinitionsFromSchema', () => {
   });
 
   it('should process nested children correctly', () => {
-    const elements: Array<IFormElement<any>> = [
+    const elements: Array<TUIElement> = [
       {
         id: '1',
         valueDestination: 'parent',
-        element: 'test',
+        element: 'column',
+        params: {},
         children: [
-          { id: '1.1', valueDestination: 'child1', element: 'test' },
-          { id: '1.2', valueDestination: 'child2', element: 'test' },
+          { id: '1.1', valueDestination: 'child1', element: 'textfield', params: {} },
+          { id: '1.2', valueDestination: 'child2', element: 'textfield', params: {} },
         ],
       },
     ];
@@ -55,13 +56,14 @@ describe('getFieldDefinitionsFromSchema', () => {
     const elements = [
       {
         id: '1',
-        element: 'test',
+        element: 'column',
+        params: {},
         children: [
-          { id: '1.1', valueDestination: 'child1', element: 'test' },
-          { id: '1.2', valueDestination: 'child2', element: 'test' },
+          { id: '1.1', valueDestination: 'child1', element: 'textfield', params: {} },
+          { id: '1.2', valueDestination: 'child2', element: 'textfield', params: {} },
         ],
       },
-    ] as Array<IFormElement<any>>;
+    ] as Array<TUIElement>;
 
     const result = getFieldDefinitionsFromSchema(elements);
     expect(result).toHaveLength(2);
@@ -70,17 +72,21 @@ describe('getFieldDefinitionsFromSchema', () => {
   });
 
   it('should handle deeply nested structures', () => {
-    const elements: Array<IFormElement<any>> = [
+    const elements: Array<TUIElement> = [
       {
         id: '1',
         valueDestination: 'level1',
-        element: 'test',
+        element: 'column',
+        params: {},
         children: [
           {
             id: '1.1',
             valueDestination: 'level2',
-            element: 'test',
-            children: [{ id: '1.1.1', valueDestination: 'level3', element: 'test' }],
+            element: 'column',
+            params: {},
+            children: [
+              { id: '1.1.1', valueDestination: 'level3', element: 'textfield', params: {} },
+            ],
           },
         ],
       },

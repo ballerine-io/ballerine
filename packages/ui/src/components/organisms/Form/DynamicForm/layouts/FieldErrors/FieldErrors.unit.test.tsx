@@ -5,8 +5,8 @@ import { IValidationError, useValidator } from '../../../Validator';
 import { IValidatorContext } from '../../../Validator/context';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement, useField } from '../../hooks/external';
-import { IFormElement } from '../../types';
 import { FieldErrors } from './FieldErrors';
+import { TUIElement } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('@/components/molecules/ErrorsList', () => ({
@@ -27,10 +27,11 @@ vi.mock('../../fields/FieldList/providers/StackProvider', () => ({
 }));
 
 describe('FieldErrors', () => {
-  const mockElement = {
+  const mockElement: TUIElement = {
     id: 'test-field',
-    type: 'text',
-  } as unknown as IFormElement;
+    element: 'textfield',
+    params: {},
+  };
 
   beforeEach(() => {
     cleanup();

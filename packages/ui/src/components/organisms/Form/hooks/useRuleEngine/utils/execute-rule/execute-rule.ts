@@ -1,7 +1,7 @@
 import { getRuleEngineRunner } from '../../rule-engine.repository';
-import { IRule } from '../../types';
+import { TRule } from '@ballerine/common';
 
-export const executeRule = (context: object, rule: IRule<any, any>) => {
+export const executeRule = (context: object, rule: TRule) => {
   const runEngine = getRuleEngineRunner(rule.engine);
 
   return runEngine(context, rule);

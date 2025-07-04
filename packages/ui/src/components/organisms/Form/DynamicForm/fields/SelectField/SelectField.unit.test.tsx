@@ -8,11 +8,10 @@ import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
-import { TBaseFields } from '../../repositories/fields-repository';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
-import { ISelectFieldParams, SelectField } from './SelectField';
+import { SelectField } from './SelectField';
 import { SearchableDropdown } from '@/components/atoms';
+import { GetUIElementByType } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('@/components/atoms/SearchableDropdown', () => ({
@@ -79,8 +78,9 @@ vi.mock('../../layouts/FieldDescription', () => ({
 }));
 
 describe('SelectField', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'selectfield'> = {
     id: 'test-id',
+    element: 'selectfield',
     params: {
       placeholder: 'Select an option',
       optionNotFoundText: 'No options found',
@@ -89,7 +89,7 @@ describe('SelectField', () => {
         { value: '2', label: 'Option 2' },
       ],
     },
-  } as IFormElement<TBaseFields, ISelectFieldParams>;
+  };
 
   const mockStack = [0];
   const mockTestId = 'test-select-field';

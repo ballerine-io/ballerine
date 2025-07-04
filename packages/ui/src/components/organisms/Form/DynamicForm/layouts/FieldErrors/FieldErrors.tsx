@@ -3,10 +3,10 @@ import { FunctionComponent, useMemo } from 'react';
 import { useValidator } from '../../../Validator';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement, useField } from '../../hooks/external';
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 export interface IFieldErrorsProps {
-  element: IFormElement;
+  element: TUIElement;
 }
 
 export const FieldErrors: FunctionComponent<IFieldErrorsProps> = ({ element }) => {

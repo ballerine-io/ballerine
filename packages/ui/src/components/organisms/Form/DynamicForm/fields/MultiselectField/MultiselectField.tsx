@@ -11,7 +11,7 @@ import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
-import { TMultiSelectFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface MultiselectFieldOption {
   label: string;
@@ -23,7 +23,7 @@ export interface IMultiselectFieldParams {
   placeholder?: string;
 }
 
-export const MultiselectField: TDynamicFormField<TMultiSelectFieldParams> = ({ element }) => {
+export const MultiselectField: TDynamicFormField<GetUIElementByType<'multiselectfield'>> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

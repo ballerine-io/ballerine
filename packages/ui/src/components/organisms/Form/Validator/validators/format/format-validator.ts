@@ -2,9 +2,9 @@ import EmailValidator from 'email-validator';
 import { parsePhoneNumber } from 'libphonenumber-js';
 import { TValidator } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message';
-import { IFormatValueValidatorParams } from './types';
+import { TFormatValidatorParams } from '@ballerine/common';
 
-export const formatValidator: TValidator<unknown, IFormatValueValidatorParams> = (
+export const formatValidator: TValidator<unknown, TFormatValidatorParams> = (
   value,
   params,
 ) => {

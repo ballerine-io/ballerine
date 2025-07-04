@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IFormEventElement, TElementEvent } from '../../hooks/internal/useEvents/types';
+import { TFormEventElement, TElementEvent } from '../../hooks/internal/useEvents/types';
 import { EventsProvider } from './EventsProvider';
 import { useEventsPool } from './hooks/internal/useEventsPool';
 
@@ -40,7 +40,7 @@ describe('EventsProvider', () => {
   });
 
   it('should provide context value from useEventsPool', () => {
-    const mockOnEvent = (eventName: TElementEvent, element: IFormEventElement<string, any>) => {
+    const mockOnEvent = (eventName: TElementEvent, element: TFormEventElement) => {
       console.log(eventName, element);
     };
     render(

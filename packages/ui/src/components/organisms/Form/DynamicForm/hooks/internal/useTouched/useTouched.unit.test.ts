@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IFormElement } from '../../../types';
 import { generateTouchedMapForAllElements } from './helpers/generate-touched-map-for-all-elements/generate-touched-map-for-all-elements';
 import { useTouched } from './useTouched';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock(
   './helpers/generate-touched-map-for-all-elements/generate-touched-map-for-all-elements',
@@ -16,9 +16,9 @@ vi.mock('../../../helpers/get-field-definitions-from-schema', () => ({
 }));
 
 describe('useTouched', () => {
-  const elements: IFormElement[] = [
-    { id: '1', valueDestination: '1', children: [], validate: [], element: 'textinput' },
-    { id: '2', valueDestination: '2', children: [], validate: [], element: 'textinput' },
+  const elements: TUIElement[] = [
+    { id: '1', valueDestination: '1', children: [], element: 'textfield', params: {} },
+    { id: '2', valueDestination: '2', children: [], element: 'textfield', params: {} },
   ];
   const context = {};
 
@@ -94,9 +94,9 @@ describe('useTouched', () => {
 
     expect(result.current.touched).toEqual(mockTouchedMap1);
 
-    const newElements: IFormElement[] = [
+    const newElements: TUIElement[] = [
       ...elements,
-      { id: '3', valueDestination: '3', children: [], validate: [], element: 'textinput' },
+      { id: '3', valueDestination: '3', children: [], element: 'textfield', params: {} },
     ];
 
     rerender({ elements: newElements, context });

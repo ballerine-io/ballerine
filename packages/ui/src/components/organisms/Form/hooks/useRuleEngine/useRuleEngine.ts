@@ -1,18 +1,19 @@
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { IRule, IRuleExecutionResult, TRuleEngine } from './types';
+import { IRuleExecutionResult } from './types';
 import { executeRules } from './utils/execute-rules';
+import { TRule } from '@ballerine/common';
 
-export interface IRuleEngineParams<TRuleEngines = TRuleEngine> {
-  rules?: Array<IRule<TRuleEngines>> | IRule<TRuleEngines>;
+export interface IRuleEngineParams {
+  rules?: Array<TRule> | TRule;
   executeRulesSync?: boolean;
   runOnInitialize?: boolean;
   executionDelay?: number;
 }
 
-export const useRuleEngine = <TRuleEngines = TRuleEngine>(
+export const useRuleEngine = (
   context: object,
-  params: IRuleEngineParams<TRuleEngines>,
+  params: IRuleEngineParams,
 ): IRuleExecutionResult[] => {
   const { executeRulesSync, rules: _rules, runOnInitialize = false, executionDelay = 500 } = params;
 
@@ -44,7 +45,7 @@ export const useRuleEngine = <TRuleEngines = TRuleEngine>(
   }, [rules, context, executeRulesSync]);
 
   const executeRulesDebounced = useCallback(
-    debounce((context: object, rules: Array<IRule<any, any>>) => {
+    debounce((context: object, rules: Array<TRule>) => {
       const results = executeRules(context, rules);
 
       if (results?.length) {

@@ -1,5 +1,5 @@
 import {
-  IFormEventElement,
+  TFormEventElement,
   TElementEvent,
 } from '@/components/organisms/Form/DynamicForm/hooks/internal/useEvents/types';
 import { useCallback, useState } from 'react';
@@ -34,7 +34,7 @@ export const useEventsPool = (onEvent: IEventsProviderProps['onEvent']) => {
   }, []);
 
   const run = useCallback(
-    (eventName: TElementEvent, element: IFormEventElement<string, any>) => {
+    (eventName: TElementEvent, element: TFormEventElement) => {
       listeners.forEach(listener => {
         if (listener.eventName === eventName && listener.id === element.id) {
           listener.callback(eventName, element);
@@ -45,7 +45,7 @@ export const useEventsPool = (onEvent: IEventsProviderProps['onEvent']) => {
   );
 
   const event = useCallback(
-    (eventName: TElementEvent, element: IFormEventElement<string, any>) => {
+    (eventName: TElementEvent, element: TFormEventElement) => {
       run(eventName, element);
       onEvent?.(eventName, element);
     },

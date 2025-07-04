@@ -11,14 +11,16 @@ import { useMountEvent } from '../../hooks/internal/useMountEvent';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
-import { TAutocompleteFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface IAutocompleteFieldOption {
   label: string;
   value: string;
 }
 
-export const AutocompleteField: TDynamicFormField<TAutocompleteFieldParams> = ({ element }) => {
+export const AutocompleteField: TDynamicFormField<GetUIElementByType<'autocompletefield'>> = ({
+  element,
+}) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

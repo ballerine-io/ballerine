@@ -1,14 +1,16 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import get from 'lodash/get';
 import { IDocumentFieldParams } from '../../../../DocumentField';
 import { composePathToDocumentPageProperty } from '../compose-path-to-document-page-property';
+import { GetUIElementByType } from '@ballerine/common';
 
 export const getFileOrFileIdFromDocumentsList = (
   documentsList: Array<IDocumentFieldParams['template']> = [],
-  element: IFormElement<'documentfield', IDocumentFieldParams>,
+  element: GetUIElementByType<'documentfield'>,
 ): File | string | undefined => {
   const { pageIndex = 0, pageProperty = 'ballerineFileId', template } = element.params || {};
 
+  // TODO: fix template id
+  // @ts-expect-error
   const documentIndex = documentsList?.findIndex(document => document.id === template?.id);
 
   if (documentIndex === -1) {

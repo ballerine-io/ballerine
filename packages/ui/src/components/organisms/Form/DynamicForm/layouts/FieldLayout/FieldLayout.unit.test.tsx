@@ -4,8 +4,8 @@ import { IDynamicFormContext, useDynamicForm } from '../../context';
 import { useStack } from '../../fields/FieldList/providers/StackProvider';
 import { useElement } from '../../hooks/external';
 import { useRequired } from '../../hooks/external/useRequired';
-import { IFormElement } from '../../types';
 import { FieldLayout } from './FieldLayout';
+import { TUIElement } from '@ballerine/common';
 
 vi.mock('../../context');
 vi.mock('../../fields/FieldList/providers/StackProvider');
@@ -15,11 +15,11 @@ vi.mock('../../hooks/external/useRequired');
 describe('FieldLayout', () => {
   const mockElement = {
     id: 'test',
-    type: 'text',
+    element: 'textfield',
     params: {
       label: 'Test Label',
     },
-  } as unknown as IFormElement<string, any>;
+  } as unknown as TUIElement;
 
   beforeEach(() => {
     vi.mocked(useDynamicForm).mockReturnValue({
@@ -73,8 +73,10 @@ describe('FieldLayout', () => {
   it('renders without label when not provided', () => {
     const elementWithoutLabel = {
       ...mockElement,
-      params: {},
-    };
+      params: {
+        label: undefined,
+      },
+    } as TUIElement;
 
     render(
       <FieldLayout element={elementWithoutLabel}>

@@ -1,4 +1,4 @@
-import { IFormEventElement } from '@/components/organisms/Form/DynamicForm/hooks/internal/useEvents/types';
+import { TFormEventElement } from '@/components/organisms/Form/DynamicForm/hooks/internal/useEvents/types';
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { IEventsListener } from '../../../types';
@@ -11,8 +11,8 @@ describe('useEventsPool', () => {
     valueDestination: 'test',
     formattedId: 'test-id',
     formattedValueDestination: 'test',
-    element: 'test',
-  } as IFormEventElement<string, any>;
+    element: 'textfield',
+  } as TFormEventElement;
 
   it('should initialize with empty listeners array', () => {
     const { result } = renderHook(() => useEventsPool(mockOnEvent));
@@ -75,8 +75,8 @@ describe('useEventsPool', () => {
       valueDestination: 'test',
       formattedId: 'test-id-1',
       formattedValueDestination: 'test',
-      element: 'test',
-    } as IFormEventElement<string, any>;
+      element: 'textfield',
+    } as TFormEventElement;
 
     const listener1 = {
       id: 'test-id-1',

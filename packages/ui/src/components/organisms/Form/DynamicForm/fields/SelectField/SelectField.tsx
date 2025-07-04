@@ -10,9 +10,9 @@ import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { TDynamicFormField } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import { SearchableDropdown } from '@/components/atoms/SearchableDropdown';
-import { TSelectFieldParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
-export const SelectField: TDynamicFormField<TSelectFieldParams> = ({ element }) => {
+export const SelectField: TDynamicFormField<GetUIElementByType<'selectfield'>> = ({ element }) => {
   useMountEvent(element);
   useUnmountEvent(element);
 

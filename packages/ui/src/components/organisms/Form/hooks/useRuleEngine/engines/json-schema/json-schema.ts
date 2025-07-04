@@ -1,7 +1,8 @@
 import ajvErrors from 'ajv-errors';
 import addFormats, { FormatName } from 'ajv-formats';
 import Ajv from 'ajv/dist/2019';
-import { IRule, TRuleEngine, TRuleEngineRunner } from '../../types';
+import { TRuleEngineRunner } from '../../types';
+import { TRule } from '@ballerine/common';
 
 const defaultFormats: FormatName[] = ['email', 'uri', 'date', 'date-time'];
 
@@ -14,7 +15,7 @@ export interface IJsonSchemaRuleEngineParams {
 
 export const jsonSchemaEngineRunner: TRuleEngineRunner = (
   context: object,
-  rule: IRule<TRuleEngine, IJsonSchemaRuleEngineParams>,
+  rule: TRule,
 ) => {
   if (!rule.value || typeof rule.value !== 'object') {
     throw new Error('JsonSchemaEngineRunner: Rule value must be an object');

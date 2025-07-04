@@ -9,8 +9,8 @@ import { usePriorityFields } from '../../hooks/internal/usePriorityFields';
 import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
-import { IFormElement } from '../../types';
-import { DateField, IDateFieldParams } from './DateField';
+import { DateField } from './DateField';
+import { GetUIElementByType } from '@ballerine/common';
 
 // Mock dependencies
 vi.mock('@/components/organisms/Renderer', () => ({
@@ -98,7 +98,7 @@ describe('DateField', () => {
       disablePast: false,
       outputFormat: 'iso',
     },
-  } as unknown as IFormElement<string, IDateFieldParams>;
+  } as unknown as GetUIElementByType<'datefield'>;
 
   it('renders DatePickerInput with correct props', () => {
     render(<DateField element={mockElement} />);
@@ -168,7 +168,7 @@ describe('DateField', () => {
   });
 
   it('passes correct params to DatePickerInput', () => {
-    const elementWithParams: IFormElement<string, IDateFieldParams> = {
+    const elementWithParams: GetUIElementByType<'datefield'> = {
       ...mockElement,
       params: {
         disableFuture: true,

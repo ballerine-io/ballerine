@@ -10,8 +10,8 @@ import { useField } from '../../hooks/external/useField';
 import { useEvents } from '../../hooks/internal/useEvents';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITaskRunnerContext } from '../../providers/TaskRunner/types';
-import { IFormElement } from '../../types';
-import { ISubmitButtonParams, SubmitButton } from './SubmitButton';
+import { SubmitButton } from './SubmitButton';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('@/components/atoms', () => ({
   Button: vi.fn(({ children, ...props }) => <button {...props}>{children}</button>),
@@ -31,7 +31,7 @@ describe('SubmitButton', () => {
       disableWhenFormIsInvalid: false,
       text: 'Test Submit',
     },
-  } as IFormElement<string, ISubmitButtonParams>;
+  } as unknown as GetUIElementByType<'submitbutton'>;
 
   const mockFieldHelpers = {
     touchAllFields: vi.fn(),
@@ -67,7 +67,7 @@ describe('SubmitButton', () => {
       elementsMap: {},
       callbacks: {},
       metadata: {},
-    } as IDynamicFormContext<object>);
+    } as unknown as IDynamicFormContext<object>);
     vi.mocked(useTaskRunner).mockReturnValue({
       tasks: [],
       isRunning: false,
@@ -111,7 +111,7 @@ describe('SubmitButton', () => {
     const element = {
       ...mockElement,
       params: { disableWhenFormIsInvalid: true },
-    };
+    } as unknown as GetUIElementByType<'submitbutton'>;
 
     vi.mocked(useValidator).mockReturnValue({
       isValid: false,
@@ -138,7 +138,7 @@ describe('SubmitButton', () => {
       elementsMap: {},
       callbacks: {},
       metadata: {},
-    } as IDynamicFormContext<object>);
+    } as unknown as IDynamicFormContext<object>);
     vi.mocked(useTaskRunner).mockReturnValue({
       tasks: [],
       isRunning: false,
@@ -178,7 +178,7 @@ describe('SubmitButton', () => {
       elementsMap: {},
       callbacks: {},
       metadata: {},
-    } as IDynamicFormContext<object>);
+    } as unknown as IDynamicFormContext<object>);
     vi.mocked(useTaskRunner).mockReturnValue({
       tasks: [],
       isRunning: false,
@@ -215,7 +215,7 @@ describe('SubmitButton', () => {
     const element = {
       ...mockElement,
       params: {},
-    };
+    } as unknown as GetUIElementByType<'submitbutton'>;
 
     render(<SubmitButton element={element} />);
 
@@ -235,7 +235,7 @@ describe('SubmitButton', () => {
       elementsMap: {},
       callbacks: {},
       metadata: {},
-    } as IDynamicFormContext<object>);
+    } as unknown as IDynamicFormContext<object>);
     vi.mocked(useTaskRunner).mockReturnValue({
       tasks: [],
       isRunning: false,

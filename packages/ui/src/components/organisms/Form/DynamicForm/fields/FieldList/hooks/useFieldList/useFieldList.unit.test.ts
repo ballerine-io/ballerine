@@ -2,23 +2,23 @@ import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDynamicForm } from '../../../../context';
 import { useField } from '../../../../hooks/external';
-import { IFormElement } from '../../../../types';
 import { useStack } from '../../providers/StackProvider';
-import { IUseFieldParams, useFieldList } from './useFieldList';
+import { useFieldList } from './useFieldList';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('../../../../hooks/external');
 vi.mock('../../providers/StackProvider');
 vi.mock('../../../../context');
 
 describe('useFieldList', () => {
-  const mockElement = {
+  const mockElement: GetUIElementByType<'fieldlist'> = {
     id: 'test',
     valueDestination: 'test',
     element: 'fieldlist',
     params: {
       defaultValue: 'test.value',
     },
-  } as IFormElement<string, IUseFieldParams>;
+  }
 
   const mockOnChange = vi.fn();
   const mockStack = [0];

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { ICommonValidator, IValidationSchema, TBaseValidators } from '../../types';
 import { requiredValueValidator } from './required-validator';
-import { IRequiredValueValidatorParams } from './types';
+import { TRequiredValidatorParams } from '@ballerine/common';
 
 describe('requiredValueValidator', () => {
   const params = {
     value: { required: true },
   };
 
-  const mockSchema: IValidationSchema<TBaseValidators, IRequiredValueValidatorParams> = {
+  const mockSchema: IValidationSchema<TBaseValidators, TRequiredValidatorParams> = {
     id: 'test',
     validators: [],
     metadata: {},

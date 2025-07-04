@@ -1,7 +1,7 @@
-import { IRule } from '@/components/organisms/Form/hooks';
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
+import { TRule } from '@ballerine/common';
 
-export const replaceTagsWithIndexesInRule = (rules: IRule[], stack?: TDeepthLevelStack) => {
+export const replaceTagsWithIndexesInRule = (rules: TRule[], stack?: TDeepthLevelStack) => {
   if (!stack || !stack.length) return rules;
 
   let jsonRules = JSON.stringify(rules);

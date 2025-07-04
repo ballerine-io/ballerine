@@ -10,14 +10,13 @@ import { useUnmountEvent } from '../../hooks/internal/useUnmountEvent';
 import { FieldDescription } from '../../layouts/FieldDescription';
 import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldLayout } from '../../layouts/FieldLayout';
-import { IFormElement } from '../../types';
 import { useStack } from '../FieldList/providers/StackProvider';
 import {
-  IMultiselectFieldParams,
   MultiselectField,
-  MultiselectFieldOption,
+  MultiselectFieldOption
 } from './MultiselectField';
 import { MultiselectfieldSelectedItem } from './MultiselectFieldSelectedItem';
+import { GetUIElementByType } from '@ballerine/common';
 
 vi.mock('./MultiselectFieldSelectedItem', () => ({
   MultiselectfieldSelectedItem: vi.fn(() => <div data-testid="selected-item" />),
@@ -87,13 +86,13 @@ describe('MultiselectField', () => {
     { label: 'Option 3', value: 'opt3' },
   ];
 
-  const mockElement = {
+  const mockElement: GetUIElementByType<'multiselectfield'> = {
     id: 'test-multiselect',
-    type: '',
+    element: 'multiselectfield',
     params: {
       options: mockOptions,
     },
-  } as unknown as IFormElement<string, IMultiselectFieldParams>;
+  }
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -156,7 +155,7 @@ describe('MultiselectField', () => {
     const elementWithoutOptions = {
       ...mockElement,
       params: {},
-    } as unknown as IFormElement<string, IMultiselectFieldParams>;
+    } as unknown as GetUIElementByType<'multiselectfield'>;
 
     render(<MultiselectField element={elementWithoutOptions} />);
 

@@ -1,6 +1,6 @@
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
-export const schema: Array<IFormElement<any, any>> = [
+export const schema: Array<TUIElement> = [
   {
     id: 'first-name',
     element: 'textfield',
@@ -12,7 +12,6 @@ export const schema: Array<IFormElement<any, any>> = [
     validate: [
       {
         type: 'required',
-        value: {},
         message: 'First name is required',
         applyWhen: {
           engine: 'json-logic',
@@ -57,7 +56,6 @@ export const schema: Array<IFormElement<any, any>> = [
     validate: [
       {
         type: 'required',
-        value: {},
         message: 'Last name is required',
         applyWhen: {
           engine: 'json-logic',
@@ -73,7 +71,7 @@ export const schema: Array<IFormElement<any, any>> = [
     element: 'submitbutton',
     valueDestination: 'submit',
     params: {
-      label: 'Submit',
+      text: 'Submit',
       disableWhenFormIsInvalid: true,
     },
   },

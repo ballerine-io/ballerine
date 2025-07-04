@@ -11,13 +11,16 @@ import { useEvents } from '../../hooks/internal/useEvents';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { TDynamicFormElement } from '../../types';
 import { toast } from 'sonner';
+import { GetUIElementByType } from '@ballerine/common';
 
 export interface ISubmitButtonParams {
   disableWhenFormIsInvalid?: boolean;
   text?: string;
 }
 
-export const SubmitButton: TDynamicFormElement<string, ISubmitButtonParams> = ({ element }) => {
+export const SubmitButton: TDynamicFormElement<GetUIElementByType<'submitbutton'>> = ({
+  element,
+}) => {
   const { stack } = useStack();
   const { id } = useElement(element, stack);
   const { disabled: _disabled, onClick } = useControl(element, stack);

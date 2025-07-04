@@ -14,7 +14,7 @@ import { FieldErrors } from '../../layouts/FieldErrors';
 import { FieldPriorityReason } from '../../layouts/FieldPriorityReason';
 import { useTaskRunner } from '../../providers/TaskRunner/hooks/useTaskRunner';
 import { ITask } from '../../providers/TaskRunner/types';
-import { IFormElement, TDynamicFormField } from '../../types';
+import { TDynamicFormField } from '../../types';
 import { IFieldListParams, useStack } from '../FieldList';
 import { EntityFieldGroupDocument } from './components/EntityFieldGroupDocument';
 import { EntityFields } from './components/EntityFields';
@@ -30,7 +30,7 @@ import { useFormHttp } from '../../hooks/internal/useFormHttp/useFormHttp';
 import { useCreateDocumentMutation } from '../../../DocumentsService';
 import { useDocumentsService } from '../../../DocumentsService/hooks/internal/useDocumentsService';
 import { useReuploadDocumentMutation } from '../../../DocumentsService/domains/documents/mutations/useReuploadDocumentMutation';
-import { TEntityFieldGroupParams } from '@ballerine/common';
+import { GetUIElementByType } from '@ballerine/common';
 
 export type TEntityFieldGroupType = 'director' | 'ubo';
 
@@ -56,7 +56,7 @@ export interface IEntityFieldGroupParams extends IFieldListParams {
   type: TEntityFieldGroupType;
 }
 
-export const EntityFieldGroup: TDynamicFormField<TEntityFieldGroupParams> = ({
+export const EntityFieldGroup: TDynamicFormField<GetUIElementByType<'entityfieldgroup'>> = ({
   element: _element,
 }) => {
   const element = useMemo(
@@ -236,7 +236,7 @@ export const EntityFieldGroup: TDynamicFormField<TEntityFieldGroupParams> = ({
             tempEntityId={entity.__id!}
             entityFieldGroupType={element.params?.type as TEntityFieldGroupType}
             isSyncing={isCreatingEntity || isUpdatingEntity}
-            element={element as IFormElement<'entityfieldgroup', IEntityFieldGroupParams>}
+            element={element}
           >
             <div className="flex flex-col gap-4">
               <div className="flex flex-row items-center justify-between">

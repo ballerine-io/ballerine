@@ -1,7 +1,6 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { describe, expect, it } from 'vitest';
-import { IDocumentFieldParams } from '../../../../DocumentField';
 import { getDocumentObjectFromDocumentsList } from './get-document-object-from-documents-list';
+import { GetUIElementByType } from '@ballerine/common';
 
 describe('getDocumentObjectFromDocumentsList', () => {
   const mockDocumentsList = [
@@ -31,7 +30,7 @@ describe('getDocumentObjectFromDocumentsList', () => {
     },
   ];
 
-  const mockElement: IFormElement<'documentfield', IDocumentFieldParams> = {
+  const mockElement = {
     id: 'test-doc',
     valueDestination: 'test-doc',
     element: 'documentfield',
@@ -64,7 +63,7 @@ describe('getDocumentObjectFromDocumentsList', () => {
         },
       },
     },
-  };
+  } as unknown as GetUIElementByType<'documentfield'>;
 
   it('should return undefined when documentsList is empty', () => {
     // act
@@ -87,7 +86,7 @@ describe('getDocumentObjectFromDocumentsList', () => {
         pageIndex: 0,
         pageProperty: 'ballerineFileId',
       },
-    } as IFormElement<'documentfield', IDocumentFieldParams>;
+    } as unknown as GetUIElementByType<'documentfield'>;
 
     // act
     const result = getDocumentObjectFromDocumentsList(mockDocumentsList, elementWithNonExistingDoc);
@@ -120,7 +119,7 @@ describe('getDocumentObjectFromDocumentsList', () => {
         ...mockElement.params,
         template: undefined,
       },
-    } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
+    } as unknown as GetUIElementByType<'documentfield'>;
 
     // act
     const result = getDocumentObjectFromDocumentsList(mockDocumentsList, elementWithoutTemplate);

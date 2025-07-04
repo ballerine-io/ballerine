@@ -1,15 +1,14 @@
 import { TDeepthLevelStack } from '@/components/organisms/Form/Validator';
 import { Renderer, TRendererSchema } from '@/components/organisms/Renderer';
 import { FunctionComponent } from 'react';
-import { IFormElement } from '../../../../types';
 import { StackProvider } from '../../../FieldList/providers/StackProvider';
-import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
+import { GetUIElementByType } from '@ballerine/common';
 
 interface IEntityFieldsProps {
   stack: TDeepthLevelStack;
   fieldId: string;
   entityId: string;
-  element: IFormElement<any, IEntityFieldGroupParams>;
+  element: GetUIElementByType<'entityfieldgroup'>;
   elementsOverride: TRendererSchema;
   index: number;
 }

@@ -1,9 +1,9 @@
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
 export const getFieldDefinitionsFromSchema = (
-  elements: Array<IFormElement<any>>,
-  definition: Array<IFormElement<any>> = [],
-): Array<IFormElement<any>> => {
+  elements: Array<TUIElement>,
+  definition: Array<TUIElement> = [],
+): Array<TUIElement> => {
   const filteredElements = elements.filter(
     element => element.valueDestination || element.children?.length,
   );

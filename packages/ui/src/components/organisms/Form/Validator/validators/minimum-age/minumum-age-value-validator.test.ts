@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ICommonValidator, IValidationSchema, TBaseValidators } from '../../types';
 import { formatErrorMessage } from '../../utils/format-error-message/format-error-message';
 import { minimumAgeValueValidator } from './minimum-age-value-validator';
-import { IMinimumAgeValidatorParams } from './types';
+import { TMinimumAgeValidatorParams } from '@ballerine/common';
 
 // Mock formatErrorMessage only
 vi.mock('../../utils/format-error-message/format-error-message');
@@ -43,7 +43,7 @@ describe('minimumAgeValueValidator', () => {
     const params = {
       type: 'minimumAge' as any,
       value: { minimumAge: 18 },
-    } as ICommonValidator<IMinimumAgeValidatorParams>;
+    } as ICommonValidator<TMinimumAgeValidatorParams>;
 
     // Act & Assert
     expect(() => minimumAgeValueValidator(invalidDate as any, params, mockSchema)).toThrow(
@@ -57,7 +57,7 @@ describe('minimumAgeValueValidator', () => {
     const params = {
       type: 'minimumAge' as any,
       value: {},
-    } as ICommonValidator<IMinimumAgeValidatorParams>;
+    } as ICommonValidator<TMinimumAgeValidatorParams>;
 
     // Act & Assert
     expect(() => minimumAgeValueValidator(date, params, mockSchema)).toThrow(
@@ -73,7 +73,7 @@ describe('minimumAgeValueValidator', () => {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: true },
         message: 'Minimum age is {minimumAge}.',
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
@@ -94,7 +94,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: true },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       // Act & Assert
       expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
@@ -106,7 +106,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: true },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       // Act & Assert
       expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
@@ -118,7 +118,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: true },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
@@ -134,7 +134,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: true },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
@@ -153,7 +153,7 @@ describe('minimumAgeValueValidator', () => {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: false },
         message: 'Minimum age is {minimumAge}.',
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       vi.mocked(formatErrorMessage).mockReturnValueOnce('Minimum age is 18.');
 
@@ -174,7 +174,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: false },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       // Act & Assert
       expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
@@ -186,7 +186,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: false },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       // Act & Assert
       expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
@@ -198,7 +198,7 @@ describe('minimumAgeValueValidator', () => {
       const params = {
         type: 'minimumAge' as any,
         value: { minimumAge: 18, strict: false },
-      } as ICommonValidator<IMinimumAgeValidatorParams>;
+      } as ICommonValidator<TMinimumAgeValidatorParams>;
 
       // Act & Assert
       expect(() => minimumAgeValueValidator(birthDate, params, mockSchema)).not.toThrow();
@@ -212,7 +212,7 @@ describe('minimumAgeValueValidator', () => {
       type: 'minimumAge' as any,
       value: { minimumAge: 18 },
       message: 'You must be at least {minimumAge} years old.',
-    } as ICommonValidator<IMinimumAgeValidatorParams>;
+    } as ICommonValidator<TMinimumAgeValidatorParams>;
 
     vi.mocked(formatErrorMessage).mockReturnValueOnce('You must be at least 18 years old.');
 
@@ -233,7 +233,7 @@ describe('minimumAgeValueValidator', () => {
     const params = {
       type: 'minimumAge' as any,
       value: { minimumAge: 18 },
-    } as ICommonValidator<IMinimumAgeValidatorParams>;
+    } as ICommonValidator<TMinimumAgeValidatorParams>;
 
     // Act
     const result = minimumAgeValueValidator(birthDate, params, mockSchema);

@@ -1,10 +1,10 @@
-import { IFormElement } from '@/components/organisms/Form/DynamicForm/types';
 import { describe, expect, it } from 'vitest';
-import { IDocumentFieldParams, IDocumentTemplate } from '../../../../DocumentField';
+import { IDocumentTemplate } from '../../../../DocumentField';
 import { getFileOrFileIdFromDocumentsList } from './get-file-or-fileid-from-documents-list';
+import { GetUIElementByType } from '@ballerine/common';
 
 describe('getFileOrFileIdFromDocumentsList', () => {
-  const mockElement: IFormElement<'documentfield', IDocumentFieldParams> = {
+  const mockElement = {
     id: 'test-doc',
     element: 'documentfield',
     valueDestination: 'documents',
@@ -36,8 +36,8 @@ describe('getFileOrFileIdFromDocumentsList', () => {
           resultPath: '',
         },
       },
-    } as unknown as IDocumentFieldParams,
-  };
+    }
+  } as unknown as GetUIElementByType<'documentfield'>;
 
   it('should return undefined when documentsList is empty', () => {
     const result = getFileOrFileIdFromDocumentsList([], mockElement);
@@ -93,7 +93,7 @@ describe('getFileOrFileIdFromDocumentsList', () => {
   });
 
   it('should use default values when params are not provided', () => {
-    const elementWithoutParams: IFormElement<'documentfield', IDocumentFieldParams> = {
+    const elementWithoutParams = {
       id: 'test-doc',
       element: 'documentfield',
       valueDestination: 'documents',
@@ -104,7 +104,7 @@ describe('getFileOrFileIdFromDocumentsList', () => {
           type: 'test',
         } as IDocumentTemplate,
       },
-    } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
+    } as unknown as GetUIElementByType<'documentfield'>;
 
     const documentsList: IDocumentTemplate[] = [
       {
@@ -153,7 +153,7 @@ describe('getFileOrFileIdFromDocumentsList', () => {
           },
         },
       },
-    } as unknown as IFormElement<'documentfield', IDocumentFieldParams>;
+    } as unknown as GetUIElementByType<'documentfield'>;
 
     const documentsList: IDocumentTemplate[] = [
       {

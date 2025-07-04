@@ -1,9 +1,10 @@
+// TODO: Implement typed validator extends
+//@ts-nocheck
 import { AnyObject } from '@/common';
 import { useState } from 'react';
 import { registerValidator, TValidator } from '../../../Validator';
 import { JSONEditorComponent } from '../../../Validator/_stories/components/JsonEditor/JsonEditor';
 import { DynamicFormV2 } from '../../DynamicForm';
-import { IFormElement } from '../../types';
 
 const johnDoeCheckerValidator: TValidator<string, any, 'johnDoeChecker'> = (value, context) => {
   if (value !== 'John Doe') {

@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useDynamicForm } from '../../../context';
 import { useStack } from '../../../fields';
-import { IFormElement } from '../../../types';
 import { checkIfRequired } from './helpers/check-if-required';
+import { TUIElement } from '@ballerine/common';
 
-export const useRequired = (element: IFormElement, context: object) => {
+export const useRequired = (element: TUIElement, context: object) => {
   const { stack } = useStack();
   const { validationParams, metadata } = useDynamicForm();
 

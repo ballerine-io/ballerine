@@ -1,9 +1,9 @@
-import { IRule } from '../../types';
+import { TRule } from '@ballerine/common';
 import { executeRule } from '../execute-rule';
 
-export const executeRules = (context: object, rules: Array<IRule<any, any>>) => {
+export const executeRules = (context: object, rules: Array<TRule>) => {
   return rules.map(rule => ({
     rule,
-    result: executeRule(context, rule as IRule),
+    result: executeRule(context, rule),
   }));
 };

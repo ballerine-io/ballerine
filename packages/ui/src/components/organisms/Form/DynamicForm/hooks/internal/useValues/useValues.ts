@@ -1,13 +1,12 @@
-import { isObject } from '@ballerine/common';
+import { isObject, TUIElement } from '@ballerine/common';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { IFormElement } from '../../../types';
 import { insertDefaultValues } from './helpers/insert-default-values';
 
 export interface IUseValuesProps<TValues extends object> {
   values: TValues;
-  schema?: Array<IFormElement<string, any>>;
+  schema?: Array<TUIElement>;
   onChange?: (newValues: TValues) => void;
   onFieldChange?: (fieldName: string, newValue: unknown, newValues: TValues) => void;
 }

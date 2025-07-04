@@ -1,6 +1,6 @@
-import { IFormElement } from '../../types';
+import { TUIElement } from '@ballerine/common';
 
-export const schema: Array<IFormElement<any, any>> = [
+export const schema: Array<TUIElement> = [
   {
     id: 'first-name-field',
     element: 'textfield',
@@ -12,7 +12,6 @@ export const schema: Array<IFormElement<any, any>> = [
     validate: [
       {
         type: 'required',
-        value: {},
         message: 'First name is required',
       },
     ],
@@ -28,7 +27,6 @@ export const schema: Array<IFormElement<any, any>> = [
     validate: [
       {
         type: 'required',
-        value: {},
         message: 'Last name is required',
       },
     ],
@@ -44,7 +42,6 @@ export const schema: Array<IFormElement<any, any>> = [
     validate: [
       {
         type: 'required',
-        value: {},
         message: 'Date of birth is required',
       },
     ],
@@ -56,11 +53,26 @@ export const schema: Array<IFormElement<any, any>> = [
     params: {
       label: 'Passport Photo',
       placeholder: 'Select your passport photo',
+      httpParams: {
+        createDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+        deleteDocument: {
+          params: {},
+          url: '',
+          method: 'GET',
+          resultPath: '',
+          headers: {},
+        },
+      },
     },
     validate: [
       {
         type: 'required',
-        value: {},
         message: 'Passport photo is required',
         applyWhen: {
           engine: 'json-logic',
@@ -88,7 +100,7 @@ export const schema: Array<IFormElement<any, any>> = [
       addButtonLabel: 'Add Workplace',
     },
     validate: [
-      { type: 'required', value: {}, message: 'Workplaces are required' },
+      { type: 'required', message: 'Workplaces are required' },
       {
         type: 'minLength',
         value: { minLength: 2 },
@@ -103,7 +115,7 @@ export const schema: Array<IFormElement<any, any>> = [
         params: {
           label: 'Workplace Name',
         },
-        validate: [{ type: 'required', value: {}, message: 'Workplace name is required' }],
+        validate: [{ type: 'required', message: 'Workplace name is required' }],
       },
       {
         id: 'workplace-start-date',
@@ -112,7 +124,7 @@ export const schema: Array<IFormElement<any, any>> = [
         params: {
           label: 'Workplace Start Date',
         },
-        validate: [{ type: 'required', value: {}, message: 'Workplace start date is required' }],
+        validate: [{ type: 'required', message: 'Workplace start date is required' }],
       },
       {
         id: 'certificate-of-employment',
@@ -120,6 +132,22 @@ export const schema: Array<IFormElement<any, any>> = [
         valueDestination: 'workplaces[$0].certificateOfEmployment',
         params: {
           label: 'Certificate of Employment',
+          httpParams: {
+            createDocument: {
+              params: {},
+              url: '',
+              method: 'GET',
+              resultPath: '',
+              headers: {},
+            },
+            deleteDocument: {
+              params: {},
+              url: '',
+              method: 'GET',
+              resultPath: '',
+              headers: {},
+            },
+          },
         },
         validate: [],
       },
@@ -130,7 +158,7 @@ export const schema: Array<IFormElement<any, any>> = [
     element: 'submitbutton',
     valueDestination: 'submit',
     params: {
-      label: 'Submit',
+      text: 'Submit',
     },
   },
 ];

@@ -1,8 +1,7 @@
-import { IFormElement } from '../../../../types';
-import { IEntityFieldGroupParams } from '../../EntityFieldGroup';
+import { GetUIElementByType, TUIElement } from '@ballerine/common';
 
 export const isEntityFieldGroupDefinition = (
-  element: IFormElement<any, any>,
-): element is IFormElement<'entityfieldgroup', IEntityFieldGroupParams> => {
+  element: TUIElement,
+): element is GetUIElementByType<'entityfieldgroup'> => {
   return element.element === 'entityfieldgroup';
 };
