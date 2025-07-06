@@ -10,7 +10,7 @@ export const patternValueValidator: TValidator<string, TPatternValidatorParams> 
 
   if (typeof value !== 'string') return true;
 
-  if (!new RegExp(params.value.pattern).test(value as string)) {
+  if (!new RegExp(params.value.pattern, params.value.flags).test(value as string)) {
     throw new Error(formatErrorMessage(message, 'pattern', params.value.pattern));
   }
 };

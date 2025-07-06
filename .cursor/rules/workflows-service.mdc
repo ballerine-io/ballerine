@@ -1,6 +1,7 @@
 ---
 description: Workflow Service Rules
 globs: ["services/workflows-service/**/*.{ts}"]
+
 ---
 ### Code Organization & Structure
 

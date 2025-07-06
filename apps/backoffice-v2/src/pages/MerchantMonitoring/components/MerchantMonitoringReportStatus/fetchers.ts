@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UpdateableReportStatus } from '@ballerine/common';
+import type { UpdateableReportStatus } from '@ballerine/common';
 
 import { Method } from '@/common/enums';
 import { apiClient } from '@/common/api-client/api-client';

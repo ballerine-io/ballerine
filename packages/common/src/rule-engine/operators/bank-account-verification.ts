@@ -12,7 +12,7 @@ type BankAccountRule = {
 };
 
 // These rules are required in order to pass the bank account verification check
-const requiredRules = ['CMM1069', 'CMM1048', 'CMM1052'];
+const requiredRules = ['CMM1069', 'CMM1048', 'CMM1053'];
 
 export class BankAccountVerification extends BaseOperator<
   any,
@@ -32,7 +32,7 @@ export class BankAccountVerification extends BaseOperator<
           bankAccountVerification: z.object({
             data: z.object({
               responseHeader: z.object({
-                requestType: z.string(),
+                requestType: z.literal(BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE),
               }),
               clientResponsePayload: z.object({
                 decisionElements: z.array(z.record(z.string(), z.unknown())),
@@ -65,10 +65,6 @@ export class BankAccountVerification extends BaseOperator<
       throw new ValidationFailedError('Extract value', 'parsing failed', result.error);
     }
 
-    if (result.data.requestType !== BANK_ACCOUNT_VERIFICATION_COMMERCIAL_REQUEST_TYPE) {
-      return [];
-    }
-
     const rulesResult = z
       .array(
         z.object({
@@ -92,7 +88,10 @@ export class BankAccountVerification extends BaseOperator<
   }
 
   evaluate(dataValue: BankAccountRule[]): boolean {
-    return dataValue.length === 0 || dataValue.every(rule => rule.ruleScore === 0);
+    const isEmpty = dataValue.length === 0;
+    const allRulesAreZero = dataValue.some(rule => rule.ruleScore !== 0);
+
+    return isEmpty || allRulesAreZero;
   }
 }
 

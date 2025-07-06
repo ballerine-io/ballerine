@@ -228,40 +228,13 @@ export class CollectionFlowService {
     );
   }
 
-  async createEntitiesIfNeeded(
-    entities: {
-      firstName: string;
-      lastName: string;
-      email: string;
-      ballerineEntityId?: string;
-    }[],
-    projectId: string,
-    transaction: Prisma.TransactionClient,
-  ) {
-    const createdEntities = entities.map(async entity => {
-      // If ID is present then entity been created in KYB
-      if (entity.ballerineEntityId) {
-        return entity;
-      }
+  removePluginsOutput({ context, plugins }: { context: DefaultContextSchema; plugins: string[] }) {
+    const pluginsOutput = structuredClone(context.pluginsOutput || {});
 
-      const { id } = await this.endUserService.create(
-        {
-          data: {
-            firstName: entity.firstName,
-            lastName: entity.lastName,
-            email: entity.email,
-            projectId,
-          },
-        },
-        transaction,
-      );
-
-      return {
-        ballerineEntityId: id,
-        ...entity,
-      };
+    plugins.forEach(pluginName => {
+      delete pluginsOutput[pluginName as keyof typeof pluginsOutput];
     });
 
-    return await Promise.all(createdEntities);
+    return pluginsOutput;
   }
 }

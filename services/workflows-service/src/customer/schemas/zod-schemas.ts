@@ -69,7 +69,8 @@ export const CustomerFeaturesSchema = z.object({
           reportType: z.string().optional(),
           runByDefault: z.boolean().optional(),
           scheduleType: z.string().optional(),
-          intervalInDays: z.number().optional(),
+          dayInMonth: z.number().optional(),
+          monthInterval: z.number().optional(),
           proxyViaCountry: z.string().optional(),
           workflowVersion: z.string().optional(),
         })

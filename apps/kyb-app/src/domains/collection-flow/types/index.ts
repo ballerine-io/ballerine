@@ -11,6 +11,7 @@ import {
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { z } from 'zod';
 import { CollectionFlowConfig, CollectionFlowContext } from './flow-context.types';
+import { BusinessTypeSchema } from '@ballerine/common';
 
 export * from './ui-schema.types';
 
@@ -193,13 +194,19 @@ export const FetchCompanyInformationResultSchema = z
     jurisdictionCode: z.string(),
     incorporationDate: z.string(),
   })
-  .transform(data => ({
-    companyName: data.name,
-    taxIdentificationNumber: data.vat,
-    businessType: data.companyType,
-    additionalInfo: {
-      status: data.currentStatus,
-      incorporationDate: data.incorporationDate,
-      openCorporate: data,
-    },
-  }));
+  .transform(data => {
+    const companyType = BusinessTypeSchema.safeParse(data.companyType);
+
+    const result = {
+      companyName: data.name,
+      taxIdentificationNumber: data.vat,
+      businessType: companyType.success ? companyType.data : undefined,
+      additionalInfo: {
+        status: data.currentStatus,
+        incorporationDate: data.incorporationDate,
+        openCorporate: data,
+      },
+    };
+
+    return result;
+  });

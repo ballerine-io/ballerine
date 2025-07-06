@@ -12,6 +12,7 @@ export const EventNamesMap = {
   CUSTOMER_CREATED: 'customer.created',
   USER_CREATED: 'user.created',
   BUSINESS_REPORT_REQUESTED: 'business_report.requested',
+  CASE_CHANGED: 'case.changed',
 } as const;
 
 type AnalyticsEvents = {
@@ -25,6 +26,14 @@ type AnalyticsEvents = {
     reportType: string;
     businessId: string;
     customerId: string;
+  };
+  [EventNamesMap.CASE_CHANGED]: {
+    workflowRuntimeDataId: string;
+    endUserId: string | null;
+    businessId: string | null;
+    projectId: string;
+    actorUserId: string | null;
+    actorEndUserId: string | null;
   };
 };
 
