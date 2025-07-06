@@ -53,6 +53,8 @@ import {
   StatePickerFieldParamsSchema,
   TagsFieldElementType,
   TagsFieldParamsSchema,
+  TaxIdPickerFieldElementType,
+  TaxIdPickerFieldParamsSchema,
   TextFieldElementType,
   TextFieldParamsSchema,
 } from './fields';
@@ -74,13 +76,11 @@ export const BaseUIElementSchema = z.discriminatedUnion('element', [
   // UI Elements start
   BaseUIElement.extend({
     element: ColumnElementType,
-    params: ColumnElementParamsSchema,
-    children: z.array(BaseUIElement),
+    params: ColumnElementParamsSchema.optional(),
   }),
   BaseUIElement.extend({
     element: RowElementType,
-    params: RowElementParamsSchema,
-    children: z.array(BaseUIElement),
+    params: RowElementParamsSchema.optional(),
   }),
   BaseUIElement.extend({
     element: DescriptionElementType,
@@ -184,6 +184,10 @@ export const BaseUIElementSchema = z.discriminatedUnion('element', [
   BaseUIElement.extend({
     element: StatePickerFieldElementType,
     params: StatePickerFieldParamsSchema,
+  }),
+  BaseUIElement.extend({
+    element: TaxIdPickerFieldElementType,
+    params: TaxIdPickerFieldParamsSchema,
   }),
   BaseUIElement.extend({
     element: SubmitButtonElementType,

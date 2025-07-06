@@ -21,9 +21,9 @@ export const EntityFieldGroupParamsSchema = FieldListParamsSchema.extend({
       httpParams: CommonHttpParamsSchema,
       transform: z.string().optional(),
     }),
-    uploadDocument: CommonHttpParamsSchema,
     deleteEntity: CommonHttpParamsSchema,
-    deleteDocument: CommonHttpParamsSchema,
+    uploadDocument: CommonHttpParamsSchema.optional(),
+    deleteDocument: CommonHttpParamsSchema.optional(),
   }),
 });
 
