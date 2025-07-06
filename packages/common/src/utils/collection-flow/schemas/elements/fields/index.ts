@@ -18,3 +18,4 @@ export * from './localepicker';
 export * from './mccpicker';
 export * from './nationalitypicker';
 export * from './statepicker';
+export * from './taxidpickerfield';
