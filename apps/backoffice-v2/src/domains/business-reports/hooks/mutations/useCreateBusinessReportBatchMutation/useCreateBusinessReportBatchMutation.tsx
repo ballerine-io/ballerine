@@ -11,10 +11,12 @@ export const useCreateBusinessReportBatchMutation = ({
   reportType,
   workflowVersion,
   onSuccess,
+  onError,
 }: {
   reportType: MerchantReportType;
   workflowVersion: string;
   onSuccess?: <TData>(data: TData) => void;
+  onError?: (error: HttpError) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -36,18 +38,6 @@ export const useCreateBusinessReportBatchMutation = ({
 
       onSuccess?.(data);
     },
-    onError: (error: unknown) => {
-      if (error instanceof HttpError && error.code === 400) {
-        toast.error(error.message);
-
-        return;
-      }
-
-      toast.error(
-        t(`toast:batch_business_report_creation.error`, {
-          errorMessage: isObject(error) && 'message' in error ? error.message : error,
-        }),
-      );
-    },
+    onError,
   });
 };

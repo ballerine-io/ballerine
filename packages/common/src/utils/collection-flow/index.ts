@@ -12,3 +12,6 @@ export * from './set-step-state';
 export * from './types';
 export * from './update-collection-flow-step';
 export * from './schemas';
+export * from './validators';
+export * from './schemas/business-type-schema';
+export * from './consts/business-type';

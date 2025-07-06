@@ -1,8 +1,8 @@
 import { CastingContext, parse } from 'csv-parse';
-import { z, ZodSchema } from 'zod';
+import { z, ZodError, ZodSchema } from 'zod';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { ForbiddenException } from '@/errors';
 import fs from 'fs';
+import { ValidationError } from '@/errors';
 
 export const parseCsv = async <TSchema extends ZodSchema>(
   processEntity: {
@@ -14,15 +14,28 @@ export const parseCsv = async <TSchema extends ZodSchema>(
 ): Promise<Array<z.output<TSchema>>> => {
   const { schema, logger, ignoreEmptyProperties = true, cast } = processEntity;
   let fileContent: Buffer;
+  let filenameWithExtension: string;
 
   if ('file' in processEntity) {
     fileContent = processEntity.file.buffer;
+    filenameWithExtension = processEntity.file.originalname;
   } else {
     fileContent = fs.readFileSync(processEntity.filePath);
+    filenameWithExtension = processEntity.filePath;
   }
+
+  const isCsv = filenameWithExtension.toLowerCase().endsWith('.csv');
 
   return new Promise((resolve, reject) => {
     const results: z.output<TSchema> = [];
+    const errors: Array<{ message: string }> = [];
+
+    if (!isCsv) {
+      errors.push({
+        message: `Unsupported file type - please download and use the provided template`,
+      });
+      reject(new ValidationError(errors));
+    }
 
     parse(
       fileContent,
@@ -31,7 +44,6 @@ export const parseCsv = async <TSchema extends ZodSchema>(
         skip_empty_lines: true,
         trim: true,
         skip_records_with_empty_values: true,
-        skip_records_with_error: true,
         cast: (value, context) => {
           if (value === '' && ignoreEmptyProperties) {
             return undefined;
@@ -42,23 +54,35 @@ export const parseCsv = async <TSchema extends ZodSchema>(
       },
       (err, records) => {
         if (err) {
-          reject(err);
+          logger.warn(`Error parsing CSV file: ${err.message}`);
+          errors.push({ message: err.message });
         }
 
-        let hadErrors = false;
+        if (records && !records.length) {
+          errors.push({ message: 'CSV seems empty. Please add at least one row' });
+        }
 
-        for (const record of records) {
+        records?.forEach((record: unknown, index: number) => {
           try {
             const validatedRecord = schema.parse(record);
             results.push(validatedRecord);
           } catch (error) {
-            logger.error('Validation error:', { error, record });
-            hadErrors = true;
-          }
-        }
+            const lineNumber = index + 2;
 
-        if (hadErrors) {
-          reject(new ForbiddenException('Schema errors in CSV'));
+            if (!(error instanceof ZodError)) {
+              throw error;
+            }
+
+            logger.error('Validation error:', { error, record });
+            const rowErrors = error.errors.map(zodIssue => ({
+              message: `Line ${lineNumber} - ${zodIssue.message}`,
+            }));
+            errors.push(...rowErrors);
+          }
+        });
+
+        if (errors.length > 0) {
+          reject(new ValidationError(errors));
         } else {
           resolve(results);
         }

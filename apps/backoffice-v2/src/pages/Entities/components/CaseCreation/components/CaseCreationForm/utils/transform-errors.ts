@@ -48,8 +48,8 @@ export const transformErrors = (errors: RJSFValidationError[]): RJSFValidationEr
       }.`;
     }
 
-    if (errorCopy.params?.format === 'email') {
-      errorCopy.message = 'Please provide valid email address.';
+    if (errorCopy.params?.pattern) {
+      errorCopy.message = `Text must match the pattern ${errorCopy.params.pattern}`;
     }
 
     return errorCopy;

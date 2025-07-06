@@ -21,7 +21,7 @@ import {
   beginTransactionIfNotExistCurry,
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
-import { ProjectScopeService } from '@/project/project-scope.service';
+import { assertIsValidProjectIds, ProjectScopeService } from '@/project/project-scope.service';
 // eslint-disable-next-line import/no-cycle
 import { FileService } from '@/providers/file/file.service';
 import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
@@ -60,6 +60,7 @@ import {
   IndividualDataSchema,
   isErrorWithMessage,
   isObject,
+  isType,
   ProcessStatus,
   setCollectionFlowStatus,
   TWorkflowHelpers,
@@ -87,6 +88,7 @@ import {
 import {
   ApprovalState,
   BusinessPosition,
+  CreatedFrom,
   Customer,
   EndUser,
   Prisma,
@@ -122,6 +124,8 @@ import { PartialDeep } from 'type-fest';
 import { WorkflowAssignee, WorkflowRuntimeListItemModel } from './workflow-runtime-list-item.model';
 import { formatIndividualVerification } from '@/common/utils/idv';
 import { AssessmentsService } from '@/assessments/assessments.service';
+import { KycService } from '@/kyc/kyc.service';
+import z from 'zod';
 
 type TEntityId = string;
 
@@ -139,9 +143,10 @@ const getAvatarUrl = (website: string | undefined | null) =>
     ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${website}&size=40`
     : null;
 
-const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
-  const record: Record<string, T> = {};
-  const errors: { key: string; error: unknown }[] = [];
+const handlePromiseAll = async <TPromises extends Record<string, Promise<any>>>(
+  promises: TPromises,
+) => {
+  const errors: Array<{ key: string; error: unknown }> = [];
   const promisesEntries = Object.entries(promises);
   const results = await Promise.all(
     promisesEntries.map(([key, promise]) =>
@@ -155,7 +160,8 @@ const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
     ),
   );
   const fulfilledResults = results.filter(
-    (res): res is { key: string; status: 'fulfilled'; data: T } => res.status === 'fulfilled',
+    (res): res is { key: string; status: 'fulfilled'; data: Awaited<TPromises[keyof TPromises]> } =>
+      res.status === 'fulfilled',
   );
   const rejectedResults = results.filter(
     (res): res is { key: string; status: 'rejected'; error: unknown } => res.status === 'rejected',
@@ -174,11 +180,16 @@ const handlePromiseAll = async <T>(promises: Record<string, Promise<T>>) => {
     );
   }
 
-  for (const fulfilledResult of fulfilledResults) {
-    record[fulfilledResult.key] = fulfilledResult.data;
-  }
+  return fulfilledResults.reduce(
+    (acc, fulfilledResult) => {
+      acc[fulfilledResult.key as keyof TPromises] = fulfilledResult.data;
 
-  return record;
+      return acc;
+    },
+    {} as {
+      [TKey in keyof TPromises]: Awaited<TPromises[TKey]>;
+    },
+  );
 };
 
 @Injectable()
@@ -209,6 +220,7 @@ export class WorkflowService {
     private readonly storageService: StorageService,
     private readonly workflowLogService: WorkflowLogService,
     private readonly assessmentsService: AssessmentsService,
+    private readonly kycService: KycService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -371,6 +383,7 @@ export class WorkflowService {
 
       nextEvents = service.getSnapshot().nextEvents;
     }
+
     let individualVerificationsChecks:
       | Awaited<ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>>
       | undefined;
@@ -951,6 +964,8 @@ export class WorkflowService {
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
+    assertIsValidProjectIds(projectIds);
+
     return await this.prismaService.$transaction(async transaction => {
       const workflow = await this.workflowRuntimeDataRepository.findByIdAndLock(
         workflowId,
@@ -1050,7 +1065,7 @@ export class WorkflowService {
           documentsUpdateContextMethod: documentsUpdateContextMethod,
         },
         documentWithDecision as unknown as DefaultContextSchema['documents'][number],
-        projectIds![0]!,
+        projectIds[0]!,
         transaction,
       );
 
@@ -1179,7 +1194,9 @@ export class WorkflowService {
           });
 
         if (allDocumentsResolved) {
+          const customer = await this.customerService.getByProjectId(projectId);
           updatedWorkflow = await this.workflowRuntimeDataRepository.updateStateById(
+            customer,
             workflowId,
             {
               data: {
@@ -1378,7 +1395,10 @@ export class WorkflowService {
       const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
       const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
+      const customer = await this.customerService.getByProjectId(projectId);
+
       const updatedResult = (await this.workflowRuntimeDataRepository.updateStateById(
+        customer,
         runtimeData.id,
         {
           data: {
@@ -1444,6 +1464,8 @@ export class WorkflowService {
       {},
       projectIds,
     );
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+
     const workflowCompleted =
       workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
@@ -1456,6 +1478,8 @@ export class WorkflowService {
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
       { data: { assigneeId, assignedAt: new Date(), projectId: currentProjectId } },
+      this.prismaService,
+      customer,
     );
 
     if (
@@ -1640,6 +1664,7 @@ export class WorkflowService {
         }
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
+          customer,
           {
             data: {
               ...entityConnect,
@@ -1749,6 +1774,7 @@ export class WorkflowService {
           });
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
+            customer,
             workflowRuntimeData.id,
             {
               data: {
@@ -1814,6 +1840,7 @@ export class WorkflowService {
         };
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
+          customer,
           existingWorkflowRuntimeData.id,
           {
             data: {
@@ -2308,6 +2335,7 @@ export class WorkflowService {
               },
             },
             transaction,
+            customer,
           );
 
           return {
@@ -2363,6 +2391,88 @@ export class WorkflowService {
             },
           },
         );
+      });
+
+      service.subscribe('RUN_AML_ON_REGISTRY_PEOPLE_OF_INTEREST', async ({ payload }) => {
+        const PayloadWithPeopleOfInterestSchema = z.object({
+          peopleOfInterest: z.array(
+            z.object({
+              firstName: z.string(),
+              lastName: z.string(),
+              role: z.string(),
+            }),
+          ),
+        });
+        const checkIsValidPayload = isType(PayloadWithPeopleOfInterestSchema);
+
+        if (!checkIsValidPayload(payload)) {
+          this.logger.log('Skipping AML on registry people of interest');
+
+          return;
+        }
+
+        const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
+        const peopleOfInterest: Array<{
+          ballerineEntityId: string;
+          firstName: string;
+          lastName: string;
+          role: string;
+        }> = [];
+
+        const promises: Record<string, Promise<any>> = {};
+
+        for (const personOfInterest of payload.peopleOfInterest) {
+          const { customer, endUser } = await handlePromiseAll({
+            customer: this.customerService.getByProjectId(currentProjectId),
+            endUser: this.endUserService.create(
+              {
+                data: {
+                  firstName: personOfInterest.firstName,
+                  lastName: personOfInterest.lastName,
+                  createdFrom: CreatedFrom.registry,
+                  projectId: currentProjectId,
+                },
+              },
+              transaction,
+            ),
+          });
+
+          peopleOfInterest.push({
+            ballerineEntityId: endUser.id,
+            firstName: endUser.firstName,
+            lastName: endUser.lastName,
+            role: personOfInterest.role,
+          });
+
+          promises[endUser.id] = this.kycService.initiateAml({
+            endUserId: endUser.id,
+            clientId: customer.name,
+            vendor: 'veriff',
+            immediateResults: true,
+            ongoingMonitoring: false,
+            callbackUrl,
+            firstName: endUser.firstName,
+            lastName: endUser.lastName,
+          });
+        }
+
+        await handlePromiseAll(promises);
+
+        await service.sendEvent({
+          type: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_INDEX,
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    peopleOfInterest,
+                  },
+                },
+              },
+            },
+          },
+        });
       });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {

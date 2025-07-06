@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -14,7 +14,8 @@ import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
-import { configs, env, serverEnvSchema } from '@/env';
+import { configs, env } from '@/env';
+import { validate } from '@/env-validate';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
 import { AxiosRequestErrorInterceptor } from '@/common/interceptors/axios-request-error.interceptor';
@@ -32,7 +33,7 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { SalesforceModule } from '@/salesforce/salesforce.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { multerFactory } from '@/common/multer';
-import { initHttpMoudle } from '@/common/http-service/http-config.service';
+import { initHttpModule } from '@/common/http-service/http-config.service';
 import { DataMigrationModule } from '@/data-migration/data-migration.module';
 import { CaseManagementModule } from '@/case-management/case-management.module';
 import { WorkflowModule } from '@/workflow/workflow.module';
@@ -40,11 +41,10 @@ import { TransactionModule } from '@/transaction/transaction.module';
 import { AlertModule } from '@/alert/alert.module';
 import { SwaggerController } from './swagger/swagger.controller';
 import { WebhooksModule } from '@/webhooks/webhooks.module';
+import { IncomingWebhooksModule } from '@/webhooks-incoming/webhooks-incoming.module';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
-import z from 'zod';
-import { hashKey } from './customer/api-key/utils';
 import { RuleEngineModule } from './rule-engine/rule-engine.module';
 import { NotionModule } from '@/notion/notion.module';
 import { SecretsManagerModule } from '@/secrets-manager/secrets-manager.module';
@@ -53,31 +53,8 @@ import { MerchantMonitoringModule } from './merchant-monitoring/merchant-monitor
 import { AnalyticsModule } from '@/common/analytics-logger/analytics.module';
 import { AssessmentsModule } from './assessments/assessments.module';
 import { KycModule } from './kyc/kyc.module';
+import { QueueModule } from '@/common/queue/queue.module';
 
-export const validate = async (config: Record<string, unknown>) => {
-  const zodEnvSchema = z
-    .object(serverEnvSchema)
-    .refine(data => data.HASHING_KEY_SECRET || data.HASHING_KEY_SECRET_BASE64, {
-      message: 'At least one of HASHING_KEY_SECRET or HASHING_KEY_SECRET_BASE64 should be present',
-      path: ['HASHING_KEY_SECRET', 'HASHING_KEY_SECRET_BASE64'],
-    });
-
-  const result = zodEnvSchema.safeParse(config);
-
-  if (!result.success) {
-    const errors = result.error.errors.map(zodIssue => ({
-      message: `❌ ${zodIssue.message}`,
-      path: zodIssue.path.join('.'), // Backwards compatibility - Legacy code message excepts array
-    }));
-
-    throw new Error(JSON.stringify(errors, null, 2));
-  }
-
-  // validate salt value
-  await hashKey('check salt value');
-
-  return result.data;
-};
 @Module({
   controllers: [SwaggerController],
   imports: [
@@ -97,6 +74,7 @@ export const validate = async (config: Record<string, unknown>) => {
     MerchantMonitoringModule,
     WorkflowModule,
     WebhooksModule,
+    IncomingWebhooksModule,
     NoteModule,
     UiDefinitionModule,
     StorageModule,
@@ -135,12 +113,13 @@ export const validate = async (config: Record<string, unknown>) => {
     BusinessReportModule,
     CronModule,
     ScheduleModule.forRoot(),
-    initHttpMoudle(),
+    initHttpModule(),
     RuleEngineModule,
     NotionModule,
     SecretsManagerModule,
     KycModule,
     AssessmentsModule,
+    QueueModule,
   ],
   providers: [
     {
