@@ -1,4 +1,3 @@
-import { safeEntityIdFilter } from '@/common/utils/safe-entity-id-filter/safe-entity-id-filter';
 import { useWorkflowDocumentsAdapter } from '@/domains/documents/hooks/adapters/useWorkflowDocumentsAdapter/useWorkflowDocumentsAdapter';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TDocument } from '@ballerine/common';
@@ -8,9 +7,7 @@ export const useBusinessDocuments = (workflow: TWorkflowById) => {
   const entityIds = useMemo(
     () =>
       workflow?.context?.entity?.ballerineEntityId
-        ? safeEntityIdFilter([workflow?.context?.entity], entity =>
-            Boolean(entity.ballerineEntityId),
-          ).map(entity => entity.ballerineEntityId)
+        ? [workflow?.context?.entity?.ballerineEntityId]
         : [],
     [workflow],
   );
