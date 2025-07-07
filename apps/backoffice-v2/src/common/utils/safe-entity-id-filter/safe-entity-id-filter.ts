@@ -1,6 +1,6 @@
-export const safeEntityIdFilter = <T>(list: Array<T>, filter: (item: T) => boolean) => {
+export const safeEntityIdFilter = <T>(list: Array<T>, predicate: (item: T) => boolean) => {
   return list.filter(item => {
-    const result = filter(item);
+    const result = predicate(item);
     const isMissing = !result;
 
     if (isMissing) {
