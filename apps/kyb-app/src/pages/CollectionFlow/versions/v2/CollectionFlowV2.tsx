@@ -61,31 +61,21 @@ export const CollectionFlowV2 = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.approved
-  ) {
+  const collectionFlowState = getCollectionFlowState(collectionFlowData?.context)?.status;
+
+  if (collectionFlowState === CollectionFlowStatusesEnum.approved) {
     return <Approved />;
   }
 
-  if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.rejected
-  ) {
+  if (collectionFlowState === CollectionFlowStatusesEnum.rejected) {
     return <Rejected />;
   }
 
-  if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.completed
-  ) {
+  if (collectionFlowState === CollectionFlowStatusesEnum.completed) {
     return <CompletedScreen redirectUrl={successRedirectUrl} />;
   }
 
-  if (
-    getCollectionFlowState(collectionFlowData?.context)?.status ===
-    CollectionFlowStatusesEnum.failed
-  ) {
+  if (collectionFlowState === CollectionFlowStatusesEnum.failed) {
     return <FailedScreen redirectUrl={failureRedirectUrl} />;
   }
 

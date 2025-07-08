@@ -63,6 +63,8 @@ import {
   isType,
   ProcessStatus,
   setCollectionFlowStatus,
+  StateTag,
+  TStateTag,
   TWorkflowHelpers,
 } from '@ballerine/common';
 import {
@@ -1389,10 +1391,20 @@ export class WorkflowService {
       // assign runtime to user, copy the context.
       const currentState = data.state;
 
+      const finalStateTags: TStateTag[] = [StateTag.APPROVED, StateTag.REJECTED];
+
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      // TODO: Use snapshot.done instead
-      const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
+      const stateHasFinalStateTags = workflowDef.definition?.states?.[currentState]?.tags?.some(
+        (tag: TStateTag) => finalStateTags.includes(tag),
+      );
+
+      const isFinal =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // TODO: Use snapshot.done instead
+        workflowDef.definition?.states?.[currentState]?.type === 'final' || stateHasFinalStateTags;
+
       const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
       const customer = await this.customerService.getByProjectId(projectId);
