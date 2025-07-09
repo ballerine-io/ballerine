@@ -1,9 +1,18 @@
 import z from 'zod';
 import { TUIElement, UIElementsSchemaWithChildren } from './elements';
 
-export interface IUIDefinitionItem {
+export const UIDefinitionPageSchema = z.object({
+  type: z.string(),
+  number: z.number(),
+  name: z.string(),
+  stateName: z.string(),
+  elements: z.array(UIElementsSchemaWithChildren),
+  plugins: z.array(z.any()).optional(),
+});
+
+export type TUIDefinitionPage = Omit<z.infer<typeof UIDefinitionPageSchema>, 'elements'> & {
   elements: TUIElement[];
-}
+};
 
 const getValueAtPath = (obj: any, path: string) => {
   const pathParts = path.split('.').map(part => {
@@ -19,15 +28,9 @@ const getValueAtPath = (obj: any, path: string) => {
   return value;
 };
 
-export const assertUIDefinitionValid = (definition: IUIDefinitionItem[]) => {
+export const assertUIDefinitionValid = (definition: TUIDefinitionPage[]) => {
   try {
-    const result = z
-      .array(
-        z.object({
-          elements: z.array(UIElementsSchemaWithChildren),
-        }),
-      )
-      .parse(definition);
+    const result = z.array(UIDefinitionPageSchema).parse(definition);
 
     return result;
   } catch (error) {
