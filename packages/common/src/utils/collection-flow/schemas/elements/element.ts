@@ -62,7 +62,7 @@ import { ValidatorSchema } from '../validation/validator';
 import { CollectionFlowRuleSchema } from './common/rule';
 import { FieldSchema } from './common';
 
-export const BaseUIElement = z.object({
+export let InitialUIElement = z.object({
   id: z.string(),
   valueDestination: z.string().optional(),
   defaultValue: z.any().optional(),
@@ -72,132 +72,139 @@ export const BaseUIElement = z.object({
   disable: z.array(CollectionFlowRuleSchema).optional(),
 });
 
-export const BaseUIElementSchema = z.discriminatedUnion('element', [
+export let UIElementsSchema = z.discriminatedUnion('element', [
   // UI Elements start
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: ColumnElementType,
     params: ColumnElementParamsSchema.optional(),
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: RowElementType,
     params: RowElementParamsSchema.optional(),
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: DescriptionElementType,
     params: DescriptionElementParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: H1ElementType,
     params: H1ElementParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: H3ElementType,
     params: H3ElementParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: H4ElementType,
     params: H4ElementParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: DividerElementType,
   }),
 
   // UI Elements end
 
   // Fields start
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: AutocompleteFieldElementType,
     params: AutocompleteFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: CheckboxFieldElementType,
     params: CheckboxFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: CheckboxListElementType,
     params: CheckboxListParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: DateFieldElementType,
     params: DateFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: DocumentFieldElementType,
     params: DocumentFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: FieldListElementType,
     params: FieldListParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: EntityFieldGroupElementType,
     params: EntityFieldGroupParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: FileFieldElementType,
     params: FileFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: MultiSelectFieldElementType,
     params: MultiSelectFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: PhoneFieldElementType,
     params: PhoneFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: RadioFieldElementType,
     params: RadioFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: SelectFieldElementType,
     params: SelectFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: TagsFieldElementType,
     params: TagsFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: TextFieldElementType,
     params: TextFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: IndustriesPickerFieldElementType,
     params: IndustriesPickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: CountryPickerFieldElementType,
     params: CountryPickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: LocalePickerFieldElementType,
     params: LocalePickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: MCCPickerFieldElementType,
     params: MCCPickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: NationalityPickerFieldElementType,
     params: NationalityPickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: StatePickerFieldElementType,
     params: StatePickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: TaxIdPickerFieldElementType,
     params: TaxIdPickerFieldParamsSchema,
   }),
-  BaseUIElement.extend({
+  InitialUIElement.extend({
     element: SubmitButtonElementType,
     params: SubmitParamsSchema,
   }),
 ]);
 
-export type TUIElements = z.infer<typeof BaseUIElementSchema>['element'];
+export const UIElementsSchemaWithChildren: z.ZodType<any> = z.intersection(
+  UIElementsSchema,
+  z.object({
+    children: z.lazy(() => z.array(UIElementsSchemaWithChildren)).optional(),
+  }),
+);
 
-export type TUIElement = z.infer<typeof BaseUIElementSchema> & {
+export type TUIElements = z.infer<typeof UIElementsSchema>['element'];
+
+export type TUIElement = z.infer<typeof UIElementsSchema> & {
   children?: TUIElement[];
 };
 
