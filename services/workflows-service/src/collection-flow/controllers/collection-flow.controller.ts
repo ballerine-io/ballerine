@@ -214,6 +214,7 @@ export class CollectionFlowController {
         throw error;
       }
 
+      this.appLogger.error(error);
       try {
         await this.workflowService.event(
           {
