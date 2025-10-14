@@ -39,6 +39,24 @@
 
 </div>
 
+---
+
+> ## ⚠️ Important Notice
+>
+> **The open source repository is currently undergoing a major rebuild and is not actively supported at this time.**
+>
+> **Stay tuned for updates!**
+>
+> **Interested in our SaaS version?**
+> - Join our [Slack workspace](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1il7txerq-K0YrXtlzMttGgD3XXYxlfw) and ping anyone from the team
+> - Email us at **sales@ballerine.com**
+>
+> **Have questions about the OSS version?**
+> - Reach out to **oss@ballerine.com**
+> - Connect with us on our [Slack workspace](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1il7txerq-K0YrXtlzMttGgD3XXYxlfw)
+
+---
+
 Ballerine is an Open-Source Risk Management Infrastructure that helps global payment companies, marketplaces and Fintechs to automate their decisions for merchant, sellers and users throughout the customer lifecycle.
 From account-opening (KYC, KYB), underwriting, and transaction monitoring, using a flexible rules & workflow engine, 3rd party plugin system, manual review back office, and document & information collection frontend flows.
 
