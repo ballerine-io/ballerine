@@ -191,7 +191,7 @@
     "prettier": "^2.8.0",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "rollup-plugin-visualizer": "^5.14.0",
-    "storybook": "^7.0.0-rc.10",
+    "storybook": "^7.6.21",
     "storybook-addon-react-router-v6": "^1.0.2",
     "tailwindcss": "^3.2.4",
     "terser": "^5.39.0",
