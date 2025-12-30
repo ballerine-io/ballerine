@@ -124,7 +124,7 @@
     "match-sorter": "^6.3.1",
     "papaparse": "^5.5.1",
     "posthog-js": "^1.154.2",
-    "qs": "^6.11.2",
+    "qs": "^6.14.1",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
