@@ -272,7 +272,7 @@ export const RISK_INDICATOR_RISK_LEVELS_MAP = Object.fromEntries(
   RISK_INDICATOR_RISK_LEVELS.map(level => [level, level]),
 ) as { [K in RiskIndicatorRiskLevel]: K };
 
-export const SUPPORTED_FILE_EXT_REGEX = /\.(jpg|jpeg|svg|png|pdf|gif|txt|csv|xlsx|xls)$/;
+export const SUPPORTED_FILE_EXT_REGEX = /\.(jpg|jpeg|svg|png|pdf|gif|txt|csv|xlsx|xls)$/i;
 
 // Extract file extensions from regex
 export const SUPPORTED_FILE_EXT_ENUM = {
