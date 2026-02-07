@@ -30,7 +30,7 @@ export class FileRepository {
     args: Prisma.SelectSubset<T, Prisma.FileFindFirstArgs>,
     projectIds: TProjectIds,
   ): Promise<File | null> {
-    const { where, ...restArgs } = args;
+    const { where, ...restArgs } = args as Record<string, unknown>;
 
     return await this.prisma.file.findFirst(
       this.scopeService.scopeFindFirst(

@@ -47,8 +47,7 @@ export class CustomerService {
   }
 
   async create(args: Parameters<CustomerRepository['create']>[0]) {
-    // @ts-expect-error - prismaService json not updated
-    const authValue = args.data?.authenticationConfiguration?.authValue;
+    const authValue = (args.data?.authenticationConfiguration as Record<string, any>)?.authValue;
     const { hashedKey, validUntil } = await generateHashedKey({ key: authValue });
 
     return await this.prismaService.$transaction(async transaction => {
@@ -98,7 +97,7 @@ export class CustomerService {
     return (await this.repository.findByName(name, args)) as unknown as TCustomerWithFeatures;
   }
 
-  async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
+  async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgs, 'where'>) {
     return (await this.repository.findByProjectId(projectId, args)) as TCustomerWithFeatures;
   }
 

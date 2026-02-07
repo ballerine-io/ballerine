@@ -15,7 +15,7 @@ export const verifySignature = ({
   return (
     signature.toLowerCase() ===
     createHmac('sha256', key)
-      .update(Buffer.from(JSON.stringify(payload), 'utf8'))
+      .update(Buffer.from(JSON.stringify(payload), 'utf8') as unknown as Uint8Array)
       .digest('hex')
       .toLowerCase()
   );

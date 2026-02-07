@@ -46,7 +46,7 @@ export class EndUserRepository {
       this.scopeService.scopeFindFirst(
         {
           where: { id },
-          ...args,
+          ...(args as Record<string, unknown>),
         },
         projectIds,
       ),
@@ -73,7 +73,7 @@ export class EndUserRepository {
   ) {
     return await this.prismaService.endUser.findFirst({
       where: { correlationId: id, projectId: { in: projectIds } },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 

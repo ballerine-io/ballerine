@@ -43,29 +43,14 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 62cd40d45 (feat(common): added schemas for documents where there were no schemas)
 import {
   defaultPrismaTransactionOptions,
   beginTransactionIfNotExistCurry,
 } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
-<<<<<<< HEAD
 import { CollectionFlowUtilityService } from '@/collection-flow/services/сollection-flow-utility/collection-flow-utility.service';
-=======
 import { HttpService } from '@nestjs/axios';
->>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
-=======
-import { PrismaService } from '@/prisma/prisma.service';
-import { assertIsValidProjectIds } from '@/project/project-scope.service';
-import {
-  beginTransactionIfNotExistCurry,
-  defaultPrismaTransactionOptions,
-} from '@/prisma/prisma.util';
->>>>>>> 4d5ca1cf3 (feat: reworked documents revision & added soft deletion for documents & files)
 
 @Injectable()
 export class DocumentService {
@@ -79,11 +64,8 @@ export class DocumentService {
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly workflowDefinitionService: WorkflowDefinitionService,
     protected readonly prismaService: PrismaService,
-<<<<<<< HEAD
     protected readonly collectionFlowUtilityService: CollectionFlowUtilityService,
-=======
     protected readonly httpService: HttpService,
->>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
   ) {}
 
   async create(
@@ -461,13 +443,12 @@ export class DocumentService {
     }
 
     const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
-      // @ts-expect-error -- the function expects properties not used by the function.
       {
         ...document,
         issuer: {
           country: document.issuingCountry,
         },
-      },
+      } as any,
       workflowDefinition.documentsSchema,
     );
     const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
@@ -532,13 +513,12 @@ export class DocumentService {
       }
 
       const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
-        // @ts-expect-error -- the function expects properties not used by the function.
         {
           ...document,
           issuer: {
             country: document.issuingCountry,
           },
-        },
+        } as any,
         workflowDefinition.documentsSchema,
       );
       const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
@@ -564,7 +544,7 @@ export class DocumentService {
 
       const decision = data.decision ? Status[data.decision] : null;
 
-      await this.peristDocumentsDesicions(
+      await this.persistDocumentsDecisions(
         [
           {
             id,
@@ -620,8 +600,7 @@ export class DocumentService {
 
       const documentsWithPropertiesSchema = documents?.map(document =>
         addPropertiesSchemaToDocument(
-          // @ts-expect-error -- the function expects properties not used by the function.
-          document,
+          document as any,
           (
             document as typeof document & {
               workflowRuntimeData: { workflowDefinition: WorkflowDefinition };
@@ -659,7 +638,7 @@ export class DocumentService {
         comment: data.comment as string,
       }));
 
-      await this.peristDocumentsDesicions(documentsWithDecisions, projectIds, transaction);
+      await this.persistDocumentsDecisions(documentsWithDecisions, projectIds, transaction);
 
       documents = await this.repository.findMany(projectIds, {
         where: {
@@ -683,7 +662,7 @@ export class DocumentService {
     });
   }
 
-  private async peristDocumentsDesicions(
+  private async persistDocumentsDecisions(
     documents: Array<{
       id: string;
       decision: DocumentDecision | null;
@@ -1205,13 +1184,12 @@ export class DocumentService {
 
     const formatPromises = typedDocuments.map(async ({ files, ...document }) => {
       const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
-        // @ts-expect-error -- the function expects properties not used by the function.
         {
           ...document,
           issuer: {
             country: document.issuingCountry,
           },
-        },
+        } as any,
         documentSchema,
       );
       const filesWithBase64 = await Promise.all(

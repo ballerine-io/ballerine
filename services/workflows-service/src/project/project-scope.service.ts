@@ -45,19 +45,16 @@ export class ProjectScopeService {
   ): T {
     assertIsValidProjectIds(projectIds);
 
-    // @ts-expect-error - dynamically typed for all queries
-    args ||= {};
-    // @ts-expect-error - dynamically typed for all queries
-    args!.where = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args?.where,
+    const queryArgs = (args || {}) as Record<string, any>;
+    queryArgs.where = {
+      ...queryArgs.where,
       project:
         typeof projectIds === 'string'
           ? { id: projectIds } // Single ID
           : { id: { in: projectIds } }, // Array of IDs
     };
 
-    return args!;
+    return queryArgs as unknown as T;
   }
 
   scopeFindOne<T>(
@@ -66,10 +63,9 @@ export class ProjectScopeService {
   ): T {
     assertIsValidProjectIds(projectIds);
 
-    // @ts-expect-error
-    args.where = {
-      // @ts-expect-error
-      ...args.where,
+    const queryArgs = args as Record<string, any>;
+    queryArgs.where = {
+      ...queryArgs.where,
       projectId: {
         in: projectIds,
       },
@@ -83,10 +79,9 @@ export class ProjectScopeService {
     projectIds: TProjectIds,
   ): T {
     assertIsValidProjectIds(projectIds);
-    // @ts-expect-error - dynamically typed for all queries
-    args.where = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.where,
+    const queryArgs = args as Record<string, any>;
+    queryArgs.where = {
+      ...queryArgs.where,
       project: {
         id: { in: projectIds },
       },
@@ -101,10 +96,9 @@ export class ProjectScopeService {
   ): T {
     assertIsValidProjectIds(projectIds);
 
-    // @ts-expect-error - dynamically typed for all queries
-    args.where = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.where,
+    const queryArgs = args as Record<string, any>;
+    queryArgs.where = {
+      ...queryArgs.where,
       project: {
         id: {
           in: projectIds,
@@ -133,10 +127,9 @@ export class ProjectScopeService {
   scopeDelete<T>(args: Prisma.SelectSubset<T, Prisma.FilterDeleteArgs>, projectIds?: TProjectIds) {
     assertIsValidProjectIds(projectIds);
 
-    // @ts-expect-error - dynamically typed for all queries
-    args.where = {
-      // @ts-expect-error - dynamically typed for all queries
-      ...args.where,
+    const queryArgs = args as Record<string, any>;
+    queryArgs.where = {
+      ...queryArgs.where,
       ...(projectIds
         ? {
             project: {

@@ -694,9 +694,9 @@ model TransactionRecord {
   id                       String                   @id @default(cuid())
   transactionCorrelationId String                   @db.VarChar
   transactionDate          DateTime
-  transactionAmount        Float // Amount of the transaction
+  transactionAmount        Decimal // Amount of the transaction
   transactionCurrency      String // Currency of the transaction
-  transactionBaseAmount    Float // Amount of the transaction
+  transactionBaseAmount    Decimal // Amount of the transaction
   transactionBaseCurrency  String // Currency of the transaction
   transactionDescription   String? // Description of the transaction
   transactionCategory      String? // Category of the transaction
@@ -749,7 +749,7 @@ model TransactionRecord {
   // Fields for merchant transactions
   productName          String?
   productDescription   String?
-  productPrice         Float?
+  productPrice         Decimal?
   productPriceCurrency String?
   productId            String?
   productSku           String?

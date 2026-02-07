@@ -2,7 +2,7 @@ import { PrismaValidationExceptionParser } from './utils/PrismaValidationExcepti
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
-import { PrismaClientValidationError } from '@prisma/client/runtime';
+import { PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { PrismaValidationExceptionParseResult } from '@/common/filters/prisma-client-validation-filter/utils/types';
 import { InvalidArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/invalid-argument-parser/invalid-argument.parser';
 import { UnknownArgumentParser } from '@/common/filters/prisma-client-validation-filter/utils/parsers/unknown-argument-parser/unknown-argument-parser';

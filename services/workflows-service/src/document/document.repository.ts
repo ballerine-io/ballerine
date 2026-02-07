@@ -60,7 +60,6 @@ export class DocumentRepository {
   ) {
     return await transaction.document.findFirst(
       this.projectScopeService.scopeFindOne(
-        // @ts-expect-error - dynamically typed for all queries
         {
           ...args,
           where: {
@@ -68,9 +67,9 @@ export class DocumentRepository {
             deletedAt: null,
             id,
           },
-        },
+        } as any,
         projectIds,
-      ),
+      ) as any,
     );
   }
 
@@ -150,7 +149,6 @@ export class DocumentRepository {
 
     const documentWithFiles = await transaction.document.findFirst(
       this.projectScopeService.scopeFindOne(
-        // @ts-expect-error - dynamically typed for all queries
         {
           ...args,
           where: {

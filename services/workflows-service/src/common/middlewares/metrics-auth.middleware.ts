@@ -17,8 +17,7 @@ export class MetricsAuthMiddleware implements NestMiddleware {
         type: 'metrics',
       };
       this.cls.set('entity', entity);
-      // @ts-expect-error
-      req.user = entity;
+      (req as any).user = entity;
       return next();
     }
 

@@ -26,7 +26,7 @@ export class UiDefinitionRepository {
       this.scopeService.scopeFindFirst(
         {
           where: { id },
-          ...args,
+          ...(args as Record<string, unknown>),
         },
         projectIds,
       ),
@@ -83,10 +83,10 @@ export class UiDefinitionRepository {
       this.scopeService.scopeDelete(
         {
           where: { id },
-          ...args,
-        },
+          ...(args as Record<string, unknown>),
+        } as any,
         projectIds,
-      ),
+      ) as any,
     );
   }
 

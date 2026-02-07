@@ -9,7 +9,7 @@ export const streamToBuffer = (stream: Stream): Promise<Buffer> => {
     });
 
     stream.on('end', () => {
-      resolve(Buffer.concat(chunks));
+      resolve(Buffer.concat(chunks as unknown as Uint8Array[]));
     });
 
     stream.on('error', reject);

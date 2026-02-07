@@ -81,7 +81,7 @@ export class WorkflowDefinitionService {
 
       await this.filterService.updatedById(filter.id, {
         data: { query: { ...rest, where: whereQuery } },
-        where: {},
+        where: {} as any,
       });
     }
 

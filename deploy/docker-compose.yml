@@ -1,4 +1,3 @@
-version: '3'
 services:
   ballerine-case-managment:
     container_name: backoffice

@@ -49,7 +49,7 @@ export class UserRepository {
     projectIds: TProjectIds,
   ): Promise<User[]> {
     const scopedArgs = {
-      ...args,
+      ...(args as Record<string, unknown>),
       where: {
         ...args?.where,
         userToProjects: !args?.where?.userToProjects
@@ -74,7 +74,7 @@ export class UserRepository {
   ): Promise<UserWithProjects> {
     return this.prisma.user.findFirstOrThrow({
       where: { id, userToProjects: { some: { projectId: { in: projectIds || [] } } } },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 
@@ -84,7 +84,7 @@ export class UserRepository {
   ): Promise<UserWithProjects> {
     return this.prisma.user.findUniqueOrThrow({
       where: { id },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 
@@ -94,7 +94,7 @@ export class UserRepository {
   ) {
     return this.prisma.user.findUnique({
       where: { email },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 
@@ -127,7 +127,7 @@ export class UserRepository {
 
     return this.prisma.user.delete({
       where: { id },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 }

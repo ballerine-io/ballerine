@@ -85,14 +85,12 @@ export class CollectionFlowService {
       config: workflowDefinition.config,
       uiOptions: uiDefinition.uiOptions,
       uiSchema: {
-        // @ts-expect-error - error from Prisma types fix
         elements: this.uiDefinitionService.traverseUiSchema(
-          // @ts-expect-error - error from Prisma types fix
-          uiDefinition.uiSchema.elements,
+          (uiDefinition.uiSchema as any).elements,
           context,
           language,
           translationService,
-        ) as UiSchemaStep[],
+        ) as unknown as UiSchemaStep[],
         theme: uiDefinition.theme,
       },
       definition: uiDefinition.definition
@@ -103,7 +101,7 @@ export class CollectionFlowService {
         businessId: workflowRuntimeData.businessId,
         entityId: tokenScope.endUserId,
       },
-    };
+    } as any;
   }
 
   async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {

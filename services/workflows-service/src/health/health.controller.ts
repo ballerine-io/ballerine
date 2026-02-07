@@ -16,9 +16,12 @@ export class HealthController {
   }
   @Get(ROUTES.READY)
   async healthReady(@Res() response: Response): Promise<Response<void>> {
-    const dbConnection = await this.healthService.isDbReady();
+    const [dbReady, redisReady] = await Promise.all([
+      this.healthService.isDbReady(),
+      this.healthService.isRedisReady(),
+    ]);
 
-    if (!dbConnection) {
+    if (!dbReady || !redisReady) {
       return response.status(HttpStatus.NOT_FOUND).send();
     }
 

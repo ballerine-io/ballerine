@@ -13,7 +13,7 @@ export const zEnumerable = <TSchema>(schema: ZodSchema<TSchema>) =>
   z.union([schema, schema.array()]);
 
 // @ts-ignore - It is expected for z.lazy to be any.
-export const NestedIntFilterSchema = z.lazy(() =>
+export const NestedIntFilterSchema: z.ZodType<any> = z.lazy(() =>
   z.object({
     equals: z.number().optional(),
     in: zEnumerable(z.number()).optional(),
@@ -108,7 +108,7 @@ export const zStringNullableFilterStringNullUnion = z.union([
 ]);
 
 // @ts-ignore - It is expected for z.lazy to be any.
-export const NestedIntNullableFilterSchema = z.lazy(() =>
+export const NestedIntNullableFilterSchema: z.ZodType<any> = z.lazy(() =>
   z
     .object({
       equals: z.number().optional().nullable(),
@@ -143,7 +143,7 @@ export const IntNullableFilterSchema = z.lazy(() =>
 export const zApprovalStateEnum = z.enum(['APPROVED', 'REJECTED', 'PROCESSING', 'NEW']);
 
 // @ts-ignore - It is expected for z.lazy to be any.
-export const NestedEnumApprovalStateFilter = z.lazy(() =>
+export const NestedEnumApprovalStateFilter: z.ZodType<any> = z.lazy(() =>
   z.object({
     equals: zApprovalStateEnum.optional(),
     in: zEnumerable(zApprovalStateEnum).optional(),

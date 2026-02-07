@@ -170,7 +170,6 @@ export class EndUserControllerExternal {
         projectIds,
       );
 
-    //@ts-expect-error
-    return makeFullWorkflow(workflowRuntimeDataWithDefinition);
+    return makeFullWorkflow(workflowRuntimeDataWithDefinition as any);
   }
 }

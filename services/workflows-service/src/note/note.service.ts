@@ -18,7 +18,7 @@ export class NoteService {
     return await this.noteRepository.findById(id, projectId, args);
   }
 
-  async getByProjectId(projectId: string, args?: Omit<Prisma.NoteFindFirstArgsBase, 'where'>) {
+  async getByProjectId(projectId: string, args?: Omit<Prisma.NoteFindFirstArgs, 'where'>) {
     return await this.noteRepository.findByProjectId(projectId, args);
   }
 

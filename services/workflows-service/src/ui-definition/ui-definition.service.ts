@@ -110,8 +110,12 @@ export class UiDefinitionService {
     for (const key in uiSchema) {
       if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
         // If the property is an object (including arrays), recursively traverse it
-        // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], context, language, _translationService);
+        this.traverseUiSchema(
+          uiSchema[key] as Record<string, unknown>,
+          context,
+          language,
+          _translationService,
+        );
       } else if (typeof uiSchema[key] === 'string') {
         const options: AnyRecord = {};
 

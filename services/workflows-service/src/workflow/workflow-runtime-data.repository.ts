@@ -473,10 +473,10 @@ export class WorkflowRuntimeDataRepository {
       this.scopeService.scopeDelete(
         {
           where: { id },
-          ...args,
-        },
+          ...(args as Record<string, unknown>),
+        } as any,
         projectIds,
-      ),
+      ) as any,
     );
   }
 

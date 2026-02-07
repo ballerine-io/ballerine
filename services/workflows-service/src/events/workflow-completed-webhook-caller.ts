@@ -143,8 +143,7 @@ export class WorkflowCompletedWebhookCaller {
 
     let status: (typeof statusMap)[keyof typeof statusMap] | undefined;
 
-    // @ts-expect-error - error from Prisma types fix
-    workflowRuntimeData.tags?.some((tag: string) => {
+    (workflowRuntimeData.tags as string[] | null)?.some((tag: string) => {
       if (tag in statusMap) {
         status = statusMap[tag as keyof typeof statusMap];
 

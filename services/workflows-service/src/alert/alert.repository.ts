@@ -79,8 +79,7 @@ export class AlertRepository {
     const batchResponse = await this.prisma.alert.updateMany({
       ...queryArgs,
       where: {
-        // @ts-expect-error - TS is not able to infer the type of where
-        ...queryArgs.where,
+        ...(queryArgs.where as Prisma.AlertWhereInput),
         id: { in: alertIds },
       },
     });

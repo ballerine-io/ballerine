@@ -33,7 +33,7 @@ export class CustomerRepository {
   async findMany<T extends Prisma.CustomerFindManyArgs>(
     args?: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>,
   ): Promise<Customer[]> {
-    return this.prisma.customer.findMany(args);
+    return this.prisma.customer.findMany(args) as unknown as Customer[];
   }
 
   async findById<T extends Omit<Prisma.CustomerFindUniqueOrThrowArgs, 'where'>>(
@@ -42,17 +42,17 @@ export class CustomerRepository {
   ): Promise<Customer> {
     return this.prisma.customer.findUniqueOrThrow({
       where: { id },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 
-  async findByProjectId<T extends Omit<Prisma.CustomerFindFirstArgsBase, 'where'>>(
+  async findByProjectId<T extends Omit<Prisma.CustomerFindFirstArgs, 'where'>>(
     projectId: string,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.CustomerFindFirstArgsBase, 'where'>>,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.CustomerFindFirstArgs, 'where'>>,
   ): Promise<Customer> {
     return this.prisma.customer.findFirstOrThrow({
       where: { projects: { some: { id: projectId } } },
-      ...(args || {
+      ...((args || {
         select: {
           id: true,
           name: true,
@@ -68,7 +68,7 @@ export class CustomerRepository {
           features: true,
           hubspotCustomerId: true,
         },
-      }),
+      }) as Record<string, unknown>),
     });
   }
 
@@ -78,7 +78,7 @@ export class CustomerRepository {
   ): Promise<any> {
     return this.prisma.customer.findUnique({
       where: { name },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 
@@ -113,8 +113,7 @@ export class CustomerRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.CustomerUpdateArgs, 'where'>>,
     transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<Customer> {
-    // @ts-expect-error - prisma json not updated
-    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
+    await this.validateApiKey((args.data?.authenticationConfiguration as Record<string, any>)?.authValue);
 
     return transaction.customer.update<T & { where: { id: string } }>({
       where: { id },
@@ -132,7 +131,7 @@ export class CustomerRepository {
   ): Promise<Customer> {
     return transaction.customer.delete({
       where: { id },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 }

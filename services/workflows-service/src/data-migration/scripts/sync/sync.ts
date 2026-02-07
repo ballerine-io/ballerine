@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
 import {
-  AlertDefinitionPayload,
-  DataSyncPayload,
+  AlertDefinition,
+  DataSync,
   DataSyncTables,
   PrismaClient,
-  UiDefinitionPayload,
-  WorkflowDefinitionPayload,
+  UiDefinition,
+  WorkflowDefinition,
 } from '@prisma/client';
 import { MD5 as objectMd5 } from 'object-hash';
 import deepDiff from 'deep-diff';
@@ -37,15 +37,15 @@ export type SyncedObject = {
 } & (
   | {
       tableName: 'WorkflowDefinition';
-      columns: Partial<WorkflowDefinitionPayload['scalars']>;
+      columns: Partial<WorkflowDefinition>;
     }
   | {
       tableName: 'UiDefinition';
-      columns: Partial<UiDefinitionPayload['scalars']>;
+      columns: Partial<UiDefinition>;
     }
   | {
       tableName: 'AlertDefinition';
-      columns: Partial<AlertDefinitionPayload['scalars']>;
+      columns: Partial<AlertDefinition>;
     }
 );
 
@@ -171,12 +171,12 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           stats.totalSyncObjectsForCurrentEnv++;
 
           appLoggerService.log(`Starting object sync for ${crossEnvKey} in ${tableName}`);
-          let existingRecord: DataSyncPayload['scalars'] | null = null;
+          let existingRecord: DataSync | null = null;
           try {
             const columnsHash = objectMd5(stableStringify(columns) ?? '');
             existingRecord = (await transaction.dataSync.findUnique({
               where: { table_crossEnvKey: { table: tableName as DataSyncTables, crossEnvKey } },
-            })) as DataSyncPayload['scalars'] | null;
+            })) as DataSync | null;
 
             if (!existingRecord) {
               existingRecord = await createSyncRecord(
@@ -334,11 +334,7 @@ function mergeEnvironmentConfigs(acc: any, key: any, obj: any) {
   acc[key].columns = {
     ...acc[key].columns,
     ...obj.columns,
-  } as Partial<
-    | WorkflowDefinitionPayload['scalars']
-    | UiDefinitionPayload['scalars']
-    | AlertDefinitionPayload['scalars']
-  >;
+  } as Partial<WorkflowDefinition> | Partial<UiDefinition> | Partial<AlertDefinition>;
   acc[key].syncedEnvironments = [
     ...new Set([...acc[key].syncedEnvironments, ...obj.syncedEnvironments]),
   ];
@@ -360,7 +356,7 @@ async function createSyncRecord(
   crossEnvKey: string,
   columns: any,
   appLoggerService: AppLoggerService,
-): Promise<DataSyncPayload['scalars']> {
+): Promise<DataSync> {
   const newSyncRecord = (await transaction.dataSync.create({
     data: {
       table: tableName as DataSyncTables,
@@ -375,7 +371,7 @@ async function createSyncRecord(
         },
       },
     },
-  })) as DataSyncPayload['scalars'];
+  })) as DataSync;
 
   appLoggerService.log(`Created ${tableName}-${crossEnvKey} in DataSync table`, {
     newSyncRecord: {
@@ -388,7 +384,7 @@ async function createSyncRecord(
   return newSyncRecord;
 }
 function createDiff(
-  existingRecord: DataSyncPayload['scalars'],
+  existingRecord: DataSync,
   dbRecord: any,
   columns: any,
   diff: any,
@@ -486,7 +482,7 @@ async function upsertFailedSync(
   tableName: string,
   crossEnvKey: string,
   error: unknown,
-  existingRecord: DataSyncPayload['scalars'] | null,
+  existingRecord: DataSync | null,
   columns: any,
 ) {
   await transaction.dataSync.upsert({
@@ -524,7 +520,7 @@ async function upsertFailedSync(
 
 async function updateSynced(
   transaction: PrismaTransactionalClient,
-  existingRecord: DataSyncPayload['scalars'],
+  existingRecord: DataSync,
   diff: any,
   columnsHash: string,
   columns: any,

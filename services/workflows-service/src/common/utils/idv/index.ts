@@ -151,7 +151,7 @@ export const handleIndividualVerificationDocuments = async ({
     });
     const fileWithExtension = `${tmpFile}${fileType?.extension ? `.${fileType?.extension}` : ''}`;
 
-    fs.writeFileSync(fileWithExtension, buffer);
+    fs.writeFileSync(fileWithExtension, buffer as unknown as Uint8Array);
 
     documentPages.push({
       uri: `file://${fileWithExtension}`,

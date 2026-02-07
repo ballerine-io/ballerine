@@ -13,8 +13,7 @@ export class KYBParentKYCSessionExampleAdapter
     flowData.id = workflow.id;
     flowData.flowData = context?.entity?.data?.dynamicInfo || {};
     flowData.flowState = context?.entity?.data?.__stateKey || null;
-    // @ts-expect-error - error from Prisma types fix
-    flowData.status = workflow.state;
+    flowData.status = workflow.state as string;
     flowData.isFinished = context?.entity?.data?.__isFinished || false;
     flowData.documents = context?.documents;
     flowData.ubos = (context.entity.data?.additionalInfo?.ubos || []).map(ubo => ({

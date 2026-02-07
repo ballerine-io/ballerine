@@ -95,11 +95,10 @@ export class IncomingWebhooksService {
       context: {
         aml: data,
         entity: {
-          // @ts-expect-error -- prisma date not compatible with typebox
           data: {
             ...rest,
             additionalInfo: rest.additionalInfo ?? {},
-          },
+          } as Record<string, unknown>,
           ballerineEntityId: endUserId,
           type: 'individual',
         },

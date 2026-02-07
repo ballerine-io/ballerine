@@ -113,7 +113,7 @@ export class WorkflowDefinitionRepository {
   ): Promise<WorkflowDefinition> {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
       where: { id, isPublic: true },
-      ...args,
+      ...(args as Record<string, unknown>),
     });
   }
 
@@ -165,10 +165,10 @@ export class WorkflowDefinitionRepository {
       this.scopeService.scopeDelete(
         {
           where: { id },
-          ...args,
-        },
+          ...(args as Record<string, unknown>),
+        } as any,
         projectIds,
-      ),
+      ) as any,
     );
   }
 
@@ -178,7 +178,7 @@ export class WorkflowDefinitionRepository {
     args?: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionFindManyArgs>,
   ) {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
-      ...args,
+      ...(args as Record<string, unknown>),
       where: {
         ...(args?.where ?? {}),
         OR: [

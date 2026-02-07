@@ -30,7 +30,7 @@ export class HttpFileService implements IStreamableFileProvider {
     }
 
     const fileBuffer = response.data;
-    await fsPromises.writeFile(localFilePath, Buffer.from(fileBuffer));
+    await fsPromises.writeFile(localFilePath, Buffer.from(fileBuffer) as unknown as Uint8Array);
 
     return localFilePath;
   }

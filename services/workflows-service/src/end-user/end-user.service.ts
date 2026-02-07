@@ -62,7 +62,7 @@ export class EndUserService {
               endUsersOnBusinesses: {
                 create: {
                   businessId: businessId ?? '',
-                  position,
+                  position: position as unknown as Prisma.EndUsersOnBusinessesCreatepositionInput,
                 },
               },
             }

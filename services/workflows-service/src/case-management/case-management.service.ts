@@ -9,7 +9,7 @@ import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/ty
 import { PrismaService } from '@/prisma/prisma.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { randomUUID } from 'crypto';
-import { BusinessPosition } from '@prisma/client';
+import { BusinessPosition, Prisma } from '@prisma/client';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import { UboToEntityAdapter } from './types';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
@@ -176,7 +176,7 @@ export class CaseManagementService {
         data: {
           endUserId: ballerineEntityId,
           businessId: workflowRuntimeData.businessId,
-          position: BusinessPosition.ubo,
+          position: BusinessPosition.ubo as unknown as Prisma.EndUsersOnBusinessesCreatepositionInput,
         },
       });
     });

@@ -56,5 +56,5 @@ export class CreateNoteDto {
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
-  fileIds?: string;
+  fileIds?: string[];
 }

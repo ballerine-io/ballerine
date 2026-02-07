@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectId } from '@/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateEntityInputDto } from '../dto/create-entity-input.dto';
 
 @Injectable()
@@ -51,7 +52,7 @@ export class CollectionFlowEntityService {
         data: {
           endUserId: endUser.id,
           businessId: workflowRuntimeData.businessId,
-          position: entityRest.variant,
+          position: entityRest.variant as unknown as Prisma.EndUsersOnBusinessesCreatepositionInput,
         },
       });
 
@@ -91,7 +92,7 @@ export class CollectionFlowEntityService {
           endUserId: entityId,
         },
         data: {
-          position: entityRest.variant,
+          position: entityRest.variant as unknown as Prisma.EndUsersOnBusinessesUpdateManyMutationInput['position'],
         },
       });
 

@@ -10,11 +10,8 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
-<<<<<<< HEAD
 import { CollectionFlowUtilityModule } from '@/collection-flow/services/сollection-flow-utility/collection-flow-utility.module';
-=======
 import { HttpModule } from '@nestjs/axios';
->>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
 
 @Module({
   imports: [
@@ -24,11 +21,8 @@ import { HttpModule } from '@nestjs/axios';
     forwardRef(() => WorkflowModule),
     UiDefinitionModule,
     WorkflowDefinitionModule,
-<<<<<<< HEAD
     CollectionFlowUtilityModule,
-=======
     HttpModule,
->>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
   ],
   controllers: [DocumentControllerExternal],
   providers: [DocumentService, DocumentRepository, ProjectScopeService],

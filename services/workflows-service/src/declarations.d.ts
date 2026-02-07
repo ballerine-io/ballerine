@@ -1,4 +1,4 @@
-import { Customer } from '@prisma/client';
+import { Customer, User as PrismaUser } from '@prisma/client';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -6,7 +6,7 @@ declare global {
 
   namespace Express {
     interface User {
-      user?: Partial<User>;
+      user?: Partial<PrismaUser>;
       customer?: Partial<Customer>;
       type: 'user' | 'customer' | 'admin';
       projectIds: string[] | null;

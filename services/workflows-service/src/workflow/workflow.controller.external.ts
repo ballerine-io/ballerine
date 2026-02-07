@@ -265,8 +265,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiBadRequestResponse({ type: ValidationError })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
-    // @ts-expect-error -- Something with swagger package
-    schema: WorkflowRunSchema,
+    schema: WorkflowRunSchema as any,
     description: 'Workflow run data.',
     examples: {
       KYB: {
@@ -497,8 +496,7 @@ export class WorkflowControllerExternal {
     schema: {
       type: 'object',
       properties: {
-        // @ts-expect-error -- ss
-        context: defaultContextSchema,
+        context: defaultContextSchema as any,
       },
     },
   })

@@ -20,8 +20,7 @@ export const logDocumentWithoutId = ({
       logger.error('Document without an ID was found', {
         line,
         workflowRuntimeDataId: workflowRuntimeData?.id,
-        // @ts-expect-error - error from Prisma types fix
-        workflowDefinitionId: workflowRuntimeData?.workflowDefinition?.id,
+          workflowDefinitionId: (workflowRuntimeData as Record<string, any>)?.workflowDefinition?.id,
         entity: {
           id: workflowRuntimeData?.context?.entity?.id,
           ballerineEntityId: workflowRuntimeData?.context?.entity?.ballerineEntityId,

@@ -233,8 +233,7 @@ export class CaseManagementController {
     await translationService.init();
 
     const elements = this.uiDefinitionService.traverseUiSchema(
-      // @ts-expect-error - error from Prisma types fix
-      body.partialUiDefinition.elements,
+      (body.partialUiDefinition as any).elements as Record<string, unknown>,
       {},
       language,
       translationService,

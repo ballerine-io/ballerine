@@ -207,20 +207,15 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
-      // @ts-expect-error - we don't validate `context` is an object
-      context.entity.id || context.entity.ballerineEntityId,
+      (context as Record<string, any>).entity.id || (context as Record<string, any>).entity.ballerineEntityId,
       currentProjectId,
       customer.name,
     );
 
-    // @ts-expect-error - we don't validate `context` is an object
-    this.setNestedProperty(context, attributePath, result);
-    // @ts-expect-error - we don't validate `context` is an object
-    context.documents =
-      // @ts-expect-error - we don't validate `context` is an object
-      context.documents?.filter(document => document.type !== 'identification_document') ?? [];
-    // @ts-expect-error - we don't validate `context` is an object
-    context.kycDocuments = persistedDocuments;
+    this.setNestedProperty(context as Record<string, any>, attributePath, result);
+    (context as Record<string, any>).documents =
+      (context as Record<string, any>).documents?.filter((document: any) => document.type !== 'identification_document') ?? [];
+    (context as Record<string, any>).kycDocuments = persistedDocuments;
 
     return context;
   }

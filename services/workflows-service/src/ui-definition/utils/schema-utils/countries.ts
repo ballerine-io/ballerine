@@ -278,5 +278,5 @@ export const getFullCountryNameByCode = (countryCode: string): string => {
   //@ts-ignore
   const result = isoCountriesRecord[countryCode.toLocaleUpperCase()];
 
-  return Array.isArray(result) ? result[0] : result || '';
+  return Array.isArray(result) ? (result[0] as string) : (result as string) || '';
 };
