@@ -365,7 +365,10 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
 };
 
 export const generateKybOnboardingSierraLeoneFormal = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: { ...kybOnboardingSierraLeoneFormalDefinition },
+  const { id, ...rest } = kybOnboardingSierraLeoneFormalDefinition;
+  return await prismaClient.workflowDefinition.upsert({
+    where: { id },
+    update: rest,
+    create: { id, ...rest },
   });
 };

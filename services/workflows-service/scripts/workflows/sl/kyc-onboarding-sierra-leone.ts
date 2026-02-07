@@ -253,7 +253,10 @@ export const kycOnboardingSierraLeoneDefinition = {
 };
 
 export const generateKycOnboardingSierraLeone = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: { ...kycOnboardingSierraLeoneDefinition },
+  const { id, ...rest } = kycOnboardingSierraLeoneDefinition;
+  return await prismaClient.workflowDefinition.upsert({
+    where: { id },
+    update: rest,
+    create: { id, ...rest },
   });
 };

@@ -468,7 +468,10 @@ export const loanKycKybSierraLeoneDefinition = {
 };
 
 export const generateLoanKycKybSierraLeone = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: { ...loanKycKybSierraLeoneDefinition },
+  const { id, ...rest } = loanKycKybSierraLeoneDefinition;
+  return await prismaClient.workflowDefinition.upsert({
+    where: { id },
+    update: rest,
+    create: { id, ...rest },
   });
 };

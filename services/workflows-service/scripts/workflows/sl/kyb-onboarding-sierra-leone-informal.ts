@@ -342,7 +342,10 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
 };
 
 export const generateKybOnboardingSierraLeoneInformal = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: { ...kybOnboardingSierraLeoneInformalDefinition },
+  const { id, ...rest } = kybOnboardingSierraLeoneInformalDefinition;
+  return await prismaClient.workflowDefinition.upsert({
+    where: { id },
+    update: rest,
+    create: { id, ...rest },
   });
 };
