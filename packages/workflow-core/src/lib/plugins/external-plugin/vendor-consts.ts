@@ -30,6 +30,14 @@ export const REGISTRY_INFORMATION_VENDORS = {
   test: 'test',
 } as const;
 
+export const DOCUMENT_VERIFICATION_VENDORS = {
+  mikashboks: 'mikashboks',
+} as const;
+
+export const FACIAL_VERIFICATION_VENDORS = {
+  mikashboks: 'mikashboks',
+} as const;
+
 export const EMAIL_TEMPLATES = {
   resubmission: 'resubmission',
   session: 'session',
@@ -55,6 +63,12 @@ export type ApiUboVendors = (typeof UBO_VENDORS)[keyof typeof UBO_VENDORS];
 export type ApiRegistryInformationVendors =
   (typeof REGISTRY_INFORMATION_VENDORS)[keyof typeof REGISTRY_INFORMATION_VENDORS];
 
+export type ApiDocumentVerificationVendors =
+  (typeof DOCUMENT_VERIFICATION_VENDORS)[keyof typeof DOCUMENT_VERIFICATION_VENDORS];
+
+export type ApiFacialVerificationVendors =
+  (typeof FACIAL_VERIFICATION_VENDORS)[keyof typeof FACIAL_VERIFICATION_VENDORS];
+
 export type ApiEmailTemplates = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
 
 export const BALLERINE_API_PLUGINS = {
@@ -65,6 +79,8 @@ export const BALLERINE_API_PLUGINS = {
   'template-email': 'template-email',
   'merchant-monitoring': 'merchant-monitoring',
   'kyc-session': 'kyc-session',
+  'document-verification': 'document-verification',
+  'facial-verification': 'facial-verification',
 } as const satisfies Record<string, string>;
 
 type PluginFactoryFnHelper<TPluginKind extends ApiPluginOptions['pluginKind'] | string> = (
@@ -189,6 +205,22 @@ type RegistryInformationKyckrOptions = {
   defaultCountry?: string;
 };
 
+type DocumentVerificationOptions = {
+  pluginKind: 'document-verification';
+  vendor: 'mikashboks';
+  successAction: string;
+  errorAction: string;
+  dataMapping?: string;
+};
+
+type FacialVerificationOptions = {
+  pluginKind: 'facial-verification';
+  vendor: 'mikashboks';
+  successAction: string;
+  errorAction: string;
+  dataMapping?: string;
+};
+
 type ApiPluginOptions =
   | DowJonesOptions
   | ComplyAdvantageOptions
@@ -200,7 +232,9 @@ type ApiPluginOptions =
   | RegistryInformationKyckrOptions
   | MerchantMonirotingOptions
   | EmailOptions
-  | KycSessionOptions;
+  | KycSessionOptions
+  | DocumentVerificationOptions
+  | FacialVerificationOptions;
 
 type TPluginFactory = Record<
   'individual-sanctions',
@@ -242,6 +276,21 @@ type TPluginFactory = Record<
     'registry-information',
     {
       [TKey in ApiRegistryInformationVendors]: PluginVendorFnHelper<'registry-information', TKey>;
+    }
+  > &
+  Record<
+    'document-verification',
+    {
+      [TKey in ApiDocumentVerificationVendors]: PluginVendorFnHelper<
+        'document-verification',
+        TKey
+      >;
+    }
+  > &
+  Record<
+    'facial-verification',
+    {
+      [TKey in ApiFacialVerificationVendors]: PluginVendorFnHelper<'facial-verification', TKey>;
     }
   >;
 
@@ -920,6 +969,116 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
           {
             transformer: 'jmespath',
             mapping: "{kyc_session_1: {vendor: 'veriff', type: 'kyc', result: {metadata: @}}}", // jmespath
+          },
+        ],
+      },
+    }),
+  },
+  [BALLERINE_API_PLUGINS['document-verification']]: {
+    [DOCUMENT_VERIFICATION_VENDORS['mikashboks']]: (
+      options: DocumentVerificationOptions,
+    ) => ({
+      name: 'document-verification',
+      displayName: 'Document Verification',
+      pluginKind: 'api',
+      vendor: 'mikashboks',
+      url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
+      method: 'POST' as const,
+      stateNames: ['document-verification'],
+      persistResponseDestination: 'pluginsOutput.document-verification',
+      headers: {
+        Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}',
+        'Content-Type': 'application/json',
+        'x-tenant-id': '{entity.ballerineEntityId}',
+        'x-project-id': '{entity.projectId}',
+      },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              ${options.dataMapping || ''}
+              person: {
+                firstName: entity.data.firstName,
+                lastName: entity.data.lastName,
+                dateOfBirth: entity.data.dateOfBirth,
+                nationalId: entity.data.identityNumber,
+                documents: documents[].{
+                  type: type,
+                  category: category,
+                  pages: pages[].{
+                    uri: uri,
+                    metadata: metadata
+                  }
+                }
+              },
+              methods: ['DOCUMENT_VERIFICATION'],
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}','?resultDestination=pluginsOutput.document-verification&processName=document-verification-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping:
+              "merge({ name: 'document-verification', status: error != `null` && 'ERROR' || decision == 'APPROVED' && 'SUCCESS' || decision == 'REJECTED' && 'REJECTED' || 'IN_PROGRESS' }, @)",
+          },
+        ],
+      },
+    }),
+  },
+  [BALLERINE_API_PLUGINS['facial-verification']]: {
+    [FACIAL_VERIFICATION_VENDORS['mikashboks']]: (
+      options: FacialVerificationOptions,
+    ) => ({
+      name: 'facial-verification',
+      displayName: 'Facial Verification',
+      pluginKind: 'api',
+      vendor: 'mikashboks',
+      url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
+      method: 'POST' as const,
+      stateNames: ['facial-verification'],
+      persistResponseDestination: 'pluginsOutput.facial-verification',
+      headers: {
+        Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}',
+        'Content-Type': 'application/json',
+        'x-tenant-id': '{entity.ballerineEntityId}',
+        'x-project-id': '{entity.projectId}',
+      },
+      request: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              ${options.dataMapping || ''}
+              person: {
+                firstName: entity.data.firstName,
+                lastName: entity.data.lastName,
+                dateOfBirth: entity.data.dateOfBirth,
+                nationalId: entity.data.identityNumber,
+                documents: documents[].{
+                  type: type,
+                  category: category,
+                  pages: pages[].{
+                    uri: uri,
+                    metadata: metadata
+                  }
+                }
+              },
+              methods: ['FACIAL_RECOGNITION'],
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}','?resultDestination=pluginsOutput.facial-verification&processName=facial-verification-unified-api'])
+            }`, // jmespath
+          },
+        ],
+      },
+      response: {
+        transform: [
+          {
+            transformer: 'jmespath',
+            mapping:
+              "merge({ name: 'facial-verification', status: error != `null` && 'ERROR' || decision == 'APPROVED' && 'SUCCESS' || decision == 'REJECTED' && 'REJECTED' || 'IN_PROGRESS' }, @)",
           },
         ],
       },

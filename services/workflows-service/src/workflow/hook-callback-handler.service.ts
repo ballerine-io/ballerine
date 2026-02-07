@@ -155,6 +155,24 @@ export class HookCallbackHandlerService {
       // );
     }
 
+    if (processName === 'document-verification-unified-api') {
+      return setPluginStatus({
+        data,
+        resultDestinationPath,
+        status: data?.error ? ProcessStatus.ERROR : ProcessStatus.SUCCESS,
+        context: workflowRuntime.context,
+      });
+    }
+
+    if (processName === 'facial-verification-unified-api') {
+      return setPluginStatus({
+        data,
+        resultDestinationPath,
+        status: data?.error ? ProcessStatus.ERROR : ProcessStatus.SUCCESS,
+        context: workflowRuntime.context,
+      });
+    }
+
     return setPluginStatus({
       data,
       resultDestinationPath,

@@ -5,4 +5,6 @@ export type UnifiedCallbackNames =
   | 'kyc-unified-api-decision'
   | 'aml-unified-api'
   | 'merchant-audit-report'
-  | 'website-monitoring';
+  | 'website-monitoring'
+  | 'document-verification-unified-api'
+  | 'facial-verification-unified-api';
