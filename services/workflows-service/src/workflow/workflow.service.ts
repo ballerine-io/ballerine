@@ -128,6 +128,7 @@ import { formatIndividualVerification } from '@/common/utils/idv';
 import { AssessmentsService } from '@/assessments/assessments.service';
 import { KycService } from '@/kyc/kyc.service';
 import z from 'zod';
+import { DocumentService } from '@/document/document.service';
 
 type TEntityId = string;
 
@@ -223,6 +224,7 @@ export class WorkflowService {
     private readonly workflowLogService: WorkflowLogService,
     private readonly assessmentsService: AssessmentsService,
     private readonly kycService: KycService,
+    private readonly documentService: DocumentService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -2925,15 +2927,33 @@ export class WorkflowService {
       [projectId],
       transaction,
     );
-    const document = runtimeData?.context?.documents?.find(
-      (document: DefaultContextSchema['documents'][number]) => {
-        if (document?._document?.id) {
-          return document._document?.id === documentId;
-        }
+    let document;
 
-        return document.id === documentId;
-      },
-    );
+    if (runtimeData?.config?.isDocumentsV2) {
+      const documentV2 = await this.documentService.getDocumentById(documentId, projectId);
+
+      document = {
+        ...documentV2,
+        issuer: {
+          country: documentV2?.issuingCountry,
+        },
+        pages: documentV2?.files?.map(file => ({
+          ballerineFileId: file.fileId,
+        })),
+      };
+    }
+
+    if (!runtimeData?.config?.isDocumentsV2) {
+      document = runtimeData?.context?.documents?.find(
+        (document: DefaultContextSchema['documents'][number]) => {
+          if (document?._document?.id) {
+            return document._document?.id === documentId;
+          }
+
+          return document.id === documentId;
+        },
+      );
+    }
 
     return addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
   }

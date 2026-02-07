@@ -17,9 +17,10 @@ import { PrismaTransactionClient, TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { addPropertiesSchemaToDocument } from '@/workflow/utils/add-properties-schema-to-document';
+// eslint-disable-next-line import/no-cycle
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, CommonWorkflowEvent, getDocumentId } from '@ballerine/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Inject, forwardRef } from '@nestjs/common';
 import {
   Document,
   DocumentDecision,
@@ -43,6 +44,9 @@ import {
   TParsedDocuments,
 } from './types';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 62cd40d45 (feat(common): added schemas for documents where there were no schemas)
 import {
   defaultPrismaTransactionOptions,
   beginTransactionIfNotExistCurry,
@@ -69,6 +73,7 @@ export class DocumentService {
     protected readonly repository: DocumentRepository,
     protected readonly documentFileService: DocumentFileService,
     protected readonly fileService: FileService,
+    @Inject(forwardRef(() => WorkflowService))
     protected readonly workflowService: WorkflowService,
     protected readonly storageService: StorageService,
     protected readonly uiDefinitionService: UiDefinitionService,

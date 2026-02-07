@@ -63,6 +63,8 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { FileModule } from '@/providers/file/file.module';
 import { FileRepository } from '@/storage/storage.repository';
 import { WebhooksModule } from '@/webhooks/webhooks.module';
+// eslint-disable-next-line import/no-cycle
+import { DocumentModule } from '@/document/document.module';
 
 @Module({
   controllers: [
@@ -89,6 +91,7 @@ import { WebhooksModule } from '@/webhooks/webhooks.module';
     forwardRef(() => EndUserModule),
     forwardRef(() => CollectionFlowModule),
     forwardRef(() => KycModule),
+    forwardRef(() => DocumentModule),
     AssessmentsModule,
     WebhooksModule,
   ],

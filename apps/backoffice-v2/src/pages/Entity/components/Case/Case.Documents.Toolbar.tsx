@@ -91,7 +91,11 @@ export const DocumentsToolbar: FunctionComponent<{
       {/* Toolbar Button Group */}
       <div className="flex items-center justify-center gap-4">
         {/* OCR Button */}
-        <div className="flex flex-col items-center">
+        <div
+          className={ctw('flex flex-col items-center', {
+            'opacity-50': !isOCREnabled,
+          })}
+        >
           <ImageOCR
             isOcrDisabled={!isOCREnabled}
             onOcrPressed={onOcrPressed}
