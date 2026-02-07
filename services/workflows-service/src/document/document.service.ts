@@ -42,6 +42,7 @@ import {
   EntitySchema,
   TParsedDocuments,
 } from './types';
+<<<<<<< HEAD
 import {
   defaultPrismaTransactionOptions,
   beginTransactionIfNotExistCurry,
@@ -53,6 +54,14 @@ import { CollectionFlowUtilityService } from '@/collection-flow/services/сollec
 =======
 import { HttpService } from '@nestjs/axios';
 >>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
+=======
+import { PrismaService } from '@/prisma/prisma.service';
+import { assertIsValidProjectIds } from '@/project/project-scope.service';
+import {
+  beginTransactionIfNotExistCurry,
+  defaultPrismaTransactionOptions,
+} from '@/prisma/prisma.util';
+>>>>>>> 4d5ca1cf3 (feat: reworked documents revision & added soft deletion for documents & files)
 
 @Injectable()
 export class DocumentService {
@@ -103,7 +112,7 @@ export class DocumentService {
 
     const entityId = getEntityId(data);
 
-    const uploadedFile = await this.fileService.uploadNewFile(projectId, entityId, {
+    await this.fileService.uploadNewFile(projectId, entityId, {
       ...file,
       mimetype:
         file.mimetype ||
@@ -115,6 +124,7 @@ export class DocumentService {
         )?.mimeType ||
         '',
     });
+
     const createdDocument = await this.repository.create(
       {
         ...data,

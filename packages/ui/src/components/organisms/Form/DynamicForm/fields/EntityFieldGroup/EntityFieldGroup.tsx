@@ -219,6 +219,10 @@ export const EntityFieldGroup: TDynamicFormField<IEntityFieldGroupParams> = ({
 
   useEffect(() => {
     void createEntitiesCreationTaskOnChange();
+
+    return () => {
+      removeTask(element.id);
+    };
   }, [value, documents, files.files, createEntitiesCreationTaskOnChange]);
 
   if (hidden) {

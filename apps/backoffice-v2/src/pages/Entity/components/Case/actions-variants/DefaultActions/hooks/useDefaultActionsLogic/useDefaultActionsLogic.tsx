@@ -35,9 +35,8 @@ export const useDefaultActionsLogic = () => {
     workflowId: workflow?.id,
     onSelectNextCase,
   });
-  const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } = useRevisionCaseMutation({
-    onSelectNextCase,
-  });
+  const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } =
+    useRevisionCaseMutation();
 
   const { isLoading: isLoadingAssignWorkflow } = useAssignWorkflowMutation({
     workflowRuntimeId: workflow?.id,
@@ -50,14 +49,22 @@ export const useDefaultActionsLogic = () => {
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const onMutateRejectCase = useCallback(() => mutateRejectCase(), [mutateRejectCase]);
 
-  const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
-
   const { documents } = useDocuments(workflow as TWorkflowById);
-
-  const documentsToReviseCount = useMemo(
-    () => [...documents].filter(document => document?.decision?.status === 'revision').length,
+  const documentsUnderRevision = useMemo(
+    () => documents?.filter(document => document?.decision?.status === 'revision'),
     [documents],
   );
+
+  const documentsUnderRevisionIds = useMemo(
+    () => documentsUnderRevision?.map(document => document?.id!) || [],
+    [documentsUnderRevision],
+  );
+
+  const { onMutateRevisionCase } = usePendingRevisionEvents({
+    mutateRevisionCase,
+    workflow,
+    documentIds: documentsUnderRevisionIds,
+  });
 
   // Only display the button spinners if the request is longer than 300ms
   const debouncedIsLoadingRejectCase = useDebounce(isLoadingRejectCase, 300);
@@ -70,7 +77,7 @@ export const useDefaultActionsLogic = () => {
       canRevision &&
       workflow?.tags?.some(tag => [StateTag.MANUAL_REVIEW, StateTag.PENDING_PROCESS].includes(tag)),
     debouncedIsLoadingRejectCase,
-    documentsToReviseCount,
+    documentsToReviseCount: documentsUnderRevision?.length ?? 0,
     debouncedIsLoadingRevisionCase,
     onMutateRevisionCase,
     onMutateRejectCase,

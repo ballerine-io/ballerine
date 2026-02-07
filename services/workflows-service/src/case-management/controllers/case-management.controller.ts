@@ -31,6 +31,7 @@ import type { Business, EndUsersOnBusinesses, UiDefinition } from '@prisma/clien
 import { TranslationService } from '@/providers/translation/translation.service';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
+import { CaseRevisionDto } from '../dtos/case-revision.dto';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -278,5 +279,14 @@ export class CaseManagementController {
       projectId,
       deletedBy: authenticatedEntity?.user?.id,
     });
+  }
+
+  @common.Post('/workflows/:workflowId/revision')
+  async caseRevision(
+    @common.Param('workflowId') workflowId: string,
+    @common.Body() body: CaseRevisionDto,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return this.caseManagementService.caseRevision(workflowId, body.documentIds, projectIds);
   }
 }
