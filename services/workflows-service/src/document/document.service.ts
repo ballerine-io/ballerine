@@ -48,7 +48,11 @@ import {
 } from '@/prisma/prisma.util';
 import { PrismaService } from '@/prisma/prisma.service';
 import { assertIsValidProjectIds } from '@/project/project-scope.service';
+<<<<<<< HEAD
 import { CollectionFlowUtilityService } from '@/collection-flow/services/сollection-flow-utility/collection-flow-utility.service';
+=======
+import { HttpService } from '@nestjs/axios';
+>>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
 
 @Injectable()
 export class DocumentService {
@@ -61,7 +65,11 @@ export class DocumentService {
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly workflowDefinitionService: WorkflowDefinitionService,
     protected readonly prismaService: PrismaService,
+<<<<<<< HEAD
     protected readonly collectionFlowUtilityService: CollectionFlowUtilityService,
+=======
+    protected readonly httpService: HttpService,
+>>>>>>> 5dfa6587b (fix: fixed rendering of csv documents)
   ) {}
 
   async create(
@@ -1180,7 +1188,7 @@ export class DocumentService {
       }
     >;
 
-    return typedDocuments.map(({ files, ...document }) => {
+    const formatPromises = typedDocuments.map(async ({ files, ...document }) => {
       const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
         // @ts-expect-error -- the function expects properties not used by the function.
         {
@@ -1191,17 +1199,44 @@ export class DocumentService {
         },
         documentSchema,
       );
+      const filesWithBase64 = await Promise.all(
+        files.map(async ({ imageUrl, file, ...fileData }) => ({
+          ...fileData,
+          imageUrl,
+          fileName: file.fileName,
+          base64:
+            this.isCsv(fileData) && imageUrl
+              ? await this.fetchCsvFromUrlAndCovertToBase64(imageUrl)
+              : undefined,
+        })),
+      );
 
       return {
         ...document,
         decision: document.decision,
-        files: files.map(({ file, ...fileData }) => ({
-          ...fileData,
-          fileName: file.fileName,
-        })),
+        files: filesWithBase64,
         propertiesSchema: documentWithPropertiesSchema.propertiesSchema,
       };
     });
+
+    return Promise.all(formatPromises);
+  }
+
+  private isCsv(file: { mimeType: string | null }) {
+    return file.mimeType === 'text/csv' || file.mimeType === 'application/csv';
+  }
+
+  private async fetchCsvFromUrlAndCovertToBase64(csvUrl: string) {
+    const response = await this.httpService.axiosRef.get(csvUrl, {
+      responseType: 'arraybuffer',
+    });
+    const buffer = response.data;
+    const base64 = Buffer.from(buffer).toString('base64');
+    const contentType = response.headers['content-type'];
+
+    const base64Result = `data:${contentType};base64,${base64}`;
+
+    return base64Result;
   }
 
   getLatestDocumentVersions(documents: Document[]) {
