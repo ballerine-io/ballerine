@@ -41,6 +41,7 @@ export class WorkflowCompletedWebhookCaller {
       select: {
         authenticationConfiguration: true,
         subscriptions: true,
+        features: true,
       },
     });
 

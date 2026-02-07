@@ -22,14 +22,4 @@ export class QueueBullboardService {
       this.logger.error(`Error registering queue ${queue.name} with BullBoard`, { error });
     }
   }
-
-  registerQueues(bullBoardInstance: any, queues: Queue[]) {
-    try {
-      const adapters = queues.map(queue => new BullMQAdapter(queue));
-      bullBoardInstance.boardInstance.setQueues(adapters);
-      this.logger.log(`Registered ${queues.length} queues with BullBoard`);
-    } catch (error) {
-      this.logger.error('Error registering queues with BullBoard', { error });
-    }
-  }
 }
