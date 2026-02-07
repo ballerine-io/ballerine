@@ -31,7 +31,7 @@ import {
   UpdateDocumentDecisionSchema,
   UpdateDocumentSchema,
 } from './dtos/document.dto';
-import { FILE_MAX_SIZE_IN_BYTE } from '@ballerine/common';
+import { FILE_MAX_SIZE_IN_BYTE } from '@/common/consts/file-size.consts';
 
 const RequestUploadSchema = Type.Object({
   workflowId: Type.String(),

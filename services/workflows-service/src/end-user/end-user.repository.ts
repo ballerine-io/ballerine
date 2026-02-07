@@ -72,7 +72,7 @@ export class EndUserRepository {
     projectIds: TProjectIds,
   ) {
     return await this.prismaService.endUser.findFirst({
-      where: { correlationId: id, projectId: { in: projectIds } },
+      where: { correlationId: id, projectId: { in: projectIds as string[] } },
       ...(args as Record<string, unknown>),
     });
   }

@@ -77,9 +77,9 @@ export class AlertRepository {
     const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
 
     const batchResponse = await this.prisma.alert.updateMany({
-      ...queryArgs,
+      ...(queryArgs as any),
       where: {
-        ...(queryArgs.where as Prisma.AlertWhereInput),
+        ...((queryArgs as any).where as Prisma.AlertWhereInput),
         id: { in: alertIds },
       },
     });

@@ -1,9 +1,6 @@
 import { formatBytes } from '@/common/utils/bytes';
-import {
-  SUPPORTED_FILE_EXT_REGEX,
-  FILE_MAX_SIZE_IN_BYTE,
-  FILE_MAX_SIZE_IN_KB,
-} from '@ballerine/common';
+import { SUPPORTED_FILE_EXT_REGEX } from '@ballerine/common';
+import { FILE_MAX_SIZE_IN_BYTE, FILE_MAX_SIZE_IN_KB } from '@/common/consts/file-size.consts';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 

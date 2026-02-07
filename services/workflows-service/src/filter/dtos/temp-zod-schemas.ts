@@ -165,7 +165,7 @@ const IntFilterSchema = z.lazy(() =>
   }),
 );
 // @ts-ignore
-export const BusinessRelationFilterSchema = z.object({
+export const BusinessRelationFilterSchema: z.ZodType<any> = z.object({
   is: z.lazy(() => BusinessWhereInputSchema).optional(),
   isNot: z.lazy(() => BusinessWhereInputSchema).optional(),
 });
@@ -255,7 +255,7 @@ export const EndUserRelationFilterSchema = z.object({
 });
 
 // @ts-ignore
-export const EndUserWhereInputSchema = z.object({
+export const EndUserWhereInputSchema: z.ZodType<any> = z.object({
   id: zStringFilterStringUnion.optional(),
   correlationId: zStringFilterStringUnion.optional(),
   verificationId: zStringNullableFilterStringNullUnion.optional(),
@@ -344,7 +344,7 @@ export const UserRelationFilterSchema = z.object({
 });
 
 // @ts-ignore
-export const WorkflowRuntimeDataSelectSchema = z.object({
+export const WorkflowRuntimeDataSelectSchema: z.ZodObject<any> = z.object({
   id: z.boolean().optional(),
   endUserId: z.boolean().optional(),
   businessId: z.boolean().optional(),
@@ -407,7 +407,7 @@ export const WorkflowRuntimeDataSelectSchema = z.object({
 });
 
 // @ts-ignore
-export const EndUserSelectSchema = z.object({
+export const EndUserSelectSchema: z.ZodObject<any> = z.object({
   id: z.boolean().optional(),
   correlationId: z.boolean().optional(),
   verificationId: z.boolean().optional(),
