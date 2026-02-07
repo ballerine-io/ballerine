@@ -11,28 +11,33 @@ export const ValidatorWrapper = <TValue extends object>({
   const { documents, files } = useDocumentsService();
 
   const valueWithFilesAndDocuments = useMemo(() => {
+    const filesFromDocuments = documents.reduce((acc, document) => {
+      const fileId = files.composeFileId({
+        type: document.type,
+        category: document.category,
+        entityType: document.businessId ? 'business' : 'ubo',
+        entityId: document.businessId ? document.businessId : document.endUserId!,
+      });
+
+      if (!document.files?.[0]) {
+        return acc;
+      }
+
+      return {
+        ...acc,
+        [fileId]: new File([], document.files?.[0]?.name!, {
+          type: document.files?.[0]?.mimeType,
+        }),
+      };
+    }, {});
+
     return {
       ...value,
       _documents: documents,
-      _files: documents.reduce((acc, document) => {
-        const fileId = files.composeFileId({
-          type: document.type,
-          category: document.category,
-          entityType: document.businessId ? 'business' : 'ubo',
-          entityId: document.businessId ? document.businessId : document.endUserId!,
-        });
-
-        if (!document.files?.[0]) {
-          return acc;
-        }
-
-        return {
-          ...acc,
-          [fileId]: new File([], document.files?.[0]?.name!, {
-            type: document.files?.[0]?.mimeType,
-          }),
-        };
-      }, files.files),
+      _files: {
+        ...filesFromDocuments,
+        ...files.files,
+      },
     } as TValue & IValidatorWrapperContext;
   }, [value, documents, files.files]);
 

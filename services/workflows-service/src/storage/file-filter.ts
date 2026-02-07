@@ -1,10 +1,11 @@
 import { formatBytes } from '@/common/utils/bytes';
-import { SUPPORTED_FILE_EXT_REGEX } from '@ballerine/common';
+import {
+  SUPPORTED_FILE_EXT_REGEX,
+  FILE_MAX_SIZE_IN_BYTE,
+  FILE_MAX_SIZE_IN_KB,
+} from '@ballerine/common';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-
-export const FILE_MAX_SIZE_IN_KB = 1024;
-export const FILE_MAX_SIZE_IN_BYTE = 10 * FILE_MAX_SIZE_IN_KB * 1024; // 10 MB
 
 export const FILE_SIZE_EXCEEDED_MSG = `File size exceeded ${formatBytes(FILE_MAX_SIZE_IN_BYTE)}`;
 export const FILE_TYPE_NOT_SUPPORTED_MSG = 'File type not supported';

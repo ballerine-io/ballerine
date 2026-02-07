@@ -288,6 +288,9 @@ export const SUPPORTED_FILE_EXT_ENUM = {
   XLS: 'xls',
 } as const;
 
+export const FILE_MAX_SIZE_IN_KB = 1024;
+export const FILE_MAX_SIZE_IN_BYTE = 10 * FILE_MAX_SIZE_IN_KB * 1024; // 10 MB
+
 // validate file exts in enum against regex
 Object.entries(SUPPORTED_FILE_EXT_ENUM).forEach(([key, value]) => {
   if (!SUPPORTED_FILE_EXT_REGEX.test(`.${value}`)) {
