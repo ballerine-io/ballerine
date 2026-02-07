@@ -182,7 +182,7 @@ export const loanKycKybSierraLeoneDefinition = {
       {
         name: 'loan_document_ocr',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/v1/document/smart-ocr`,
+        url: `${env.UNIFIED_API_URL}/api/v1/document/smart-ocr`,
         method: 'POST',
         stateNames: ['loan_document_review'],
         successAction: 'LOAN_DOCS_REVIEWED',
@@ -282,7 +282,7 @@ export const loanKycKybSierraLeoneDefinition = {
                   }
                 }
               },
-              documents: documents[?category=='business_document' || category=='proof_of_registration' || category=='proof_of_address' || category=='proof_of_location']
+              documents: documents[?category=='business_document' || category=='proof_of_registration' || category=='proof_of_ownership' || category=='proof_of_address' || category=='proof_of_location']
             }`,
           },
         ],

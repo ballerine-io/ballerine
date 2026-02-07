@@ -86,7 +86,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'APPROVED']]) > \`0\` && (pluginsOutput.address_verification.status == 'SUCCESS' || pluginsOutput.address_verification == null)`,
+                rule: `childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'APPROVED']]) > \`0\` && (pluginsOutput.address_verification.status == 'VERIFIED' || pluginsOutput.address_verification == null)`,
               },
             },
           },

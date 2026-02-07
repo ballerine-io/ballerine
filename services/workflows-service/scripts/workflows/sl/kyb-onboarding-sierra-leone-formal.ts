@@ -61,7 +61,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_onboarding_sierra_leone.*.[result.status][]) == length(childWorkflows.kyc_onboarding_sierra_leone.*[])',
+                  rule: 'length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags != null]) == length(childWorkflows.kyc_onboarding_sierra_leone.*[])',
                 },
               },
             },
@@ -94,7 +94,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `pluginsOutput.business_document_verification.status == 'SUCCESS' && pluginsOutput.address_verification.status == 'SUCCESS' && (pluginsOutput.business_document_verification.result.confidenceScore || \`0\`) >= \`80\``,
+                rule: `pluginsOutput.business_document_verification.status == 'VERIFIED' && pluginsOutput.address_verification.status == 'VERIFIED' && (pluginsOutput.business_document_verification.confidenceScore || \`0\`) >= \`80\``,
               },
             },
           },
@@ -167,7 +167,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
                   phoneNumber: entity.data.phoneNumber,
                   email: entity.data.email,
                   address: entity.data.address,
-                  documents: documents[?category=='business_document' || category=='proof_of_registration'].{
+                  documents: documents[?category=='business_document' || category=='proof_of_registration' || category=='proof_of_ownership'].{
                     type: type,
                     frontImageUrl: pages[0].uri,
                     issuingCountry: 'SL',
