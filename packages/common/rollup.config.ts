@@ -1,4 +1,4 @@
-import { RollupOptions } from 'rollup';
+import type { Plugin, RollupOptions } from 'rollup';
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 // rollup-plugin-size doesn't have a types package.
@@ -24,6 +24,10 @@ type Options = {
   jsName: string;
   globals: Record<string, string>;
 };
+
+// rollup-plugin-typescript-paths is typed against a newer Rollup plugin API.
+// Coerce to the Rollup version used by this package (runtime compatibility is unchanged).
+const asRollupPlugin = (plugin: unknown): Plugin => plugin as Plugin;
 
 const umdDevPlugin = (type: 'development' | 'production') =>
   replace({
@@ -103,15 +107,15 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       banner,
       preserveModules: true,
       preserveModulesRoot: path.resolve(process.cwd(), 'src'),
-    },
-    plugins: [
-      babelPlugin,
-      nodeResolve({ extensions: ['.ts'] }),
-      typescriptPaths({ preserveExtensions: true }),
-      json(),
-    ],
-  };
-}
+	    },
+	    plugins: [
+	      babelPlugin,
+	      nodeResolve({ extensions: ['.ts'] }),
+	      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
+	      json(),
+	    ],
+	  };
+	}
 
 function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
   return {
@@ -126,16 +130,16 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       preserveModulesRoot: path.resolve(process.cwd(), 'src'),
       exports: 'named',
       banner,
-    },
-    plugins: [
-      babelPlugin,
-      typescriptPaths({ preserveExtensions: true }),
-      commonjs(),
-      nodeResolve({ extensions: ['.ts'] }),
-      json(),
-    ],
-  };
-}
+	    },
+	    plugins: [
+	      babelPlugin,
+	      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
+	      commonjs(),
+	      nodeResolve({ extensions: ['.ts'] }),
+	      json(),
+	    ],
+	  };
+	}
 
 function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
@@ -148,14 +152,14 @@ function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): Ro
       file: `${packageDir}/dist/umd/index.development.js`,
       name: jsName,
       banner,
-    },
-    plugins: [
-      babelPlugin,
-      typescriptPaths({ preserveExtensions: true }),
-      commonjs(),
-      nodeResolve({ extensions: ['.ts'] }),
-      umdDevPlugin('development'),
-      json(),
+	    },
+	    plugins: [
+	      babelPlugin,
+	      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
+	      commonjs(),
+	      nodeResolve({ extensions: ['.ts'] }),
+	      umdDevPlugin('development'),
+	      json(),
     ],
   };
 }

@@ -12,6 +12,11 @@ import dts from 'rollup-plugin-dts';
 import { readJsonSync } from 'fs-extra';
 import json from '@rollup/plugin-json';
 
+const nodeMajor = Number.parseInt(process.versions.node.split('.')[0] || '0', 10);
+// @rollup/plugin-terser uses worker_threads and is unreliable on Node >= 22 in this repo
+// (repo engines typically target Node < 22). Keep minification for supported Node versions.
+const shouldMinifyUmd = nodeMajor < 22;
+
 type Options = {
   input: string;
   packageDir: string;
@@ -161,13 +166,13 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
       json(),
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('production'),
-      terser(),
+      shouldMinifyUmd ? terser({ maxWorkers: 1 }) : null,
       size({}),
       visualizer({
         filename: `${packageDir}/dist/stats-html.html`,
         gzipSize: true,
       }),
-    ],
+    ].filter(Boolean) as any,
   };
 }
 

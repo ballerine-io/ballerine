@@ -28,7 +28,8 @@ export interface IDocumentWithFiles extends IDocument {
   files: IDocumentFile[];
 }
 
-export type TDocumentEntityType = 'business' | 'ubo' | 'director';
+// 'end_user' is the primary applicant in KYC-only flows (no businessId).
+export type TDocumentEntityType = 'business' | 'ubo' | 'director' | 'end_user';
 
 export interface IDocumentCreationData {
   category: string;

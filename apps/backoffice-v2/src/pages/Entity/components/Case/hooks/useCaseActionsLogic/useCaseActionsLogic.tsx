@@ -14,9 +14,12 @@ import { tagToBadgeData } from '../../consts';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { useCaseState } from '../useCaseState/useCaseState';
 import { IUseActions } from './interfaces';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchUpdateWorkflowById } from '@/domains/workflows/fetchers';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const filterId = useFilterId();
+  const queryClient = useQueryClient();
   const { data: workflow, isLoading: isLoadingCase } = useWorkflowByIdQuery({
     workflowId,
     filterId,
@@ -69,6 +72,46 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   const isWorkflowCompleted = workflow?.status === 'completed';
 
+  // Custom labels from context.metadata
+  const customLabels = useMemo(() => {
+    const labels = (workflow?.context?.metadata as Record<string, unknown>)?.customLabels;
+    return Array.isArray(labels) ? (labels as string[]) : [];
+  }, [workflow?.context?.metadata]);
+
+  const { mutate: mutateCustomLabels } = useMutation({
+    mutationFn: (newLabels: string[]) =>
+      fetchUpdateWorkflowById({
+        workflowId,
+        body: {
+          context: {
+            metadata: {
+              ...(workflow?.context?.metadata ?? {}),
+              customLabels: newLabels,
+            },
+          },
+        },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+    },
+  });
+
+  const onAddCustomLabel = useCallback(
+    (label: string) => {
+      if (!customLabels.includes(label)) {
+        mutateCustomLabels([...customLabels, label]);
+      }
+    },
+    [customLabels, mutateCustomLabels],
+  );
+
+  const onRemoveCustomLabel = useCallback(
+    (label: string) => {
+      mutateCustomLabels(customLabels.filter(l => l !== label));
+    },
+    [customLabels, mutateCustomLabels],
+  );
+
   return {
     isActionButtonDisabled,
     onMutateAssignWorkflow,
@@ -91,5 +134,9 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     notes,
     isNotesOpen: isNotesOpen === 'true',
     setIsNotesOpen,
+    customLabels,
+    onAddCustomLabel,
+    onRemoveCustomLabel,
   };
 };
+

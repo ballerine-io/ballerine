@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 import { Type } from '@sinclair/typebox';
-import { env } from '../../../src/env';
+import { generateBaseCaseLevelStatesWithPendingResubmission } from '../generate-base-case-level-states';
 
 export const kycOnboardingSierraLeoneDefinition = {
   id: 'kyc_onboarding_sierra_leone',
@@ -20,11 +20,16 @@ export const kycOnboardingSierraLeoneDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'document_collection',
+          // Programmatic start (e.g., LoanCube/NAMK) when documents are already present in context.
+          start_with_documents: 'document_verification',
         },
       },
       document_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
+          // Ballerine collection-flow app sends this on final submission.
+          COLLECTION_FLOW_FINISHED: 'document_verification',
+          // Legacy alias (kept for backwards compatibility with any custom clients).
           COLLECTION_COMPLETED: 'document_verification',
         },
       },
@@ -59,7 +64,7 @@ export const kycOnboardingSierraLeoneDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `pluginsOutput.document_verification.status == 'VERIFIED' && pluginsOutput.facial_verification.status == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\``,
+                rule: `pluginsOutput.document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.facial_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\``,
               },
             },
           },
@@ -68,44 +73,17 @@ export const kycOnboardingSierraLeoneDefinition = {
           },
         ],
       },
-      manual_review: {
-        tags: [StateTag.MANUAL_REVIEW],
-        on: {
-          approve: 'approved',
-          reject: 'rejected',
-          revision: 'revision',
-        },
-      },
-      revision: {
-        tags: [StateTag.REVISION],
-        always: [
-          {
-            target: 'pending_resubmission',
-          },
-        ],
-      },
-      pending_resubmission: {
-        tags: [StateTag.REVISION],
-        on: {
-          RESUBMITTED: 'manual_review',
-        },
-      },
-      approved: {
-        tags: [StateTag.APPROVED],
-        type: 'final' as const,
-      },
-      rejected: {
-        tags: [StateTag.REJECTED],
-        type: 'final' as const,
-      },
+      ...generateBaseCaseLevelStatesWithPendingResubmission({
+        resumeState: 'document_verification',
+      }),
     },
   },
   extensions: {
     apiPlugins: [
-      {
-        name: 'document_verification',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyc`,
+	      {
+	        name: 'document_verification',
+	        pluginKind: 'api',
+	        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
         method: 'POST',
         stateNames: ['document_verification'],
         successAction: 'DOCUMENT_VERIFIED',
@@ -120,8 +98,8 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: `{
-                person: {
+	              mapping: `{
+	                person: {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
@@ -136,26 +114,28 @@ export const kycOnboardingSierraLeoneDefinition = {
                     issuingCountry: 'SL',
                     number: properties.nationalIdNumber || properties.documentNumber
                   }
-                },
-                methods: ['DOCUMENT_VERIFICATION'],
-                countryCode: 'SL'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'facial_verification',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyc`,
+	                },
+	                methods: ['DOCUMENT_VERIFICATION'],
+	                countryCode: 'SL',
+                  callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.document_verification.data&processName=document-verification-unified-api'])
+	              }`,
+	            },
+	          ],
+	        },
+	        response: {
+	          transform: [
+	            {
+	              transformer: 'jmespath',
+	              mapping:
+	                "merge(@, { name: 'document_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
+	            },
+	          ],
+	        },
+	      },
+	      {
+	        name: 'facial_verification',
+	        pluginKind: 'api',
+	        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
         method: 'POST',
         stateNames: ['facial_verification'],
         successAction: 'FACIAL_VERIFIED',
@@ -170,8 +150,8 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: `{
-                person: {
+	              mapping: `{
+	                person: {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
@@ -185,22 +165,24 @@ export const kycOnboardingSierraLeoneDefinition = {
                   biometricData: {
                     facialImages: documents[?category=='proof_of_identity_ownership'].pages[].uri
                   }
-                },
-                methods: ['FACIAL_RECOGNITION'],
-                countryCode: 'SL'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
+	                },
+	                methods: ['FACIAL_RECOGNITION'],
+	                countryCode: 'SL',
+                  callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.facial_verification.data&processName=facial-verification-unified-api'])
+	              }`,
+	            },
+	          ],
+	        },
+	        response: {
+	          transform: [
+	            {
+	              transformer: 'jmespath',
+	              mapping:
+	                "merge(@, { name: 'facial_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
+	            },
+	          ],
+	        },
+	      },
       {
         name: 'resubmission_email',
         pluginKind: 'template-email',

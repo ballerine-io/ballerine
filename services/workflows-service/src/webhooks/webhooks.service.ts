@@ -15,6 +15,30 @@ import {
   type OutgoingWebhookPayloads,
 } from './types/webhook';
 
+const SECRET_TEMPLATE_REGEX = /\{secret\.([A-Z0-9_]+)\}/g;
+
+const interpolateSecretTemplates = (template: string) => {
+  const usedKeys: string[] = [];
+  const missingKeys = new Set<string>();
+
+  const interpolated = template.replace(SECRET_TEMPLATE_REGEX, (_match, key: string) => {
+    usedKeys.push(key);
+    const value = process.env[key];
+    if (typeof value !== 'string' || value.length === 0) {
+      missingKeys.add(key);
+      // Keep placeholder so we can detect unresolved templates downstream.
+      return _match;
+    }
+    return value;
+  });
+
+  return {
+    interpolated,
+    usedKeys,
+    missingKeys: Array.from(missingKeys),
+  };
+};
+
 const captureWebhookFailureWithSentry = (errorPayload: Record<string, unknown>) => {
   Sentry.captureException(
     new Error('Failed to send a webhook', {
@@ -148,8 +172,38 @@ export class WebhooksService implements OnModuleInit {
     forceDirect?: boolean,
   ) {
     const { url, method, headers: argHeaders, data, secret, timeout } = config;
+    const { interpolated: interpolatedUrl, usedKeys, missingKeys } =
+      interpolateSecretTemplates(url);
 
-    this.logger.log('Sending webhook...', { url, method });
+    if (missingKeys.length > 0) {
+      this.logger.error('Webhook URL contains unresolved secret placeholders', {
+        urlTemplate: url,
+        usedKeys,
+        missingKeys,
+        method,
+        jobName: name,
+      });
+      return;
+    }
+
+    // Validate URL early to avoid noisy retries / queue churn on invalid templates.
+    try {
+      // eslint-disable-next-line no-new
+      new URL(interpolatedUrl);
+    } catch {
+      this.logger.error('Webhook URL is invalid', {
+        urlTemplate: url,
+        method,
+        jobName: name,
+      });
+      return;
+    }
+
+    this.logger.log('Sending webhook...', {
+      url: interpolatedUrl,
+      method,
+      ...(usedKeys.length > 0 ? { interpolatedSecrets: usedKeys } : {}),
+    });
 
     const headers: RawAxiosRequestHeaders = {
       Accept: 'application/json',
@@ -166,7 +220,7 @@ export class WebhooksService implements OnModuleInit {
     }
 
     const requestData: OutgoingWebhookJobData = {
-      url,
+      url: interpolatedUrl,
       method,
       headers,
       data,

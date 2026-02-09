@@ -92,10 +92,20 @@ export class CollectionFlowStateService {
       uiDefinition,
       workflowWithRelations.context,
       documents,
-      entities.map(entity => ({
-        entityId: entity.id,
-        variant: entity.variant || 'business',
-      })),
+      [
+        // For KYC-only workflows there is typically a single `endUserId` on the runtime data
+        // and no `endUsers[]` relation (directors/ubos). Include it so document revisions don't
+        // crash the collection-flow state computation.
+        ...(workflowWithRelations.endUserId
+          ? [{ entityId: workflowWithRelations.endUserId, variant: 'business' as const }]
+          : []),
+        ...entities.map(entity => ({
+          entityId: entity.id,
+          variant: (entity.variant || 'business') as EndUserVariant | 'business',
+        })),
+      ].filter(
+        (value, index, array) => array.findIndex(v => v.entityId === value.entityId) === index,
+      ),
     );
 
     const isCollectionFlowStateEqual = isEqual(collectionFlowState, computedCollectionFlowState);

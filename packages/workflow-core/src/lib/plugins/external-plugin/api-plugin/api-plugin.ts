@@ -1,5 +1,6 @@
-import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
+import { AnyRecord, isErrorWithMessage, isObject, ProcessStatus } from '@ballerine/common';
 import { logger } from '../../../logger';
+import { BUILT_IN_EVENT } from '../../../built-in-event';
 import {
   HelpersTransformer,
   TContext,
@@ -127,8 +128,23 @@ export class ApiPlugin {
         }
 
         if (this.successAction) {
+          // Some upstream services (e.g., Unified API) return a 200 with a domain-level
+          // status like "ERROR" or "PENDING". Our workflows normalize these into
+          // `responseBody.status` (ProcessStatus) during response transforms.
+          //
+          // If the response indicates an error, prefer the configured errorAction.
+          // If the response is in-progress, dispatch NO_OP to keep the machine in
+          // the current state (a callback/hook can later advance it).
+          const status = isObject(responseBody) ? (responseBody as AnyRecord).status : undefined;
+          const callbackAction =
+            status === ProcessStatus.ERROR && this.errorAction
+              ? this.errorAction
+              : status === ProcessStatus.IN_PROGRESS
+                ? BUILT_IN_EVENT.NO_OP
+                : this.successAction;
+
           return this.returnSuccessResponse(
-            this.successAction,
+            callbackAction,
             {
               ...responseBody,
             },

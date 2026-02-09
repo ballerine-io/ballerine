@@ -109,17 +109,47 @@ export class UnifiedApiClient {
     });
   }
 
-  async runOcr({ images, schema }: { images: TOcrImages; schema: TSchema }) {
-    return await this.axiosInstance.post('/v1/smart-ocr', {
-      images,
-      schema,
-    });
+  /**
+   * Build tenant/project isolation headers for Unified API requests.
+   * These headers ensure downstream services (Document API, Bio-Facial, OpenSearch)
+   * scope all data operations to the correct tenant and project.
+   */
+  private buildTenantHeaders(customerId?: string, projectId?: string): Record<string, string> {
+    const headers: Record<string, string> = {};
+    if (customerId) headers['x-tenant-id'] = customerId;
+    if (projectId) headers['x-project-id'] = projectId;
+    return headers;
+  }
+
+  async runOcr({
+    images,
+    schema,
+    customerId,
+    projectId,
+  }: {
+    images: TOcrImages;
+    schema: TSchema;
+    customerId?: string;
+    projectId?: string;
+  }) {
+    return await this.axiosInstance.post(
+      '/v1/smart-ocr',
+      {
+        images,
+        schema,
+      },
+      {
+        headers: this.buildTenantHeaders(customerId, projectId),
+      },
+    );
   }
 
   async runDocumentOcr({
     images,
     supportedCountries,
     overrideSchemas,
+    customerId,
+    projectId,
   }: {
     images: TOcrImages;
     supportedCountries: string[];
@@ -131,12 +161,20 @@ export class UnifiedApiClient {
         schema: TSchema;
       }>;
     };
+    customerId?: string;
+    projectId?: string;
   }) {
-    return await this.axiosInstance.post('/v1/document/smart-ocr', {
-      images,
-      supportedCountries,
-      overrideSchemas,
-    });
+    return await this.axiosInstance.post(
+      '/v1/document/smart-ocr',
+      {
+        images,
+        supportedCountries,
+        overrideSchemas,
+      },
+      {
+        headers: this.buildTenantHeaders(customerId, projectId),
+      },
+    );
   }
 
   public async createCustomer(payload: Customer) {
@@ -161,6 +199,9 @@ export class UnifiedApiClient {
     return await this.axiosInstance.put(
       `/customers/${payload.project.customer.id}/businesses/${payload.id}`,
       formattedPayload,
+      {
+        headers: this.buildTenantHeaders(payload.project.customer.id),
+      },
     );
   }
 
@@ -283,6 +324,15 @@ export class UnifiedApiClient {
     lastName,
     dateOfBirth,
     projectId,
+    customerId,
+    // Bio-facial fields — optional, enable facial verification when provided
+    documents,
+    biometricData,
+    idNumber,
+    phoneNumber,
+    country,
+    methods,
+    performDeduplication,
   }: {
     clientId: string;
     endUserId: string;
@@ -296,20 +346,49 @@ export class UnifiedApiClient {
     lastName: string;
     dateOfBirth?: string;
     projectId: string;
+    customerId?: string;
+    documents?: Array<{
+      type?: string;
+      frontImage?: string;
+      backImage?: string;
+      documentNumber?: string;
+    }>;
+    biometricData?: {
+      facialImages?: string[];
+    };
+    idNumber?: string;
+    phoneNumber?: string;
+    country?: string;
+    methods?: string[];
+    performDeduplication?: boolean;
   }) {
-    return await this.axiosInstance.post(`/individual-verification-sessions`, {
-      clientId,
-      endUserId: `${endUserId}__${sessionId ?? ''}`,
-      workflowRuntimeDataId,
-      vendor,
-      withAml,
-      ongoingMonitoring,
-      callbackUrl,
-      firstName,
-      lastName,
-      dateOfBirth,
-      projectId,
-    });
+    return await this.axiosInstance.post(
+      `/individual-verification-sessions`,
+      {
+        clientId,
+        endUserId: `${endUserId}__${sessionId ?? ''}`,
+        workflowRuntimeDataId,
+        vendor,
+        withAml,
+        ongoingMonitoring,
+        callbackUrl,
+        firstName,
+        lastName,
+        dateOfBirth,
+        projectId,
+        // Bio-facial fields — omitted from payload when undefined
+        ...(documents && { documents }),
+        ...(biometricData && { biometricData }),
+        ...(idNumber && { idNumber }),
+        ...(phoneNumber && { phoneNumber }),
+        ...(country && { country }),
+        ...(methods && { methods }),
+        ...(performDeduplication !== undefined && { performDeduplication }),
+      },
+      {
+        headers: this.buildTenantHeaders(customerId, projectId),
+      },
+    );
   }
 
   public async runAml({
@@ -322,6 +401,8 @@ export class UnifiedApiClient {
     firstName,
     lastName,
     dateOfBirth,
+    projectId,
+    customerId,
   }: {
     clientId: string;
     endUserId: string;
@@ -332,17 +413,26 @@ export class UnifiedApiClient {
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
+    projectId?: string;
+    customerId?: string;
   }) {
-    return await this.axiosInstance.post(`/aml-sessions`, {
-      clientId,
-      endUserId,
-      vendor,
-      immediateResults,
-      ongoingMonitoring,
-      callbackUrl,
-      firstName,
-      lastName,
-      dateOfBirth,
-    });
+    return await this.axiosInstance.post(
+      `/aml-sessions`,
+      {
+        clientId,
+        endUserId,
+        vendor,
+        immediateResults,
+        ongoingMonitoring,
+        callbackUrl,
+        firstName,
+        lastName,
+        dateOfBirth,
+        projectId,
+      },
+      {
+        headers: this.buildTenantHeaders(customerId, projectId),
+      },
+    );
   }
 }

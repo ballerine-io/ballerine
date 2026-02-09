@@ -759,24 +759,24 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       },
       request: {
         transform: [
-          {
-            transformer: 'jmespath',
-            // #TODO: create new token (new using old one)
-            mapping: `{
-              ${options.dataMapping || ''}
-              kybCompanyName: entity.data.companyName,
-              customerCompanyName: metadata.customerName,
-              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
-              supportEmail: join('',['support@',metadata.customerName,'.com']),
-              from: 'no-reply@ballerine.com',
-              name: join(' ',[metadata.customerName,'Team']),
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: ${
-                options.templateId
-                  ? `'${options.templateId}'`
-                  : `'d-7305991b3e5840f9a14feec767ea7301'`
-              },
+	          {
+	            transformer: 'jmespath',
+	            // #TODO: create new token (new using old one)
+	            mapping: `{
+	              ${options.dataMapping || ''}
+	              kybCompanyName: entity.data.companyName || entity.data.businessName || entity.data.tradingName || '',
+	              customerCompanyName: metadata.customerName,
+	              firstName: entity.data.additionalInfo.mainRepresentative.firstName || entity.data.firstName || entity.data.additionalInfo.owner.firstName || entity.data.ownerFirstName || entity.data.additionalInfo.directors[0].firstName || 'Customer',
+	              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+	              supportEmail: join('',['support@',metadata.customerName,'.com']),
+	              from: 'no-reply@ballerine.com',
+	              name: join(' ',[metadata.customerName,'Team']),
+	              receivers: ((entity.data.additionalInfo.mainRepresentative.email || entity.data.email || entity.data.additionalInfo.owner.email || entity.data.additionalInfo.directors[0].email) != null) && [entity.data.additionalInfo.mainRepresentative.email || entity.data.email || entity.data.additionalInfo.owner.email || entity.data.additionalInfo.directors[0].email] || [],
+	              templateId: ${
+	                options.templateId
+	                  ? `'${options.templateId}'`
+	                  : `'d-7305991b3e5840f9a14feec767ea7301'`
+	              },
               revisionReason: documents[].decision[].revisionReason | [0],
               language: workflowRuntimeConfig.language,
               adapter: '{secret.MAIL_ADAPTER}'
@@ -989,8 +989,8 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       headers: {
         Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}',
         'Content-Type': 'application/json',
-        'x-tenant-id': '{entity.ballerineEntityId}',
-        'x-project-id': '{entity.projectId}',
+        'x-tenant-id': '{entity.data.tenantId}',
+        'x-project-id': '{entity.data.projectId}',
       },
       request: {
         transform: [
@@ -1044,8 +1044,8 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       headers: {
         Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}',
         'Content-Type': 'application/json',
-        'x-tenant-id': '{entity.ballerineEntityId}',
-        'x-project-id': '{entity.projectId}',
+        'x-tenant-id': '{entity.data.tenantId}',
+        'x-project-id': '{entity.data.projectId}',
       },
       request: {
         transform: [

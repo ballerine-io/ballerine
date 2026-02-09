@@ -200,6 +200,76 @@ export class WorkflowControllerInternal {
     }
   }
 
+  /**
+   * Batch Event Decision — Apply the same approve/reject decision to multiple workflows.
+   *
+   * Processes sequentially with error isolation: individual failures do not block
+   * the remaining workflows. Returns a summary of successes and failures.
+   *
+   * POST /internal/workflows/batch/event-decision
+   * Body: { workflowIds: string[], name: string, reason?: string }
+   */
+  @common.Post('/batch/event-decision')
+  @swagger.ApiOkResponse({ description: 'Batch decision results' })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(AdminAuthGuard)
+  async batchDecision(
+    @common.Body()
+    data: {
+      workflowIds: string[];
+      name: 'approve' | 'reject' | 'revision';
+      reason?: string;
+    },
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const { workflowIds, name, reason } = data;
+
+    if (!workflowIds?.length) {
+      throw new common.BadRequestException('workflowIds array is required and must not be empty');
+    }
+
+    if (workflowIds.length > 100) {
+      throw new common.BadRequestException(
+        `workflowIds exceeds maximum batch size of 100 (received ${workflowIds.length})`,
+      );
+    }
+
+    const validNames = ['approve', 'reject', 'revision'] as const;
+
+    if (!name || !validNames.includes(name as (typeof validNames)[number])) {
+      throw new common.BadRequestException(
+        `name must be one of: ${validNames.join(', ')} (received '${name}')`,
+      );
+    }
+
+    const results: Array<{ id: string; success: boolean; error?: string }> = [];
+
+    for (const id of workflowIds) {
+      try {
+        await this.service.updateDecisionAndSendEvent({
+          id,
+          name,
+          reason,
+          projectId: currentProjectId,
+        });
+        results.push({ id, success: true });
+      } catch (error) {
+        results.push({
+          id,
+          success: false,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    return {
+      total: workflowIds.length,
+      succeeded: results.filter(r => r.success).length,
+      failed: results.filter(r => !r.success).length,
+      results,
+    };
+  }
+
   // PATCH /workflows/:id
   @common.Patch('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })

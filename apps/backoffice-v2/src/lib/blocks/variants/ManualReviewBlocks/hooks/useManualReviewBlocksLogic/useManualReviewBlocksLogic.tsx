@@ -12,6 +12,7 @@ import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components
 import { StateTag, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 import { useAddressBlock } from '@/lib/blocks/hooks/useAddressBlock/useAddressBlock';
+import { useVerificationResultsBlock } from '@/lib/blocks/hooks/useVerificationResultsBlock/useVerificationResultsBlock';
 import { titleCase } from 'string-ts';
 import { EDIT_TEMPLATES } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
 
@@ -115,6 +116,10 @@ export const useManualReviewBlocksLogic = () => {
     },
   });
 
+  const verificationResultsBlock = useVerificationResultsBlock({
+    pluginsOutput: workflow?.context?.pluginsOutput as Record<string, unknown> | undefined,
+  });
+
   const entityAdditionalInfoBlock = useEntityAdditionalInfoBlock({
     entity: workflow?.context?.entity,
     workflow,
@@ -135,8 +140,15 @@ export const useManualReviewBlocksLogic = () => {
       ...entityAdditionalInfoBlock,
       ...entityAddressBlock,
       ...documentsBlocks,
+      ...verificationResultsBlock,
     ];
-  }, [businessInformation, documentsBlocks, entityAdditionalInfoBlock, entityAddressBlock]);
+  }, [
+    businessInformation,
+    documentsBlocks,
+    entityAdditionalInfoBlock,
+    entityAddressBlock,
+    verificationResultsBlock,
+  ]);
 
   return {
     blocks,

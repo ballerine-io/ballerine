@@ -28,6 +28,7 @@ import { ReuploadDocumentDtoSchema } from '../dto/re-upload-document.dto';
 import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { ReuploadDocumentDto } from '../dto/reupload-document.dto';
 import { FILE_MAX_SIZE_IN_BYTE } from '@/common/consts/file-size.consts';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 const fileParsePipe = new ParseFilePipeBuilder()
   .addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE })
@@ -61,7 +62,10 @@ const fileUploadInterceptor = FileInterceptor('file', {
 @ApiTags('Collection Flow Documents')
 @Controller('collection-flow/documents')
 export class CollectionFlowDocumentsController {
-  constructor(protected readonly collectionFlowDocumentsService: CollectionFlowDocumentsService) {}
+  constructor(
+    protected readonly collectionFlowDocumentsService: CollectionFlowDocumentsService,
+    protected readonly workflowService: WorkflowService,
+  ) {}
 
   @ApiResponse({
     status: 200,
@@ -123,6 +127,34 @@ export class CollectionFlowDocumentsController {
       throw new BadRequestException(
         'End user and business ID cannot be provided at the same time.',
       );
+    }
+
+    const workflow = await this.workflowService.getWorkflowByIdWithRelations(
+      tokenScope.workflowRuntimeDataId,
+      [tokenScope.projectId],
+    );
+
+    const allowedEndUserIds = new Set<string>(
+      [
+        workflow.endUserId,
+        ...(workflow.endUsers?.map(endUser => endUser.id) ?? []),
+      ].filter(Boolean) as string[],
+    );
+
+    if (endUserId && !allowedEndUserIds.has(endUserId)) {
+      throw new BadRequestException('Provided end user ID is not part of this workflow.');
+    }
+
+    if (businessId) {
+      if (!workflow.businessId) {
+        throw new BadRequestException('Workflow does not have a business entity.');
+      }
+
+      if (workflow.businessId !== businessId) {
+        throw new BadRequestException(
+          'Provided business ID does not match the workflow business.',
+        );
+      }
     }
 
     return this.collectionFlowDocumentsService.createDocument({

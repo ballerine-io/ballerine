@@ -1625,6 +1625,14 @@ export class WorkflowService {
       // @ts-ignore
       contextToInsert.entity.ballerineEntityId ||= entityId;
 
+      // Ensure stable tenant/project identifiers exist in context for downstream services (Unified API, Document API, etc.).
+      // This is required for cross-entity deduplication and tenant-scoped configuration.
+      const entity = (contextToInsert as AnyRecord).entity;
+      if (isObject(entity) && isObject(entity.data)) {
+        entity.data.tenantId ??= customer.name;
+        entity.data.projectId ??= currentProjectId;
+      }
+
       const entityConnect = {
         [`${entityType}Id`]: entityId,
       };
@@ -2062,10 +2070,28 @@ export class WorkflowService {
       return;
     };
     const businessWebsite = getBusinessWebsite(context.entity.data ?? {});
+    const entityData = (context.entity.data ?? {}) as Record<string, any>;
+
+    // Ballerine's Business model requires `companyName`, but informal SL entities often
+    // only supply `businessName` / `tradingName`. Normalize here to prevent hard failures
+    // during workflow creation (e2e + real onboarding).
+    const derivedCompanyName =
+      (typeof entityData.companyName === 'string' && entityData.companyName.trim()
+        ? entityData.companyName
+        : undefined) ??
+      (typeof entityData.businessName === 'string' && entityData.businessName.trim()
+        ? entityData.businessName
+        : undefined) ??
+      (typeof entityData.tradingName === 'string' && entityData.tradingName.trim()
+        ? entityData.tradingName
+        : undefined) ??
+      correlationId;
+
     const { id } = await this.businessService.create({
       data: {
         correlationId,
-        ...(context.entity.data as object),
+        ...entityData,
+        ...(derivedCompanyName ? { companyName: derivedCompanyName } : {}),
         ...(businessWebsite && { website: businessWebsite }),
         project: { connect: { id: currentProjectId } },
       } as Prisma.BusinessCreateInput,
@@ -2570,10 +2596,12 @@ export class WorkflowService {
       }
 
       if (currentState !== workflowRuntimeData.state) {
+        const correlationId = await this.getCorrelationIdFromWorkflow(updatedRuntimeData, projectIds);
+
         this.workflowEventEmitter.emit('workflow.state.changed', {
           entityId: entityId as string,
           state: updatedRuntimeData.state,
-          correlationId: updatedRuntimeData.context.ballerineEntityId,
+          correlationId,
           runtimeData: updatedRuntimeData,
         });
       }
@@ -3008,6 +3036,10 @@ export class WorkflowService {
           await new UnifiedApiClient().runOcr({
             images,
             schema: document.propertiesSchema as unknown as TSchema,
+            // Use the same tenant/project identifiers we propagate to Unified API plugins.
+            // This keeps OCR/extraction scoped correctly for downstream services.
+            customerId: customer.name,
+            projectId,
           })
         )?.data;
       },

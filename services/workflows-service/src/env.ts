@@ -10,6 +10,24 @@ const path = getEnvFilePath();
 
 config({ path });
 
+// In production we avoid injecting DB_URL as a plaintext Cloud Run env var.
+// Terraform provides DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME and we build
+// DB_URL here before schema validation (Prisma reads DB_URL).
+if (!process.env.DB_URL) {
+  const host = process.env.DB_HOST;
+  const port = process.env.DB_PORT || '5432';
+  const user = process.env.DB_USER;
+  const password = process.env.DB_PASSWORD;
+  const dbName = process.env.DB_NAME;
+
+  if (host && user && password && dbName) {
+    const safeHost = host.includes(':') ? `[${host}]` : host; // IPv6 support
+    process.env.DB_URL = `postgres://${encodeURIComponent(user)}:${encodeURIComponent(
+      password,
+    )}@${safeHost}:${encodeURIComponent(port)}/${encodeURIComponent(dbName)}`;
+  }
+}
+
 const urlArrayTransformer = (value: string) => {
   const urlSchema = z.string().url();
   const urlArray = value.split(',');

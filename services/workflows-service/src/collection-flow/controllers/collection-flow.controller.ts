@@ -29,6 +29,8 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
 import { CollectionFlowStateService } from '../services/collection-flow-state.service';
 import { PrismaService } from '@/prisma/prisma.service';
+import { DocumentService } from '@/document/document.service';
+import { isObject } from '@ballerine/common';
 
 @UseWorkflowAuthGuard()
 @ApiExcludeController()
@@ -42,6 +44,7 @@ export class CollectionFlowController {
     protected readonly endUserService: EndUserService,
     protected readonly collectionFlowStateService: CollectionFlowStateService,
     protected readonly prismaService: PrismaService,
+    protected readonly documentService: DocumentService,
   ) {}
 
   @common.Get('/customer')
@@ -176,6 +179,62 @@ export class CollectionFlowController {
         });
 
         context.pluginsOutput = pluginsOutput;
+      }
+
+      // Collection-flow v2 stores uploaded files in the documents service (DB) rather than directly in
+      // `context.documents`. Our SL workflows (and Unified API adapters) expect a legacy-like
+      // `context.documents[].pages[].uri` shape, so we synthesize it here from the latest documents.
+      //
+      // This keeps workflow definitions simple and ensures verification plugins have access to
+      // signed URLs immediately after the end-user submits/resubmits their documents.
+      try {
+        const latestDocs = await this.documentService.getLatestDocumentsWithFilesByWorkflowId(
+          tokenScope.workflowRuntimeDataId,
+          [tokenScope.projectId],
+        );
+
+        const latestDocsWithSignedUrls = await this.documentService.fetchDocumentsFiles({
+          documents: latestDocs as any,
+          format: 'signed-url',
+        });
+
+        (context as AnyRecord).documents = (latestDocsWithSignedUrls as any[]).map(doc => ({
+          category: doc.category,
+          type: doc.type,
+          issuer: { country: doc.issuingCountry || 'SL' },
+          pages: (doc.files ?? [])
+            .slice()
+            .sort((a: any, b: any) => {
+              const variantOrder = (v: string) =>
+                v === 'front' ? 0 : v === 'back' ? 1 : 2;
+              return (
+                variantOrder(a.variant) - variantOrder(b.variant) ||
+                (a.page || 0) - (b.page || 0)
+              );
+            })
+            .map((file: any) => ({
+              provider: 'http',
+              uri: file.imageUrl,
+              type: file.mimeType,
+              metadata: {
+                side: file.variant,
+                pageNumber: file.page != null ? String(file.page) : undefined,
+              },
+            })),
+          properties: isObject(doc.properties) ? doc.properties : {},
+          decision: doc.decision
+            ? {
+                status: doc.decision,
+                comment: doc.comment ?? undefined,
+              }
+            : undefined,
+        }));
+      } catch (error) {
+        // Non-fatal: allow flows without documents (or with external/programmatic docs) to proceed.
+        this.appLogger.warn('Failed to synthesize context.documents from documents service', {
+          workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+          error,
+        });
       }
 
       await this.workflowService.updateWorkflowRuntimeData(

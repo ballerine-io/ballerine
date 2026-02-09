@@ -35,6 +35,7 @@ export const ALL_BLOCKS = [
   'entityAdditionalInfoBlock',
   'headquartersAddressWithContainerBlock',
   'entityAddressWithContainerBlock',
+  'verificationResultsBlock',
 ] as const;
 
 export type TAllBlocks = Record<(typeof ALL_BLOCKS)[number], Blocks>;

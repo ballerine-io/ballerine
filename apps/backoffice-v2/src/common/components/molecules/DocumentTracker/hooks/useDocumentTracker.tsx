@@ -88,9 +88,17 @@ export const useDocumentTracker = ({ workflowId }: { workflowId: string }) => {
           return;
         }
 
-        identifiers.document.decisionReason = reason || 'Document requested';
+        // Avoid mutating React Query cached data in-place (identifiers object is sourced from query results).
+        const identifiersWithReason = {
+          ...identifiers,
+          entity: { ...identifiers.entity },
+          document: {
+            ...identifiers.document,
+            decisionReason: reason || 'Document requested',
+          },
+        };
 
-        return setSelectedIdsToRequest(prev => [...prev, identifiers]);
+        return setSelectedIdsToRequest(prev => [...prev, identifiersWithReason]);
       };
 
       return {

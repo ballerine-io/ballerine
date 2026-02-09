@@ -57,33 +57,43 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
     })
     .sort((a, b) => b.indicators.length - a.indicators.length);
 
-  if (!workflow?.workflowDefinition?.config?.isCaseOverviewEnabled) {
-    return;
+  const isCaseOverviewEnabled = workflow?.workflowDefinition?.config?.isCaseOverviewEnabled;
+  const isDocumentTrackerEnabled = workflow?.workflowDefinition?.config?.isDocumentTrackerEnabled;
+  const isCaseRiskOverviewEnabled =
+    workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled;
+
+  if (!isCaseOverviewEnabled && !isDocumentTrackerEnabled) {
+    return null;
   }
 
   return (
     <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
-      {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <OverallRiskLevel
-          riskScore={
-            workflow?.context?.pluginsOutput?.riskEvaluation?.riskScore ??
-            workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore
-          }
-          riskLevels={{}}
-        />
+      {isCaseOverviewEnabled && (
+        <>
+          {isCaseRiskOverviewEnabled && (
+            <OverallRiskLevel
+              riskScore={
+                workflow?.context?.pluginsOutput?.riskEvaluation?.riskScore ??
+                workflow?.context?.pluginsOutput?.risk_evaluation?.riskScore
+              }
+              riskLevels={{}}
+            />
+          )}
+          <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
+          {isDocumentTrackerEnabled && <DocumentTracker workflowId={workflow?.id} />}
+          {isDemoOnly && !workflow?.workflowDefinition?.config?.disableVideoGuide && (
+            <CaseVideoGuide
+              title="Onboarding Introduction"
+              description="Learn about Ballerine complete onboarding and underwriting capabilities"
+            />
+          )}
+          {isCaseRiskOverviewEnabled && (
+            <RiskIndicatorsSummary sections={riskIndicators} Link={RiskIndicatorLink} />
+          )}
+        </>
       )}
-      <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
-      {workflow?.workflowDefinition?.config?.isDocumentTrackerEnabled && (
+      {!isCaseOverviewEnabled && isDocumentTrackerEnabled && (
         <DocumentTracker workflowId={workflow?.id} />
-      )}
-      {isDemoOnly && !workflow?.workflowDefinition?.config?.disableVideoGuide && (
-        <CaseVideoGuide
-          title="Onboarding Introduction"
-          description="Learn about Ballerine complete onboarding and underwriting capabilities"
-        />
-      )}
-      {workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled && (
-        <RiskIndicatorsSummary sections={riskIndicators} Link={RiskIndicatorLink} />
       )}
     </div>
   );

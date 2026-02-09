@@ -76,8 +76,8 @@ export const beginTransactionIfNotExistCurry = ({
 };
 
 export const defaultPrismaTransactionOptions: PrismaTransactionOptions = {
-  maxWait: 60_000,
-  timeout: 60_000,
+  maxWait: 120_000,
+  timeout: 120_000,
 };
 
 export const isPrismaClientKnownRequestError = (

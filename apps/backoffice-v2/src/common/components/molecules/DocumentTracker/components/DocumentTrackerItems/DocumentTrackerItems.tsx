@@ -12,7 +12,7 @@ type TDocumentTrackerItemsProps = {
 export const DocumentTrackerItems = memo(
   ({ documentTrackerItems, getSubItems }: TDocumentTrackerItemsProps) => {
     const businessSubitems = useMemo(
-      () => documentTrackerItems?.business.map(getSubItems).filter(Boolean) ?? [],
+      () => (documentTrackerItems?.business ?? []).map(getSubItems).filter(Boolean),
       [documentTrackerItems?.business, getSubItems],
     );
     const individualsSubitems = useMemo(

@@ -57,7 +57,20 @@ export type TIndividualVerificationData = {
   reason: string;
   decisionScore: number;
   images: Array<{ context?: string; content: string }>;
-  aml: Record<string, unknown>;
+  // F1: Optional — the Unified API intentionally omits `aml` when there are no
+  // AML results. Sending `aml: {}` would be truthy but have no `.hits`, which
+  // causes a TypeError in Ballerine's `mapCallbackDataToIndividual`.
+  aml?: Record<string, unknown>;
+  // Per-method verification breakdown — each entry shows the status of a
+  // verification method (ran, errored, or skipped) for case management visibility.
+  methodBreakdown?: Array<{
+    method: string;
+    status: string;
+    confidence: number;
+    verifiedAttributes: string[];
+    failedAttributes: string[];
+    reason?: string;
+  }>;
 };
 
 const IGNORED_DECISION_CHECKS = ['newUser', 'newDocument'] as const;
@@ -142,6 +155,9 @@ export const handleIndividualVerificationDocuments = async ({
     };
   }> = [];
 
+  // F5: Track temp file paths for cleanup after persistence
+  const tempFilePaths: string[] = [];
+
   for (const kycDocumentImage of kycDocumentImages) {
     const tmpFile = tmp.fileSync({ keep: false }).name;
     const base64ImageContent = kycDocumentImage.content.split(',')[1];
@@ -152,6 +168,7 @@ export const handleIndividualVerificationDocuments = async ({
     const fileWithExtension = `${tmpFile}${fileType?.extension ? `.${fileType?.extension}` : ''}`;
 
     fs.writeFileSync(fileWithExtension, buffer as unknown as Uint8Array);
+    tempFilePaths.push(fileWithExtension);
 
     documentPages.push({
       uri: `file://${fileWithExtension}`,
@@ -163,30 +180,44 @@ export const handleIndividualVerificationDocuments = async ({
     });
   }
 
-  return [
-    {
-      type: 'identification_document',
-      category: kycDocument.type?.value?.toLocaleLowerCase(),
-      pages: documentPages,
-      issuer: {
-        country: kycDocument.country?.value,
-        city: kycDocument.city?.value,
-        additionalInfo: {
+  return {
+    documents: [
+      {
+        type: 'identification_document',
+        category: kycDocument.type?.value?.toLocaleLowerCase(),
+        pages: documentPages,
+        issuer: {
+          country: kycDocument.country?.value,
+          city: kycDocument.city?.value,
+          additionalInfo: {
+            validFrom: kycDocument.validFrom?.value,
+            validUntil: kycDocument.validUntil?.value,
+            firstIssue: kycDocument.firstIssue?.value,
+          },
+        },
+        properties: {
+          expiryDate: kycDocument.validUntil?.value,
+          idNumber: person.idNumber?.value,
           validFrom: kycDocument.validFrom?.value,
           validUntil: kycDocument.validUntil?.value,
           firstIssue: kycDocument.firstIssue?.value,
         },
+        issuingVersion: kycDocument.issueNumber || 1,
       },
-      properties: {
-        expiryDate: kycDocument.validUntil?.value,
-        idNumber: person.idNumber?.value,
-        validFrom: kycDocument.validFrom?.value,
-        validUntil: kycDocument.validUntil?.value,
-        firstIssue: kycDocument.firstIssue?.value,
-      },
-      issuingVersion: kycDocument.issueNumber || 1,
+    ],
+    // F5: Cleanup function to remove temp files after they've been persisted
+    cleanupTempFiles: () => {
+      for (const filePath of tempFilePaths) {
+        try {
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        } catch {
+          // Best-effort cleanup — don't fail if a temp file is already gone
+        }
+      }
     },
-  ];
+  };
 };
 
 export const formatIndividualVerification = ({

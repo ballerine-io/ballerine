@@ -87,6 +87,21 @@ export class WorkflowAuthGuard implements CanActivate {
       throw new UnauthorizedException('Token has expired');
     }
 
+    // Cross-validate: ensure the workflow referenced by this token belongs to the token's project.
+    // This is a defense-in-depth check — the token itself is unguessable (122-bit UUID),
+    // but we verify project ownership to guard against data corruption or token table manipulation.
+    if (tokenEntity.projectId && tokenEntity.workflowRuntimeDataId) {
+      const workflow = await this.workflowService.getWorkflowRuntimeDataById(
+        tokenEntity.workflowRuntimeDataId,
+        {},
+        [tokenEntity.projectId],
+      );
+
+      if (!workflow) {
+        throw new UnauthorizedException('Token references a workflow outside its project scope');
+      }
+    }
+
     this.cls.set('entity', {
       endUser: {
         workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,

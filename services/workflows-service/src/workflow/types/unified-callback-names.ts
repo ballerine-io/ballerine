@@ -7,4 +7,9 @@ export type UnifiedCallbackNames =
   | 'merchant-audit-report'
   | 'website-monitoring'
   | 'document-verification-unified-api'
-  | 'facial-verification-unified-api';
+  | 'facial-verification-unified-api'
+  | 'business-document-verification-unified-api'
+  | 'market-card-verification-unified-api'
+  | 'address-verification-unified-api'
+  | 'business-photo-analysis-unified-api'
+  | 'loan-financial-analysis-unified-api';

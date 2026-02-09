@@ -563,15 +563,72 @@ export class WorkflowControllerExternal {
           );
         }
 
-        if (params.event && params.event !== 'undefined') {
+        // Unified API callbacks use a single hook endpoint id (UNIFIED_API_VERIFICATION_HOOK_ID) across
+        // multiple plugins. Derive the real workflow event to dispatch from the workflow definition's
+        // apiPlugin successAction/errorAction based on resultDestination + payload status.
+        let eventToDispatch: string | undefined = params.event;
+        let derivedFromPlugin = false;
+
+        const resultDestination = query.resultDestination;
+        if (typeof resultDestination === 'string' && resultDestination.startsWith('pluginsOutput.')) {
+          const pluginName = resultDestination.split('.')[1];
+
+          if (pluginName) {
+            const workflowDefinition = await this.prismaService.workflowDefinition.findUnique({
+              where: { id: workflowRuntime.workflowDefinitionId },
+              select: { extensions: true },
+            });
+
+            const extensions = workflowDefinition?.extensions as AnyRecord | null | undefined;
+            const apiPlugins = extensions && isObject(extensions) ? (extensions.apiPlugins as any) : undefined;
+
+            const plugin =
+              Array.isArray(apiPlugins) && apiPlugins.length > 0
+                ? apiPlugins.find(p => isObject(p) && p.name === pluginName)
+                : undefined;
+
+            if (plugin && isObject(plugin)) {
+              derivedFromPlugin = true;
+
+              const payload = hookResponse as AnyRecord;
+              const status = typeof payload?.status === 'string' ? payload.status : undefined;
+              const hasError =
+                Boolean(payload?.error) || status === 'ERROR' || status === 'EXPIRED';
+              const isPending = status === 'PENDING';
+
+              if (isPending) {
+                // Keep workflow in the current state while the upstream process is still pending.
+                eventToDispatch = undefined;
+              } else {
+                eventToDispatch = hasError
+                  ? (plugin.errorAction as string | undefined)
+                  : (plugin.successAction as string | undefined);
+              }
+            }
+          }
+        }
+
+        if (eventToDispatch && eventToDispatch !== 'undefined') {
           await this.workflowService.event(
             {
               id: params.id,
-              name: params.event,
+              name: eventToDispatch,
             },
             [workflowRuntime.projectId],
             workflowRuntime.projectId,
             transaction,
+          );
+        } else if (derivedFromPlugin) {
+          // If we derived from a plugin and chose not to dispatch an event (e.g. PENDING),
+          // do not fall back to dispatching the hook id.
+        } else if (typeof resultDestination === 'string' && resultDestination.startsWith('pluginsOutput.')) {
+          // F11: Log when we expected to derive an event from a plugin but couldn't find
+          // the matching plugin in the workflow definition. This helps diagnose stuck
+          // workflows where callbacks arrive but no state transition occurs.
+          console.warn(
+            `[hook] Could not derive plugin event for resultDestination="${resultDestination}" ` +
+            `on workflow ${params.id} (definition: ${workflowRuntime.workflowDefinitionId}). ` +
+            `Dispatching fallback event "${params.event}".`,
           );
         }
       }, defaultPrismaTransactionOptions);

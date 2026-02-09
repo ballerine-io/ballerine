@@ -8,6 +8,7 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { WebhooksService } from '@/webhooks/webhooks.service';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -16,6 +17,7 @@ export class WorkflowStateChangedWebhookCaller {
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
+    private readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     private readonly webhooksService: WebhooksService,
   ) {
     workflowEventEmitter.on('workflow.state.changed', async data => {
@@ -48,11 +50,26 @@ export class WorkflowStateChangedWebhookCaller {
       customer.authenticationConfiguration as TAuthenticationConfiguration;
 
     for (const webhook of webhooks) {
+      let childWorkflowsRuntimeData;
+
+      if (webhook.config?.withChildWorkflows) {
+        childWorkflowsRuntimeData = await this.workflowRuntimeDataRepository.findMany(
+          {
+            where: {
+              parentRuntimeDataId: data.runtimeData.id,
+              deletedAt: null,
+            },
+          },
+          [data.runtimeData.projectId],
+        );
+      }
+
       await this.sendWebhook({
         data,
         webhook,
         webhookSharedSecret,
         forceDirect: customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled !== true,
+        childWorkflowsRuntimeData,
       });
     }
   }
@@ -62,11 +79,13 @@ export class WorkflowStateChangedWebhookCaller {
     webhook: { id, url, environment, apiVersion },
     webhookSharedSecret,
     forceDirect,
+    childWorkflowsRuntimeData,
   }: {
     data: ExtractWorkflowEventData<'workflow.state.changed'>;
     webhook: Webhook;
     webhookSharedSecret: string;
     forceDirect?: boolean;
+    childWorkflowsRuntimeData?: unknown;
   }) {
     const payload = {
       id,
@@ -81,7 +100,10 @@ export class WorkflowStateChangedWebhookCaller {
       ballerineEntityId: data.entityId,
       correlationId: data.correlationId,
       environment,
-      data: data.runtimeData.context,
+      data: {
+        ...data.runtimeData.context,
+        ...(childWorkflowsRuntimeData ? { childWorkflowsRuntimeData } : {}),
+      },
     } as const;
 
     await this.webhooksService.invokeWebhook(

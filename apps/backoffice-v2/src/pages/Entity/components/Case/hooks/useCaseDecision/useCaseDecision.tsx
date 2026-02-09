@@ -35,18 +35,19 @@ export const useCaseDecision = () => {
   // Disable the reject/approve buttons if the end user is not ready to be rejected/approved.
   // Based on `workflowDefinition` - ['APPROVE', 'REJECT', 'RECOLLECT'].
   const canReject = caseState.actionButtonsEnabled && workflow?.nextEvents?.includes(Action.REJECT);
+  const workflowLevelResolution =
+    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+    workflow?.context?.entity?.type === 'business';
+  const hasRevisionEvent = workflow?.nextEvents?.includes(Action.REVISION);
   const canRevision =
     caseState.actionButtonsEnabled &&
-    workflow?.nextEvents?.includes(Action.REVISION) &&
-    someDocumentDecisionStatus(documents, 'revision');
+    someDocumentDecisionStatus(documents, 'revision') &&
+    (workflowLevelResolution || hasRevisionEvent);
 
   const canApprove =
     !canRevision &&
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.APPROVE);
-  const workflowLevelResolution =
-    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
-    workflow?.context?.entity?.type === 'business';
   const noAction = workflowLevelResolution && !canApprove && !canReject && !canRevision;
 
   return {

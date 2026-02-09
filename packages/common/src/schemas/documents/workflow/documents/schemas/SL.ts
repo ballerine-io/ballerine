@@ -1,8 +1,12 @@
 import { TDocument } from '../types';
 import { Type } from '@sinclair/typebox';
 
-// Example patterns and helper types for Sierra Leone:
-const slNationalIdPattern = '^SL[0-9]{9}$'; // e.g., SL followed by 9 digits
+// Sierra Leone National ID pattern(s):
+// - ECOWAS Biometric ID: Prefix 'SL' followed by 9 digits (most common, e.g., SL123456789)
+// - Legacy/manual IDs: 8-12 alphanumeric characters (various older formats)
+// PRE-PRODUCTION: Confirm definitive format(s) with NCRA IT Division before launch.
+// Relaxed to accept both formats until NCRA provides definitive specification.
+const slNationalIdPattern = '^(SL[0-9]{9}|[A-Z0-9]{8,12})$';
 const alphaNumeric = '^[a-zA-Z0-9]*$';
 const alphaNumericWithSpaces = '^[\\sa-zA-Z0-9]*$';
 const slPhonePattern = '^232[0-9]{8}$'; // Country code 232 followed by 8 digits

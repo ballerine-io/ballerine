@@ -8,11 +8,27 @@ export type TDocumentWithoutPageType = Omit<DefaultContextSchema['documents'][nu
 
 export type TDocumentsWithoutPageType = TDocumentWithoutPageType[];
 
+const SECRET_TEMPLATE_URL_REGEX = /^\{secret\.[A-Za-z0-9_]+\}$/;
+
+const SubscriptionUrlSchema = z.string().refine(value => {
+  // Allow secret placeholders (resolved later in webhooks.service.ts)
+  if (SECRET_TEMPLATE_URL_REGEX.test(value)) return true;
+
+  // Match Zod's built-in url() semantics (WHATWG URL parsing)
+  try {
+    // eslint-disable-next-line no-new
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}, 'Invalid url');
+
 export const SubscriptionSchema = z.discriminatedUnion('type', [
   z
     .object({
       type: z.enum(['webhook', 'email']),
-      url: z.string().url(),
+      url: SubscriptionUrlSchema,
       events: z.array(z.string()),
       config: z
         .object({

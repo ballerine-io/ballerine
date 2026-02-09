@@ -149,7 +149,7 @@ export class BusinessService {
         {
           params: { vendor },
           headers: {
-            Authorization: `Bearer ${process.env.UNIFIED_API_TOKEN as string}`,
+            Authorization: `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`,
           },
         },
       );

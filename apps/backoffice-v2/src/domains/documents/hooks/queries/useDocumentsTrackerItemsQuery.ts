@@ -24,9 +24,11 @@ export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: stri
 
       searchParams.set('activeTab', tab);
 
-      return `${pathname}${searchParams.toString()}#${titleCase(category ?? '')} - ${titleCase(
-        type ?? '',
-      )}`;
+      const searchString = searchParams.toString();
+
+      return `${pathname}${searchString ? `?${searchString}` : ''}#${titleCase(
+        category ?? '',
+      )} - ${titleCase(type ?? '')}`;
     },
     [pathname],
   );
@@ -49,7 +51,7 @@ export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: stri
           ubos: data?.individuals.ubos.map(item => ({
             ...item,
             url: generateUrlToDocument({
-              tab: 'ubosKyc',
+              tab: 'individuals',
               search,
               category: item?.identifiers?.document?.category,
               type: item?.identifiers?.document?.type,
@@ -58,7 +60,7 @@ export const useDocumentsTrackerItemsQuery = ({ workflowId }: { workflowId: stri
           directors: data?.individuals.directors.map(item => ({
             ...item,
             url: generateUrlToDocument({
-              tab: 'directors',
+              tab: 'individuals',
               search,
               category: item?.identifiers?.document?.category,
               type: item?.identifiers?.document?.type,

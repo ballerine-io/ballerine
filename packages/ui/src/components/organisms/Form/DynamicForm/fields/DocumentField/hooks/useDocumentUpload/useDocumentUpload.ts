@@ -11,12 +11,14 @@ import { useStack } from '../../../FieldList';
 import { useCreateDocument } from '../useCreateDocument';
 import { useReuploadDocument } from '../useReuploadDocument';
 import { useDeleteDocumentFiles } from '../useDeleteDocument';
+import { getDocumentEntityTarget } from '../../utils/get-document-entity-target';
 
 export const useDocumentUpload = (
   element: IFormElement<'documentfield', IDocumentFieldParams>,
   params: IDocumentFieldParams,
 ) => {
   const { metadata } = useDynamicForm();
+  const { entityType, entityId } = getDocumentEntityTarget(metadata, 'useDocumentUpload');
   const { uploadOn = 'change' } = params;
   const { addTask, removeTask } = useTaskRunner();
   const { stack } = useStack();
@@ -24,24 +26,24 @@ export const useDocumentUpload = (
   const document = useDocument({
     type: element.params?.template?.type!,
     category: element.params?.template?.category!,
-    entityType: 'business',
-    entityId: metadata.businessId!,
+    entityType,
+    entityId,
   });
   const { setFile } = useDocumentFile({
     type: element.params?.template?.type!,
     category: element.params?.template?.category!,
-    entityType: 'business',
-    entityId: metadata.businessId!,
+    entityType,
+    entityId,
   });
   const { createDocument, isCreatingDocument } = useCreateDocument({
     element,
-    entityType: 'business',
-    entityId: metadata.businessId!,
+    entityType,
+    entityId,
   });
   const { reuploadDocument, isReuploadingDocument } = useReuploadDocument({
     element,
-    entityType: 'business',
-    entityId: metadata.businessId!,
+    entityType,
+    entityId,
   });
   const { deleteDocumentFiles, isDeletingDocumentFiles } = useDeleteDocumentFiles();
 

@@ -9,6 +9,7 @@ import { AlertControllerInternal } from '@/alert/alert.controller.internal';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertService } from '@/alert/alert.service';
 import { AlertControllerExternal } from '@/alert/alert.controller.external';
+import { SlaCheckController } from '@/alert/sla-check.controller';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -48,7 +49,7 @@ import { MonitoringModule } from '@/common/monitoring/monitoring.module';
     }),
     AlertDefinitionModule,
   ],
-  controllers: [AlertControllerInternal, AlertControllerExternal],
+  controllers: [AlertControllerInternal, AlertControllerExternal, SlaCheckController],
   providers: [
     AlertService,
     AlertRepository,

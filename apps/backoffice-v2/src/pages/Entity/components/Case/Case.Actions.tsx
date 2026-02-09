@@ -14,6 +14,7 @@ import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptio
 import { tagToBadgeData } from './consts';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { IActionsProps } from './interfaces';
+import { CustomLabels } from '@/lib/blocks/components/CustomLabels/CustomLabels';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -48,6 +49,9 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     isNotesOpen,
     setIsNotesOpen,
     workflow,
+    customLabels,
+    onAddCustomLabel,
+    onRemoveCustomLabel,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   const entityInitials = createInitials(fullName);
@@ -130,6 +134,12 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             >
               <NotesButton numberOfNotes={notes?.length ?? 0} />
             </NotesSheet>
+            <CustomLabels
+              labels={customLabels}
+              onAdd={onAddCustomLabel}
+              onRemove={onRemoveCustomLabel}
+              isDisabled={isWorkflowCompleted}
+            />
           </div>
         </div>
         {showResolutionButtons && workflowDefinition && (

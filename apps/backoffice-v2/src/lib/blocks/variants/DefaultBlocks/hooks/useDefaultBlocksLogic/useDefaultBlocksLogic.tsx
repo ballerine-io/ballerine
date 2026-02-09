@@ -47,6 +47,7 @@ import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStore
 import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
 import { useIndividualsUserProvidedBlock } from '@/lib/blocks/hooks/useIndividualsUserProvidedBlock/useIndividualsUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
+import { useVerificationResultsBlock } from '@/lib/blocks/hooks/useVerificationResultsBlock/useVerificationResultsBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
 import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
@@ -684,6 +685,10 @@ export const useDefaultBlocksLogic = () => {
     isEnabled: !workflow?.workflowDefinition?.config?.disableAiSummary,
   });
 
+  const verificationResultsBlock = useVerificationResultsBlock({
+    pluginsOutput: workflow?.context?.pluginsOutput as Record<string, unknown> | undefined,
+  });
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) {
       return {};
@@ -724,6 +729,7 @@ export const useDefaultBlocksLogic = () => {
       aiSummaryBlock,
       entityAddressWithContainerBlock,
       entityAdditionalInfoBlock,
+      verificationResultsBlock,
     } satisfies TAllBlocks;
   }, [
     associatedCompaniesBlock,
@@ -761,6 +767,7 @@ export const useDefaultBlocksLogic = () => {
     aiSummaryBlock,
     entityAddressWithContainerBlock,
     entityAdditionalInfoBlock,
+    verificationResultsBlock,
   ]);
 
   const { blocks, tabs } = useCaseBlocks({

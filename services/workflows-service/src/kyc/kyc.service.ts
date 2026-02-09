@@ -38,6 +38,19 @@ export class KycService {
     lastName: string;
     dateOfBirth?: string;
     projectId: string;
+    // Bio-facial fields — optional, forwarded to Unified API when provided
+    documents?: Array<{
+      type?: string;
+      frontImage?: string;
+      backImage?: string;
+      documentNumber?: string;
+    }>;
+    biometricData?: { facialImages?: string[] };
+    idNumber?: string;
+    phoneNumber?: string;
+    country?: string;
+    methods?: string[];
+    performDeduplication?: boolean;
   }) {
     const response = await this.unifiedApiClient.runIndividualVerification(data);
 
@@ -120,6 +133,15 @@ export class KycService {
     language,
     revisionReason,
     projectId,
+    // Bio-facial fields — forwarded to Unified API when an upstream workflow
+    // provides document images and selfies in the context.
+    documents,
+    biometricData,
+    idNumber,
+    phoneNumber,
+    country,
+    methods,
+    performDeduplication,
   }: {
     endUserId: string;
     workflowRuntimeDataId: string;
@@ -129,6 +151,18 @@ export class KycService {
     language: string;
     revisionReason: string | undefined;
     projectId: TProjectId;
+    documents?: Array<{
+      type?: string;
+      frontImage?: string;
+      backImage?: string;
+      documentNumber?: string;
+    }>;
+    biometricData?: { facialImages?: string[] };
+    idNumber?: string;
+    phoneNumber?: string;
+    country?: string;
+    methods?: string[];
+    performDeduplication?: boolean;
   }) {
     const APP_API_URL = this.configService.get('APP_API_URL');
 
@@ -185,6 +219,14 @@ export class KycService {
       lastName: endUser.lastName,
       dateOfBirth: endUser.dateOfBirth?.toISOString().split('T')[0] ?? undefined,
       projectId,
+      // Bio-facial fields — forwarded only when provided by the caller
+      documents,
+      biometricData,
+      idNumber,
+      phoneNumber,
+      country,
+      methods,
+      performDeduplication,
     });
 
     await this.sendIndividualVerificationEmail({

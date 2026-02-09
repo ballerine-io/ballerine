@@ -4,6 +4,7 @@ module.exports = {
   },
   parserOptions: {
     project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
   },
   extends: ['plugin:import/recommended', 'plugin:import/typescript', '@ballerine/eslint-config'],
   settings: {

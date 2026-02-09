@@ -22,13 +22,14 @@ export const useThirdPartyTrackerItems = ({
         ?.map(({ displayName, name }) => {
           const plugin = getPluginByName(name, workflowPluginsOutput);
           const pluginStatus = plugin?.status ?? ProcessStatus.DEFAULT;
+          const label = displayName || name;
 
           return {
             text:
               pluginStatus === ProcessStatus.CANCELED ? (
-                <span className={`text-slate-400/40 line-through`}>{displayName}</span>
+                <span className={`text-slate-400/40 line-through`}>{label}</span>
               ) : (
-                displayName
+                label
               ),
             leftIcon: processStatusToIcon[pluginStatus as keyof typeof processStatusToIcon],
           };

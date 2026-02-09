@@ -131,6 +131,7 @@ export const useTabsToBlocksMap = ({
     entityAdditionalInfoBlock,
     headquartersAddressWithContainerBlock,
     entityAddressWithContainerBlock,
+    verificationResultsBlock,
   } = blocks;
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
@@ -610,6 +611,7 @@ export const useTabsToBlocksMap = ({
       ...uboDocumentBlocks,
       ...directorDocumentBlocks,
       ...kycBlocks,
+      ...verificationResultsBlock,
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
       ...associatedCompaniesBlock,
@@ -632,7 +634,12 @@ export const useTabsToBlocksMap = ({
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
-      [Tab.KYC]: [...businessInformationBlocks, ...amlWithContainerBlock, ...kycBlocks],
+      [Tab.KYC]: [
+        ...businessInformationBlocks,
+        ...amlWithContainerBlock,
+        ...kycBlocks,
+        ...verificationResultsBlock,
+      ],
     } as const;
   }
 

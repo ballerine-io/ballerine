@@ -22,6 +22,7 @@ import { useDynamicForm } from '../../context';
 import { useDeleteDocumentFiles } from './hooks/useDeleteDocument';
 import { useDocumentUpload } from './hooks/useDocumentUpload';
 import { useDynamicDocumentDefinition } from './hooks/useDynamicDocumentDefinition';
+import { getDocumentEntityTarget } from './utils/get-document-entity-target';
 
 export type TDocumentStatus = 'requested' | 'provided' | 'unprovided';
 export type TDocumentDecision = 'approved' | 'rejected' | 'revisions';
@@ -60,6 +61,7 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   useUnmountEvent(_element);
 
   const { metadata } = useDynamicForm();
+  const { entityType, entityId } = getDocumentEntityTarget(metadata, 'DocumentField');
 
   const {
     file,
@@ -70,8 +72,8 @@ export const DocumentField: TDynamicFormField<IDocumentFieldParams> = ({ element
   } = useDocumentFile({
     type: _element.params?.template?.type!,
     category: _element.params?.template?.category!,
-    entityType: 'business',
-    entityId: metadata.businessId!,
+    entityType,
+    entityId,
   });
 
   const element = useDynamicDocumentDefinition({
