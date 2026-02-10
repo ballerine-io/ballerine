@@ -8,7 +8,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { buildCollectionFlowState, getOrderedSteps } from '@ballerine/common';
 import { env } from '@/env';
 import { WORKFLOW_FINAL_STATES } from '@/workflow/consts';
-import { Prisma, UiDefinitionContext } from '@prisma/client';
+import { Prisma, UiDefinition, UiDefinitionContext } from '@prisma/client';
 
 @Injectable()
 export class WorkflowTokenService {
@@ -33,23 +33,29 @@ export class WorkflowTokenService {
 
     const workflowToken = await this.workflowTokenRepository.create(projectId, data, transaction);
 
-    if (existingTokensForWorkflowRuntime === 0) {
-      const { workflowDefinitionId, context } = await this.workflowRuntimeDataRepository.findById(
-        workflowRuntimeDataId,
-        { select: { workflowDefinitionId: true, context: true } },
-        [projectId],
-        transaction,
-      );
-
-      let collectionFlow;
-      const [uiDefinition, customer] = await Promise.all([
-        this.uiDefinitionService.getByWorkflowDefinitionId(
-          workflowDefinitionId,
-          UiDefinitionContext.collection_flow,
+      if (existingTokensForWorkflowRuntime === 0) {
+        const { workflowDefinitionId, context } = await this.workflowRuntimeDataRepository.findById(
+          workflowRuntimeDataId,
+          { select: { workflowDefinitionId: true, context: true } },
           [projectId],
-        ),
-        this.customerService.getByProjectId(projectId),
-      ]);
+          transaction,
+        );
+
+        let collectionFlow;
+        const customer = await this.customerService.getByProjectId(projectId);
+        let uiDefinition: UiDefinition | null = null;
+
+        // A workflow token should still be issued even when no collection-flow UI definition exists.
+        // This is common for backend-only flows or for environments where only back-office UIs are seeded.
+        try {
+          uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+            workflowDefinitionId,
+            UiDefinitionContext.collection_flow,
+            [projectId],
+          );
+        } catch {
+          uiDefinition = null;
+        }
 
       try {
         collectionFlow = buildCollectionFlowState({

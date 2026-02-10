@@ -24,7 +24,8 @@ export class ProjectAssigneeGuard implements CanActivate {
     } else if (request.query.assigneeId && typeof request.query.assigneeId === 'string') {
       assigneeId = request.query.assigneeId;
     } else if (request.params.assigneeId) {
-      assigneeId = request.params.assigneeId;
+      const param = request.params.assigneeId;
+      assigneeId = Array.isArray(param) ? (param[0] ?? undefined) : param;
     }
 
     if (assigneeId === null) {

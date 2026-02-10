@@ -35,18 +35,32 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'data_collection',
+          // Backend-only shortcut when the caller already provided owner + business documents.
+          start_with_documents: 'owner_id_check',
         },
       },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           COLLECTION_COMPLETED: 'owner_id_check',
+          // Backwards-compatibility with older collection-flow UIs.
+          COLLECTION_FLOW_FINISHED: 'owner_id_check',
         },
       },
       owner_id_check: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          // Single child KYC for the sole proprietor owner
+          // Spawn the owner KYC child workflow(s), then wait for callback results.
+          CONTINUE: [{ target: 'pending_owner_kyc' }],
+          FAILED: [{ target: 'manual_review' }],
+        },
+      },
+      pending_owner_kyc: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          // Delivered from childCallbackResults when the child KYC workflow completes.
+          OWNER_KYC_RESPONDED: [{ target: 'market_card_verification' }],
+          // Backwards-compatibility with older deliverEvent names.
           OWNER_KYC_DONE: [{ target: 'market_card_verification' }],
           OWNER_KYC_FAILED: [{ target: 'manual_review' }],
         },
@@ -114,6 +128,9 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
       pending_resubmission: {
         tags: [StateTag.REVISION],
         on: {
+          // Fired by the resubmission email plugin.
+          EMAIL_SENT: 'pending_resubmission',
+          EMAIL_FAILURE: 'pending_resubmission',
           RESUBMITTED: 'manual_review',
         },
       },
@@ -238,22 +255,25 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             mapping: `{
               entity: {
                 type: 'individual',
-                id: join('-', ['owner', entity.id]),
+                id: join('-', ['owner', businessId || '']),
                 data: {
-                  firstName: entity.data.ownerFirstName || entity.data.additionalInfo.owner.firstName,
-                  lastName: entity.data.ownerLastName || entity.data.additionalInfo.owner.lastName,
-                  nationalId: entity.data.ownerNationalId || entity.data.additionalInfo.owner.nationalId,
-                  dateOfBirth: entity.data.additionalInfo.owner.dateOfBirth,
-                  phoneNumber: entity.data.phoneNumber,
-                  email: entity.data.email,
-                  country: 'SL'
+                  firstName: owner.firstName,
+                  lastName: owner.lastName,
+                  nationalId: owner.nationalId,
+                  dateOfBirth: owner.dateOfBirth,
+                  phoneNumber: owner.phoneNumber || phoneNumber,
+                  email: owner.email || email,
+                  country: 'SL',
+                  tenantId: tenantId,
+                  projectId: projectId
                 }
               },
-              documents: entity.data.additionalInfo.owner.documents || []
+              documents: owner.documents || []
             }`,
           },
         ],
-        initEvent: 'start',
+        // The owner KYC is derived from documents provided in the KYB flow; no separate webview is expected.
+        initEvent: 'start_with_documents',
       },
     ],
     commonPlugins: [
@@ -267,11 +287,20 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           {
             transformer: 'jmespath',
             // Wrap owner in array since iterative plugin expects array
-            mapping: '[entity.data.additionalInfo.owner]',
+            mapping: `[
+              {
+                owner: entity.data.additionalInfo.owner,
+                businessId: entity.id,
+                tenantId: entity.data.tenantId,
+                projectId: entity.data.projectId,
+                email: entity.data.email,
+                phoneNumber: entity.data.phoneNumber
+              }
+            ]`,
           },
         ],
-        successAction: 'OWNER_KYC_DONE',
-        errorAction: 'OWNER_KYC_FAILED',
+        successAction: 'CONTINUE',
+        errorAction: 'FAILED',
       },
     ],
   },
@@ -286,10 +315,11 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           },
         ],
         persistenceStates: ['approved', 'rejected', 'manual_review'],
-        deliverEvent: 'OWNER_KYC_DONE',
+        deliverEvent: 'OWNER_KYC_RESPONDED',
       },
     ],
     createCollectionFlowToken: true,
+    language: 'en',
   },
   contextSchema: {
     type: 'json-schema',

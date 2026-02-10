@@ -21,12 +21,16 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'data_collection',
+          // Backend-only shortcut when the caller already provided business documents.
+          start_with_documents: 'business_document_check',
         },
       },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           COLLECTION_COMPLETED: 'business_document_check',
+          // Backwards-compatibility with older collection-flow UIs.
+          COLLECTION_FLOW_FINISHED: 'business_document_check',
         },
       },
       business_document_check: {
@@ -122,6 +126,9 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
       pending_resubmission: {
         tags: [StateTag.REVISION],
         on: {
+          // Fired by the resubmission email plugin.
+          EMAIL_SENT: 'pending_resubmission',
+          EMAIL_FAILURE: 'pending_resubmission',
           RESUBMITTED: 'manual_review',
         },
       },
@@ -253,22 +260,25 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
             mapping: `{
               entity: {
                 type: 'individual',
-                id: join('-', ['director', @.id || '']),
+                id: join('-', ['director', id || '']),
                 data: {
-                  firstName: @.firstName,
-                  lastName: @.lastName,
-                  nationalId: @.nationalId,
-                  dateOfBirth: @.dateOfBirth,
-                  phoneNumber: @.phoneNumber,
-                  email: @.email,
-                  country: 'SL'
+                  firstName: firstName,
+                  lastName: lastName,
+                  nationalId: nationalId,
+                  dateOfBirth: dateOfBirth,
+                  phoneNumber: phoneNumber,
+                  email: email,
+                  country: 'SL',
+                  tenantId: tenantId,
+                  projectId: projectId
                 }
               },
-              documents: @.documents || []
+              documents: documents || []
             }`,
           },
         ],
-        initEvent: 'start',
+        // Directors are collected as part of the parent KYB flow; no separate webview is expected.
+        initEvent: 'start_with_documents',
       },
     ],
     commonPlugins: [
@@ -280,7 +290,18 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         iterateOn: [
           {
             transformer: 'jmespath',
-            mapping: 'entity.data.additionalInfo.directors',
+            mapping: `entity.data.additionalInfo.directors[].{
+              id: @.id || @.nationalId || '',
+              firstName: @.firstName,
+              lastName: @.lastName,
+              nationalId: @.nationalId,
+              dateOfBirth: @.dateOfBirth,
+              phoneNumber: @.phoneNumber,
+              email: @.email,
+              documents: @.documents || [],
+              tenantId: entity.data.tenantId,
+              projectId: entity.data.projectId
+            }`,
           },
         ],
         successAction: 'CONTINUE',
@@ -304,6 +325,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
       },
     ],
     createCollectionFlowToken: true,
+    language: 'en',
   },
   contextSchema: {
     type: 'json-schema',

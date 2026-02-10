@@ -20,12 +20,16 @@ export const kycOnboardingSierraLeoneDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'document_collection',
+          // Backend-only shortcut when the caller already provided identity documents + selfie.
+          start_with_documents: 'document_verification',
         },
       },
       document_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           COLLECTION_COMPLETED: 'document_verification',
+          // Backwards-compatibility with older collection-flow UIs.
+          COLLECTION_FLOW_FINISHED: 'document_verification',
         },
       },
       document_verification: {
@@ -87,6 +91,9 @@ export const kycOnboardingSierraLeoneDefinition = {
       pending_resubmission: {
         tags: [StateTag.REVISION],
         on: {
+          // Fired by the resubmission email plugin.
+          EMAIL_SENT: 'pending_resubmission',
+          EMAIL_FAILURE: 'pending_resubmission',
           RESUBMITTED: 'manual_review',
         },
       },
@@ -215,6 +222,7 @@ export const kycOnboardingSierraLeoneDefinition = {
   },
   config: {
     createCollectionFlowToken: true,
+    language: 'en',
   },
   contextSchema: {
     type: 'json-schema',
