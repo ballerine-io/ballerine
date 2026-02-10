@@ -4,6 +4,7 @@ import {
   TCompanyInformation,
 } from '@/business/types/business-information';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { getGcpIdToken } from '@/common/utils/gcp-id-token';
 import { TCustomerWithFeatures } from '@/customer/types';
 import { env } from '@/env';
 import type { PrismaTransaction, TProjectIds } from '@/types';
@@ -144,12 +145,18 @@ export class BusinessService {
     });
 
     try {
+      const audience = new URL(env.UNIFIED_API_URL).origin;
+      const idToken = await getGcpIdToken(audience);
+      const authHeader = idToken
+        ? `Bearer ${idToken}`
+        : `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`;
+
       const request$ = this.httpService.get<TCompanyInformation>(
         `${env.UNIFIED_API_URL}/companies/${jurisdictionCode}/${registrationNumber}`,
         {
           params: { vendor },
           headers: {
-            Authorization: `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`,
+            Authorization: authHeader,
           },
         },
       );

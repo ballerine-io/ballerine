@@ -18,6 +18,7 @@ import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
 import { isType } from '@ballerine/common';
 import z from 'zod';
+import { getGcpIdToken } from '@/common/utils/gcp-id-token';
 
 export type BusinessPayload = Pick<
   Business,
@@ -106,6 +107,23 @@ export class UnifiedApiClient {
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN as string}`,
       },
+    });
+
+    // In Cloud Run, Unified API is protected by IAM; attach an ID token per request.
+    // Local/dev keeps using UNIFIED_API_TOKEN (app-level auth) without metadata calls.
+    this.axiosInstance.interceptors.request.use(async config => {
+      try {
+        const audience = new URL(env.UNIFIED_API_URL).origin;
+        const idToken = await getGcpIdToken(audience);
+
+        if (idToken) {
+          config.headers = { ...(config.headers ?? {}), Authorization: `Bearer ${idToken}` };
+        }
+      } catch {
+        // Best-effort; request will fail with 401/403 if IAM auth is required.
+      }
+
+      return config;
     });
   }
 

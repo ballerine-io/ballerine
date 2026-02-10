@@ -11,6 +11,7 @@ import {
 import { env } from '@/env';
 import * as errors from '@/errors';
 import { CountryCode } from '@/common/countries';
+import { getGcpIdToken } from '@/common/utils/gcp-id-token';
 
 const CreateReportResponseSchema = z.object({});
 
@@ -51,6 +52,23 @@ export class MerchantMonitoringClient {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN ?? ''}`,
       },
       timeout: 300_000,
+    });
+
+    // In Cloud Run, Unified API is protected by IAM; attach an ID token per request.
+    // Local/dev keeps using UNIFIED_API_TOKEN (app-level auth) without metadata calls.
+    this.axios.interceptors.request.use(async config => {
+      try {
+        const audience = new URL(env.UNIFIED_API_URL).origin;
+        const idToken = await getGcpIdToken(audience);
+
+        if (idToken) {
+          config.headers = { ...(config.headers ?? {}), Authorization: `Bearer ${idToken}` };
+        }
+      } catch {
+        // Best-effort; request will fail with 401/403 if IAM auth is required.
+      }
+
+      return config;
     });
   }
 
@@ -140,12 +158,9 @@ export class MerchantMonitoringClient {
 
   public async findById({ id, customerId }: { id: string; customerId: string }) {
     try {
-      const response = await axios.get(`${env.UNIFIED_API_URL}/merchants/analysis/${id}`, {
+      const response = await this.axios.get(`merchants/analysis/${id}`, {
         params: {
           customerId,
-        },
-        headers: {
-          Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
         },
       });
 
@@ -212,7 +227,7 @@ export class MerchantMonitoringClient {
     withoutExampleReports?: boolean;
     searchQuery?: string;
   }) {
-    const response = await axios.get(`${env.UNIFIED_API_URL}/external/tld`, {
+    const response = await this.axios.get(`external/tld`, {
       params: {
         customerId,
         ...(businessId && { merchantId: businessId }),
@@ -228,9 +243,6 @@ export class MerchantMonitoringClient {
         withoutExampleReports,
         ...(searchQuery && { searchQuery }),
         ...(reportType && { reportType }),
-      },
-      headers: {
-        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       },
     });
 
@@ -249,11 +261,7 @@ export class MerchantMonitoringClient {
   }
 
   public async listFindings() {
-    const response = await this.axios.get('external/findings', {
-      headers: {
-        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
-      },
-    });
+    const response = await this.axios.get('external/findings');
 
     return response.data ?? [];
   }
@@ -287,9 +295,6 @@ export class MerchantMonitoringClient {
         customerId,
         from,
         to,
-      },
-      headers: {
-        Authorization: `Bearer ${env.UNIFIED_API_TOKEN}`,
       },
     });
 

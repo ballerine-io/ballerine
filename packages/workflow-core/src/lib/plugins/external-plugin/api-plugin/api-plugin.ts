@@ -21,6 +21,60 @@ export const invokedAtTransformer: HelpersTransformer = new HelpersTransformer([
   invokedAtTransformerDefinition,
 ] as THelperFormatingLogic);
 
+type TIdTokenCacheEntry = { token: string; expMs: number };
+const gcpIdTokenCache = new Map<string, TIdTokenCacheEntry>();
+
+const isCloudRunHostname = (hostname: string) =>
+  hostname.endsWith('.a.run.app') || hostname.endsWith('.run.app');
+
+const decodeJwtExpMs = (jwt: string): number | null => {
+  const parts = jwt.split('.');
+  if (parts.length < 2) return null;
+
+  // Base64url decode (JWT payload)
+  const payloadB64 = parts[1]!.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = payloadB64.padEnd(Math.ceil(payloadB64.length / 4) * 4, '=');
+
+  try {
+    const payload = JSON.parse(Buffer.from(padded, 'base64').toString('utf8')) as {
+      exp?: number;
+    };
+    if (!payload.exp) return null;
+    return payload.exp * 1000;
+  } catch {
+    return null;
+  }
+};
+
+const getGcpIdToken = async (audience: string): Promise<string | null> => {
+  // Cloud Run sets K_SERVICE; avoid metadata calls in local/dev and other runtimes.
+  if (!process.env.K_SERVICE) return null;
+
+  const cached = gcpIdTokenCache.get(audience);
+  if (cached && Date.now() < cached.expMs - 60_000) return cached.token;
+
+  const url = new URL(
+    'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity',
+  );
+  url.searchParams.set('audience', audience);
+  url.searchParams.set('format', 'full');
+
+  try {
+    const res = await fetch(url.toString(), {
+      headers: { 'Metadata-Flavor': 'Google' },
+    });
+    if (!res.ok) return null;
+
+    const token = await res.text();
+    const expMs = decodeJwtExpMs(token) ?? Date.now() + 5 * 60_000;
+    gcpIdTokenCache.set(audience, { token, expMs });
+
+    return token;
+  } catch {
+    return null;
+  }
+};
+
 export class ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'api';
@@ -225,6 +279,30 @@ export class ApiPlugin {
     headers: Headers;
   }> {
     let _url: string = url;
+
+    // If this is a Cloud Run-to-Cloud Run call, attach an IAM ID token.
+    // This keeps Cloud Run invocation restricted (no allUsers binding) while still supporting
+    // app-level auth headers defined in workflow configs.
+    if (process.env.K_SERVICE) {
+      try {
+        const urlObj = new URL(_url);
+        if (isCloudRunHostname(urlObj.hostname)) {
+          const audience = urlObj.origin;
+          const idToken = await getGcpIdToken(audience);
+
+          if (idToken) {
+            const resolvedHeaders = { ...(headers as Record<string, unknown>) };
+            for (const key of Object.keys(resolvedHeaders)) {
+              if (key.toLowerCase() === 'authorization') delete resolvedHeaders[key];
+            }
+            resolvedHeaders['Authorization'] = `Bearer ${idToken}`;
+            headers = resolvedHeaders as HeadersInit;
+          }
+        }
+      } catch {
+        // Ignore auth injection failures; fetch will surface a 401/403 if required.
+      }
+    }
 
     const _requestParams = {
       method: method,
