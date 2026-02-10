@@ -117,7 +117,8 @@ export class UnifiedApiClient {
         const idToken = await getGcpIdToken(audience);
 
         if (idToken) {
-          config.headers = { ...(config.headers ?? {}), Authorization: `Bearer ${idToken}` };
+          if (!config.headers) config.headers = {} as any;
+          (config.headers as any).Authorization = `Bearer ${idToken}`;
         }
       } catch {
         // Best-effort; request will fail with 401/403 if IAM auth is required.
