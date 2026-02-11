@@ -15,7 +15,7 @@ import { env } from '../../../src/env';
  * What this workflow does:
  * - Persist and display the submitted loan + business context in Ballerine
  * - Run loan document OCR/extraction (bank statements, income records, etc.)
- * - Route to manual review for final decision (approve/reject/revision)
+ * - Auto-approve when OCR succeeds with high confidence; otherwise route to manual review
  */
 
 export const loanKycKybSierraLeoneDefinition = {
@@ -35,18 +35,27 @@ export const loanKycKybSierraLeoneDefinition = {
         tags: [StateTag.PENDING_PROCESS],
         on: {
           start: 'loan_document_review',
+          // Fired by LoanCube when additional loan documents are uploaded after submission.
+          // Allows re-running OCR even if the workflow hasn't reached manual_review yet.
+          LOAN_DOCS_UPDATED: 'loan_document_review',
         },
       },
       loan_document_review: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          LOAN_DOCS_REVIEWED: [{ target: 'manual_review' }],
-          LOAN_DOCS_FAILED: [{ target: 'manual_review' }], // Non-blocking
+          LOAN_DOCS_REVIEWED: [{ target: 'risk_evaluation' }],
+          LOAN_DOCS_FAILED: [{ target: 'manual_review' }],
+          // Re-run OCR/extraction when LoanCube re-syncs documents into the runtime.
+          LOAN_DOCS_UPDATED: [{ target: 'loan_document_review' }],
         },
-        // Auto-transition if no loan documents
+        // Auto-approve if no loan documents.
+        //
+        // Rationale: this workflow is used to stage/approve loan documents (OCR + operator review)
+        // when documents are attached to the loan. If no documents were submitted, there is
+        // nothing for Ballerine to verify here, so we allow the loan to proceed.
         always: [
           {
-            target: 'manual_review',
+            target: 'approved',
             cond: {
               type: 'jmespath',
               options: {
@@ -56,12 +65,39 @@ export const loanKycKybSierraLeoneDefinition = {
           },
         ],
       },
+      risk_evaluation: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          // If documents are updated while we're evaluating the OCR results,
+          // bounce back through OCR so the decision is based on the latest uploads.
+          LOAN_DOCS_UPDATED: 'loan_document_review',
+        },
+        always: [
+          {
+            target: 'approved',
+            cond: {
+              type: 'jmespath',
+              options: {
+                // Auto-approve only when ALL OCR results succeeded and meet the confidence threshold.
+                // Unified API smart-ocr returns: { results: [{ success, confidence, ... }] }
+                rule: `length(pluginsOutput.loan_document_ocr.results) > \`0\` && length(pluginsOutput.loan_document_ocr.results[?success != \`true\` || (confidence || \`0\`) < \`0.7\` || error != null]) == \`0\``,
+              },
+            },
+          },
+          {
+            target: 'manual_review',
+          },
+        ],
+      },
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
         on: {
           approve: 'approved',
           reject: 'rejected',
           revision: 'revision',
+          // Fired by LoanCube when additional loan documents are uploaded after submission.
+          // Sends the runtime back through OCR/extraction so operators see updated results.
+          LOAN_DOCS_UPDATED: 'loan_document_review',
         },
       },
       revision: {
@@ -169,24 +205,28 @@ export const loanKycKybSierraLeoneDefinition = {
             phoneNumber: Type.Optional(Type.String()),
             email: Type.Optional(Type.String()),
             country: Type.Optional(Type.String({ default: 'SL' })),
-            address: Type.Optional(Type.Object({
-              line1: Type.Optional(Type.String()),
-              city: Type.Optional(Type.String()),
-              district: Type.Optional(Type.String()),
-              country: Type.Optional(Type.String({ default: 'SL' })),
-            })),
+            address: Type.Optional(
+              Type.Object({
+                line1: Type.Optional(Type.String()),
+                city: Type.Optional(Type.String()),
+                district: Type.Optional(Type.String()),
+                country: Type.Optional(Type.String({ default: 'SL' })),
+              }),
+            ),
             // Business info (if applicable)
             businessName: Type.Optional(Type.String()),
             businessType: Type.Optional(Type.String()),
             registrationNumber: Type.Optional(Type.String()),
             taxIdNumber: Type.Optional(Type.String()),
-            businessAddress: Type.Optional(Type.Object({
-              line1: Type.Optional(Type.String()),
-              city: Type.Optional(Type.String()),
-              district: Type.Optional(Type.String()),
-              market: Type.Optional(Type.String()),
-              country: Type.Optional(Type.String({ default: 'SL' })),
-            })),
+            businessAddress: Type.Optional(
+              Type.Object({
+                line1: Type.Optional(Type.String()),
+                city: Type.Optional(Type.String()),
+                district: Type.Optional(Type.String()),
+                market: Type.Optional(Type.String()),
+                country: Type.Optional(Type.String({ default: 'SL' })),
+              }),
+            ),
             directors: Type.Optional(Type.Array(Type.Any())),
             // Loan application reference
             loanApplicationId: Type.Optional(Type.String()),

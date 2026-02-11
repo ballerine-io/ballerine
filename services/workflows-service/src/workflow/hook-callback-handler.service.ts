@@ -5,7 +5,7 @@ import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, EndUserActiveMonitoringsSchema, ProcessStatus } from '@ballerine/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
 import { get, isObject, set } from 'lodash';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -55,6 +55,8 @@ export const setPluginStatus = ({
 
 @Injectable()
 export class HookCallbackHandlerService {
+  private readonly logger = new Logger(HookCallbackHandlerService.name);
+
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly customerService: CustomerService,
@@ -195,7 +197,19 @@ export class HookCallbackHandlerService {
     ]);
 
     if (!business) {
-      throw new BadRequestException('Business not found.');
+      this.logger.warn(
+        `Missing business for website-monitoring callback; correlationId=${
+          context?.entity?.id ?? 'unknown'
+        }`,
+      );
+
+      return setPluginStatus({
+        resultDestinationPath,
+        context: workflowRuntime.context,
+        data: reportData as Record<string, unknown>,
+        ignoreLastKey: false,
+        status: ProcessStatus.SUCCESS,
+      });
     }
 
     return setPluginStatus({
@@ -225,14 +239,17 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
-      (context as Record<string, any>).entity.id || (context as Record<string, any>).entity.ballerineEntityId,
+      (context as Record<string, any>).entity.id ||
+        (context as Record<string, any>).entity.ballerineEntityId,
       currentProjectId,
       customer.name,
     );
 
     this.setNestedProperty(context as Record<string, any>, attributePath, result);
     (context as Record<string, any>).documents =
-      (context as Record<string, any>).documents?.filter((document: any) => document.type !== 'identification_document') ?? [];
+      (context as Record<string, any>).documents?.filter(
+        (document: any) => document.type !== 'identification_document',
+      ) ?? [];
     (context as Record<string, any>).kycDocuments = persistedDocuments;
 
     return context;

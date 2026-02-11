@@ -113,7 +113,9 @@ export class CustomerRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.CustomerUpdateArgs, 'where'>>,
     transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<Customer> {
-    await this.validateApiKey((args.data?.authenticationConfiguration as Record<string, any>)?.authValue);
+    await this.validateApiKey(
+      (args.data?.authenticationConfiguration as Record<string, any>)?.authValue,
+    );
 
     return transaction.customer.update<T & { where: { id: string } }>({
       where: { id },

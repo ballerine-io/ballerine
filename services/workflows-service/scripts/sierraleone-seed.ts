@@ -75,12 +75,7 @@ async function createSLCustomer(
   return customer;
 }
 
-async function createSLProject(
-  client: PrismaClient,
-  customer: Customer,
-  id: string,
-  name: string,
-) {
+async function createSLProject(client: PrismaClient, customer: Customer, id: string, name: string) {
   return client.project.upsert({
     where: { id: `project-${id}` },
     update: {
@@ -940,53 +935,65 @@ async function main() {
     // 1. Create tenant customers
     console.info('Creating SL tenant customers...');
 
-    const customerDefault = await createSLCustomer(
+    const customerDefault = (await createSLCustomer(
       client,
       'mikashboks-sl',
       'MiKashBoks Sierra Leone',
       'mk-sl-api-key-default',
       'mk-sl-webhook-secret-default',
-    ) as Customer;
+    )) as Customer;
 
-    const customerLoanCube = await createSLCustomer(
+    const customerLoanCube = (await createSLCustomer(
       client,
       'loancube',
       'LoanCube',
       'lc-sl-api-key-prod',
       'lc-sl-webhook-secret-prod',
       { disableBusinessSyncToUnifiedApi: true },
-    ) as Customer;
+    )) as Customer;
 
-    const customerMobile = await createSLCustomer(
+    const customerMobile = (await createSLCustomer(
       client,
       'namk-mobile',
       'MiKashBoks Mobile',
       'mk-mobile-api-key-prod',
       'mk-mobile-webhook-secret-prod',
-    ) as Customer;
+    )) as Customer;
 
-    const customerUssd = await createSLCustomer(
+    const customerUssd = (await createSLCustomer(
       client,
       'namk-ussd',
       'MiKashBoks USSD/WhatsApp',
       'mk-ussd-api-key-prod',
       'mk-ussd-webhook-secret-prod',
-    ) as Customer;
+    )) as Customer;
 
     // 2. Create projects
     console.info('Creating SL projects...');
 
     const projectDefault = await createSLProject(
-      client, customerDefault, 'sl-default', 'Sierra Leone Default',
+      client,
+      customerDefault,
+      'sl-default',
+      'Sierra Leone Default',
     );
     const projectLoanCube = await createSLProject(
-      client, customerLoanCube, 'loancube-sl', 'LoanCube Sierra Leone',
+      client,
+      customerLoanCube,
+      'loancube-sl',
+      'LoanCube Sierra Leone',
     );
     const projectMobile = await createSLProject(
-      client, customerMobile, 'namk-mobile-sl', 'Mobile App Sierra Leone',
+      client,
+      customerMobile,
+      'namk-mobile-sl',
+      'Mobile App Sierra Leone',
     );
     const projectUssd = await createSLProject(
-      client, customerUssd, 'namk-ussd-sl', 'USSD/WhatsApp Sierra Leone',
+      client,
+      customerUssd,
+      'namk-ussd-sl',
+      'USSD/WhatsApp Sierra Leone',
     );
 
     // 3. Seed workflow definitions
@@ -1034,9 +1041,15 @@ async function main() {
     });
 
     console.info('=== Sierra Leone seed complete ===');
-    console.info(`  Customers: ${customerDefault.id}, ${customerLoanCube.id}, ${customerMobile.id}, ${customerUssd.id}`);
-    console.info(`  Projects: ${projectDefault.id}, ${projectLoanCube.id}, ${projectMobile.id}, ${projectUssd.id}`);
-    console.info(`  Workflows: kyc_onboarding_sierra_leone, kyb_onboarding_sierra_leone_formal, kyb_onboarding_sierra_leone_informal, loan_kyc_kyb_sierra_leone`);
+    console.info(
+      `  Customers: ${customerDefault.id}, ${customerLoanCube.id}, ${customerMobile.id}, ${customerUssd.id}`,
+    );
+    console.info(
+      `  Projects: ${projectDefault.id}, ${projectLoanCube.id}, ${projectMobile.id}, ${projectUssd.id}`,
+    );
+    console.info(
+      `  Workflows: kyc_onboarding_sierra_leone, kyb_onboarding_sierra_leone_formal, kyb_onboarding_sierra_leone_informal, loan_kyc_kyb_sierra_leone`,
+    );
   } catch (error) {
     console.error('Seed failed:', error);
     throw error;

@@ -176,7 +176,8 @@ export class CaseManagementService {
         data: {
           endUserId: ballerineEntityId,
           businessId: workflowRuntimeData.businessId,
-          position: BusinessPosition.ubo as unknown as Prisma.EndUsersOnBusinessesCreatepositionInput,
+          position:
+            BusinessPosition.ubo as unknown as Prisma.EndUsersOnBusinessesCreatepositionInput,
         },
       });
     });

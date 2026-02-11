@@ -58,6 +58,8 @@ export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiTags(WORKFLOW_TAG)
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
+  private readonly logger = new common.Logger(WorkflowControllerExternal.name);
+
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
@@ -577,9 +579,13 @@ export class WorkflowControllerExternal {
       }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`, {
-          cause: error,
-        });
+        // Unified API callbacks can race with workflow cleanup or retries.
+        // A missing runtime should be treated as a no-op to avoid alert noise.
+        this.logger.warn(
+          `Ignoring hook callback for missing workflow runtime id=${params.id} event=${params.event}`,
+        );
+
+        return;
       }
 
       throw error;

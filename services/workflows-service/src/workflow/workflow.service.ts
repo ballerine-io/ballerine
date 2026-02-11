@@ -282,7 +282,12 @@ export class WorkflowService {
     );
 
     return await this.workflowDefinitionRepository.create({
-      data: { ...(workflowDefinition as Record<string, unknown>), name: data.name, projectId: projectId, isPublic: false } as any,
+      data: {
+        ...(workflowDefinition as Record<string, unknown>),
+        name: data.name,
+        projectId: projectId,
+        isPublic: false,
+      } as any,
       select,
     });
   }
@@ -378,7 +383,10 @@ export class WorkflowService {
         definitionType: workflow.workflowDefinition.definitionType as 'statechart-json',
         workflowContext: {
           machineContext: workflow.context,
-          state: workflow.state ?? (workflow.workflowDefinition.definition as Record<string, unknown>)?.initial as string,
+          state:
+            workflow.state ??
+            ((workflow.workflowDefinition.definition as Record<string, unknown>)
+              ?.initial as string),
         },
       });
 
@@ -2114,7 +2122,9 @@ export class WorkflowService {
       return;
     }
 
-    const validate = ajv.compile((workflowDefinition?.contextSchema as Record<string, unknown>)?.schema as object); // TODO: fix type
+    const validate = ajv.compile(
+      (workflowDefinition?.contextSchema as Record<string, unknown>)?.schema as object,
+    ); // TODO: fix type
     const isValid = validate({
       ...context,
       // Validation should not include the documents' 'propertiesSchema' prop.

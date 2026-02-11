@@ -22,16 +22,64 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         on: {
           start: 'data_collection',
           // Backend-only shortcut when the caller already provided business documents.
-          start_with_documents: 'business_document_check',
+          start_with_documents: 'device_deduplication',
         },
       },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_COMPLETED: 'business_document_check',
+          COLLECTION_COMPLETED: 'device_deduplication',
           // Backwards-compatibility with older collection-flow UIs.
-          COLLECTION_FLOW_FINISHED: 'business_document_check',
+          COLLECTION_FLOW_FINISHED: 'device_deduplication',
         },
+      },
+      device_deduplication: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          // Always proceed to indexing; we route to manual review later based on link-based risk signals.
+          DEVICE_DEDUP_COMPLETED: [{ target: 'device_indexing' }],
+          DEVICE_DEDUP_FAILED: [{ target: 'device_indexing' }], // Fail-open
+        },
+        always: [
+          {
+            target: 'business_document_check',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: 'entity.data.device == null || length(entity.data.device) == `0`',
+              },
+            },
+          },
+        ],
+      },
+      device_indexing: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          DEVICE_INDEXED: [{ target: 'device_linking' }],
+          DEVICE_INDEX_FAILED: [{ target: 'business_document_check' }], // Fail-open
+        },
+      },
+      device_linking: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          DEVICE_LINKED: [{ target: 'device_routing' }],
+          DEVICE_LINK_FAILED: [{ target: 'business_document_check' }], // Fail-open
+        },
+      },
+      device_routing: {
+        tags: [StateTag.PENDING_PROCESS],
+        always: [
+          {
+            target: 'manual_review',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: '(pluginsOutput.device_linking.risk.userCount || `0`) > `1`',
+              },
+            },
+          },
+          { target: 'business_document_check' },
+        ],
       },
       business_document_check: {
         tags: [StateTag.PENDING_PROCESS],
@@ -145,6 +193,117 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
   extensions: {
     apiPlugins: [
       {
+        name: 'device_deduplication_check',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
+        method: 'POST',
+        stateNames: ['device_deduplication'],
+        successAction: 'DEVICE_DEDUP_COMPLETED',
+        errorAction: 'DEVICE_DEDUP_FAILED',
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                device: entity.data.device,
+                countryCode: 'SL',
+                searchScope: 'local'
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@',
+            },
+          ],
+        },
+      },
+      {
+        name: 'device_indexing',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/index`,
+        method: 'POST',
+        stateNames: ['device_indexing'],
+        successAction: 'DEVICE_INDEXED',
+        errorAction: 'DEVICE_INDEX_FAILED',
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                device: entity.data.device,
+                canonicalDeviceId: pluginsOutput.device_deduplication_check.duplicateIds[0],
+                countryCode: 'SL'
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@',
+            },
+          ],
+        },
+      },
+      {
+        name: 'device_linking',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/link-person`,
+        method: 'POST',
+        stateNames: ['device_linking'],
+        successAction: 'DEVICE_LINKED',
+        errorAction: 'DEVICE_LINK_FAILED',
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                personId: entity.data.ownerId,
+                deviceId: pluginsOutput.device_indexing.documentId,
+                confidence: \`1\`,
+                evidence: {
+                  source: 'ballerine',
+                  workflow: 'kyb_onboarding_sierra_leone_formal',
+                  businessId: entity.id,
+                  deviceDedup: pluginsOutput.device_deduplication_check
+                }
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@',
+            },
+          ],
+        },
+      },
+      {
         name: 'business_document_verification',
         pluginKind: 'api',
         url: `${env.UNIFIED_API_URL}/api/v1/verification/kyb`,
@@ -182,6 +341,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
                   }
                 },
                 methods: ['BUSINESS_DOCUMENT_VERIFICATION'],
+                performDeduplication: true,
                 countryCode: 'SL'
               }`,
             },
@@ -316,8 +476,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         transformers: [
           {
             transformer: 'jmespath',
-            mapping:
-              '{childEntity: entity.data, vendorResult: pluginsOutput}',
+            mapping: '{childEntity: entity.data, vendorResult: pluginsOutput}',
           },
         ],
         persistenceStates: ['approved', 'rejected', 'manual_review'],
@@ -344,37 +503,51 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
             industry: Type.Optional(Type.String()),
             phoneNumber: Type.Optional(Type.String()),
             email: Type.Optional(Type.String()),
+            ownerId: Type.Optional(Type.String()),
             website: Type.Optional(Type.String()),
             country: Type.Optional(Type.String({ default: 'SL' })),
-            address: Type.Optional(Type.Object({
-              line1: Type.Optional(Type.String()),
-              line2: Type.Optional(Type.String()),
-              city: Type.Optional(Type.String()),
-              district: Type.Optional(Type.String()),
-              country: Type.Optional(Type.String({ default: 'SL' })),
-            })),
-            additionalInfo: Type.Optional(Type.Object({
-              directors: Type.Optional(Type.Array(Type.Object({
-                id: Type.Optional(Type.String()),
-                firstName: Type.String(),
-                lastName: Type.String(),
-                nationalId: Type.Optional(Type.String()),
-                dateOfBirth: Type.Optional(Type.String()),
-                phoneNumber: Type.Optional(Type.String()),
-                email: Type.Optional(Type.String()),
-                role: Type.Optional(Type.String()),
-                documents: Type.Optional(Type.Array(Type.Any())),
-              }))),
-              ubos: Type.Optional(Type.Array(Type.Object({
-                id: Type.Optional(Type.String()),
-                firstName: Type.String(),
-                lastName: Type.String(),
-                nationalId: Type.Optional(Type.String()),
-                dateOfBirth: Type.Optional(Type.String()),
-                ownershipPercentage: Type.Optional(Type.Number()),
-                documents: Type.Optional(Type.Array(Type.Any())),
-              }))),
-            })),
+            address: Type.Optional(
+              Type.Object({
+                line1: Type.Optional(Type.String()),
+                line2: Type.Optional(Type.String()),
+                city: Type.Optional(Type.String()),
+                district: Type.Optional(Type.String()),
+                country: Type.Optional(Type.String({ default: 'SL' })),
+              }),
+            ),
+            device: Type.Optional(Type.Any()),
+            additionalInfo: Type.Optional(
+              Type.Object({
+                directors: Type.Optional(
+                  Type.Array(
+                    Type.Object({
+                      id: Type.Optional(Type.String()),
+                      firstName: Type.String(),
+                      lastName: Type.String(),
+                      nationalId: Type.Optional(Type.String()),
+                      dateOfBirth: Type.Optional(Type.String()),
+                      phoneNumber: Type.Optional(Type.String()),
+                      email: Type.Optional(Type.String()),
+                      role: Type.Optional(Type.String()),
+                      documents: Type.Optional(Type.Array(Type.Any())),
+                    }),
+                  ),
+                ),
+                ubos: Type.Optional(
+                  Type.Array(
+                    Type.Object({
+                      id: Type.Optional(Type.String()),
+                      firstName: Type.String(),
+                      lastName: Type.String(),
+                      nationalId: Type.Optional(Type.String()),
+                      dateOfBirth: Type.Optional(Type.String()),
+                      ownershipPercentage: Type.Optional(Type.Number()),
+                      documents: Type.Optional(Type.Array(Type.Any())),
+                    }),
+                  ),
+                ),
+              }),
+            ),
             tenantId: Type.Optional(Type.String()),
             projectId: Type.Optional(Type.String()),
           }),

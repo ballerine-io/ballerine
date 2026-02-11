@@ -104,10 +104,22 @@ export async function customSeed() {
     console.info('  Upserting SL projects...');
 
     const projectSpecs = [
-      { id: 'project-sl-default', name: 'Sierra Leone Default', customerId: 'customer-mikashboks-sl' },
+      {
+        id: 'project-sl-default',
+        name: 'Sierra Leone Default',
+        customerId: 'customer-mikashboks-sl',
+      },
       { id: 'project-loancube-sl', name: 'LoanCube Sierra Leone', customerId: 'customer-loancube' },
-      { id: 'project-namk-mobile-sl', name: 'Mobile App Sierra Leone', customerId: 'customer-namk-mobile' },
-      { id: 'project-namk-ussd-sl', name: 'USSD/WhatsApp Sierra Leone', customerId: 'customer-namk-ussd' },
+      {
+        id: 'project-namk-mobile-sl',
+        name: 'Mobile App Sierra Leone',
+        customerId: 'customer-namk-mobile',
+      },
+      {
+        id: 'project-namk-ussd-sl',
+        name: 'USSD/WhatsApp Sierra Leone',
+        customerId: 'customer-namk-ussd',
+      },
     ] as const;
 
     for (const spec of projectSpecs) {
@@ -125,8 +137,14 @@ export async function customSeed() {
 
     const workflowDefs = [
       { def: kycOnboardingSierraLeoneDefinition, label: 'kyc_onboarding_sierra_leone' },
-      { def: kybOnboardingSierraLeoneFormalDefinition, label: 'kyb_onboarding_sierra_leone_formal' },
-      { def: kybOnboardingSierraLeoneInformalDefinition, label: 'kyb_onboarding_sierra_leone_informal' },
+      {
+        def: kybOnboardingSierraLeoneFormalDefinition,
+        label: 'kyb_onboarding_sierra_leone_formal',
+      },
+      {
+        def: kybOnboardingSierraLeoneInformalDefinition,
+        label: 'kyb_onboarding_sierra_leone_informal',
+      },
       { def: loanKycKybSierraLeoneDefinition, label: 'loan_kyc_kyb_sierra_leone' },
     ] as const;
 

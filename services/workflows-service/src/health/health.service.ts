@@ -4,10 +4,7 @@ import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class HealthService {
-  constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly redis: RedisService,
-  ) {}
+  constructor(protected readonly prisma: PrismaService, protected readonly redis: RedisService) {}
 
   async isDbReady(): Promise<boolean> {
     try {

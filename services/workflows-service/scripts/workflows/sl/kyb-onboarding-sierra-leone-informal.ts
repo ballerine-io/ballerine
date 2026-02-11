@@ -36,16 +36,81 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         on: {
           start: 'data_collection',
           // Backend-only shortcut when the caller already provided owner + business documents.
-          start_with_documents: 'owner_id_check',
+          start_with_documents: 'device_deduplication',
         },
       },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_COMPLETED: 'owner_id_check',
+          COLLECTION_COMPLETED: 'device_deduplication',
           // Backwards-compatibility with older collection-flow UIs.
-          COLLECTION_FLOW_FINISHED: 'owner_id_check',
+          COLLECTION_FLOW_FINISHED: 'device_deduplication',
         },
+      },
+      device_deduplication: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          // Always proceed to indexing; we route to manual review later based on link-based risk signals.
+          DEVICE_DEDUP_COMPLETED: [{ target: 'device_indexing' }],
+          DEVICE_DEDUP_FAILED: [{ target: 'device_indexing' }], // Fail-open
+        },
+        always: [
+          {
+            target: 'kyc_gate',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: 'entity.data.device == null || length(entity.data.device) == `0`',
+              },
+            },
+          },
+        ],
+      },
+      device_indexing: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          DEVICE_INDEXED: [{ target: 'device_linking' }],
+          DEVICE_INDEX_FAILED: [{ target: 'kyc_gate' }], // Fail-open
+        },
+      },
+      device_linking: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          DEVICE_LINKED: [{ target: 'device_routing' }],
+          DEVICE_LINK_FAILED: [{ target: 'kyc_gate' }], // Fail-open
+        },
+      },
+      device_routing: {
+        tags: [StateTag.PENDING_PROCESS],
+        always: [
+          {
+            target: 'manual_review',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: '(pluginsOutput.device_linking.risk.userCount || `0`) > `1`',
+              },
+            },
+          },
+          { target: 'kyc_gate' },
+        ],
+      },
+      kyc_gate: {
+        tags: [StateTag.PENDING_PROCESS],
+        always: [
+          {
+            target: 'market_card_verification',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: 'entity.data.kycVerified == `true`',
+              },
+            },
+          },
+          {
+            target: 'owner_id_check',
+          },
+        ],
       },
       owner_id_check: {
         tags: [StateTag.PENDING_PROCESS],
@@ -100,7 +165,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'APPROVED']]) > \`0\` && (pluginsOutput.address_verification.status == 'VERIFIED' || pluginsOutput.address_verification == null)`,
+                rule: `(entity.data.kycVerified == \`true\` || (childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'APPROVED']]) > \`0\`)) && (pluginsOutput.address_verification.status == 'VERIFIED' || pluginsOutput.address_verification == null)`,
               },
             },
           },
@@ -146,6 +211,117 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
   },
   extensions: {
     apiPlugins: [
+      {
+        name: 'device_deduplication_check',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
+        method: 'POST',
+        stateNames: ['device_deduplication'],
+        successAction: 'DEVICE_DEDUP_COMPLETED',
+        errorAction: 'DEVICE_DEDUP_FAILED',
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                device: entity.data.device,
+                countryCode: 'SL',
+                searchScope: 'local'
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@',
+            },
+          ],
+        },
+      },
+      {
+        name: 'device_indexing',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/index`,
+        method: 'POST',
+        stateNames: ['device_indexing'],
+        successAction: 'DEVICE_INDEXED',
+        errorAction: 'DEVICE_INDEX_FAILED',
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                device: entity.data.device,
+                canonicalDeviceId: pluginsOutput.device_deduplication_check.duplicateIds[0],
+                countryCode: 'SL'
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@',
+            },
+          ],
+        },
+      },
+      {
+        name: 'device_linking',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/link-person`,
+        method: 'POST',
+        stateNames: ['device_linking'],
+        successAction: 'DEVICE_LINKED',
+        errorAction: 'DEVICE_LINK_FAILED',
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                personId: entity.data.ownerId,
+                deviceId: pluginsOutput.device_indexing.documentId,
+                confidence: \`1\`,
+                evidence: {
+                  source: 'ballerine',
+                  workflow: 'kyb_onboarding_sierra_leone_informal',
+                  businessId: entity.id,
+                  deviceDedup: pluginsOutput.device_deduplication_check
+                }
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@',
+            },
+          ],
+        },
+      },
       {
         name: 'market_card_verification',
         pluginKind: 'api',
@@ -213,6 +389,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
                 business: {
                   id: entity.id,
                   name: entity.data.businessName || entity.data.companyName,
+                  entityType: entity.data.businessType,
                   address: entity.data.address,
                   documents: documents[?category=='proof_of_address' || category=='proof_of_location'].{
                     type: type,
@@ -221,6 +398,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
                   }
                 },
                 methods: ['BUSINESS_ADDRESS_VERIFICATION'],
+                performDeduplication: true,
                 countryCode: 'SL'
               }`,
             },
@@ -338,28 +516,37 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             phoneNumber: Type.Optional(Type.String()),
             email: Type.Optional(Type.String()),
             country: Type.Optional(Type.String({ default: 'SL' })),
-            address: Type.Optional(Type.Object({
-              line1: Type.Optional(Type.String()),
-              city: Type.Optional(Type.String()),
-              district: Type.Optional(Type.String()),
-              market: Type.Optional(Type.String()), // e.g., "Lumley Market", "Big Market"
-              country: Type.Optional(Type.String({ default: 'SL' })),
-            })),
+            ownerId: Type.Optional(Type.String()),
+            kycVerified: Type.Optional(Type.Boolean()),
+            address: Type.Optional(
+              Type.Object({
+                line1: Type.Optional(Type.String()),
+                city: Type.Optional(Type.String()),
+                district: Type.Optional(Type.String()),
+                market: Type.Optional(Type.String()), // e.g., "Lumley Market", "Big Market"
+                country: Type.Optional(Type.String({ default: 'SL' })),
+              }),
+            ),
+            device: Type.Optional(Type.Any()),
             // Owner info (sole proprietor)
             ownerFirstName: Type.Optional(Type.String()),
             ownerLastName: Type.Optional(Type.String()),
             ownerNationalId: Type.Optional(Type.String()),
-            additionalInfo: Type.Optional(Type.Object({
-              owner: Type.Optional(Type.Object({
-                firstName: Type.String(),
-                lastName: Type.String(),
-                nationalId: Type.Optional(Type.String()),
-                dateOfBirth: Type.Optional(Type.String()),
-                phoneNumber: Type.Optional(Type.String()),
-                email: Type.Optional(Type.String()),
-                documents: Type.Optional(Type.Array(Type.Any())),
-              })),
-            })),
+            additionalInfo: Type.Optional(
+              Type.Object({
+                owner: Type.Optional(
+                  Type.Object({
+                    firstName: Type.String(),
+                    lastName: Type.String(),
+                    nationalId: Type.Optional(Type.String()),
+                    dateOfBirth: Type.Optional(Type.String()),
+                    phoneNumber: Type.Optional(Type.String()),
+                    email: Type.Optional(Type.String()),
+                    documents: Type.Optional(Type.Array(Type.Any())),
+                  }),
+                ),
+              }),
+            ),
             tenantId: Type.Optional(Type.String()),
             projectId: Type.Optional(Type.String()),
           }),
