@@ -1,5 +1,5 @@
 import { apiClient } from '@/common/api-client/api-client';
-import { Method, States } from '@/common/enums';
+import { Method, State, States } from '@/common/enums';
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
@@ -50,18 +50,20 @@ export const fetchWorkflows = async (params: {
         z.object({
           id: z.string(),
           status: z.string(),
-          createdAt: z.string().datetime(),
+          createdAt: z
+            .union([z.string().datetime(), z.string(), z.date()])
+            .transform(value => (value instanceof Date ? value.toISOString() : value)),
           entity: ObjectWithIdSchema.extend({
-            name: z.string(),
+            name: z.string().nullish().transform(value => value ?? ''),
             avatarUrl: z.string().nullable().optional(),
-            approvalState: z.enum(States),
+            approvalState: z.enum(States).catch(State.NEW),
           }),
           assignee: ObjectWithIdSchema.extend({
-            firstName: z.string(),
-            lastName: z.string(),
+            firstName: z.string().nullish().transform(value => value ?? ''),
+            lastName: z.string().nullish().transform(value => value ?? ''),
             avatarUrl: z.string().nullable().optional(),
           }).nullable(),
-          tags: z.array(z.string()).nullable().optional(),
+          tags: z.array(z.string()).nullable().catch([]).optional(),
         }),
       ),
       meta: z.object({

@@ -33,6 +33,7 @@ export const fetchBusinessReportMetrics = async ({ from, to }: { from?: string; 
     endpoint: `../external/business-reports/metrics?${queryString}`,
     method: Method.GET,
     schema: MetricsResponseSchema,
+    timeout: 30_000,
   });
 
   return handleZodError(error, businessReportMetrics);

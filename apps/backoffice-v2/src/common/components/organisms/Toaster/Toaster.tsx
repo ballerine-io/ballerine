@@ -11,10 +11,10 @@ export const Toaster = ({ className, toastOptions, ...props }: ToasterProps) => 
       className={ctw('toaster group', className)}
       richColors
       icons={{
-        success: <CheckCircle2 size="medium" />,
-        info: <Info size="medium" />,
-        error: <AlertCircle size="medium" />,
-        warning: <AlertTriangle size="medium" />,
+        success: <CheckCircle2 size={18} />,
+        info: <Info size={18} />,
+        error: <AlertCircle size={18} />,
+        warning: <AlertTriangle size={18} />,
       }}
       closeButton
       toastOptions={{

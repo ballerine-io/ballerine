@@ -41,6 +41,20 @@ const MetricsResponseSchema = z.object({
   removedWebsitesCount: z.number(),
 });
 
+const EmptyMetrics = {
+  riskLevelCounts: {
+    low: 0,
+    medium: 0,
+    high: 0,
+    critical: 0,
+  },
+  violationCounts: [],
+  activeBusinessesCount: 0,
+  activeWebsitesCount: 0,
+  addedWebsitesCount: 0,
+  removedWebsitesCount: 0,
+} satisfies z.infer<typeof MetricsResponseSchema>;
+
 @Injectable()
 export class MerchantMonitoringClient {
   private axios: AxiosInstance;
@@ -291,14 +305,28 @@ export class MerchantMonitoringClient {
     from?: string;
     to?: string;
   }) {
-    const response = await this.axios.get('merchants/analysis/metrics', {
-      params: {
-        customerId,
-        from,
-        to,
-      },
-    });
+    try {
+      const response = await this.axios.get('merchants/analysis/metrics', {
+        params: {
+          customerId,
+          from,
+          to,
+        },
+      });
 
-    return MetricsResponseSchema.parse(response.data);
+      const parsedMetrics = MetricsResponseSchema.safeParse(response.data);
+
+      if (!parsedMetrics.success) {
+        return EmptyMetrics;
+      }
+
+      return parsedMetrics.data;
+    } catch (error) {
+      if (error instanceof AxiosError && [400, 404].includes(error.response?.status ?? 0)) {
+        return EmptyMetrics;
+      }
+
+      throw error;
+    }
   }
 }
