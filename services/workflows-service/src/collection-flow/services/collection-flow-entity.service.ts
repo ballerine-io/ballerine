@@ -92,7 +92,8 @@ export class CollectionFlowEntityService {
           endUserId: entityId,
         },
         data: {
-          position: entityRest.variant as unknown as Prisma.EndUsersOnBusinessesUpdateManyMutationInput['position'],
+          position:
+            entityRest.variant as unknown as Prisma.EndUsersOnBusinessesUpdateManyMutationInput['position'],
         },
       });
 

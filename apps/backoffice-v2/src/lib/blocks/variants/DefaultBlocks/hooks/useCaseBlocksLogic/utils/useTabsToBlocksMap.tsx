@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { toast } from 'sonner';
 import { t } from 'i18next';
+import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
 import {
   EDIT_TEMPLATES,
   useEditCollectionFlow,
@@ -131,7 +132,6 @@ export const useTabsToBlocksMap = ({
     entityAdditionalInfoBlock,
     headquartersAddressWithContainerBlock,
     entityAddressWithContainerBlock,
-    verificationResultsBlock,
   } = blocks;
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
@@ -572,6 +572,32 @@ export const useTabsToBlocksMap = ({
 
   const kycBlocks = useKYCBlocks(individuals);
 
+  // Sierra Leone: expose device dedup/link risk signals (shared-device graphs) in the backoffice UI.
+  // This is populated by Ballerine workflow apiPlugins:
+  // - device_deduplication_check
+  // - device_indexing
+  // - device_linking
+  const deviceSignalsBlock = useObjectEntriesBlock({
+    object: (() => {
+      const entityDevice = blocksCreationParams?.workflow?.context?.entity?.data?.device;
+      const pluginsOutput = blocksCreationParams?.workflow?.context?.pluginsOutput ?? {};
+
+      const deviceDedup = (pluginsOutput as any)?.device_deduplication_check;
+      const deviceIndexing = (pluginsOutput as any)?.device_indexing;
+      const deviceLinking = (pluginsOutput as any)?.device_linking;
+
+      const out: Record<string, any> = {};
+      if (entityDevice) out.providedDeviceSignals = entityDevice;
+      if (deviceDedup) out.deviceDeduplication = deviceDedup;
+      if (deviceIndexing) out.deviceIndexing = deviceIndexing;
+      if (deviceLinking) out.deviceLinking = deviceLinking;
+
+      return out;
+    })(),
+    heading: 'Device Signals',
+    subheading: 'Deduplication and shared-device risk (Unified API)',
+  });
+
   const defaultTabsMap = {
     [Tab.SUMMARY]: [
       ...(blocksCreationParams?.workflow?.workflowDefinition?.config?.isCaseOverviewEnabled
@@ -606,12 +632,12 @@ export const useTabsToBlocksMap = ({
     [Tab.INDIVIDUALS]: [
       ...individualsUserProvidedBlock,
       ...individualsRegistryProvidedBlock,
+      ...deviceSignalsBlock,
       ...amlWithContainerBlock,
       ...mainRepresentativeBlock,
       ...uboDocumentBlocks,
       ...directorDocumentBlocks,
       ...kycBlocks,
-      ...verificationResultsBlock,
     ],
     [Tab.ASSOCIATED_COMPANIES]: [
       ...associatedCompaniesBlock,
@@ -636,9 +662,9 @@ export const useTabsToBlocksMap = ({
     return {
       [Tab.KYC]: [
         ...businessInformationBlocks,
+        ...deviceSignalsBlock,
         ...amlWithContainerBlock,
         ...kycBlocks,
-        ...verificationResultsBlock,
       ],
     } as const;
   }

@@ -1,36 +1,34 @@
+# Dockerfile.test — Ballerine workflows-service for E2E testing
+# Mirrors the main Dockerfile but adds curl for healthchecks
+# and handles the prepare script that runs prisma:generate during npm install
+
 FROM node:18.17.1-bullseye-slim as dev
 
-RUN apt-get update && apt-get install -y dumb-init curl
+RUN apt-get update && apt-get install -y dumb-init curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-ARG RELEASE
-ENV RELEASE=${RELEASE:-unknown}
-ARG SHORT_SHA
-ENV SHORT_SHA=${SHORT_SHA}
-
-# Copy package.json AND prisma schema first (prisma:generate runs during npm install's prepare)
 COPY ./package.json .
+
+# Copy source before install so prisma:generate (called by prepare hook) finds the schema
 COPY ./prisma ./prisma
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./tsconfig.build.json ./tsconfig.build.json
 
 RUN npm install --legacy-peer-deps
 
 COPY . .
 
+RUN npm run prisma:generate
 RUN npm run build
 
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
 FROM node:18.17.1-bullseye-slim as prod
 
-ARG RELEASE
-ENV RELEASE=${RELEASE:-unknown}
-ARG SHORT_SHA
-ENV SHORT_SHA=${SHORT_SHA}
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=dev /usr/bin/dumb-init /usr/bin/dumb-init
 COPY --from=dev /app/node_modules/ ./node_modules

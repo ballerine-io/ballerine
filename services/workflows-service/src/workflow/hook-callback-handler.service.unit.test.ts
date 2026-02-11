@@ -1,5 +1,6 @@
-import { setPluginStatus } from './hook-callback-handler.service';
+import { HookCallbackHandlerService, setPluginStatus } from './hook-callback-handler.service';
 import { ProcessStatus } from '@ballerine/common';
+import type { WorkflowRuntimeData } from '@prisma/client';
 
 describe('setPluginStatusToSuccess', () => {
   it('should set plugin status to success', () => {
@@ -106,5 +107,47 @@ describe('setPluginStatusToSuccess', () => {
         },
       },
     });
+  });
+});
+
+describe('HookCallbackHandlerService', () => {
+  it('handles missing business in website-monitoring callback without throwing', async () => {
+    const businessService = {
+      getByCorrelationId: jest.fn().mockResolvedValue(null),
+    };
+
+    const service = new HookCallbackHandlerService(
+      {} as never,
+      {} as never,
+      businessService as never,
+      {} as never,
+      {} as never,
+    );
+
+    const result = await service.prepareWebsiteMonitoringContext(
+      { reportData: { monitored: true } },
+      {
+        context: {
+          entity: { id: 'corr-123' },
+          apiPlugins: {
+            websiteMonitoring: {
+              status: ProcessStatus.IN_PROGRESS,
+            },
+          },
+        },
+      } as unknown as WorkflowRuntimeData,
+      'apiPlugins.websiteMonitoring',
+      'project-id',
+    );
+
+    expect(result).toEqual({
+      apiPlugins: {
+        websiteMonitoring: {
+          data: { monitored: true },
+          status: ProcessStatus.SUCCESS,
+        },
+      },
+    });
+    expect(businessService.getByCorrelationId).toHaveBeenCalledWith('corr-123', ['project-id']);
   });
 });
