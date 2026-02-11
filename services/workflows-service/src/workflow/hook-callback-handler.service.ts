@@ -231,7 +231,7 @@ export class HookCallbackHandlerService {
     const attributePath = resultDestinationPath.split('.');
     const context = JSON.parse(JSON.stringify(workflowRuntime.context));
     const result = formatIndividualVerification(typedData);
-    const documents = await handleIndividualVerificationDocuments({
+    const { documents, cleanupTempFiles } = await handleIndividualVerificationDocuments({
       kycDocument: typedData.document,
       kycDocumentImages: typedData.images,
       person: typedData.person,
@@ -244,6 +244,7 @@ export class HookCallbackHandlerService {
       currentProjectId,
       customer.name,
     );
+    cleanupTempFiles();
 
     this.setNestedProperty(context as Record<string, any>, attributePath, result);
     (context as Record<string, any>).documents =
