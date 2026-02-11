@@ -103,8 +103,8 @@ export const kycOnboardingSierraLeoneDefinition = {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId,
-                  idType: 'NATIONAL_ID',
+                  idNumber: entity.data.nationalId || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
+                  idType: (documents[?category=='proof_of_identity'][0].type == 'passport' && 'PASSPORT') || (documents[?category=='proof_of_identity'][0].type == 'voter_id' && 'VOTER_ID') || (documents[?category=='proof_of_identity'][0].type == 'drivers_license' && 'DRIVERS_LICENSE') || 'NATIONAL_ID',
                   dateOfBirth: entity.data.dateOfBirth,
                   phoneNumber: entity.data.phoneNumber,
                   documents: documents[?category=='proof_of_identity'].{
@@ -155,7 +155,8 @@ export const kycOnboardingSierraLeoneDefinition = {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId,
+                  idNumber: entity.data.nationalId || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
+                  idType: (documents[?category=='proof_of_identity'][0].type == 'passport' && 'PASSPORT') || (documents[?category=='proof_of_identity'][0].type == 'voter_id' && 'VOTER_ID') || (documents[?category=='proof_of_identity'][0].type == 'drivers_license' && 'DRIVERS_LICENSE') || 'NATIONAL_ID',
                   dateOfBirth: entity.data.dateOfBirth,
                   documents: documents[?category=='proof_of_identity'].{
                     type: type,
