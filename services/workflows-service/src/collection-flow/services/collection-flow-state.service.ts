@@ -25,7 +25,7 @@ import { findEntityFieldsDefinition } from '../helpers/find-entity-fields-defini
 import { findDocumentDefinitionByTypeAndCategory } from '../helpers/find-document-definition-by-type-and-category';
 import { findBusinessDocumentDefinitionByTypeAndCategory } from '../helpers/find-business-document-definition';
 import { EntityType, TEntityType } from '../enums';
-import { CollectionFlowMissingException } from '../exceptions/collection-flow-missing.exception';
+
 import { UpdateCollectionFlowStateDto } from '@/workflow/dtos/update-collection-flow-state.dto';
 import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -69,10 +69,6 @@ export class CollectionFlowStateService {
 
     if (!isCollectionFlowStateSupported) {
       return null;
-    }
-
-    if (!collectionFlowState) {
-      throw new CollectionFlowMissingException();
     }
 
     const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
@@ -145,7 +141,22 @@ export class CollectionFlowStateService {
     })) as Array<Document & { entityType: TEntityType }>;
 
     if (!getCollectionFlowState(context)) {
-      throw new NotFoundException('Collection flow state not found');
+      // Initialize default collection flow state for fresh workflows that don't
+      // have it yet (e.g., newly created KYC workflows with context: { documents: [] })
+      const collectionFlowSteps = (
+        uiDefinition.uiSchema as unknown as { elements: IUIDefinitionPage[] }
+      ).elements;
+      context.collectionFlow = {
+        ...context.collectionFlow,
+        state: {
+          status: CollectionFlowStatusesEnum.pending,
+          currentStep: collectionFlowSteps[0]?.stateName || '',
+          steps: collectionFlowSteps.map(step => ({
+            stepName: step.stateName,
+            state: CollectionFlowStepStatesEnum.idle,
+          })),
+        },
+      };
     }
 
     documentsWithEntityTypes = documentsWithEntityTypes.filter(
