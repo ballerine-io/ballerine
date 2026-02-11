@@ -107,15 +107,15 @@ function esm({ input, packageDir, external, banner }: Options): RollupOptions {
       banner,
       preserveModules: true,
       preserveModulesRoot: path.resolve(process.cwd(), 'src'),
-	    },
-	    plugins: [
-	      babelPlugin,
-	      nodeResolve({ extensions: ['.ts'] }),
-	      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
-	      json(),
-	    ],
-	  };
-	}
+    },
+    plugins: [
+      babelPlugin,
+      nodeResolve({ extensions: ['.ts'] }),
+      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
+      json(),
+    ],
+  };
+}
 
 function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
   return {
@@ -130,16 +130,16 @@ function cjs({ input, external, packageDir, banner }: Options): RollupOptions {
       preserveModulesRoot: path.resolve(process.cwd(), 'src'),
       exports: 'named',
       banner,
-	    },
-	    plugins: [
-	      babelPlugin,
-	      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
-	      commonjs(),
-	      nodeResolve({ extensions: ['.ts'] }),
-	      json(),
-	    ],
-	  };
-	}
+    },
+    plugins: [
+      babelPlugin,
+      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
+      commonjs(),
+      nodeResolve({ extensions: ['.ts'] }),
+      json(),
+    ],
+  };
+}
 
 function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): RollupOptions {
   return {
@@ -152,14 +152,14 @@ function umdDev({ input, umdExternal, packageDir, banner, jsName }: Options): Ro
       file: `${packageDir}/dist/umd/index.development.js`,
       name: jsName,
       banner,
-	    },
-	    plugins: [
-	      babelPlugin,
-	      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
-	      commonjs(),
-	      nodeResolve({ extensions: ['.ts'] }),
-	      umdDevPlugin('development'),
-	      json(),
+    },
+    plugins: [
+      babelPlugin,
+      asRollupPlugin(typescriptPaths({ preserveExtensions: true })),
+      commonjs(),
+      nodeResolve({ extensions: ['.ts'] }),
+      umdDevPlugin('development'),
+      json(),
     ],
   };
 }

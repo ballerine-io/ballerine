@@ -30,15 +30,9 @@ const SLA_BREACH_CROSS_ENV_KEY = 'SLA_BREACH_MANUAL_REVIEW';
 @common.Controller('internal/sla-check')
 @swagger.ApiExcludeController()
 export class SlaCheckController {
-  private readonly SLA_THRESHOLD_HOURS = parseInt(
-    process.env['SLA_THRESHOLD_HOURS'] ?? '24',
-    10,
-  );
+  private readonly SLA_THRESHOLD_HOURS = parseInt(process.env['SLA_THRESHOLD_HOURS'] ?? '24', 10);
 
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly logger: AppLoggerService,
-  ) {}
+  constructor(private readonly prisma: PrismaService, private readonly logger: AppLoggerService) {}
 
   @common.Post()
   @common.UseGuards(AdminAuthGuard)
@@ -113,9 +107,7 @@ export class SlaCheckController {
       });
 
       const alreadyAlerted = new Set(
-        existingAlerts
-          .map(a => a.workflowRuntimeDataId)
-          .filter((id): id is string => id != null),
+        existingAlerts.map(a => a.workflowRuntimeDataId).filter((id): id is string => id != null),
       );
 
       let created = 0;
@@ -161,10 +153,9 @@ export class SlaCheckController {
         skippedDuplicates: skipped,
       });
     } catch (error) {
-      this.logger.error(
-        `SLA check failed: ${error instanceof Error ? error.message : ''}`,
-        { error },
-      );
+      this.logger.error(`SLA check failed: ${error instanceof Error ? error.message : ''}`, {
+        error,
+      });
 
       throw new common.InternalServerErrorException('SLA check failed');
     }

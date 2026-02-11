@@ -71,11 +71,7 @@ const WorkflowLogSummarySchema = z.object({
   data: z.record(z.string(), z.number()),
 });
 
-export const fetchWorkflowLogSummary = async ({
-  workflowId,
-}: {
-  workflowId: string;
-}) => {
+export const fetchWorkflowLogSummary = async ({ workflowId }: { workflowId: string }) => {
   const [response, error] = await apiClient({
     endpoint: `../workflow-logs/summary/${workflowId}`,
     method: Method.GET,

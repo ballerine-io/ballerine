@@ -135,10 +135,9 @@ export class CollectionFlowDocumentsController {
     );
 
     const allowedEndUserIds = new Set<string>(
-      [
-        workflow.endUserId,
-        ...(workflow.endUsers?.map(endUser => endUser.id) ?? []),
-      ].filter(Boolean) as string[],
+      [workflow.endUserId, ...(workflow.endUsers?.map(endUser => endUser.id) ?? [])].filter(
+        Boolean,
+      ) as string[],
     );
 
     if (endUserId && !allowedEndUserIds.has(endUserId)) {
@@ -151,9 +150,7 @@ export class CollectionFlowDocumentsController {
       }
 
       if (workflow.businessId !== businessId) {
-        throw new BadRequestException(
-          'Provided business ID does not match the workflow business.',
-        );
+        throw new BadRequestException('Provided business ID does not match the workflow business.');
       }
     }
 

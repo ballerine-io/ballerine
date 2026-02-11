@@ -1,14 +1,55 @@
 import { PrismaClient } from '@prisma/client';
-import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
+import {
+  defaultContextSchema,
+  getDocumentsByCountry,
+  StateTag,
+  WorkflowDefinitionVariant,
+} from '@ballerine/common';
 import { Type } from '@sinclair/typebox';
-import { env } from '../../../src/env';
 import { kycOnboardingSierraLeoneDefinition } from './kyc-onboarding-sierra-leone';
+import { generateBaseCaseLevelStatesWithPendingResubmission } from '../generate-base-case-level-states';
 
+/**
+ * Formal KYB (Know Your Business) Onboarding Workflow for Sierra Leone.
+ *
+ * For registered businesses (LLC, Corporation, Partnership, Registered Company)
+ * that have formal registration documents.
+ *
+ * Steps:
+ * 1. Data collection (business documents, registration certificates)
+ * 2. Business document verification (Certificate of Incorporation, business license)
+ *    via Unified API → Document API (BUSINESS_DOCUMENT_VERIFICATION method)
+ * 3. Business registry check — STUB (SL business registry API not yet available)
+ * 4. Director KYC — Spawns child KYC workflow per director (iterative)
+ * 5. Address verification (proof of address, utility bills)
+ *    via Unified API → Document API (BUSINESS_ADDRESS_VERIFICATION method)
+ * 6. Risk evaluation (aggregates all results, auto-approve if confidence >= 80)
+ *
+ * Auto-approval requires:
+ * - Business documents VERIFIED with confidence >= 80
+ * - Address VERIFIED
+ * - All director KYC workflows approved
+ */
 export const kybOnboardingSierraLeoneFormalDefinition = {
   id: 'kyb_onboarding_sierra_leone_formal',
   name: 'kyb_onboarding_sierra_leone_formal',
   version: 1,
   definitionType: 'statechart-json',
+  // SL document schemas for formal KYB-relevant categories.
+  // Includes identity docs (for director KYC child workflows),
+  // registration docs, address proofs, and financial documents.
+  documentsSchema: getDocumentsByCountry('SL').filter(doc =>
+    [
+      'proof_of_identity',
+      'proof_of_identity_ownership',
+      'business_document',
+      'proof_of_registration',
+      'proof_of_address',
+      'proof_of_ownership',
+      'proof_of_employment',
+      'financial_information',
+    ].includes(doc.category),
+  ),
   definition: {
     id: 'kyb_onboarding_sierra_leone_formal_v1',
     predictableActionArguments: true,
@@ -21,66 +62,25 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'data_collection',
-          // Backend-only shortcut when the caller already provided business documents.
-          start_with_documents: 'device_deduplication',
+          // Programmatic start (e.g., LoanCube) when documents are already present in context.
+          start_with_documents: 'business_document_check',
         },
       },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_COMPLETED: 'device_deduplication',
-          // Backwards-compatibility with older collection-flow UIs.
-          COLLECTION_FLOW_FINISHED: 'device_deduplication',
+          // Ballerine collection-flow app sends this on final submission.
+          COLLECTION_FLOW_FINISHED: 'business_document_check',
+          // Legacy alias (kept for backwards compatibility with any custom clients).
+          COLLECTION_COMPLETED: 'business_document_check',
         },
       },
-      device_deduplication: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          // Always proceed to indexing; we route to manual review later based on link-based risk signals.
-          DEVICE_DEDUP_COMPLETED: [{ target: 'device_indexing' }],
-          DEVICE_DEDUP_FAILED: [{ target: 'device_indexing' }], // Fail-open
-        },
-        always: [
-          {
-            target: 'business_document_check',
-            cond: {
-              type: 'jmespath',
-              options: {
-                rule: 'entity.data.device == null || length(entity.data.device) == `0`',
-              },
-            },
-          },
-        ],
-      },
-      device_indexing: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          DEVICE_INDEXED: [{ target: 'device_linking' }],
-          DEVICE_INDEX_FAILED: [{ target: 'business_document_check' }], // Fail-open
-        },
-      },
-      device_linking: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          DEVICE_LINKED: [{ target: 'device_routing' }],
-          DEVICE_LINK_FAILED: [{ target: 'business_document_check' }], // Fail-open
-        },
-      },
-      device_routing: {
-        tags: [StateTag.PENDING_PROCESS],
-        always: [
-          {
-            target: 'manual_review',
-            cond: {
-              type: 'jmespath',
-              options: {
-                rule: '(pluginsOutput.device_linking.risk.userCount || `0`) > `1`',
-              },
-            },
-          },
-          { target: 'business_document_check' },
-        ],
-      },
+      /**
+       * Business Document Verification
+       * Verifies Certificate of Incorporation, business license, registration docs.
+       * Calls Unified API with method BUSINESS_DOCUMENT_VERIFICATION which routes to
+       * Document API for AI-powered document classification, extraction, and validation.
+       */
       business_document_check: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
@@ -88,15 +88,46 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
           BUSINESS_DOCS_FAILED: [{ target: 'manual_review' }],
         },
       },
+      /**
+       * Business Registry Check — STUB
+       *
+       * Sierra Leone does not yet have a public API for business registration
+       * verification. When available (OARG — Office of the Administrator and
+       * Registrar General), this state should:
+       * 1. Query the SL business registry with registrationNumber
+       * 2. Confirm business name, directors, registration status
+       * 3. Cross-reference with tax authority (NRA)
+       *
+       * For now: auto-transitions to run_director_kyc (pass-through).
+       *
+       * TODO: Implement SL business registry integration
+       * Contact: OARG, Roxy Building, Gloucester Street, Freetown
+       */
       business_registry_check: {
         tags: [StateTag.PENDING_PROCESS],
-        // Stub: auto-transition until Sierra Leone business registry API is available
         always: [
+          {
+            // Avoid respawning director child workflows on resubmissions/reruns; if they already exist,
+            // proceed directly to address verification.
+            target: 'address_verification',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: 'childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[]) > `0`',
+              },
+            },
+          },
           {
             target: 'run_director_kyc',
           },
         ],
       },
+      /**
+       * Director KYC
+       * Spawns a child kyc_onboarding_sierra_leone workflow for each director
+       * listed in entity.data.additionalInfo.directors. Uses the iterative plugin
+       * to handle multiple directors.
+       */
       run_director_kyc: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
@@ -113,6 +144,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
+                  // All director KYC child workflows have completed (have tags set)
                   rule: 'length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags != null]) == length(childWorkflows.kyc_onboarding_sierra_leone.*[])',
                 },
               },
@@ -121,6 +153,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         },
         always: [
           {
+            // Skip if no directors listed
             target: 'address_verification',
             cond: {
               type: 'jmespath',
@@ -131,6 +164,12 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
           },
         ],
       },
+      /**
+       * Address Verification
+       * Verifies business address via proof of address documents (utility bills,
+       * lease agreements, community leader letters).
+       * Calls Unified API with method BUSINESS_ADDRESS_VERIFICATION.
+       */
       address_verification: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
@@ -146,7 +185,12 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `pluginsOutput.business_document_verification.status == 'VERIFIED' && pluginsOutput.address_verification.status == 'VERIFIED' && (pluginsOutput.business_document_verification.confidenceScore || \`0\`) >= \`80\``,
+                // Auto-approve if:
+                // 1. Business docs VERIFIED
+                // 2. Address VERIFIED
+                // 3. Confidence >= 80
+                // 4. If directors are provided, require ALL director KYC child workflows to be approved
+                rule: `pluginsOutput.business_document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.address_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.business_document_verification.confidenceScore || \`0\`) >= \`80\` && (entity.data.additionalInfo.directors == null || length(entity.data.additionalInfo.directors) == \`0\` || (childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) == length(entity.data.additionalInfo.directors)))`,
               },
             },
           },
@@ -155,158 +199,23 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
           },
         ],
       },
-      manual_review: {
-        tags: [StateTag.MANUAL_REVIEW],
-        on: {
-          approve: 'approved',
-          reject: 'rejected',
-          revision: 'revision',
-        },
-      },
-      revision: {
-        tags: [StateTag.REVISION],
-        always: [
-          {
-            target: 'pending_resubmission',
-          },
-        ],
-      },
-      pending_resubmission: {
-        tags: [StateTag.REVISION],
-        on: {
-          // Fired by the resubmission email plugin.
-          EMAIL_SENT: 'pending_resubmission',
-          EMAIL_FAILURE: 'pending_resubmission',
-          RESUBMITTED: 'manual_review',
-        },
-      },
-      approved: {
-        tags: [StateTag.APPROVED],
-        type: 'final' as const,
-      },
-      rejected: {
-        tags: [StateTag.REJECTED],
-        type: 'final' as const,
-      },
+      ...generateBaseCaseLevelStatesWithPendingResubmission({
+        resumeState: 'business_document_check',
+      }),
     },
   },
   extensions: {
     apiPlugins: [
-      {
-        name: 'device_deduplication_check',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
-        method: 'POST',
-        stateNames: ['device_deduplication'],
-        successAction: 'DEVICE_DEDUP_COMPLETED',
-        errorAction: 'DEVICE_DEDUP_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                device: entity.data.device,
-                countryCode: 'SL',
-                searchScope: 'local'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'device_indexing',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/index`,
-        method: 'POST',
-        stateNames: ['device_indexing'],
-        successAction: 'DEVICE_INDEXED',
-        errorAction: 'DEVICE_INDEX_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                device: entity.data.device,
-                canonicalDeviceId: pluginsOutput.device_deduplication_check.duplicateIds[0],
-                countryCode: 'SL'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'device_linking',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/link-person`,
-        method: 'POST',
-        stateNames: ['device_linking'],
-        successAction: 'DEVICE_LINKED',
-        errorAction: 'DEVICE_LINK_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                personId: entity.data.ownerId,
-                deviceId: pluginsOutput.device_indexing.documentId,
-                confidence: \`1\`,
-                evidence: {
-                  source: 'ballerine',
-                  workflow: 'kyb_onboarding_sierra_leone_formal',
-                  businessId: entity.id,
-                  deviceDedup: pluginsOutput.device_deduplication_check
-                }
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
+      // ──────────────────────────────────────────────────────────────────────
+      // Business Document Verification
+      // Calls Unified API POST /api/v1/verification/kyb with method BUSINESS_DOCUMENT_VERIFICATION
+      // Sends registration certificates, business licenses, ownership documents.
+      // Unified API → Document API classifies, extracts, and validates.
+      // ──────────────────────────────────────────────────────────────────────
       {
         name: 'business_document_verification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyb`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyb`,
         method: 'POST',
         stateNames: ['business_document_check'],
         successAction: 'BUSINESS_DOCS_VERIFIED',
@@ -335,14 +244,15 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
                   address: entity.data.address,
                   documents: documents[?category=='business_document' || category=='proof_of_registration' || category=='proof_of_ownership'].{
                     type: type,
+                    category: category,
                     frontImageUrl: pages[0].uri,
                     issuingCountry: 'SL',
                     number: properties.registrationNumber || properties.licenseNumber
                   }
                 },
                 methods: ['BUSINESS_DOCUMENT_VERIFICATION'],
-                performDeduplication: true,
-                countryCode: 'SL'
+                countryCode: 'SL',
+                callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.business_document_verification.data&processName=business-document-verification-unified-api'])
               }`,
             },
           ],
@@ -351,15 +261,21 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
+              mapping:
+                "merge(@, { name: 'business_document_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
             },
           ],
         },
       },
+      // ──────────────────────────────────────────────────────────────────────
+      // Address Verification
+      // Calls Unified API POST /api/v1/verification/kyb with method BUSINESS_ADDRESS_VERIFICATION
+      // Sends proof of address documents (utility bills, lease agreements).
+      // ──────────────────────────────────────────────────────────────────────
       {
         name: 'address_verification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyb`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyb`,
         method: 'POST',
         stateNames: ['address_verification'],
         successAction: 'ADDRESS_VERIFIED',
@@ -381,12 +297,14 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
                   address: entity.data.address,
                   documents: documents[?category=='proof_of_address' || category=='proof_of_location'].{
                     type: type,
+                    category: category,
                     frontImageUrl: pages[0].uri,
                     issuingCountry: 'SL'
                   }
                 },
                 methods: ['BUSINESS_ADDRESS_VERIFICATION'],
-                countryCode: 'SL'
+                countryCode: 'SL',
+                callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.address_verification.data&processName=address-verification-unified-api'])
               }`,
             },
           ],
@@ -395,7 +313,8 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
+              mapping:
+                "merge(@, { name: 'address_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
             },
           ],
         },
@@ -420,24 +339,23 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
             mapping: `{
               entity: {
                 type: 'individual',
-                id: join('-', ['director', id || '']),
+                id: join('-', ['director', @.id || '']),
                 data: {
-                  firstName: firstName,
-                  lastName: lastName,
-                  nationalId: nationalId,
-                  dateOfBirth: dateOfBirth,
-                  phoneNumber: phoneNumber,
-                  email: email,
+                  firstName: @.firstName,
+                  lastName: @.lastName,
+                  nationalId: @.nationalId,
+                  dateOfBirth: @.dateOfBirth,
+                  phoneNumber: @.phoneNumber,
+                  email: @.email,
                   country: 'SL',
-                  tenantId: tenantId,
-                  projectId: projectId
+                  tenantId: entity.data.tenantId,
+                  projectId: entity.data.projectId
                 }
               },
-              documents: documents || []
+              documents: @.documents || []
             }`,
           },
         ],
-        // Directors are collected as part of the parent KYB flow; no separate webview is expected.
         initEvent: 'start_with_documents',
       },
     ],
@@ -450,18 +368,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         iterateOn: [
           {
             transformer: 'jmespath',
-            mapping: `entity.data.additionalInfo.directors[].{
-              id: @.id || @.nationalId || '',
-              firstName: @.firstName,
-              lastName: @.lastName,
-              nationalId: @.nationalId,
-              dateOfBirth: @.dateOfBirth,
-              phoneNumber: @.phoneNumber,
-              email: @.email,
-              documents: @.documents || [],
-              tenantId: entity.data.tenantId,
-              projectId: entity.data.projectId
-            }`,
+            mapping: 'entity.data.additionalInfo.directors',
           },
         ],
         successAction: 'CONTINUE',
@@ -470,6 +377,17 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
     ],
   },
   config: {
+    workflowLevelResolution: true,
+    createCollectionFlowToken: true,
+    language: 'en',
+    supportedLanguages: ['en'],
+    // UI feature flags
+    isCaseOverviewEnabled: true,
+    isCaseRiskOverviewEnabled: true,
+    isDocumentsV2: true,
+    isDocumentTrackerEnabled: true,
+    isCollectionFlowPageRevisionEnabled: true,
+    theme: { type: 'kyb' },
     childCallbackResults: [
       {
         definitionId: kycOnboardingSierraLeoneDefinition.name,
@@ -483,8 +401,6 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         deliverEvent: 'KYC_RESPONDED',
       },
     ],
-    createCollectionFlowToken: true,
-    language: 'en',
   },
   contextSchema: {
     type: 'json-schema',
@@ -503,7 +419,6 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
             industry: Type.Optional(Type.String()),
             phoneNumber: Type.Optional(Type.String()),
             email: Type.Optional(Type.String()),
-            ownerId: Type.Optional(Type.String()),
             website: Type.Optional(Type.String()),
             country: Type.Optional(Type.String({ default: 'SL' })),
             address: Type.Optional(
@@ -515,7 +430,6 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
                 country: Type.Optional(Type.String({ default: 'SL' })),
               }),
             ),
-            device: Type.Optional(Type.Any()),
             additionalInfo: Type.Optional(
               Type.Object({
                 directors: Type.Optional(
@@ -556,7 +470,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
     ]),
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.DEFAULT,
+  variant: WorkflowDefinitionVariant.KYB,
 };
 
 export const generateKybOnboardingSierraLeoneFormal = async (prismaClient: PrismaClient) => {

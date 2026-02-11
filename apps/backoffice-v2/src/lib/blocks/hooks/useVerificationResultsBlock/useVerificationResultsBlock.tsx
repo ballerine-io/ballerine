@@ -94,10 +94,7 @@ const STATUS_DISPLAY: Record<string, { label: string; variant: string }> = {
   PENDING: { label: 'Pending', variant: 'info' },
 };
 
-const toTitleCase = (str: string) =>
-  str
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase());
+const toTitleCase = (str: string) => str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 const formatConfidence = (score: number | undefined): string => {
   if (score === undefined || score === null) return 'N/A';
@@ -149,16 +146,28 @@ export const useVerificationResultsBlock = ({
   pluginsOutput: Record<string, unknown> | undefined;
 }) => {
   return useMemo(() => {
-    const docVerification = pluginsOutput?.document_verification as VerificationPluginOutput | undefined;
-    const facialVerification = pluginsOutput?.facial_verification as VerificationPluginOutput | undefined;
-    const businessDocumentVerification =
-      pluginsOutput?.business_document_verification as VerificationPluginOutput | undefined;
-    const addressVerification = pluginsOutput?.address_verification as VerificationPluginOutput | undefined;
-    const marketCardVerification = pluginsOutput?.market_card_verification as VerificationPluginOutput | undefined;
+    const docVerification = pluginsOutput?.document_verification as
+      | VerificationPluginOutput
+      | undefined;
+    const facialVerification = pluginsOutput?.facial_verification as
+      | VerificationPluginOutput
+      | undefined;
+    const businessDocumentVerification = pluginsOutput?.business_document_verification as
+      | VerificationPluginOutput
+      | undefined;
+    const addressVerification = pluginsOutput?.address_verification as
+      | VerificationPluginOutput
+      | undefined;
+    const marketCardVerification = pluginsOutput?.market_card_verification as
+      | VerificationPluginOutput
+      | undefined;
     const deviceDedup = pluginsOutput?.device_dedup_check as DeviceDedupOutput | undefined;
-    const loanFinancialAnalysis = pluginsOutput?.loan_financial_analysis as LoanFinancialAnalysisOutput | undefined;
-    const businessPhotoClassification =
-      pluginsOutput?.business_photo_classification as BusinessPhotoClassificationOutput | undefined;
+    const loanFinancialAnalysis = pluginsOutput?.loan_financial_analysis as
+      | LoanFinancialAnalysisOutput
+      | undefined;
+    const businessPhotoClassification = pluginsOutput?.business_photo_classification as
+      | BusinessPhotoClassificationOutput
+      | undefined;
 
     if (
       !docVerification &&
@@ -303,9 +312,9 @@ export const useVerificationResultsBlock = ({
           .buildFlat(),
       });
 
-      const extractedData =
-        (docVerification.metadata?.extractedData ??
-          docVerification.data) as Record<string, unknown> | undefined;
+      const extractedData = (docVerification.metadata?.extractedData ?? docVerification.data) as
+        | Record<string, unknown>
+        | undefined;
 
       const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
 
@@ -370,8 +379,8 @@ export const useVerificationResultsBlock = ({
                   dup.personId && dup.confidenceScore !== undefined
                     ? `Person ${dup.personId} — ${formatConfidence(dup.confidenceScore)} match`
                     : dup.personId
-                      ? `Person ${dup.personId}`
-                      : 'Unknown',
+                    ? `Person ${dup.personId}`
+                    : 'Unknown',
               })),
             })
             .buildFlat(),
@@ -518,7 +527,9 @@ export const useVerificationResultsBlock = ({
       });
     }
 
-    const loanFinancialResults = getResultsArray(loanFinancialAnalysis) as FinancialAnalysisResult[];
+    const loanFinancialResults = getResultsArray(
+      loanFinancialAnalysis,
+    ) as FinancialAnalysisResult[];
     if (loanFinancialResults.length > 0) {
       blocks.addCell({
         type: 'block',
@@ -583,11 +594,17 @@ function buildOverallStatus(
   const details: Array<{ label: string; value: string }> = [];
 
   if (docVerification?.confidenceScore !== undefined) {
-    details.push({ label: 'Document Confidence', value: formatConfidence(docVerification.confidenceScore) });
+    details.push({
+      label: 'Document Confidence',
+      value: formatConfidence(docVerification.confidenceScore),
+    });
   }
 
   if (facialVerification?.confidenceScore !== undefined) {
-    details.push({ label: 'Facial Confidence', value: formatConfidence(facialVerification.confidenceScore) });
+    details.push({
+      label: 'Facial Confidence',
+      value: formatConfidence(facialVerification.confidenceScore),
+    });
   }
 
   if (businessDocVerification?.confidenceScore !== undefined) {
@@ -717,9 +734,7 @@ function buildExtractedDataDetails(
 
       const field = fieldValue as Record<string, unknown>;
       const value =
-        field && typeof field === 'object' && 'value' in field
-          ? field['value']
-          : fieldValue;
+        field && typeof field === 'object' && 'value' in field ? field['value'] : fieldValue;
 
       if (value === null || value === undefined || value === '') continue;
 
@@ -748,8 +763,13 @@ function buildLoanFinancialAnalysisDetails(
     }
 
     const documentType = (nested?.['documentType'] ?? result.documentType) as string | undefined;
-    const suggestedCategory = (nested?.['suggestedCategory'] ?? result.suggestedCategory) as string | undefined;
-    const estimatedIncome = (nested?.['estimatedIncome'] ?? result.estimatedIncome) as number | null | undefined;
+    const suggestedCategory = (nested?.['suggestedCategory'] ?? result.suggestedCategory) as
+      | string
+      | undefined;
+    const estimatedIncome = (nested?.['estimatedIncome'] ?? result.estimatedIncome) as
+      | number
+      | null
+      | undefined;
     const currency = (nested?.['currency'] ?? result.currency) as string | null | undefined;
     const isAuthentic = (nested?.['isAuthentic'] ?? result.isAuthentic) as boolean | undefined;
     const qualityScore = nested?.['qualityScore'] ?? result.qualityScore;
@@ -813,9 +833,17 @@ function buildBusinessPhotoAnalysisDetails(
     }
 
     const isLegitimate = (nested?.['isLegitimate'] ?? result.isLegitimate) as boolean | undefined;
-    const businessCategory = (nested?.['businessCategory'] ?? result.businessCategory) as string | null | undefined;
-    const businessNature = (nested?.['businessNature'] ?? result.businessNature) as string | null | undefined;
-    const estimatedScale = (nested?.['estimatedScale'] ?? result.estimatedScale) as string | undefined;
+    const businessCategory = (nested?.['businessCategory'] ?? result.businessCategory) as
+      | string
+      | null
+      | undefined;
+    const businessNature = (nested?.['businessNature'] ?? result.businessNature) as
+      | string
+      | null
+      | undefined;
+    const estimatedScale = (nested?.['estimatedScale'] ?? result.estimatedScale) as
+      | string
+      | undefined;
     const hasSignage = (nested?.['hasSignage'] ?? result.hasSignage) as boolean | undefined;
     const hasCustomers = (nested?.['hasCustomers'] ?? result.hasCustomers) as boolean | undefined;
     const qualityScore = nested?.['qualityScore'] ?? result.qualityScore;

@@ -98,9 +98,7 @@ export const CustomLabels: FunctionComponent<CustomLabelsProps> = ({
               className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
               onClick={() => handleAddPreset(preset.value)}
             >
-              <span
-                className={ctw('inline-block h-2 w-2 rounded-full', preset.color)}
-              />
+              <span className={ctw('inline-block h-2 w-2 rounded-full', preset.color)} />
               {preset.value.replace(/_/g, ' ')}
             </button>
           ))}

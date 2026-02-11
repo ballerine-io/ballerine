@@ -2606,7 +2606,10 @@ export class WorkflowService {
       }
 
       if (currentState !== workflowRuntimeData.state) {
-        const correlationId = await this.getCorrelationIdFromWorkflow(updatedRuntimeData, projectIds);
+        const correlationId = await this.getCorrelationIdFromWorkflow(
+          updatedRuntimeData,
+          projectIds,
+        );
 
         this.workflowEventEmitter.emit('workflow.state.changed', {
           entityId: entityId as string,

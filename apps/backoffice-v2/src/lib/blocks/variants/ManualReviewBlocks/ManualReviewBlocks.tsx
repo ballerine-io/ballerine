@@ -20,7 +20,7 @@ export const ManualReviewBlocks = () => {
       {!isLoading && !blocks?.length && <NoBlocks />}
       {workflowId && (
         <details className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-          <summary className="cursor-pointer text-sm font-medium text-gray-700 select-none">
+          <summary className="cursor-pointer select-none text-sm font-medium text-gray-700">
             📋 Audit Trail
           </summary>
           <div className="mt-3">

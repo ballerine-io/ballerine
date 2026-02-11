@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 import { Type } from '@sinclair/typebox';
-import { env } from '../../../src/env';
+import { generateBaseCaseLevelStatesWithPendingResubmission } from '../generate-base-case-level-states';
 
 export const kycOnboardingSierraLeoneDefinition = {
   id: 'kyc_onboarding_sierra_leone',
@@ -20,16 +20,17 @@ export const kycOnboardingSierraLeoneDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'document_collection',
-          // Backend-only shortcut when the caller already provided identity documents + selfie.
+          // Programmatic start (e.g., LoanCube/NAMK) when documents are already present in context.
           start_with_documents: 'document_verification',
         },
       },
       document_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_COMPLETED: 'document_verification',
-          // Backwards-compatibility with older collection-flow UIs.
+          // Ballerine collection-flow app sends this on final submission.
           COLLECTION_FLOW_FINISHED: 'document_verification',
+          // Legacy alias (kept for backwards compatibility with any custom clients).
+          COLLECTION_COMPLETED: 'document_verification',
         },
       },
       document_verification: {
@@ -42,60 +43,9 @@ export const kycOnboardingSierraLeoneDefinition = {
       facial_verification: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          FACIAL_VERIFIED: [{ target: 'device_deduplication' }],
+          FACIAL_VERIFIED: [{ target: 'ncra_check' }],
           FACIAL_VERIFICATION_FAILED: [{ target: 'manual_review' }],
         },
-      },
-      device_deduplication: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          // Always proceed to indexing; we route to manual review later based on link-based risk signals.
-          DEVICE_DEDUP_COMPLETED: [{ target: 'device_indexing' }],
-          DEVICE_DEDUP_FAILED: [{ target: 'device_indexing' }], // Fail-open
-        },
-        // If caller didn't provide device signals, skip device dedup entirely.
-        always: [
-          {
-            target: 'ncra_check',
-            cond: {
-              type: 'jmespath',
-              options: {
-                rule: 'entity.data.device == null || length(entity.data.device) == `0`',
-              },
-            },
-          },
-        ],
-      },
-      device_indexing: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          DEVICE_INDEXED: [{ target: 'device_linking' }],
-          DEVICE_INDEX_FAILED: [{ target: 'ncra_check' }], // Fail-open
-        },
-      },
-      device_linking: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          DEVICE_LINKED: [{ target: 'device_routing' }],
-          DEVICE_LINK_FAILED: [{ target: 'ncra_check' }], // Fail-open
-        },
-      },
-      device_routing: {
-        tags: [StateTag.PENDING_PROCESS],
-        always: [
-          {
-            target: 'manual_review',
-            cond: {
-              type: 'jmespath',
-              options: {
-                // Only hard-gate when we see real shared-device usage (graph link count > 1).
-                // This avoids false positives when the same person re-verifies on the same device.
-                rule: '(pluginsOutput.device_linking.risk.userCount || `0`) > `1`',
-              },
-            },
-          },
-          { target: 'ncra_check' },
-        ],
       },
       ncra_check: {
         tags: [StateTag.PENDING_PROCESS],
@@ -114,7 +64,7 @@ export const kycOnboardingSierraLeoneDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `pluginsOutput.document_verification.status == 'VERIFIED' && pluginsOutput.facial_verification.status == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\``,
+                rule: `pluginsOutput.document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.facial_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\``,
               },
             },
           },
@@ -123,39 +73,9 @@ export const kycOnboardingSierraLeoneDefinition = {
           },
         ],
       },
-      manual_review: {
-        tags: [StateTag.MANUAL_REVIEW],
-        on: {
-          approve: 'approved',
-          reject: 'rejected',
-          revision: 'revision',
-        },
-      },
-      revision: {
-        tags: [StateTag.REVISION],
-        always: [
-          {
-            target: 'pending_resubmission',
-          },
-        ],
-      },
-      pending_resubmission: {
-        tags: [StateTag.REVISION],
-        on: {
-          // Fired by the resubmission email plugin.
-          EMAIL_SENT: 'pending_resubmission',
-          EMAIL_FAILURE: 'pending_resubmission',
-          RESUBMITTED: 'manual_review',
-        },
-      },
-      approved: {
-        tags: [StateTag.APPROVED],
-        type: 'final' as const,
-      },
-      rejected: {
-        tags: [StateTag.REJECTED],
-        type: 'final' as const,
-      },
+      ...generateBaseCaseLevelStatesWithPendingResubmission({
+        resumeState: 'document_verification',
+      }),
     },
   },
   extensions: {
@@ -163,7 +83,7 @@ export const kycOnboardingSierraLeoneDefinition = {
       {
         name: 'document_verification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyc`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
         method: 'POST',
         stateNames: ['document_verification'],
         successAction: 'DOCUMENT_VERIFIED',
@@ -179,12 +99,12 @@ export const kycOnboardingSierraLeoneDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-                person: {
+	                person: {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
-                  idType: (documents[?category=='proof_of_identity'][0].type == 'passport' && 'PASSPORT') || (documents[?category=='proof_of_identity'][0].type == 'voter_id' && 'VOTER_ID') || (documents[?category=='proof_of_identity'][0].type == 'drivers_license' && 'DRIVERS_LICENSE') || 'NATIONAL_ID',
+                  idNumber: entity.data.nationalId,
+                  idType: 'NATIONAL_ID',
                   dateOfBirth: entity.data.dateOfBirth,
                   phoneNumber: entity.data.phoneNumber,
                   documents: documents[?category=='proof_of_identity'].{
@@ -194,10 +114,11 @@ export const kycOnboardingSierraLeoneDefinition = {
                     issuingCountry: 'SL',
                     number: properties.nationalIdNumber || properties.documentNumber
                   }
-                },
-                methods: ['DOCUMENT_VERIFICATION'],
-                countryCode: 'SL'
-              }`,
+	                },
+	                methods: ['DOCUMENT_VERIFICATION'],
+	                countryCode: 'SL',
+                  callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.document_verification.data&processName=document-verification-unified-api'])
+	              }`,
             },
           ],
         },
@@ -205,7 +126,8 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
+              mapping:
+                "merge(@, { name: 'document_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
             },
           ],
         },
@@ -213,7 +135,7 @@ export const kycOnboardingSierraLeoneDefinition = {
       {
         name: 'facial_verification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyc`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
         method: 'POST',
         stateNames: ['facial_verification'],
         successAction: 'FACIAL_VERIFIED',
@@ -229,12 +151,11 @@ export const kycOnboardingSierraLeoneDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-                person: {
+	                person: {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
-                  idType: (documents[?category=='proof_of_identity'][0].type == 'passport' && 'PASSPORT') || (documents[?category=='proof_of_identity'][0].type == 'voter_id' && 'VOTER_ID') || (documents[?category=='proof_of_identity'][0].type == 'drivers_license' && 'DRIVERS_LICENSE') || 'NATIONAL_ID',
+                  idNumber: entity.data.nationalId,
                   dateOfBirth: entity.data.dateOfBirth,
                   documents: documents[?category=='proof_of_identity'].{
                     type: type,
@@ -242,16 +163,13 @@ export const kycOnboardingSierraLeoneDefinition = {
                     issuingCountry: 'SL'
                   },
                   biometricData: {
-                    facialImages: documents[?category=='proof_of_identity_ownership'].pages[].{
-                      position: 'FRONT',
-                      imageUrl: uri
-                    }
+                    facialImages: documents[?category=='proof_of_identity_ownership'].pages[].uri
                   }
-                },
-                methods: ['FACIAL_RECOGNITION'],
-                performDeduplication: true,
-                countryCode: 'SL'
-              }`,
+	                },
+	                methods: ['FACIAL_RECOGNITION'],
+	                countryCode: 'SL',
+                  callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.facial_verification.data&processName=facial-verification-unified-api'])
+	              }`,
             },
           ],
         },
@@ -259,117 +177,8 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'device_deduplication_check',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
-        method: 'POST',
-        stateNames: ['device_deduplication'],
-        successAction: 'DEVICE_DEDUP_COMPLETED',
-        errorAction: 'DEVICE_DEDUP_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                device: entity.data.device,
-                countryCode: 'SL',
-                searchScope: 'local'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'device_indexing',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/index`,
-        method: 'POST',
-        stateNames: ['device_indexing'],
-        successAction: 'DEVICE_INDEXED',
-        errorAction: 'DEVICE_INDEX_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                device: entity.data.device,
-                canonicalDeviceId: pluginsOutput.device_deduplication_check.duplicateIds[0],
-                countryCode: 'SL'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'device_linking',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/link-person`,
-        method: 'POST',
-        stateNames: ['device_linking'],
-        successAction: 'DEVICE_LINKED',
-        errorAction: 'DEVICE_LINK_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                personId: entity.id,
-                deviceId: pluginsOutput.device_indexing.documentId,
-                confidence: \`1\`,
-                evidence: {
-                  source: 'ballerine',
-                  workflow: 'kyc_onboarding_sierra_leone',
-                  deviceDedup: pluginsOutput.device_deduplication_check
-                }
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
+              mapping:
+                "merge(@, { name: 'facial_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
             },
           ],
         },
@@ -388,7 +197,6 @@ export const kycOnboardingSierraLeoneDefinition = {
   },
   config: {
     createCollectionFlowToken: true,
-    language: 'en',
   },
   contextSchema: {
     type: 'json-schema',
@@ -417,7 +225,6 @@ export const kycOnboardingSierraLeoneDefinition = {
                 country: Type.Optional(Type.String({ default: 'SL' })),
               }),
             ),
-            device: Type.Optional(Type.Any()),
             tenantId: Type.Optional(Type.String()),
             projectId: Type.Optional(Type.String()),
           }),

@@ -1,8 +1,13 @@
 import { PrismaClient } from '@prisma/client';
-import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
+import {
+  defaultContextSchema,
+  getDocumentsByCountry,
+  StateTag,
+  WorkflowDefinitionVariant,
+} from '@ballerine/common';
 import { Type } from '@sinclair/typebox';
-import { env } from '../../../src/env';
 import { kycOnboardingSierraLeoneDefinition } from './kyc-onboarding-sierra-leone';
+import { generateBaseCaseLevelStatesWithPendingResubmission } from '../generate-base-case-level-states';
 
 /**
  * Informal / Sole Proprietorship KYB workflow for Sierra Leone.
@@ -17,12 +22,35 @@ import { kycOnboardingSierraLeoneDefinition } from './kyc-onboarding-sierra-leon
  * - Market Association Card replaces Certificate of Incorporation
  * - Community Leader Letter is the primary address proof
  * - Lower auto-approval confidence threshold (70 vs 80 for formal)
+ * - Business photo classification step to analyze business premises
+ *
+ * Steps:
+ * 1. Data collection (owner info, business photos, market card, address proof)
+ * 2. Owner KYC — Spawns child kyc_onboarding_sierra_leone for sole proprietor
+ * 3. Business photo classification — AI analyzes photos of the business
+ *    (stock levels, equipment, business type confirmation) via Document API
+ * 4. Market card verification — Non-blocking (proceeds even if failed/missing)
+ * 5. Address verification (community leader letter, utility bill)
+ * 6. Risk evaluation (aggregates all results)
  */
 export const kybOnboardingSierraLeoneInformalDefinition = {
   id: 'kyb_onboarding_sierra_leone_informal',
   name: 'kyb_onboarding_sierra_leone_informal',
   version: 1,
   definitionType: 'statechart-json',
+  // SL document schemas for informal KYB-relevant categories.
+  // Includes identity docs (for owner KYC child), market cards,
+  // location proofs, and financial documents for informal traders.
+  documentsSchema: getDocumentsByCountry('SL').filter(doc =>
+    [
+      'proof_of_identity',
+      'proof_of_identity_ownership',
+      'business_document',
+      'proof_of_location',
+      'proof_of_address',
+      'financial_information',
+    ].includes(doc.category),
+  ),
   definition: {
     id: 'kyb_onboarding_sierra_leone_informal_v1',
     predictableActionArguments: true,
@@ -35,100 +63,70 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'data_collection',
-          // Backend-only shortcut when the caller already provided owner + business documents.
-          start_with_documents: 'device_deduplication',
+          // Programmatic start (e.g., LoanCube) when documents are already present in context.
+          start_with_documents: 'owner_id_check',
         },
       },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_COMPLETED: 'device_deduplication',
-          // Backwards-compatibility with older collection-flow UIs.
-          COLLECTION_FLOW_FINISHED: 'device_deduplication',
+          // Ballerine collection-flow app sends this on final submission.
+          COLLECTION_FLOW_FINISHED: 'owner_id_check',
+          // Legacy alias (kept for backwards compatibility with any custom clients).
+          COLLECTION_COMPLETED: 'owner_id_check',
         },
       },
-      device_deduplication: {
+      owner_id_check: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          // Always proceed to indexing; we route to manual review later based on link-based risk signals.
-          DEVICE_DEDUP_COMPLETED: [{ target: 'device_indexing' }],
-          DEVICE_DEDUP_FAILED: [{ target: 'device_indexing' }], // Fail-open
+          // Iterative plugin spawns child → fires this on success
+          OWNER_KYC_SPAWNED: [{ target: 'pending_owner_kyc' }],
+          OWNER_KYC_FAILED: [{ target: 'manual_review' }],
         },
-        always: [
-          {
-            target: 'kyc_gate',
-            cond: {
-              type: 'jmespath',
-              options: {
-                rule: 'entity.data.device == null || length(entity.data.device) == `0`',
-              },
-            },
-          },
-        ],
       },
-      device_indexing: {
+      /**
+       * Wait for owner KYC child workflow to complete.
+       * The childCallbackResults config listens for the child entering
+       * approved/rejected/manual_review and delivers OWNER_KYC_RESPONDED.
+       */
+      pending_owner_kyc: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          DEVICE_INDEXED: [{ target: 'device_linking' }],
-          DEVICE_INDEX_FAILED: [{ target: 'kyc_gate' }], // Fail-open
+          OWNER_KYC_RESPONDED: [{ target: 'business_photo_classification' }],
         },
       },
-      device_linking: {
+      /**
+       * Business Photo Classification — AI Analysis
+       *
+       * Analyzes photos of the business premises to:
+       * - Confirm business type matches declaration (e.g., retail shop has stock/shelves)
+       * - Assess business viability (stock levels, equipment, condition)
+       * - Detect business category indicators (buckets, produce, sewing machines, etc.)
+       * - Provide confidence score for the business assessment
+       *
+       * Calls Document API POST /api/v1/documents/analyze-photo via Unified API.
+       * Non-blocking: proceeds to market_card_verification even if no photos or failure.
+       */
+      business_photo_classification: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          DEVICE_LINKED: [{ target: 'device_routing' }],
-          DEVICE_LINK_FAILED: [{ target: 'kyc_gate' }], // Fail-open
+          BUSINESS_PHOTO_CLASSIFIED: [{ target: 'market_card_verification' }],
+          BUSINESS_PHOTO_FAILED: [{ target: 'market_card_verification' }], // Non-blocking
         },
-      },
-      device_routing: {
-        tags: [StateTag.PENDING_PROCESS],
-        always: [
-          {
-            target: 'manual_review',
-            cond: {
-              type: 'jmespath',
-              options: {
-                rule: '(pluginsOutput.device_linking.risk.userCount || `0`) > `1`',
-              },
-            },
-          },
-          { target: 'kyc_gate' },
-        ],
-      },
-      kyc_gate: {
-        tags: [StateTag.PENDING_PROCESS],
+        // If no business photos, auto-transition
         always: [
           {
             target: 'market_card_verification',
             cond: {
               type: 'jmespath',
               options: {
-                rule: 'entity.data.kycVerified == `true`',
+                // Prefer Ballerine's canonical category `proof_of_location` for premises photos.
+                // Keep `proof_of_business` as a backward-compatible alias for already-seeded flows.
+                rule: "length(documents[?category=='business_photo' || category=='proof_of_location' || category=='proof_of_business']) == `0`",
               },
             },
           },
-          {
-            target: 'owner_id_check',
-          },
         ],
-      },
-      owner_id_check: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          // Spawn the owner KYC child workflow(s), then wait for callback results.
-          CONTINUE: [{ target: 'pending_owner_kyc' }],
-          FAILED: [{ target: 'manual_review' }],
-        },
-      },
-      pending_owner_kyc: {
-        tags: [StateTag.PENDING_PROCESS],
-        on: {
-          // Delivered from childCallbackResults when the child KYC workflow completes.
-          OWNER_KYC_RESPONDED: [{ target: 'market_card_verification' }],
-          // Backwards-compatibility with older deliverEvent names.
-          OWNER_KYC_DONE: [{ target: 'market_card_verification' }],
-          OWNER_KYC_FAILED: [{ target: 'manual_review' }],
-        },
       },
       market_card_verification: {
         tags: [StateTag.PENDING_PROCESS],
@@ -160,12 +158,13 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         tags: [StateTag.PENDING_PROCESS],
         always: [
           {
-            // Lower threshold for informal businesses (70 vs 80 for formal)
+            // Lower threshold for informal businesses
+            // Auto-approve if owner KYC approved and address verified (or no address doc)
             target: 'approved',
             cond: {
               type: 'jmespath',
               options: {
-                rule: `(entity.data.kycVerified == \`true\` || (childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'APPROVED']]) > \`0\`)) && (pluginsOutput.address_verification.status == 'VERIFIED' || pluginsOutput.address_verification == null)`,
+                rule: `childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) > \`0\` && (pluginsOutput.address_verification.verificationStatus == 'VERIFIED' || pluginsOutput.address_verification == null)`,
               },
             },
           },
@@ -174,51 +173,28 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           },
         ],
       },
-      manual_review: {
-        tags: [StateTag.MANUAL_REVIEW],
-        on: {
-          approve: 'approved',
-          reject: 'rejected',
-          revision: 'revision',
-        },
-      },
-      revision: {
-        tags: [StateTag.REVISION],
-        always: [
-          {
-            target: 'pending_resubmission',
-          },
-        ],
-      },
-      pending_resubmission: {
-        tags: [StateTag.REVISION],
-        on: {
-          // Fired by the resubmission email plugin.
-          EMAIL_SENT: 'pending_resubmission',
-          EMAIL_FAILURE: 'pending_resubmission',
-          RESUBMITTED: 'manual_review',
-        },
-      },
-      approved: {
-        tags: [StateTag.APPROVED],
-        type: 'final' as const,
-      },
-      rejected: {
-        tags: [StateTag.REJECTED],
-        type: 'final' as const,
-      },
+      ...generateBaseCaseLevelStatesWithPendingResubmission({
+        resumeState: 'business_photo_classification',
+      }),
     },
   },
   extensions: {
     apiPlugins: [
+      // ──────────────────────────────────────────────────────────────────────
+      // Business Photo Classification
+      // Calls Unified API which routes to Document API POST /api/v1/documents/analyze-photo
+      // Analyzes business premises photos to confirm business type and viability.
+      // Categories analyzed: stock levels, equipment, business signage, premises condition.
+      // Non-blocking — result stored for risk evaluation and manual review reference.
+      // ──────────────────────────────────────────────────────────────────────
       {
-        name: 'device_deduplication_check',
+        name: 'business_photo_classification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/document/analyze-photo`,
         method: 'POST',
-        stateNames: ['device_deduplication'],
-        successAction: 'DEVICE_DEDUP_COMPLETED',
-        errorAction: 'DEVICE_DEDUP_FAILED',
+        stateNames: ['business_photo_classification'],
+        successAction: 'BUSINESS_PHOTO_CLASSIFIED',
+        errorAction: 'BUSINESS_PHOTO_FAILED',
         headers: {
           Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
           'Content-Type': 'application/json',
@@ -230,9 +206,15 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-                device: entity.data.device,
-                countryCode: 'SL',
-                searchScope: 'local'
+                images: documents[?category=='business_photo' || category=='proof_of_location' || category=='proof_of_business'].pages[].{
+                  remote: {
+                    imageUri: uri,
+                    mimeType: type || 'image/jpeg'
+                  }
+                },
+                businessType: entity.data.businessType,
+                supportedCountries: ['SL'],
+                callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.business_photo_classification.data&processName=business-photo-analysis-unified-api'])
               }`,
             },
           ],
@@ -241,91 +223,21 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
+              mapping: "merge(@, { name: 'business_photo_classification', status: 'SUCCESS' })",
             },
           ],
         },
       },
-      {
-        name: 'device_indexing',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/index`,
-        method: 'POST',
-        stateNames: ['device_indexing'],
-        successAction: 'DEVICE_INDEXED',
-        errorAction: 'DEVICE_INDEX_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                device: entity.data.device,
-                canonicalDeviceId: pluginsOutput.device_deduplication_check.duplicateIds[0],
-                countryCode: 'SL'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
-      {
-        name: 'device_linking',
-        pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/entity-resolution/devices/link-person`,
-        method: 'POST',
-        stateNames: ['device_linking'],
-        successAction: 'DEVICE_LINKED',
-        errorAction: 'DEVICE_LINK_FAILED',
-        headers: {
-          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
-          'Content-Type': 'application/json',
-          'x-tenant-id': '{entity.data.tenantId}',
-          'x-project-id': '{entity.data.projectId}',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                personId: entity.data.ownerId,
-                deviceId: pluginsOutput.device_indexing.documentId,
-                confidence: \`1\`,
-                evidence: {
-                  source: 'ballerine',
-                  workflow: 'kyb_onboarding_sierra_leone_informal',
-                  businessId: entity.id,
-                  deviceDedup: pluginsOutput.device_deduplication_check
-                }
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@',
-            },
-          ],
-        },
-      },
+      // ──────────────────────────────────────────────────────────────────────
+      // Market Card Verification
+      // Calls Unified API POST /api/v1/verification/kyb with BUSINESS_DOCUMENT_VERIFICATION
+      // Verifies Market Association Card (replaces Certificate of Incorporation for informal businesses)
+      // Non-blocking — many informal businesses may not have a market card.
+      // ──────────────────────────────────────────────────────────────────────
       {
         name: 'market_card_verification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyb`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyb`,
         method: 'POST',
         stateNames: ['market_card_verification'],
         successAction: 'MARKET_CARD_VERIFIED',
@@ -348,12 +260,14 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
                   address: entity.data.address,
                   documents: documents[?type=='market_association_card'].{
                     type: type,
+                    category: category,
                     frontImageUrl: pages[0].uri,
                     issuingCountry: 'SL'
                   }
                 },
                 methods: ['BUSINESS_DOCUMENT_VERIFICATION'],
-                countryCode: 'SL'
+                countryCode: 'SL',
+                callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.market_card_verification.data&processName=market-card-verification-unified-api'])
               }`,
             },
           ],
@@ -362,15 +276,21 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
+              mapping:
+                "merge(@, { name: 'market_card_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
             },
           ],
         },
       },
+      // ──────────────────────────────────────────────────────────────────────
+      // Address Verification
+      // Calls Unified API POST /api/v1/verification/kyb with BUSINESS_ADDRESS_VERIFICATION
+      // Verifies business address via community leader letter, utility bills.
+      // ──────────────────────────────────────────────────────────────────────
       {
         name: 'address_verification',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/api/v1/verification/kyb`,
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyb`,
         method: 'POST',
         stateNames: ['address_verification'],
         successAction: 'ADDRESS_VERIFIED',
@@ -389,17 +309,17 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
                 business: {
                   id: entity.id,
                   name: entity.data.businessName || entity.data.companyName,
-                  entityType: entity.data.businessType,
                   address: entity.data.address,
                   documents: documents[?category=='proof_of_address' || category=='proof_of_location'].{
                     type: type,
+                    category: category,
                     frontImageUrl: pages[0].uri,
                     issuingCountry: 'SL'
                   }
                 },
                 methods: ['BUSINESS_ADDRESS_VERIFICATION'],
-                performDeduplication: true,
-                countryCode: 'SL'
+                countryCode: 'SL',
+                callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.address_verification.data&processName=address-verification-unified-api'])
               }`,
             },
           ],
@@ -408,7 +328,8 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@',
+              mapping:
+                "merge(@, { name: 'address_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
             },
           ],
         },
@@ -430,27 +351,30 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         transformers: [
           {
             transformer: 'jmespath',
+            // join() requires Array<string>; `entity.id || ''` avoids runtime type errors during transform.
+            // NOTE: In @ballerine/workflow-core@0.6.142, complex JMESPath expressions here (filters/||)
+            // can fail output-schema inference for child plugins at runtime. Passing the full documents
+            // array is safe because the child KYC workflow filters by document category internally.
             mapping: `{
               entity: {
                 type: 'individual',
-                id: join('-', ['owner', businessId || '']),
+                id: join('-', ['owner', entity.id || '']),
                 data: {
-                  firstName: owner.firstName,
-                  lastName: owner.lastName,
-                  nationalId: owner.nationalId,
-                  dateOfBirth: owner.dateOfBirth,
-                  phoneNumber: owner.phoneNumber || phoneNumber,
-                  email: owner.email || email,
+                  firstName: entity.data.ownerFirstName || entity.data.additionalInfo.owner.firstName,
+                  lastName: entity.data.ownerLastName || entity.data.additionalInfo.owner.lastName,
+                  nationalId: entity.data.ownerNationalId || entity.data.additionalInfo.owner.nationalId,
+                  dateOfBirth: entity.data.additionalInfo.owner.dateOfBirth,
+                  phoneNumber: entity.data.phoneNumber,
+                  email: entity.data.email,
                   country: 'SL',
-                  tenantId: tenantId,
-                  projectId: projectId
+                  tenantId: entity.data.tenantId,
+                  projectId: entity.data.projectId
                 }
               },
-              documents: owner.documents || []
+              documents: documents
             }`,
           },
         ],
-        // The owner KYC is derived from documents provided in the KYB flow; no separate webview is expected.
         initEvent: 'start_with_documents',
       },
     ],
@@ -464,25 +388,29 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         iterateOn: [
           {
             transformer: 'jmespath',
-            // Wrap owner in array since iterative plugin expects array
-            mapping: `[
-              {
-                owner: entity.data.additionalInfo.owner,
-                businessId: entity.id,
-                tenantId: entity.data.tenantId,
-                projectId: entity.data.projectId,
-                email: entity.data.email,
-                phoneNumber: entity.data.phoneNumber
-              }
-            ]`,
+            // IterativePlugin passes each array item as the "context" to the action plugin.
+            // For sole-proprietor KYB we want the child plugin to receive the FULL workflow context
+            // (entity + documents), not just the owner object.
+            mapping: '[@]',
           },
         ],
-        successAction: 'CONTINUE',
-        errorAction: 'FAILED',
+        successAction: 'OWNER_KYC_SPAWNED',
+        errorAction: 'OWNER_KYC_FAILED',
       },
     ],
   },
   config: {
+    workflowLevelResolution: true,
+    createCollectionFlowToken: true,
+    language: 'en',
+    supportedLanguages: ['en'],
+    // UI feature flags
+    isCaseOverviewEnabled: true,
+    isCaseRiskOverviewEnabled: true,
+    isDocumentsV2: true,
+    isDocumentTrackerEnabled: true,
+    isCollectionFlowPageRevisionEnabled: true,
+    theme: { type: 'kyb' },
     childCallbackResults: [
       {
         definitionId: kycOnboardingSierraLeoneDefinition.name,
@@ -496,8 +424,6 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         deliverEvent: 'OWNER_KYC_RESPONDED',
       },
     ],
-    createCollectionFlowToken: true,
-    language: 'en',
   },
   contextSchema: {
     type: 'json-schema',
@@ -516,8 +442,6 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             phoneNumber: Type.Optional(Type.String()),
             email: Type.Optional(Type.String()),
             country: Type.Optional(Type.String({ default: 'SL' })),
-            ownerId: Type.Optional(Type.String()),
-            kycVerified: Type.Optional(Type.Boolean()),
             address: Type.Optional(
               Type.Object({
                 line1: Type.Optional(Type.String()),
@@ -527,7 +451,6 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
                 country: Type.Optional(Type.String({ default: 'SL' })),
               }),
             ),
-            device: Type.Optional(Type.Any()),
             // Owner info (sole proprietor)
             ownerFirstName: Type.Optional(Type.String()),
             ownerLastName: Type.Optional(Type.String()),
@@ -555,7 +478,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
     ]),
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.DEFAULT,
+  variant: WorkflowDefinitionVariant.KYB,
 };
 
 export const generateKybOnboardingSierraLeoneInformal = async (prismaClient: PrismaClient) => {

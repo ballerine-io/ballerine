@@ -58,8 +58,6 @@ export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiTags(WORKFLOW_TAG)
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
-  private readonly logger = new common.Logger(WorkflowControllerExternal.name);
-
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
@@ -565,81 +563,93 @@ export class WorkflowControllerExternal {
           );
         }
 
-        const mappedEvent = this.mapUnifiedVerificationEvent({
-          event: params.event,
-          processName: query.processName,
-          hookResponse,
-        });
+        // Unified API callbacks use a single hook endpoint id (UNIFIED_API_VERIFICATION_HOOK_ID) across
+        // multiple plugins. Derive the real workflow event to dispatch from the workflow definition's
+        // apiPlugin successAction/errorAction based on resultDestination + payload status.
+        let eventToDispatch: string | undefined = params.event;
+        let derivedFromPlugin = false;
 
-        if (mappedEvent && mappedEvent !== 'undefined') {
-          try {
-            await this.workflowService.event(
-              {
-                id: params.id,
-                name: mappedEvent,
-              },
-              [workflowRuntime.projectId],
-              workflowRuntime.projectId,
-              transaction,
-            );
-          } catch (eventError) {
-            // Unified callback retries can arrive after the workflow moved on.
-            // For the generic verification-result hook, treat incompatible
-            // event transitions as no-op so callbacks don't dead-letter.
-            if (params.event === 'verification-result') {
-              this.logger.warn(
-                `Ignoring verification-result event dispatch failure for workflow runtime id=${params.id} event=${mappedEvent}: ${
-                  eventError instanceof Error ? eventError.message : String(eventError)
-                }`,
-              );
-            } else {
-              throw eventError;
+        const resultDestination = query.resultDestination;
+        if (
+          typeof resultDestination === 'string' &&
+          resultDestination.startsWith('pluginsOutput.')
+        ) {
+          const pluginName = resultDestination.split('.')[1];
+
+          if (pluginName) {
+            const workflowDefinition = await this.prismaService.workflowDefinition.findUnique({
+              where: { id: workflowRuntime.workflowDefinitionId },
+              select: { extensions: true },
+            });
+
+            const extensions = workflowDefinition?.extensions as AnyRecord | null | undefined;
+            const apiPlugins =
+              extensions && isObject(extensions) ? (extensions.apiPlugins as any) : undefined;
+
+            const plugin =
+              Array.isArray(apiPlugins) && apiPlugins.length > 0
+                ? apiPlugins.find(p => isObject(p) && p.name === pluginName)
+                : undefined;
+
+            if (plugin && isObject(plugin)) {
+              derivedFromPlugin = true;
+
+              const payload = hookResponse as AnyRecord;
+              const status = typeof payload?.status === 'string' ? payload.status : undefined;
+              const hasError =
+                Boolean(payload?.error) || status === 'ERROR' || status === 'EXPIRED';
+              const isPending = status === 'PENDING';
+
+              if (isPending) {
+                // Keep workflow in the current state while the upstream process is still pending.
+                eventToDispatch = undefined;
+              } else {
+                eventToDispatch = hasError
+                  ? (plugin.errorAction as string | undefined)
+                  : (plugin.successAction as string | undefined);
+              }
             }
           }
+        }
+
+        if (eventToDispatch && eventToDispatch !== 'undefined') {
+          await this.workflowService.event(
+            {
+              id: params.id,
+              name: eventToDispatch,
+            },
+            [workflowRuntime.projectId],
+            workflowRuntime.projectId,
+            transaction,
+          );
+        } else if (derivedFromPlugin) {
+          // If we derived from a plugin and chose not to dispatch an event (e.g. PENDING),
+          // do not fall back to dispatching the hook id.
+        } else if (
+          typeof resultDestination === 'string' &&
+          resultDestination.startsWith('pluginsOutput.')
+        ) {
+          // F11: Log when we expected to derive an event from a plugin but couldn't find
+          // the matching plugin in the workflow definition. This helps diagnose stuck
+          // workflows where callbacks arrive but no state transition occurs.
+          console.warn(
+            `[hook] Could not derive plugin event for resultDestination="${resultDestination}" ` +
+              `on workflow ${params.id} (definition: ${workflowRuntime.workflowDefinitionId}). ` +
+              `Dispatching fallback event "${params.event}".`,
+          );
         }
       }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        // Unified API callbacks can race with workflow cleanup or retries.
-        // A missing runtime should be treated as a no-op to avoid alert noise.
-        this.logger.warn(
-          `Ignoring hook callback for missing workflow runtime id=${params.id} event=${params.event}`,
-        );
-
-        return;
+        throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`, {
+          cause: error,
+        });
       }
 
       throw error;
     }
 
     return;
-  }
-
-  private mapUnifiedVerificationEvent({
-    event,
-    processName,
-    hookResponse,
-  }: {
-    event?: string;
-    processName?: string;
-    hookResponse: unknown;
-  }): string | undefined {
-    if (!event || event !== 'verification-result') {
-      return event;
-    }
-
-    const status = String((hookResponse as Record<string, unknown>)?.['status'] ?? '').toUpperCase();
-    const success = status === 'VERIFIED';
-
-    if (processName === 'document-verification-unified-api') {
-      return success ? 'DOCUMENT_VERIFIED' : 'DOCUMENT_VERIFICATION_FAILED';
-    }
-
-    if (processName === 'facial-verification-unified-api') {
-      return success ? 'FACIAL_VERIFIED' : 'FACIAL_VERIFICATION_FAILED';
-    }
-
-    return undefined;
   }
 
   @common.Patch('/:workflowRuntimeDataId/sync-entity')

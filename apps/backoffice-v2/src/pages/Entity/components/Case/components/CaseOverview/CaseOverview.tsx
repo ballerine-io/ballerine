@@ -59,8 +59,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
 
   const isCaseOverviewEnabled = workflow?.workflowDefinition?.config?.isCaseOverviewEnabled;
   const isDocumentTrackerEnabled = workflow?.workflowDefinition?.config?.isDocumentTrackerEnabled;
-  const isCaseRiskOverviewEnabled =
-    workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled;
+  const isCaseRiskOverviewEnabled = workflow?.workflowDefinition?.config?.isCaseRiskOverviewEnabled;
 
   if (!isCaseOverviewEnabled && !isDocumentTrackerEnabled) {
     return null;

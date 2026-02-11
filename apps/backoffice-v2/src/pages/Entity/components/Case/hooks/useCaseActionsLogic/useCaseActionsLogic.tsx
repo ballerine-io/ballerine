@@ -139,4 +139,3 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     onRemoveCustomLabel,
   };
 };
-

@@ -12,10 +12,7 @@ describe('getDocumentEntityTarget', () => {
   });
 
   it('routes to end_user when metadata.businessId is absent', () => {
-    const target = getDocumentEntityTarget(
-      { entityId: 'end-user-456' },
-      'useDocumentUpload',
-    );
+    const target = getDocumentEntityTarget({ entityId: 'end-user-456' }, 'useDocumentUpload');
 
     expect(target).toEqual({ entityType: 'end_user', entityId: 'end-user-456' });
   });
@@ -26,4 +23,3 @@ describe('getDocumentEntityTarget', () => {
     );
   });
 });
-

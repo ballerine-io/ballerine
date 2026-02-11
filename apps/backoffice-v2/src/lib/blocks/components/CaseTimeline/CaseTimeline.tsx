@@ -2,10 +2,7 @@ import React, { FunctionComponent, useMemo, useState } from 'react';
 import { useWorkflowLogs } from '@/domains/workflow-logs/hooks/queries/useWorkflowLogs/useWorkflowLogs';
 import type { TWorkflowLog } from '@/domains/workflow-logs/fetchers';
 
-const LOG_TYPE_CONFIG: Record<
-  string,
-  { label: string; icon: string; color: string }
-> = {
+const LOG_TYPE_CONFIG: Record<string, { label: string; icon: string; color: string }> = {
   STATE_TRANSITION: {
     label: 'State Changed',
     icon: '→',
@@ -59,14 +56,9 @@ function formatTimestamp(isoString: string): string {
   });
 }
 
-function formatDuration(
-  current: TWorkflowLog,
-  previous: TWorkflowLog | undefined,
-): string | null {
+function formatDuration(current: TWorkflowLog, previous: TWorkflowLog | undefined): string | null {
   if (!previous) return null;
-  const ms =
-    new Date(current.createdAt).getTime() -
-    new Date(previous.createdAt).getTime();
+  const ms = new Date(current.createdAt).getTime() - new Date(previous.createdAt).getTime();
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
   return `${Math.round(ms / 60_000)}min`;
@@ -95,9 +87,7 @@ interface CaseTimelineProps {
   workflowId: string;
 }
 
-export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({
-  workflowId,
-}) => {
+export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({ workflowId }) => {
   const [filter, setFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
 
@@ -148,9 +138,7 @@ export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-700">
           Audit Trail
-          <span className="ml-2 text-xs font-normal text-gray-400">
-            ({total} events)
-          </span>
+          <span className="ml-2 text-xs font-normal text-gray-400">({total} events)</span>
         </h3>
         <select
           className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-600"
@@ -171,7 +159,7 @@ export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({
       {/* Timeline */}
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gray-200" />
+        <div className="absolute bottom-0 left-[15px] top-0 w-px bg-gray-200" />
 
         <ul className="space-y-0">
           {sortedLogs.map((log, idx) => {
@@ -200,17 +188,11 @@ export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({
                     <span className="text-[10px] text-gray-400">
                       {formatTimestamp(log.createdAt)}
                     </span>
-                    {duration && (
-                      <span className="text-[10px] text-gray-300">
-                        +{duration}
-                      </span>
-                    )}
+                    {duration && <span className="text-[10px] text-gray-300">+{duration}</span>}
                   </div>
 
                   {/* Description */}
-                  <p className="text-xs text-gray-600">
-                    {getLogDescription(log)}
-                  </p>
+                  <p className="text-xs text-gray-600">{getLogDescription(log)}</p>
                 </div>
               </li>
             );

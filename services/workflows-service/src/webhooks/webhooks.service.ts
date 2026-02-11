@@ -172,8 +172,11 @@ export class WebhooksService implements OnModuleInit {
     forceDirect?: boolean,
   ) {
     const { url, method, headers: argHeaders, data, secret, timeout } = config;
-    const { interpolated: interpolatedUrl, usedKeys, missingKeys } =
-      interpolateSecretTemplates(url);
+    const {
+      interpolated: interpolatedUrl,
+      usedKeys,
+      missingKeys,
+    } = interpolateSecretTemplates(url);
 
     if (missingKeys.length > 0) {
       this.logger.error('Webhook URL contains unresolved secret placeholders', {

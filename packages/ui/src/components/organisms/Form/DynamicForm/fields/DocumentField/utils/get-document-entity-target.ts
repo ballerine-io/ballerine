@@ -25,4 +25,3 @@ export const getDocumentEntityTarget = (
 
   return { entityType, entityId: resolvedEntityId };
 };
-
