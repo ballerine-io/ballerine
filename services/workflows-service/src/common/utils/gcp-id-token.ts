@@ -37,15 +37,20 @@ export const getGcpIdToken = async (audience: string): Promise<string | null> =>
     const res = await fetch(url.toString(), {
       headers: { 'Metadata-Flavor': 'Google' },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(
+        `[getGcpIdToken] Metadata server returned ${res.status} for audience=${audience}`,
+      );
+      return null;
+    }
 
     const token = await res.text();
     const expMs = decodeJwtExpMs(token) ?? Date.now() + 5 * 60_000;
     cache.set(audience, { token, expMs });
 
     return token;
-  } catch {
+  } catch (err) {
+    console.warn('[getGcpIdToken] Failed to fetch ID token from metadata server', err);
     return null;
   }
 };
-

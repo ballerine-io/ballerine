@@ -337,8 +337,15 @@ export class WorkflowService {
 
       return assessments?.flatMap(assessment => assessment.individualVerificationsChecks) ?? [];
     } catch (error) {
+      // Assessments are optional enrichment for parent workflows.
+      // Do not let transient failures (401 auth, 503 unavailable, etc.)
+      // crash the entire collection flow context request.
       if (!(error instanceof NotFoundException)) {
-        throw error;
+        this.logger.warn('Failed to fetch individual verification checks (non-fatal)', {
+          workflowRuntimeDataId,
+          projectId,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
 
       return [];

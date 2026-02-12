@@ -112,6 +112,11 @@ export class UnifiedApiClient {
 
     // In Cloud Run, Unified API is protected by IAM; attach an ID token per request.
     // Local/dev keeps using UNIFIED_API_TOKEN (app-level auth) without metadata calls.
+    //
+    // IMPORTANT: Do NOT overwrite the Authorization header — it carries the app-level
+    // UNIFIED_API_TOKEN that the Unified API auth middleware validates. The x-api-key
+    // header (set above in the constructor) is the primary auth mechanism.
+    // Pass the IAM token in a separate header for Cloud Run IAM layer if needed.
     this.axiosInstance.interceptors.request.use(async config => {
       try {
         const audience = new URL(env.UNIFIED_API_URL).origin;
@@ -119,10 +124,15 @@ export class UnifiedApiClient {
 
         if (idToken) {
           if (!config.headers) config.headers = {} as any;
-          (config.headers as any).Authorization = `Bearer ${idToken}`;
+          // Use the GCP standard header when Authorization is already occupied by app-level credentials.
+          // This allows the request to pass Cloud Run IAM if allUsers is ever removed.
+          (config.headers as any)['X-Serverless-Authorization'] = `Bearer ${idToken}`;
         }
-      } catch {
-        // Best-effort; request will fail with 401/403 if IAM auth is required.
+      } catch (err) {
+        // Log at warn so IAM token failures are observable, not silently swallowed.
+        this.logger.warn('[UnifiedApiClient] Failed to obtain GCP ID token (best-effort)', {
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
 
       return config;
