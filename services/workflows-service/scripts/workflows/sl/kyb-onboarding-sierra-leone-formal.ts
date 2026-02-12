@@ -222,6 +222,7 @@ export const kybOnboardingSierraLeoneFormalDefinition = {
         errorAction: 'BUSINESS_DOCS_FAILED',
         headers: {
           Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'x-api-key': '{secret.UNIFIED_API_TOKEN}',
           'Content-Type': 'application/json',
           'x-tenant-id': '{entity.data.tenantId}',
           'x-project-id': '{entity.data.projectId}',

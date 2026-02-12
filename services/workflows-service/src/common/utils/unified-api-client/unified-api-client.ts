@@ -106,6 +106,7 @@ export class UnifiedApiClient {
       baseURL: env.UNIFIED_API_URL,
       headers: {
         Authorization: `Bearer ${env.UNIFIED_API_TOKEN as string}`,
+        'x-api-key': env.UNIFIED_API_TOKEN as string,
       },
     });
 
