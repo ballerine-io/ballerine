@@ -36,5 +36,10 @@ globalThis.env = {
 }
 EOF
 
+# Also write config for the kyc-mobile sub-page
+if [ -d /usr/share/nginx/html/kyc-mobile ]; then
+  cp /usr/share/nginx/html/config.js /usr/share/nginx/html/kyc-mobile/config.js
+fi
+
 # Handle CMD command
 exec "$@"

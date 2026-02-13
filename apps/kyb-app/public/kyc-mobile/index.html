@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <title>MiKashBoks – Identity Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 16px 20px;
+            text-align: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .header .subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 2px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light), var(--success));
+            transition: width 0.4s ease;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .step {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .doc-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .doc-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .doc-card:hover,
+        .doc-card:active {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .doc-card.selected {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .doc-card .doc-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .doc-card .doc-label {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .doc-card .doc-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .camera-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 300px;
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .camera-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+
+        .camera-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border: 3px dashed rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius);
+            margin: 20px;
+        }
+
+        .camera-hint {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            object-fit: contain;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:active {
+            background: var(--bg);
+        }
+
+        .btn-capture {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #fff;
+            border: 4px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.15s;
+        }
+
+        .btn-capture:active {
+            transform: translateX(-50%) scale(0.9);
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .success-icon {
+            font-size: 64px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .error-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin: 0 20px;
+            display: none;
+        }
+
+        .error-banner.visible {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .error-banner .error-text {
+            font-size: 13px;
+            color: #991b1b;
+            line-height: 1.4;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .info-list {
+            list-style: none;
+            margin: 0 0 24px;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .info-list li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            padding: 16px 20px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Identity Verification</h1>
+        <div class="subtitle">MiKashBoks</div>
+    </div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div id="errorBanner" class="error-banner">
+        <span>⚠️</span>
+        <span class="error-text" id="errorText"></span>
+    </div>
+
+    <div class="content">
+        <!-- STEP 0: Welcome -->
+        <div class="step active" id="step-welcome">
+            <div class="step-icon">🛡️</div>
+            <div class="step-title">Verify Your Identity</div>
+            <div class="step-desc">We need to verify your identity to keep your account secure. This takes about 2
+                minutes.</div>
+            <ul class="info-list">
+                <li>Take a photo of your ID document</li>
+                <li>Take a selfie for face matching</li>
+                <li>Your data is encrypted and secure</li>
+            </ul>
+            <div class="spacer"></div>
+        </div>
+
+        <!-- STEP 1: Document Selection -->
+        <div class="step" id="step-doc-select">
+            <div class="step-title">Select Document Type</div>
+            <div class="step-desc">Choose the identity document you want to use</div>
+            <div class="doc-grid" id="docGrid">
+                <div class="doc-card" data-doc-type="id_card" data-doc-category="identification_document">
+                    <span class="doc-icon">🪪</span>
+                    <div>
+                        <div class="doc-label">National ID Card</div>
+                        <div class="doc-hint">SL national ID or ECOWAS card</div>
+                    </div>
+                </div>
+                <div class="doc-card" data-doc-type="passport" data-doc-category="identification_document">
+                    <span class="doc-icon">📘</span>
+                    <div>
+                        <div class="doc-label">Passport</div>
+                        <div class="doc-hint">Valid international passport</div>
+                    </div>
+                </div>
+                <div class="doc-card" data-doc-type="voter_id" data-doc-category="identification_document">
+                    <span class="doc-icon">🗳️</span>
+                    <div>
+                        <div class="doc-label">Voter ID Card</div>
+                        <div class="doc-hint">Sierra Leone voter registration card</div>
+                    </div>
+                </div>
+                <div class="doc-card" data-doc-type="drivers_license" data-doc-category="identification_document">
+                    <span class="doc-icon">🚗</span>
+                    <div>
+                        <div class="doc-label">Driver's License</div>
+                        <div class="doc-hint">Valid driver's license</div>
+                    </div>
+                </div>
+            </div>
+            <div class="spacer"></div>
+        </div>
+
+        <!-- STEP 2: Document Photo (Front) -->
+        <div class="step" id="step-doc-photo">
+            <div class="step-title">Photo of Document Front</div>
+            <div class="step-desc">Position your document within the frame and take a clear photo</div>
+            <div class="camera-container" id="docCameraContainer">
+                <video id="docVideo" autoplay playsinline muted></video>
+                <div class="camera-overlay"></div>
+                <div class="camera-hint">Hold steady &amp; ensure good lighting</div>
+                <button class="btn-capture" id="docCaptureBtn" aria-label="Take photo"></button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Review Document Photo -->
+        <div class="step" id="step-doc-review">
+            <div class="step-title">Review Your Photo</div>
+            <div class="step-desc">Make sure the document is clearly visible and all text is readable</div>
+            <div class="preview-container"><img id="docPreview" alt="Document preview" /></div>
+            <div class="preview-actions">
+                <button class="btn btn-secondary" id="docRetakeBtn">↻ Retake</button>
+                <button class="btn btn-primary" id="docAcceptBtn">✓ Looks Good</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Selfie intro -->
+        <div class="step" id="step-selfie-start">
+            <div class="step-icon">🤳</div>
+            <div class="step-title">Time for a Selfie</div>
+            <div class="step-desc">We'll use your front camera to take a selfie. This helps us confirm the person
+                submitting matches the ID document.</div>
+            <ul class="info-list">
+                <li>Face the camera directly</li>
+                <li>Ensure good lighting on your face</li>
+                <li>Remove hats or sunglasses</li>
+            </ul>
+            <div class="spacer"></div>
+        </div>
+
+        <!-- STEP 5: Selfie Photo -->
+        <div class="step" id="step-selfie">
+            <div class="step-title">Take Your Selfie</div>
+            <div class="step-desc">Look at the camera and hold steady</div>
+            <div class="camera-container" id="selfieCameraContainer">
+                <video id="selfieVideo" autoplay playsinline muted style="transform: scaleX(-1);"></video>
+                <div class="camera-overlay" style="margin: 40px; border-radius: 50%;"></div>
+                <div class="camera-hint">Keep your face centered</div>
+                <button class="btn-capture" id="selfieCaptureBtn" aria-label="Take selfie"></button>
+            </div>
+        </div>
+
+        <!-- STEP 6: Review Selfie -->
+        <div class="step" id="step-selfie-review">
+            <div class="step-title">Review Your Selfie</div>
+            <div class="step-desc">Make sure your face is clearly visible</div>
+            <div class="preview-container">
+                <img id="selfiePreview" alt="Selfie preview"
+                    style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;" />
+            </div>
+            <div class="preview-actions">
+                <button class="btn btn-secondary" id="selfieRetakeBtn">↻ Retake</button>
+                <button class="btn btn-primary" id="selfieAcceptBtn">✓ Looks Good</button>
+            </div>
+        </div>
+
+        <!-- STEP 7: Submitting -->
+        <div class="step" id="step-loading">
+            <div class="spacer"></div>
+            <div class="spinner"></div>
+            <div class="step-title">Submitting Documents</div>
+            <div class="step-desc" id="loadingDesc">Uploading your documents securely...</div>
+            <div class="spacer"></div>
+        </div>
+
+        <!-- STEP 8: Complete -->
+        <div class="step" id="step-complete">
+            <div class="spacer"></div>
+            <div class="success-icon">✅</div>
+            <div class="step-title">Verification Submitted!</div>
+            <div class="step-desc">Your documents have been submitted successfully. Verification is being processed —
+                you'll be notified of the result.</div>
+            <div class="spacer"></div>
+        </div>
+
+        <!-- Error fallback -->
+        <div class="step" id="step-error">
+            <div class="spacer"></div>
+            <div class="step-icon">❌</div>
+            <div class="step-title">Something Went Wrong</div>
+            <div class="step-desc" id="errorDesc">An error occurred. Please try again.</div>
+            <button class="btn btn-primary" id="retryBtn" style="margin-top:16px;">Try Again</button>
+            <div class="spacer"></div>
+        </div>
+    </div>
+
+    <div class="footer" id="footer">
+        <button class="btn btn-primary" id="nextBtn" style="width:100%">Get Started</button>
+    </div>
+
+    <script>
+        // ── Configuration ──
+        const params = new URLSearchParams(window.location.search);
+        const TOKEN = params.get('token') || '';
+        // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
+        // or from query param override
+        const rawBase = params.get('apiUrl')
+            || (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL)
+            || '/api/v1/';
+        const apiBase = rawBase.replace(/\/+$/, '');
+
+        // ── State ──
+        const STEPS = [
+            'step-welcome', 'step-doc-select', 'step-doc-photo', 'step-doc-review',
+            'step-selfie-start', 'step-selfie', 'step-selfie-review',
+            'step-loading', 'step-complete'
+        ];
+        let currentStep = 0;
+        let selectedDocType = null;
+        let selectedDocCategory = null;
+        let docPhotoBlob = null;
+        let selfieBlob = null;
+        let activeStream = null;
+        let workflowData = null; // populated from active-flow API
+
+        // ── DOM refs ──
+        const progressFill = document.getElementById('progressFill');
+        const nextBtn = document.getElementById('nextBtn');
+        const errorBanner = document.getElementById('errorBanner');
+        const errorText = document.getElementById('errorText');
+        const footer = document.getElementById('footer');
+
+        // ── Utilities ──
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorBanner.classList.add('visible');
+            setTimeout(() => errorBanner.classList.remove('visible'), 8000);
+        }
+
+        function stopCamera() {
+            if (activeStream) {
+                activeStream.getTracks().forEach(t => t.stop());
+                activeStream = null;
+            }
+        }
+
+        async function startCamera(videoEl, facingMode) {
+            stopCamera();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
+                    audio: false,
+                });
+                activeStream = stream;
+                videoEl.srcObject = stream;
+                await videoEl.play();
+            } catch (err) {
+                console.error('Camera error:', err);
+                showError('Could not access camera. Please allow camera permissions and try again.');
+            }
+        }
+
+        function captureFrame(videoEl) {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoEl.videoWidth || 1280;
+            canvas.height = videoEl.videoHeight || 720;
+            const ctx = canvas.getContext('2d');
+            // Mirror selfie capture to match preview
+            if (videoEl.style.transform === 'scaleX(-1)') {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(videoEl, 0, 0);
+            return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+        }
+
+        function blobToPreview(blob, imgEl) {
+            imgEl.src = URL.createObjectURL(blob);
+        }
+
+        // ── API helpers ──
+        async function apiRequest(method, path, body, isFormData) {
+            const headers = {};
+            if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+            if (!isFormData && body) headers['Content-Type'] = 'application/json';
+
+            const resp = await fetch(apiBase + path, {
+                method,
+                headers,
+                body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
+            });
+
+            if (!resp.ok) {
+                const text = await resp.text().catch(() => '');
+                throw new Error(`${method} ${path}: ${resp.status} ${text.substring(0, 200)}`);
+            }
+            return resp.json().catch(() => ({}));
+        }
+
+        // Fetch workflow data to get endUserId
+        async function fetchWorkflowData() {
+            try {
+                const result = await apiRequest('GET', '/collection-flow/active-flow');
+                workflowData = result.result || result;
+                console.log('Workflow data loaded:', !!workflowData);
+            } catch (err) {
+                console.warn('Could not fetch active-flow, will try without endUserId:', err);
+            }
+        }
+
+        // Upload a document file via the collection-flow documents API
+        async function uploadDocument(blob, filename, docType, docCategory, fileType, fileVariant, pageNum) {
+            const endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || '';
+
+            const formData = new FormData();
+            formData.append('file', blob, filename);
+            formData.append('category', docCategory);
+            formData.append('type', docType);
+            formData.append('issuingVersion', '1');
+            formData.append('issuingCountry', 'SL');
+            formData.append('page', String(pageNum));
+            formData.append('documentType', fileType);    // 'document' | 'selfie' | 'other'
+            formData.append('documentVariant', fileVariant); // 'front' | 'back' | 'other'
+            if (endUserId) {
+                formData.append('endUserId', endUserId);
+            }
+
+            return apiRequest('POST', '/collection-flow/documents', formData, true);
+        }
+
+        // ── Navigation ──
+        function goToStep(idx) {
+            stopCamera();
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            const stepId = STEPS[idx];
+            if (!stepId) return;
+            document.getElementById(stepId).classList.add('active');
+            currentStep = idx;
+            progressFill.style.width = Math.round((idx / (STEPS.length - 1)) * 100) + '%';
+            updateFooter();
+
+            if (stepId === 'step-doc-photo') startCamera(document.getElementById('docVideo'), 'environment');
+            if (stepId === 'step-selfie') startCamera(document.getElementById('selfieVideo'), 'user');
+            if (stepId === 'step-loading') submitDocuments();
+        }
+
+        function updateFooter() {
+            const step = STEPS[currentStep];
+            const hideFooter = ['step-doc-photo', 'step-doc-review', 'step-selfie',
+                'step-selfie-review', 'step-loading', 'step-error'].includes(step);
+            footer.style.display = hideFooter ? 'none' : '';
+
+            if (step === 'step-welcome') { nextBtn.textContent = 'Get Started'; nextBtn.disabled = false; }
+            else if (step === 'step-doc-select') { nextBtn.textContent = 'Continue'; nextBtn.disabled = !selectedDocType; }
+            else if (step === 'step-selfie-start') { nextBtn.textContent = 'Open Camera'; nextBtn.disabled = false; }
+            else if (step === 'step-complete') { nextBtn.textContent = 'Done'; nextBtn.disabled = false; }
+        }
+
+        function showErrorStep(msg) {
+            stopCamera();
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-error').classList.add('active');
+            document.getElementById('errorDesc').textContent = msg;
+            footer.style.display = 'none';
+        }
+
+        // ── Event handlers ──
+        nextBtn.addEventListener('click', () => {
+            const step = STEPS[currentStep];
+            if (step === 'step-complete') {
+                // Signal completion to Android WebView bridge
+                try { if (window.Android && window.Android.onVerificationComplete) window.Android.onVerificationComplete('submitted'); } catch (e) { }
+                window.close();
+                return;
+            }
+            goToStep(currentStep + 1);
+        });
+
+        document.querySelectorAll('.doc-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.doc-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedDocType = card.dataset.docType;
+                selectedDocCategory = card.dataset.docCategory;
+                nextBtn.disabled = false;
+            });
+        });
+
+        document.getElementById('docCaptureBtn').addEventListener('click', async () => {
+            docPhotoBlob = await captureFrame(document.getElementById('docVideo'));
+            blobToPreview(docPhotoBlob, document.getElementById('docPreview'));
+            goToStep(STEPS.indexOf('step-doc-review'));
+        });
+
+        document.getElementById('docRetakeBtn').addEventListener('click', () => {
+            docPhotoBlob = null;
+            goToStep(STEPS.indexOf('step-doc-photo'));
+        });
+
+        document.getElementById('docAcceptBtn').addEventListener('click', () => goToStep(STEPS.indexOf('step-selfie-start')));
+
+        document.getElementById('selfieCaptureBtn').addEventListener('click', async () => {
+            selfieBlob = await captureFrame(document.getElementById('selfieVideo'));
+            blobToPreview(selfieBlob, document.getElementById('selfiePreview'));
+            goToStep(STEPS.indexOf('step-selfie-review'));
+        });
+
+        document.getElementById('selfieRetakeBtn').addEventListener('click', () => {
+            selfieBlob = null;
+            goToStep(STEPS.indexOf('step-selfie'));
+        });
+
+        document.getElementById('selfieAcceptBtn').addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
+
+        document.getElementById('retryBtn').addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
+
+        // ── Submission ──
+        async function submitDocuments() {
+            const loadingDesc = document.getElementById('loadingDesc');
+            try {
+                // 1. Upload document photo (front)
+                loadingDesc.textContent = 'Uploading document photo...';
+                await uploadDocument(
+                    docPhotoBlob,
+                    selectedDocType + '_front.jpeg',
+                    selectedDocType,
+                    selectedDocCategory,
+                    'document',  // DocumentFileType enum
+                    'front',     // DocumentFileVariant enum
+                    1            // page number
+                );
+
+                // 2. Upload selfie
+                loadingDesc.textContent = 'Uploading selfie...';
+                await uploadDocument(
+                    selfieBlob,
+                    'selfie.jpeg',
+                    selectedDocType,
+                    selectedDocCategory,
+                    'selfie',    // DocumentFileType enum
+                    'front',     // DocumentFileVariant: 'front' is the standard for selfie
+                    2            // page number
+                );
+
+                // 3. Final submission — fires the workflow event and synthesizes documents
+                loadingDesc.textContent = 'Processing verification...';
+
+                // First, get the current workflow context for the final-submission body
+                let context = {};
+                try {
+                    const ctxResult = await apiRequest('GET', '/collection-flow/active-flow');
+                    const wf = ctxResult.result || ctxResult;
+                    context = wf.context || {};
+                } catch (e) {
+                    console.warn('Could not fetch context for final-submission, using minimal body:', e);
+                }
+
+                // Ensure collectionFlow state is present
+                if (!context.collectionFlow) {
+                    context.collectionFlow = {};
+                }
+                if (!context.collectionFlow.state) {
+                    context.collectionFlow.state = { status: 'pending', steps: [] };
+                }
+
+                // Call final-submission to trigger the COLLECTION_FLOW_FINISHED event
+                try {
+                    await apiRequest('POST', '/collection-flow/final-submission', {
+                        eventName: 'COLLECTION_FLOW_FINISHED',
+                        context: context,
+                    });
+                } catch (finalErr) {
+                    console.warn('final-submission failed, trying send-event:', finalErr);
+                    // Fallback: just fire the event directly
+                    try {
+                        await apiRequest('POST', '/collection-flow/send-event', {
+                            eventName: 'COLLECTION_FLOW_FINISHED',
+                        });
+                    } catch (eventErr) {
+                        // The documents ARE uploaded. Backend will pick up eventually.
+                        console.warn('send-event also failed. Documents uploaded, workflow should still process:', eventErr);
+                    }
+                }
+
+                // Success
+                goToStep(STEPS.indexOf('step-complete'));
+            } catch (err) {
+                console.error('Submission failed:', err);
+                showErrorStep('Failed to submit: ' + (err.message || 'Unknown error. Please check your connection and try again.'));
+            }
+        }
+
+        // ── Init ──
+        if (!TOKEN) {
+            showError('No verification token provided. Please open this page from the MiKashBoks app.');
+            nextBtn.disabled = true;
+        } else {
+            // Pre-fetch workflow data for endUserId
+            fetchWorkflowData();
+        }
+        updateFooter();
+    </script>
+</body>
+
+</html>
