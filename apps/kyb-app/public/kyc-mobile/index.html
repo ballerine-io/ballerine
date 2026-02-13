@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#1a1a2e" />
     <title>MiKashBoks – Identity Verification</title>
+    <script type="text/javascript" src="/kyc-mobile/config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -394,7 +395,7 @@
         <div class="subtitle">MiKashBoks</div>
     </div>
     <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
     </div>
     <div id="errorBanner" class="error-banner">
         <span>⚠️</span>
@@ -406,8 +407,9 @@
         <div class="step active" id="step-welcome">
             <div class="step-icon">🛡️</div>
             <div class="step-title">Verify Your Identity</div>
-            <div class="step-desc">We need to verify your identity to keep your account secure. This takes about 2
-                minutes.</div>
+            <div class="step-desc">
+                We need to verify your identity to keep your account secure. This takes about 2 minutes.
+            </div>
             <ul class="info-list">
                 <li>Take a photo of your ID document</li>
                 <li>Take a selfie for face matching</li>
@@ -468,7 +470,9 @@
         <!-- STEP 3: Review Document Photo -->
         <div class="step" id="step-doc-review">
             <div class="step-title">Review Your Photo</div>
-            <div class="step-desc">Make sure the document is clearly visible and all text is readable</div>
+            <div class="step-desc">
+                Make sure the document is clearly visible and all text is readable
+            </div>
             <div class="preview-container"><img id="docPreview" alt="Document preview" /></div>
             <div class="preview-actions">
                 <button class="btn btn-secondary" id="docRetakeBtn">↻ Retake</button>
@@ -480,8 +484,10 @@
         <div class="step" id="step-selfie-start">
             <div class="step-icon">🤳</div>
             <div class="step-title">Time for a Selfie</div>
-            <div class="step-desc">We'll use your front camera to take a selfie. This helps us confirm the person
-                submitting matches the ID document.</div>
+            <div class="step-desc">
+                We'll use your front camera to take a selfie. This helps us confirm the person submitting
+                matches the ID document.
+            </div>
             <ul class="info-list">
                 <li>Face the camera directly</li>
                 <li>Ensure good lighting on your face</li>
@@ -495,8 +501,8 @@
             <div class="step-title">Take Your Selfie</div>
             <div class="step-desc">Look at the camera and hold steady</div>
             <div class="camera-container" id="selfieCameraContainer">
-                <video id="selfieVideo" autoplay playsinline muted style="transform: scaleX(-1);"></video>
-                <div class="camera-overlay" style="margin: 40px; border-radius: 50%;"></div>
+                <video id="selfieVideo" autoplay playsinline muted style="transform: scaleX(-1)"></video>
+                <div class="camera-overlay" style="margin: 40px; border-radius: 50%"></div>
                 <div class="camera-hint">Keep your face centered</div>
                 <button class="btn-capture" id="selfieCaptureBtn" aria-label="Take selfie"></button>
             </div>
@@ -508,7 +514,7 @@
             <div class="step-desc">Make sure your face is clearly visible</div>
             <div class="preview-container">
                 <img id="selfiePreview" alt="Selfie preview"
-                    style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;" />
+                    style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover" />
             </div>
             <div class="preview-actions">
                 <button class="btn btn-secondary" id="selfieRetakeBtn">↻ Retake</button>
@@ -530,8 +536,10 @@
             <div class="spacer"></div>
             <div class="success-icon">✅</div>
             <div class="step-title">Verification Submitted!</div>
-            <div class="step-desc">Your documents have been submitted successfully. Verification is being processed —
-                you'll be notified of the result.</div>
+            <div class="step-desc">
+                Your documents have been submitted successfully. Verification is being processed — you'll
+                be notified of the result.
+            </div>
             <div class="spacer"></div>
         </div>
 
@@ -541,13 +549,13 @@
             <div class="step-icon">❌</div>
             <div class="step-title">Something Went Wrong</div>
             <div class="step-desc" id="errorDesc">An error occurred. Please try again.</div>
-            <button class="btn btn-primary" id="retryBtn" style="margin-top:16px;">Try Again</button>
+            <button class="btn btn-primary" id="retryBtn" style="margin-top: 16px">Try Again</button>
             <div class="spacer"></div>
         </div>
     </div>
 
     <div class="footer" id="footer">
-        <button class="btn btn-primary" id="nextBtn" style="width:100%">Get Started</button>
+        <button class="btn btn-primary" id="nextBtn" style="width: 100%">Get Started</button>
     </div>
 
     <script>
@@ -556,16 +564,23 @@
         const TOKEN = params.get('token') || '';
         // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
         // or from query param override
-        const rawBase = params.get('apiUrl')
-            || (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL)
-            || '/api/v1/';
+        const rawBase =
+            params.get('apiUrl') ||
+            (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) ||
+            '/api/v1/';
         const apiBase = rawBase.replace(/\/+$/, '');
 
         // ── State ──
         const STEPS = [
-            'step-welcome', 'step-doc-select', 'step-doc-photo', 'step-doc-review',
-            'step-selfie-start', 'step-selfie', 'step-selfie-review',
-            'step-loading', 'step-complete'
+            'step-welcome',
+            'step-doc-select',
+            'step-doc-photo',
+            'step-doc-review',
+            'step-selfie-start',
+            'step-selfie',
+            'step-selfie-review',
+            'step-loading',
+            'step-complete',
         ];
         let currentStep = 0;
         let selectedDocType = null;
@@ -639,7 +654,7 @@
             const resp = await fetch(apiBase + path, {
                 method,
                 headers,
-                body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
+                body: isFormData ? body : body ? JSON.stringify(body) : undefined,
             });
 
             if (!resp.ok) {
@@ -661,7 +676,15 @@
         }
 
         // Upload a document file via the collection-flow documents API
-        async function uploadDocument(blob, filename, docType, docCategory, fileType, fileVariant, pageNum) {
+        async function uploadDocument(
+            blob,
+            filename,
+            docType,
+            docCategory,
+            fileType,
+            fileVariant,
+            pageNum,
+        ) {
             const endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || '';
 
             const formData = new FormData();
@@ -671,7 +694,7 @@
             formData.append('issuingVersion', '1');
             formData.append('issuingCountry', 'SL');
             formData.append('page', String(pageNum));
-            formData.append('documentType', fileType);    // 'document' | 'selfie' | 'other'
+            formData.append('documentType', fileType); // 'document' | 'selfie' | 'other'
             formData.append('documentVariant', fileVariant); // 'front' | 'back' | 'other'
             if (endUserId) {
                 formData.append('endUserId', endUserId);
@@ -691,21 +714,37 @@
             progressFill.style.width = Math.round((idx / (STEPS.length - 1)) * 100) + '%';
             updateFooter();
 
-            if (stepId === 'step-doc-photo') startCamera(document.getElementById('docVideo'), 'environment');
+            if (stepId === 'step-doc-photo')
+                startCamera(document.getElementById('docVideo'), 'environment');
             if (stepId === 'step-selfie') startCamera(document.getElementById('selfieVideo'), 'user');
             if (stepId === 'step-loading') submitDocuments();
         }
 
         function updateFooter() {
             const step = STEPS[currentStep];
-            const hideFooter = ['step-doc-photo', 'step-doc-review', 'step-selfie',
-                'step-selfie-review', 'step-loading', 'step-error'].includes(step);
+            const hideFooter = [
+                'step-doc-photo',
+                'step-doc-review',
+                'step-selfie',
+                'step-selfie-review',
+                'step-loading',
+                'step-error',
+            ].includes(step);
             footer.style.display = hideFooter ? 'none' : '';
 
-            if (step === 'step-welcome') { nextBtn.textContent = 'Get Started'; nextBtn.disabled = false; }
-            else if (step === 'step-doc-select') { nextBtn.textContent = 'Continue'; nextBtn.disabled = !selectedDocType; }
-            else if (step === 'step-selfie-start') { nextBtn.textContent = 'Open Camera'; nextBtn.disabled = false; }
-            else if (step === 'step-complete') { nextBtn.textContent = 'Done'; nextBtn.disabled = false; }
+            if (step === 'step-welcome') {
+                nextBtn.textContent = 'Get Started';
+                nextBtn.disabled = false;
+            } else if (step === 'step-doc-select') {
+                nextBtn.textContent = 'Continue';
+                nextBtn.disabled = !selectedDocType;
+            } else if (step === 'step-selfie-start') {
+                nextBtn.textContent = 'Open Camera';
+                nextBtn.disabled = false;
+            } else if (step === 'step-complete') {
+                nextBtn.textContent = 'Done';
+                nextBtn.disabled = false;
+            }
         }
 
         function showErrorStep(msg) {
@@ -721,7 +760,10 @@
             const step = STEPS[currentStep];
             if (step === 'step-complete') {
                 // Signal completion to Android WebView bridge
-                try { if (window.Android && window.Android.onVerificationComplete) window.Android.onVerificationComplete('submitted'); } catch (e) { }
+                try {
+                    if (window.Android && window.Android.onVerificationComplete)
+                        window.Android.onVerificationComplete('submitted');
+                } catch (e) { }
                 window.close();
                 return;
             }
@@ -749,7 +791,9 @@
             goToStep(STEPS.indexOf('step-doc-photo'));
         });
 
-        document.getElementById('docAcceptBtn').addEventListener('click', () => goToStep(STEPS.indexOf('step-selfie-start')));
+        document
+            .getElementById('docAcceptBtn')
+            .addEventListener('click', () => goToStep(STEPS.indexOf('step-selfie-start')));
 
         document.getElementById('selfieCaptureBtn').addEventListener('click', async () => {
             selfieBlob = await captureFrame(document.getElementById('selfieVideo'));
@@ -762,9 +806,13 @@
             goToStep(STEPS.indexOf('step-selfie'));
         });
 
-        document.getElementById('selfieAcceptBtn').addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
+        document
+            .getElementById('selfieAcceptBtn')
+            .addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
 
-        document.getElementById('retryBtn').addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
+        document
+            .getElementById('retryBtn')
+            .addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
 
         // ── Submission ──
         async function submitDocuments() {
@@ -777,9 +825,9 @@
                     selectedDocType + '_front.jpeg',
                     selectedDocType,
                     selectedDocCategory,
-                    'document',  // DocumentFileType enum
-                    'front',     // DocumentFileVariant enum
-                    1            // page number
+                    'document', // DocumentFileType enum
+                    'front', // DocumentFileVariant enum
+                    1, // page number
                 );
 
                 // 2. Upload selfie
@@ -789,9 +837,9 @@
                     'selfie.jpeg',
                     selectedDocType,
                     selectedDocCategory,
-                    'selfie',    // DocumentFileType enum
-                    'front',     // DocumentFileVariant: 'front' is the standard for selfie
-                    2            // page number
+                    'selfie', // DocumentFileType enum
+                    'front', // DocumentFileVariant: 'front' is the standard for selfie
+                    2, // page number
                 );
 
                 // 3. Final submission — fires the workflow event and synthesizes documents
@@ -830,7 +878,10 @@
                         });
                     } catch (eventErr) {
                         // The documents ARE uploaded. Backend will pick up eventually.
-                        console.warn('send-event also failed. Documents uploaded, workflow should still process:', eventErr);
+                        console.warn(
+                            'send-event also failed. Documents uploaded, workflow should still process:',
+                            eventErr,
+                        );
                     }
                 }
 
@@ -838,7 +889,10 @@
                 goToStep(STEPS.indexOf('step-complete'));
             } catch (err) {
                 console.error('Submission failed:', err);
-                showErrorStep('Failed to submit: ' + (err.message || 'Unknown error. Please check your connection and try again.'));
+                showErrorStep(
+                    'Failed to submit: ' +
+                    (err.message || 'Unknown error. Please check your connection and try again.'),
+                );
             }
         }
 
