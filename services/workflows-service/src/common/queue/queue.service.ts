@@ -100,7 +100,9 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
     }
 
     const worker = new Worker(queueName, processor, {
-      connection: this.redisClient,
+      // Cast: top-level ioredis and bullmq's bundled ioredis diverge at the type level
+      // but are runtime-compatible. See bullmq issue #2886.
+      connection: this.redisClient as any,
       concurrency: options.concurrency ?? 1,
       autorun: true,
     });
@@ -136,7 +138,8 @@ export class BullMQQueueService implements OnModuleDestroy, IQueueService {
 
     const mergedJobOptions = { ...defaultJobOptions, ...(options?.jobOptions || {}) };
     const queue = new Queue(queueName, {
-      connection: this.redisClient as IORedis,
+      // Cast: same ioredis/bullmq type divergence as Worker above.
+      connection: this.redisClient as any,
       defaultJobOptions: mergedJobOptions,
     });
     this.queues.set(queueName, queue);

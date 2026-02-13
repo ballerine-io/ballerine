@@ -1,3 +1,14 @@
+/**
+ * Minimal type declarations for the Node 18+ native Fetch API.
+ * We only declare what this file actually uses, avoiding the full DOM lib
+ * which would pollute the type space of a Node.js service.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare function fetch(
+  input: string,
+  init?: Record<string, any>,
+): Promise<{ ok: boolean; status: number; text(): Promise<string> }>;
+
 type TIdTokenCacheEntry = { token: string; expMs: number };
 
 const cache = new Map<string, TIdTokenCacheEntry>();

@@ -91,7 +91,7 @@ export class KycService {
 
     const payload = {
       from: {
-        email: 'no-reply@ballerine.com',
+        email: 'no-reply@mikashboks.com',
         name: `${customerName} Team`,
       },
       personalizations: [

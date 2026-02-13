@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔨 Pre-push: type-checking workflows-service..."
+npx nx run @ballerine/workflows-service:build --skip-nx-cache 2>&1
+BUILD_EXIT=$?
+
+if [ $BUILD_EXIT -ne 0 ]; then
+  echo ""
+  echo "❌ workflows-service build failed — push blocked."
+  echo "   Fix the type errors above, then try again."
+  exit 1
+fi
+
+echo "✅ Build passed — pushing."

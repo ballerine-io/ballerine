@@ -97,13 +97,13 @@
   "business_report_creation": {
     "success": "Merchant check created successfully.",
     "error": "Error occurred while creating a merchant check.",
-    "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
+    "is_example": "Please contact MiKashBoks at support@mikashboks.com for access to this feature."
   },
   "batch_business_report_creation": {
     "no_file": "No file selected.",
     "success": "Merchant checks created successfully.",
     "error": "Error occurred while creating merchant checks.",
-    "is_example": "Please contact Ballerine at oss@ballerine.com for access to this feature."
+    "is_example": "Please contact MiKashBoks at support@mikashboks.com for access to this feature."
   },
   "business_report_status_update": {
     "success": "Merchant check status updated successfully.",

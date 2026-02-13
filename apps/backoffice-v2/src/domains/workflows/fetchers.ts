@@ -54,13 +54,22 @@ export const fetchWorkflows = async (params: {
             .union([z.string().datetime(), z.string(), z.date()])
             .transform(value => (value instanceof Date ? value.toISOString() : value)),
           entity: ObjectWithIdSchema.extend({
-            name: z.string().nullish().transform(value => value ?? ''),
+            name: z
+              .string()
+              .nullish()
+              .transform(value => value ?? ''),
             avatarUrl: z.string().nullable().optional(),
             approvalState: z.enum(States).catch(State.NEW),
           }),
           assignee: ObjectWithIdSchema.extend({
-            firstName: z.string().nullish().transform(value => value ?? ''),
-            lastName: z.string().nullish().transform(value => value ?? ''),
+            firstName: z
+              .string()
+              .nullish()
+              .transform(value => value ?? ''),
+            lastName: z
+              .string()
+              .nullish()
+              .transform(value => value ?? ''),
             avatarUrl: z.string().nullable().optional(),
           }).nullable(),
           tags: z.array(z.string()).nullable().catch([]).optional(),
