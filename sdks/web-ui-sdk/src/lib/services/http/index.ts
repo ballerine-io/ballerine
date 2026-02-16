@@ -98,20 +98,48 @@ const httpPatch = async <TResponse>(url: string, body: AnyRecord) => {
 };
 
 const httpGet = async (url: string) => {
+  const headers: Record<string, string> = {};
+  const authHeader = getAuthorizationHeader();
+  if (authHeader) headers['Authorization'] = authHeader;
+
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      Authorization: getAuthorizationHeader(),
-    },
+    headers,
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Error fetching ${url}. http code: ${response.status}, ${response.statusText}.`,
-    );
+    const detail = await extractErrorDetail(response);
+    throw new Error(`Error fetching ${url}: ${response.status} — ${detail}`);
   }
 
   return response.json();
+};
+
+/** Simple delay helper for retry backoff. */
+const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+/**
+ * Retry wrapper — retries a function on transient failures (network errors, 5xx).
+ * Client errors (4xx) are NOT retried — they indicate a bad request.
+ */
+const withRetry = async <T>(
+  fn: () => Promise<T>,
+  { maxAttempts = 2, delayMs = 1500 }: { maxAttempts?: number; delayMs?: number } = {},
+): Promise<T> => {
+  let lastError: Error | undefined;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      // Don't retry 4xx client errors — only network failures and 5xx
+      const is4xx = lastError.message.includes(': 4');
+      if (is4xx || attempt >= maxAttempts) break;
+      console.warn(`Retry ${attempt}/${maxAttempts} after error:`, lastError.message);
+      await delay(delayMs * attempt); // Linear backoff
+    }
+  }
+  throw lastError;
 };
 
 export const getVerificationStatus = async (_endUserId: string) => {
@@ -209,7 +237,7 @@ const uploadCollectionFlowDocument = async (
   formData.append('documentVariant', fileVariant);
   formData.append('endUserId', endUserId);
 
-  return httpPost(getUploadFileEndpoint(), formData);
+  return withRetry(() => httpPost(getUploadFileEndpoint(), formData));
 };
 
 /**

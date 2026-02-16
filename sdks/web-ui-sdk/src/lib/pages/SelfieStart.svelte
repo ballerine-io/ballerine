@@ -27,8 +27,13 @@
 
   let skipBackSide = false;
 
+  // Resolve documentInfo from step config (pre-selected) or store (user-selected).
+  // When document-selection step is skipped, the store is never populated — so we
+  // must also check step.documentInfo (set by the host page for pre-selected types).
+  const resolvedDocumentInfo = step.documentInfo || $selectedDocumentInfo;
+
   $: {
-    if ($selectedDocumentInfo && !$selectedDocumentInfo.backSide) {
+    if (resolvedDocumentInfo && !resolvedDocumentInfo.backSide) {
       skipBackSide = true;
     }
   }

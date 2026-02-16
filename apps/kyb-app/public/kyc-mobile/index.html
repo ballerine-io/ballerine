@@ -144,10 +144,12 @@
       // When doc type is pre-selected from Android, the document-selection step is skipped.
       // We must set `type` and `documentInfo` on photo steps so the SDK knows which
       // document overlay to show and whether a back-side photo is needed.
+      // Variant must match the SDK theme: passport = 'regular' (same as cards).
+      // 'a4' is only for full-page documents (business registrations, etc.).
       var preselectedDocInfo = hasPreselectedDoc ? {
         type: preselectedDocType,
         kind: preselectedDocType,
-        variant: preselectedDocType === 'passport' ? 'a4' : 'regular',
+        variant: 'regular',
         backSide: preselectedDocType !== 'passport',
         orderIndex: 0,
       } : null;
@@ -171,16 +173,18 @@
         );
       }
 
-      // When pre-selected, set `type` on photo steps so SDK renders correct overlay.
-      // When not pre-selected, the SDK reads from selectedDocumentInfo store (set by
-      // document-selection step).
+      // Pass `type` and `documentInfo` on steps that need them when pre-selected.
+      // `type` → used by getDocumentType() to resolve the document overlay.
+      // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
+      //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
+      // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
       steps.push(
         { name: 'document-photo', id: 'document-photo', type: hasPreselectedDoc ? preselectedDocType : undefined },
-        { name: 'check-document', id: 'check-document', type: hasPreselectedDoc ? preselectedDocType : undefined },
+        { name: 'check-document', id: 'check-document', type: hasPreselectedDoc ? preselectedDocType : undefined, documentInfo: preselectedDocInfo },
         { name: 'document-photo-back-start', id: 'document-photo-back-start', documentInfo: preselectedDocInfo },
         { name: 'document-photo-back', id: 'document-photo-back', type: hasPreselectedDoc ? preselectedDocType : undefined },
         { name: 'check-document-photo-back', id: 'check-document-photo-back', documentInfo: preselectedDocInfo },
-        { name: 'selfie-start', id: 'selfie-start' },
+        { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
         { name: 'selfie', id: 'selfie' },
         { name: 'check-selfie', id: 'check-selfie' },
         { name: 'loading', id: 'loading' },
@@ -243,18 +247,40 @@
         }
 
         // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
+        // Retry once (2 attempts total) with 20s timeout per attempt.
+        // Mobile networks in Sierra Leone can be unreliable — a single attempt is insufficient.
+        var FETCH_TIMEOUT_MS = 20000;
+        var MAX_ATTEMPTS = 2;
         var workflowData = null;
-        try {
-          var resp = await fetch(apiBase + '/collection-flow/active-flow', {
-            headers: { Authorization: 'Bearer ' + TOKEN },
-          });
-          if (!resp.ok) throw new Error('HTTP ' + resp.status);
-          var json = await resp.json();
-          workflowData = json.result || json;
-        } catch (e) {
-          console.error('Failed to load workflow:', e);
+        var lastFetchError = null;
+
+        for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+          try {
+            var controller = new AbortController();
+            var timeoutId = setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS);
+            var resp = await fetch(apiBase + '/collection-flow/active-flow', {
+              headers: { Authorization: 'Bearer ' + TOKEN },
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var json = await resp.json();
+            workflowData = json.result || json;
+            break; // success — exit retry loop
+          } catch (e) {
+            lastFetchError = e;
+            console.warn('Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:', e);
+            if (attempt < MAX_ATTEMPTS) {
+              // Brief pause before retry (1s)
+              await new Promise(function (r) { setTimeout(r, 1000); });
+            }
+          }
+        }
+
+        if (!workflowData) {
+          console.error('Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:', lastFetchError);
           document.getElementById('kyc-host').innerHTML =
-            '<p class="init-message error">Could not connect to the verification service. Please close and try again.</p>';
+            '<p class="init-message error">Could not connect to the verification service. Please check your internet connection and try again.</p>';
           return;
         }
 
@@ -301,7 +327,12 @@
             id: endUserId,
             endUserMetadata: {
               issuingCountry: issuingCountry,
-              workflowContext: JSON.stringify(workflowData?.context || {}),
+              // Only pass the minimal context fields needed by the SDK's final-submission.
+              // The SDK spreads this into the COLLECTION_FLOW_FINISHED payload context.
+              // Passing the entire workflow context is wasteful (can be 100KB+) and fragile.
+              workflowContext: JSON.stringify({
+                collectionFlow: (workflowData?.context || {}).collectionFlow || {},
+              }),
               preselectedDocType: preselectedDocType || '',
             },
           },
@@ -349,10 +380,55 @@
                     'Complete this quick verification to unlock loans, higher savings limits, and faster transactions.',
                   button: 'Get Started',
                 },
-                document_selection: {
+                'document-selection': {
                   title: 'Choose Your Document',
                   description: 'Select the type of identity document you would like to use.',
                 },
+                // ── Capture-step translations ──
+                // The SDK resolves document-photo / document-photo-back with nested
+                // doc-type keys: e.g. t('document-photo.id_card', 'title').
+                'document-photo': {
+                  title: 'Take Document Photo',
+                  description: 'Position the front of your document inside the frame. Ensure good lighting and no glare.',
+                  id_card:          { title: 'National ID – Front',    description: 'Position the front of your National ID inside the frame.' },
+                  passport:         { title: 'Passport Photo Page',    description: 'Position the photo page of your passport inside the frame.' },
+                  voter_id:         { title: 'Voter ID – Front',       description: 'Position the front of your Voter ID inside the frame.' },
+                  drivers_license:  { title: "Driver's Licence – Front", description: "Position the front of your Driver's Licence inside the frame." },
+                },
+                'check-document': {
+                  title: 'Check Your Photo',
+                  description: 'Make sure all text is clear and readable, with no blur or glare.',
+                },
+                'document-photo-back-start': {
+                  title: 'Back of Document',
+                  description: 'Now take a photo of the back of your document.',
+                  button: 'Take Photo',
+                },
+                'document-photo-back': {
+                  title: 'Document – Back Side',
+                  description: 'Position the back of your document inside the frame.',
+                  id_card:          { title: 'National ID – Back',     description: 'Position the back of your National ID inside the frame.' },
+                  voter_id:         { title: 'Voter ID – Back',        description: 'Position the back of your Voter ID inside the frame.' },
+                  drivers_license:  { title: "Driver's Licence – Back",description: "Position the back of your Driver's Licence inside the frame." },
+                },
+                'check-document-photo-back': {
+                  title: 'Check Back Photo',
+                  description: 'Make sure the back side is clear and readable.',
+                },
+                'selfie-start': {
+                  title: 'Take a Selfie',
+                  description: 'Position your face inside the oval and ensure good lighting.',
+                  button: 'Take Selfie',
+                },
+                selfie: {
+                  title: 'Selfie',
+                  description: 'Look straight at the camera. Make sure your face is fully visible.',
+                },
+                'check-selfie': {
+                  title: 'Check Your Selfie',
+                  description: 'Make sure your face is clearly visible and well-lit.',
+                },
+                // ── End-state translations ──
                 loader: {
                   'text-one': 'Uploading photos...',
                   'text-two': 'Processing verification...',
@@ -374,6 +450,11 @@
                 decline: {
                   title: 'Verification Could Not Be Completed',
                   description: 'Please contact support for assistance.',
+                },
+                // ── General / shared strings ──
+                general: {
+                  errorDocumentVerification: 'Verification check failed. Retrying...',
+                  errorDocuments: 'Failed to upload documents. Please try again.',
                 },
               },
             },
