@@ -8,11 +8,15 @@ export const REDIS_CLIENT = Symbol('REDIS_CLIENT');
 const REDIS_RECONNECT_MAX_DELAY_MS = 30_000;
 const REDIS_RECONNECT_BASE_DELAY_MS = 500;
 const REDIS_HEALTH_CHECK_INTERVAL_MS = 30_000;
+/** Seconds after construction during which isHealthy() returns true even if Redis is still connecting.
+ *  This prevents the startup probe from failing while the Redis connection is being established. */
+const REDIS_STARTUP_GRACE_SECONDS = 30;
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
   public readonly client!: IORedis;
   private healthCheckInterval?: ReturnType<typeof setInterval>;
+  private readonly constructedAt = Date.now();
 
   constructor(private readonly logger: AppLoggerService) {
     if (!env.QUEUE_SYSTEM_ENABLED) {
@@ -32,7 +36,7 @@ export class RedisService implements OnModuleDestroy {
       // Required by BullMQ — disables per-request retry limit so
       // blocking commands (BRPOPLPUSH etc.) can wait indefinitely.
       maxRetriesPerRequest: null,
-      ...(env.ENVIRONMENT_NAME !== 'local' ? { tls: {} } : {}),
+      ...(env.REDIS_TLS_ENABLED ? { tls: {} } : {}),
 
       // Reconnection strategy: exponential backoff capped at 30 s.
       retryStrategy(times: number) {
@@ -87,11 +91,27 @@ export class RedisService implements OnModuleDestroy {
       return true;
     }
 
+    // During the startup grace period, report healthy even if Redis is still
+    // connecting.  This prevents the Cloud Run startup probe from killing the
+    // container before the Redis connection has had a chance to establish.
+    const elapsedSeconds = (Date.now() - this.constructedAt) / 1000;
+    const withinGracePeriod = elapsedSeconds < REDIS_STARTUP_GRACE_SECONDS;
+
     try {
       const result = await this.ping();
 
       return result === 'PONG';
     } catch {
+      if (withinGracePeriod) {
+        this.logger.warn(
+          `Redis not yet reachable (${Math.round(
+            elapsedSeconds,
+          )}s elapsed) — within startup grace period, reporting healthy`,
+        );
+
+        return true;
+      }
+
       return false;
     }
   }
