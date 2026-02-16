@@ -1,4 +1,5 @@
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import axios from 'axios';
 import fs from 'fs';
 import * as tmp from 'tmp';
 
@@ -160,8 +161,52 @@ export const handleIndividualVerificationDocuments = async ({
 
   for (const kycDocumentImage of kycDocumentImages) {
     const tmpFile = tmp.fileSync({ keep: false }).name;
-    const base64ImageContent = kycDocumentImage.content.split(',')[1];
-    const buffer = Buffer.from(base64ImageContent as string, 'base64');
+    let buffer: Buffer;
+
+    if (kycDocumentImage.content.startsWith('http')) {
+      // SSRF guard: reject non-HTTP(S) schemes and private/internal network addresses
+      const parsedUrl = new URL(kycDocumentImage.content);
+
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        throw new Error(`Unsupported URL protocol: ${parsedUrl.protocol}`);
+      }
+
+      const hostname = parsedUrl.hostname;
+      const privatePatterns = [
+        /^localhost$/i,
+        /^127\./,
+        /^10\./,
+        /^172\.(1[6-9]|2[0-9]|3[01])\./,
+        /^192\.168\./,
+        /^169\.254\./,
+        /^0\./,
+        /^\[::1\]$/,
+        /^\[fc/i,
+        /^\[fd/i,
+        /^\[fe80:/i,
+        /metadata\.google\.internal/i,
+      ];
+
+      if (privatePatterns.some(pattern => pattern.test(hostname))) {
+        throw new Error(`URL points to a private or internal address: ${hostname}`);
+      }
+
+      // Fetch remote image with timeout and size constraints
+      const response = await axios.get(kycDocumentImage.content, {
+        responseType: 'arraybuffer',
+        timeout: 15_000, // 15 second timeout
+        maxContentLength: 25 * 1024 * 1024, // 25 MB max
+        maxRedirects: 3,
+      });
+      buffer = Buffer.from(response.data);
+    } else {
+      // Extract base64 content (strip data URI prefix if present)
+      const base64ImageContent = kycDocumentImage.content.includes(',')
+        ? (kycDocumentImage.content.split(',')[1] ?? kycDocumentImage.content)
+        : kycDocumentImage.content;
+      buffer = Buffer.from(base64ImageContent, 'base64');
+    }
+
     const fileType = await getFileMetadata({
       file: buffer,
     });
