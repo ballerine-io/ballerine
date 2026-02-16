@@ -159,7 +159,13 @@
       var steps = [];
       if (!hasPreselectedDoc) {
         steps.push(
-          { name: 'welcome', id: 'welcome' },
+          {
+            name: 'welcome',
+            id: 'welcome',
+            elements: [
+              { id: 'list', type: 'list', orderIndex: 45, props: {} },
+            ],
+          },
           {
             name: 'document-selection',
             id: 'document-selection',
@@ -380,9 +386,30 @@
                     'Complete this quick verification to unlock loans, higher savings limits, and faster transactions.',
                   button: 'Get Started',
                 },
+                // ── Welcome page benefit list ──
+                // The List component reads from `list-${flowName}` namespace.
+                // `title` is the list heading; `item-N` are the bullet items.
+                // Number of items is auto-detected from key count minus 1 (for title).
+                'list-mikashboks-kyc': {
+                  title: 'What you will need:',
+                  'item-1': 'Take a photo of your ID document',
+                  'item-2': 'Take a selfie for face matching',
+                  'item-3': 'Your data is encrypted and secure',
+                },
                 'document-selection': {
                   title: 'Choose Your Document',
                   description: 'Select the type of identity document you would like to use.',
+                },
+                // ── SL-specific document option descriptions ──
+                'document-options': {
+                  'id_card-title': 'National ID Card',
+                  'id_card-description': 'SL national ID or ECOWAS card',
+                  'passport-title': 'Passport',
+                  'passport-description': 'Valid international passport',
+                  'voter_id-title': 'Voter ID',
+                  'voter_id-description': 'Sierra Leone voter registration card',
+                  'drivers_license-title': "Driver's Licence",
+                  'drivers_license-description': 'Valid Sierra Leone driving licence',
                 },
                 // ── Capture-step translations ──
                 // The SDK resolves document-photo / document-photo-back with nested
@@ -417,7 +444,7 @@
                 },
                 'selfie-start': {
                   title: 'Take a Selfie',
-                  description: 'Position your face inside the oval and ensure good lighting.',
+                  description: 'Face the camera directly with good lighting. Remove any hats or sunglasses, and position your face inside the oval.',
                   button: 'Take Selfie',
                 },
                 selfie: {
@@ -440,12 +467,40 @@
                     'Your documents have been submitted successfully. You can now close this page.',
                   button: 'Done',
                 },
+                // ── Resubmission per-reason translations ──
+                // The SDK's Resubmission.svelte renders `${reasonCode}-title`,
+                // `${reasonCode}-description`, `${reasonCode}-button`.
+                // Each reason gets a specific title, description, and button label.
                 resubmission: {
+                  // Fallback for unknown/null reason codes
                   title: 'Resubmission Required',
-                  description: reasonCode
-                    ? RESUBMISSION_REASONS[reasonCode] || RESUBMISSION_REASONS.GENERIC
-                    : 'There was an issue with your submission. Please try again.',
+                  description: 'There was an issue with your submission. Please try again.',
                   button: 'Try Again',
+                  // Per-reason overrides
+                  'DOCUMENT_BLURRY-title': 'Photo Quality Issue',
+                  'DOCUMENT_BLURRY-description': 'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
+                  'DOCUMENT_BLURRY-button': 'Retake Document Photo',
+                  'DOCUMENT_OBSCURED-title': 'Document Not Fully Visible',
+                  'DOCUMENT_OBSCURED-description': 'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
+                  'DOCUMENT_OBSCURED-button': 'Retake Document Photo',
+                  'DOCUMENT_EXPIRED-title': 'Document Expired',
+                  'DOCUMENT_EXPIRED-description': 'The document you submitted has expired. Please use a valid, unexpired document.',
+                  'DOCUMENT_EXPIRED-button': 'Choose Another Document',
+                  'FACE_NOT_VISIBLE-title': 'Face Not Clearly Visible',
+                  'FACE_NOT_VISIBLE-description': 'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+                  'FACE_NOT_VISIBLE-button': 'Retake Selfie',
+                  'FACE_MISMATCH-title': 'Face Does Not Match',
+                  'FACE_MISMATCH-description': 'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+                  'FACE_MISMATCH-button': 'Retake Photos',
+                  'DOCUMENT_BACK_MISSING-title': 'Back of Document Missing',
+                  'DOCUMENT_BACK_MISSING-description': 'We need a photo of the back of your document. Please capture it.',
+                  'DOCUMENT_BACK_MISSING-button': 'Take Back Photo',
+                  'DOCUMENT_TYPE_UNSUPPORTED-title': 'Document Not Accepted',
+                  'DOCUMENT_TYPE_UNSUPPORTED-description': 'The document type you submitted is not accepted. Please choose a different document.',
+                  'DOCUMENT_TYPE_UNSUPPORTED-button': 'Choose Another Document',
+                  'GENERIC-title': 'Resubmission Required',
+                  'GENERIC-description': 'There was an issue with your submission. Please try again.',
+                  'GENERIC-button': 'Try Again',
                 },
                 decline: {
                   title: 'Verification Could Not Be Completed',

@@ -40,16 +40,36 @@ const extractErrorDetail = async (response: Response): Promise<string> => {
   return detail;
 };
 
+/** Timeout for file uploads — generous for slow mobile networks in West Africa. */
+const UPLOAD_TIMEOUT_MS = 90_000;
+
 const httpPost = async <TResponse>(url: string, body: FormData) => {
   const headers: Record<string, string> = {};
   const authHeader = getAuthorizationHeader();
   if (authHeader) headers['Authorization'] = authHeader;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers,
-    body,
-  });
+  // AbortController enforces a hard timeout on file uploads.
+  // Mobile networks in Sierra Leone can stall mid-upload; without this
+  // the user would wait indefinitely with no feedback.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), UPLOAD_TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error(`Upload timed out after ${UPLOAD_TIMEOUT_MS / 1000}s — please check your connection and try again.`);
+    }
+    throw err;
+  }
+  clearTimeout(timeoutId);
 
   if (!response.ok) {
     const detail = await extractErrorDetail(response);
@@ -249,6 +269,13 @@ const uploadCollectionFlowDocument = async (
 export const verifyDocumentsCollectionFlow = async (
   data: IStoreData,
 ): Promise<IDocumentVerificationResponse> => {
+  // Pre-flight connectivity check — fail fast if the device is offline.
+  // navigator.onLine is imperfect (can be true on captive portals) but catches
+  // the common case of airplane mode / Wi-Fi disconnect on mobile devices.
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    throw new Error('You appear to be offline. Please check your internet connection and try again.');
+  }
+
   const endUserInfo = getEndUserInfo();
   const endUserId = endUserInfo.id || '';
   const endUserMetadata = (endUserInfo as Record<string, unknown>).endUserMetadata as

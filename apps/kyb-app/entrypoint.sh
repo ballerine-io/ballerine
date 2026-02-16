@@ -24,5 +24,16 @@ fi
 
 echo "[entrypoint] config.js VITE_API_URL=${VITE_API_URL:-(empty)}"
 
+# Template VITE_API_URL into the nginx config for the /api/v1/ reverse proxy.
+# Only substitute $VITE_API_URL (via explicit list) to avoid corrupting nginx's
+# own variables like $proxy_host, $remote_addr, etc.
+if [ -n "$VITE_API_URL" ]; then
+  envsubst '${VITE_API_URL}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp
+  mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf
+  echo "[entrypoint] nginx proxy configured → ${VITE_API_URL}"
+else
+  echo "[entrypoint] WARNING: VITE_API_URL empty, nginx API proxy will not work"
+fi
+
 # Handle CMD command
 exec "$@"

@@ -22,10 +22,18 @@
   const hasDocumentSelection = isDocumentSelectionStepExists($configuration);
 
   const reasonCode = $currentParams ? $currentParams.reasonCode : null;
+  const targetStepId = $currentParams ? $currentParams.targetStepId : null;
 
   const handleNavigate = () => {
+    // Smart re-entry: navigate to the specific step that needs re-doing
+    // (e.g. selfie step for FACE_NOT_VISIBLE, doc-back for DOCUMENT_BACK_MISSING)
+    if (targetStepId) {
+      $currentStepId = targetStepId;
+      return;
+    }
+    // Fallback: go to document selection or first document step
     if (hasDocumentSelection) {
-      $currentStepId = 'select-document';
+      $currentStepId = 'document-selection';
       return;
     }
     $currentStepId = 'document-start';

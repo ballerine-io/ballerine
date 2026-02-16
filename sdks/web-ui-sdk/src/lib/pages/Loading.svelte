@@ -45,6 +45,22 @@
   }
 
   /**
+   * Maps resubmission reason codes to the SDK step the user should re-enter at.
+   * This enables "smart re-entry" — e.g. FACE_NOT_VISIBLE jumps straight to selfie,
+   * DOCUMENT_BACK_MISSING jumps to the back-photo step, etc.
+   * Step IDs must match those declared in the flow config passed by the host page.
+   */
+  const REASON_TARGET_STEP: Record<string, string> = {
+    DOCUMENT_BLURRY: 'document-photo',
+    DOCUMENT_OBSCURED: 'document-photo',
+    DOCUMENT_EXPIRED: 'document-selection',
+    FACE_NOT_VISIBLE: 'selfie-start',
+    FACE_MISMATCH: 'document-photo',
+    DOCUMENT_BACK_MISSING: 'document-photo-back-start',
+    DOCUMENT_TYPE_UNSUPPORTED: 'document-selection',
+  };
+
+  /**
    * Handle a collection-flow response that contains idvResult directly
    * (no polling needed — the backend processes inline during final-submission).
    */
@@ -62,7 +78,18 @@
       await preloadStepById($configuration, configuration, 'decline', flowName);
       $currentStepId = 'decline';
     } else if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
-      $currentParams = params;
+      // Resolve the smart re-entry target step from the reason code
+      const reason = typeof response.reasonCode === 'string' ? response.reasonCode : '';
+      const targetStepId = REASON_TARGET_STEP[reason] || undefined;
+      // When target is document-selection but no selection step exists, fall back to document-photo
+      const hasDocSelection = $configuration.flows?.['mikashboks-kyc']?.steps?.some(
+        (s: { name?: string }) => s.name === 'document-selection',
+      );
+      const resolvedTarget =
+        targetStepId === 'document-selection' && !hasDocSelection
+          ? 'document-photo'
+          : targetStepId;
+      $currentParams = { ...params, targetStepId: resolvedTarget } as ISelectedParams;
       await preloadStepById($configuration, configuration, 'resubmission', flowName);
       $currentStepId = 'resubmission';
     } else {
@@ -94,7 +121,16 @@
         $currentStepId = 'decline';
       }
       if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
-        $currentParams = params;
+        const reason = typeof response.reasonCode === 'string' ? response.reasonCode : '';
+        const targetStepId = REASON_TARGET_STEP[reason] || undefined;
+        const hasDocSelection = $configuration.flows?.['mikashboks-kyc']?.steps?.some(
+          (s: { name?: string }) => s.name === 'document-selection',
+        );
+        const resolvedTarget =
+          targetStepId === 'document-selection' && !hasDocSelection
+            ? 'document-photo'
+            : targetStepId;
+        $currentParams = { ...params, targetStepId: resolvedTarget } as ISelectedParams;
         await preloadStepById($configuration, configuration, 'resubmission', flowName);
         $currentStepId = 'resubmission';
       }

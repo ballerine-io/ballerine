@@ -105,7 +105,9 @@ export class CollectionFlowService {
   }
 
   async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {
-    this.logger.log(`Getting active workflow ${workflowRuntimeId}`);
+    this.logger.log(`Getting active workflow for runtimeId: ${workflowRuntimeId}`, {
+      projectIds,
+    });
 
     const workflowData = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
@@ -113,9 +115,23 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    this.logger.log('Active workflow', { workflowId: workflowData ? workflowData.id : null });
+    if (!workflowData) {
+      this.logger.error(`Active workflow not found for runtimeId: ${workflowRuntimeId}`, {
+        projectIds,
+      });
+      throw new Error(
+        `Active workflow with runtimeId ${workflowRuntimeId} not found for projects: ${projectIds.join(
+          ', ',
+        )}.`,
+      );
+    }
 
-    return workflowData ? workflowData : null;
+    this.logger.log('Active workflow found successfully', {
+      workflowId: workflowData.id,
+      workflowDefinitionId: workflowData.workflowDefinitionId,
+    });
+
+    return workflowData;
   }
 
   async updateWorkflowRuntimeLanguage(language: string, tokenScope: ITokenScope) {

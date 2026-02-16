@@ -1,6 +1,7 @@
 <script lang="ts">
   import { T } from '../contexts/translation';
   import { IconButton, IconCloseButton, Image, NextStepButton, Paragraph, Title } from '../atoms';
+  import List from '../molecules/List/List.svelte';
   import { configuration } from '../contexts/configuration';
   import { goToNextStep, goToPrevStep } from '../contexts/navigation/hooks';
   import { Elements } from '../contexts/configuration/types';
@@ -88,6 +89,9 @@
       <Paragraph configuration={element.props}>
         <T key={element.props.context || 'description'} namespace={stepNamespace} />
       </Paragraph>
+    {/if}
+    {#if element.type === Elements.List}
+      <List configuration={element.props} />
     {/if}
     {#if element.type === Elements.Button}
       <div class="button-container">

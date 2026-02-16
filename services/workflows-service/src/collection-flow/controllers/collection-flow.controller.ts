@@ -64,15 +64,11 @@ export class CollectionFlowController {
       [tokenScope.projectId],
     );
 
-    if (!activeWorkflow) {
-      throw new common.InternalServerErrorException('Workflow not found.');
-    }
-
     try {
       const adapter = this.adapterManager.getAdapter(activeWorkflow.workflowDefinitionId);
 
       return {
-        result: activeWorkflow ? adapter.serialize(activeWorkflow) : null,
+        result: adapter.serialize(activeWorkflow),
       };
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
