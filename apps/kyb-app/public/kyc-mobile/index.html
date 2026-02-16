@@ -1032,7 +1032,8 @@
               video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
               audio: false,
             });
-          } catch (_) {
+          } catch (hiResErr) {
+            console.warn('High-res camera failed, trying fallback:', hiResErr.name, hiResErr.message);
             // Fallback: no resolution constraints
             stream = await navigator.mediaDevices.getUserMedia({
               video: { facingMode },
@@ -1043,11 +1044,13 @@
           videoEl.srcObject = stream;
           await videoEl.play();
 
-          // Detect camera disconnect
+          // Detect camera disconnect (defensive: only react if stream is still active)
           stream.getTracks().forEach(track => {
             track.onended = () => {
-              showError('Camera disconnected. Please try again.');
-              goToStep(currentStep > 0 ? currentStep - 1 : 0);
+              if (activeStream && activeStream.active) {
+                showError('Camera disconnected. Please try again.');
+                goToStep(currentStep > 0 ? currentStep - 1 : 0);
+              }
             };
           });
 
@@ -1313,7 +1316,7 @@
       function mapRevisionReasonToCode(revisionReason) {
         if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
         const lower = revisionReason.toLowerCase();
-        if (lower.includes('blur') || lower.includes('unclear') || lower.includes('quality') || lower.includes('unreadable'))
+        if (lower.includes('blur') || lower.includes('unclear') || lower.includes('quality') || lower.includes('unreadable') || lower.includes('sharp') || lower.includes('focus'))
           return 'DOCUMENT_BLURRY';
         if (lower.includes('obscur') || lower.includes('cut off') || lower.includes('partial') || lower.includes('crop'))
           return 'DOCUMENT_OBSCURED';
@@ -1471,6 +1474,10 @@
         }
         if (!docPhotoBlob || !selfieBlob) {
           showErrorStep('Missing photos. Please go back and retake them.');
+          return;
+        }
+        if (needsBackSide(selectedDocType) && !docBackPhotoBlob) {
+          showErrorStep('Back-side photo is required. Please go back and capture it.');
           return;
         }
 
