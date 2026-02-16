@@ -1308,6 +1308,52 @@
         showNonLinearStep('step-resubmit');
       }
 
+      // Map free-text revision reasons from Ballerine backoffice to our structured reason codes.
+      // Operators type free-form reasons; we keyword-match to the closest structured code.
+      function mapRevisionReasonToCode(revisionReason) {
+        if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
+        const lower = revisionReason.toLowerCase();
+        if (lower.includes('blur') || lower.includes('unclear') || lower.includes('quality') || lower.includes('unreadable'))
+          return 'DOCUMENT_BLURRY';
+        if (lower.includes('obscur') || lower.includes('cut off') || lower.includes('partial') || lower.includes('crop'))
+          return 'DOCUMENT_OBSCURED';
+        if (lower.includes('expir') || lower.includes('expired'))
+          return 'DOCUMENT_EXPIRED';
+        if (lower.includes('face not') || lower.includes('selfie') || lower.includes('face visible'))
+          return 'FACE_NOT_VISIBLE';
+        if (lower.includes('face mismatch') || lower.includes('does not match') || lower.includes('face match'))
+          return 'FACE_MISMATCH';
+        if (lower.includes('back') || lower.includes('back side') || lower.includes('reverse'))
+          return 'DOCUMENT_BACK_MISSING';
+        if (lower.includes('unsupported') || lower.includes('not accepted') || lower.includes('wrong document'))
+          return 'DOCUMENT_TYPE_UNSUPPORTED';
+        return 'GENERIC';
+      }
+
+      // Check workflow state for revision/resubmission and extract reason
+      function checkWorkflowForResubmission() {
+        if (!workflowData) return null;
+        const state = workflowData.state || workflowData.status;
+        const REVISION_STATES = ['pending_resubmission', 'revision', 'revised'];
+        if (!REVISION_STATES.includes(state)) return null;
+
+        // Extract revision reason from document decisions or workflow context
+        const docs = workflowData.context?.documents || [];
+        for (const doc of docs) {
+          const decision = doc.decision || {};
+          if (decision.status === 'revision' && decision.revisionReason) {
+            return mapRevisionReasonToCode(decision.revisionReason);
+          }
+        }
+
+        // Check top-level workflow context for revisionReason
+        const ctxReason = workflowData.context?.revisionReason;
+        if (ctxReason) return mapRevisionReasonToCode(ctxReason);
+
+        // Workflow is in revision state but no specific reason found
+        return 'GENERIC';
+      }
+
       // ── Event handlers ──
       nextBtn.addEventListener('click', () => {
         const step = STEPS[currentStep];
@@ -1556,11 +1602,20 @@
             });
         } else {
           // Normal flow: blocking fetch of workflow data — required for uploads to work
-          fetchWorkflowData().catch(err => {
-            console.error('Failed to load workflow data:', err);
-            showError('Could not connect to the verification service. Please close and try again.');
-            nextBtn.disabled = true;
-          });
+          fetchWorkflowData()
+            .then(() => {
+              // After loading workflow data, check if we're in a revision state
+              const revisionCode = checkWorkflowForResubmission();
+              if (revisionCode) {
+                console.log('Workflow in revision state, reason:', revisionCode);
+                showResubmitStep(revisionCode);
+              }
+            })
+            .catch(err => {
+              console.error('Failed to load workflow data:', err);
+              showError('Could not connect to the verification service. Please close and try again.');
+              nextBtn.disabled = true;
+            });
         }
       }
       updateFooter();
