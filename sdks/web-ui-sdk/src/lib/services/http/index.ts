@@ -133,7 +133,7 @@ const withRetry = async <T>(
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       // Don't retry 4xx client errors — only network failures and 5xx
-      const is4xx = lastError.message.includes(': 4');
+      const is4xx = /: 4\d{2} —/.test(lastError.message);
       if (is4xx || attempt >= maxAttempts) break;
       console.warn(`Retry ${attempt}/${maxAttempts} after error:`, lastError.message);
       await delay(delayMs * attempt); // Linear backoff
