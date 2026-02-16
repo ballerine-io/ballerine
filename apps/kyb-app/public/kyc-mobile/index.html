@@ -123,6 +123,7 @@
       var params = new URLSearchParams(window.location.search);
       var TOKEN = params.get('token') || '';
       var preselectedDocType = params.get('docType');
+      var initRetryAttempted = false;
 
       // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
       // Security: NEVER allow apiUrl override from query params (prevents credential theft)
@@ -156,48 +157,53 @@
 
       // ── Build flow steps ──
       // Skip welcome + document-selection when doc type is pre-selected from Android
-      var steps = [];
-      if (!hasPreselectedDoc) {
-        steps.push(
-          {
-            name: 'welcome',
-            id: 'welcome',
-            elements: [
-              { id: 'list', type: 'list', orderIndex: 45, props: {} },
-            ],
-          },
-          {
-            name: 'document-selection',
-            id: 'document-selection',
-            documentOptions: [
-              { type: 'id_card', kind: 'id_card' },
-              { type: 'passport', kind: 'passport' },
-              { type: 'voter_id', kind: 'voter_id' },
-              { type: 'drivers_license', kind: 'drivers_license' },
-            ],
-          },
+      function buildSteps(usePreselectedDoc) {
+        var builtSteps = [];
+        if (!usePreselectedDoc) {
+          builtSteps.push(
+            {
+              name: 'welcome',
+              id: 'welcome',
+              elements: [
+                { id: 'list', type: 'list', orderIndex: 45, props: {} },
+              ],
+            },
+            {
+              name: 'document-selection',
+              id: 'document-selection',
+              documentOptions: [
+                { type: 'id_card', kind: 'id_card' },
+                { type: 'passport', kind: 'passport' },
+                { type: 'voter_id', kind: 'voter_id' },
+                { type: 'drivers_license', kind: 'drivers_license' },
+              ],
+            },
+          );
+        }
+
+        // Pass `type` and `documentInfo` on steps that need them when pre-selected.
+        // `type` → used by getDocumentType() to resolve the document overlay.
+        // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
+        //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
+        // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
+        builtSteps.push(
+          { name: 'document-photo', id: 'document-photo', type: usePreselectedDoc ? preselectedDocType : undefined },
+          { name: 'check-document', id: 'check-document', type: usePreselectedDoc ? preselectedDocType : undefined, documentInfo: preselectedDocInfo },
+          { name: 'document-photo-back-start', id: 'document-photo-back-start', documentInfo: preselectedDocInfo },
+          { name: 'document-photo-back', id: 'document-photo-back', type: usePreselectedDoc ? preselectedDocType : undefined },
+          { name: 'check-document-photo-back', id: 'check-document-photo-back', documentInfo: preselectedDocInfo },
+          { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
+          { name: 'selfie', id: 'selfie' },
+          { name: 'check-selfie', id: 'check-selfie' },
+          { name: 'loading', id: 'loading' },
+          { name: 'resubmission', id: 'resubmission' },
+          { name: 'decline', id: 'decline' },
+          { name: 'final', id: 'final' },
         );
+        return builtSteps;
       }
 
-      // Pass `type` and `documentInfo` on steps that need them when pre-selected.
-      // `type` → used by getDocumentType() to resolve the document overlay.
-      // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
-      //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
-      // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
-      steps.push(
-        { name: 'document-photo', id: 'document-photo', type: hasPreselectedDoc ? preselectedDocType : undefined },
-        { name: 'check-document', id: 'check-document', type: hasPreselectedDoc ? preselectedDocType : undefined, documentInfo: preselectedDocInfo },
-        { name: 'document-photo-back-start', id: 'document-photo-back-start', documentInfo: preselectedDocInfo },
-        { name: 'document-photo-back', id: 'document-photo-back', type: hasPreselectedDoc ? preselectedDocType : undefined },
-        { name: 'check-document-photo-back', id: 'check-document-photo-back', documentInfo: preselectedDocInfo },
-        { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
-        { name: 'selfie', id: 'selfie' },
-        { name: 'check-selfie', id: 'check-selfie' },
-        { name: 'loading', id: 'loading' },
-        { name: 'resubmission', id: 'resubmission' },
-        { name: 'decline', id: 'decline' },
-        { name: 'final', id: 'final' },
-      );
+      var steps = buildSteps(hasPreselectedDoc);
 
       // ── Signal completion to Android WebView ──
       // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
@@ -545,8 +551,24 @@
       }
 
       // ── Start ──
-      initFlow().catch(function (err) {
+      initFlow().catch(async function (err) {
         console.error('Init failed:', err);
+        // Hardening: If preselected doc mode fails to boot (SDK/config edge case),
+        // retry once in full-flow mode instead of failing immediately.
+        if (!initRetryAttempted && hasPreselectedDoc) {
+          initRetryAttempted = true;
+          hasPreselectedDoc = false;
+          preselectedDocType = null;
+          preselectedDocInfo = null;
+          steps = buildSteps(false);
+          console.warn('Retrying KYC init in full-flow mode after preselected-doc bootstrap failure');
+          try {
+            await initFlow();
+            return;
+          } catch (retryErr) {
+            console.error('Retry init failed:', retryErr);
+          }
+        }
         document.getElementById('kyc-host').innerHTML =
           '<p class="init-message error">Could not start verification. Please close and try again.</p>';
       });

@@ -430,7 +430,7 @@ export const verifyDocumentsCollectionFlow = async (
 
   return {
     status: submissionResult.status || ('completed' as TVerificationStatuses),
-    idvResult: idvResult as IDocumentVerificationResponse['idvResult'],
+    idvResult: idvResult,
     reasonCode,
   };
 };

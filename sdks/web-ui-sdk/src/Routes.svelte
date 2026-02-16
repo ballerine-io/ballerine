@@ -9,47 +9,66 @@
 
   const getFlowSteps = () => {
     const flowName = getFlowName();
-    const flow = $configuration.flows[flowName];
-    return flow.steps as RecursivePartial<IStepConfiguration>[];
+    const flow = $configuration.flows?.[flowName];
+    return (flow?.steps || []) as RecursivePartial<IStepConfiguration>[];
   };
 
   const flowSteps = getFlowSteps();
-  const configurationStepIds = flowSteps.map(s => s.id) as string[];
-  let stepId = configurationStepIds[0];
-  const flowStep = flowSteps.find(s => s.id === stepId) as IStepConfiguration;
+  const firstStep = flowSteps[0];
+  let stepId = (firstStep?.id as string) || '';
+  let step = firstStep?.name ? steps.find(s => s.name === firstStep.name) : undefined;
 
-  let step = steps.find(s => s.name === flowStep.name);
-
-  const routeInit = (currentStepId: string, currentStepIdx: number) => {
+  const routeInit = (activeStepId: string, activeStepIdx: number) => {
     const flowSteps = getFlowSteps();
-    const configurationStepIds = flowSteps.map(s => s.id) as string[];
-    const configurationStepId = configurationStepIds.find((id: string) => id === currentStepId);
+    if (!flowSteps.length) return;
 
-    if (configurationStepId === stepId) {
+    const configurationStepIds = flowSteps
+      .map(s => s.id)
+      .filter((id): id is string => typeof id === 'string');
+    const firstFlowStep = flowSteps[0];
+    const firstStepId = firstFlowStep?.id as string | undefined;
+
+    const alignToFirstConfiguredStep = () => {
+      if (!firstStepId || !firstFlowStep?.name) return;
+
+      stepId = firstStepId;
+      step = steps.find(s => s.name === firstFlowStep.name);
+
+      if (activeStepId !== firstStepId) {
+        $currentStepId = firstStepId;
+        $currentStepIdx = 0;
+        sendNavigationUpdateEvent();
+        visitedPage(firstStepId, $currentParams ? $currentParams.toString() : '');
+      } else if (activeStepIdx !== 0) {
+        $currentStepIdx = 0;
+      }
+    };
+
+    if (!configurationStepIds.includes(activeStepId)) {
+      // The app state can still point to an old/default step (e.g. "welcome")
+      // while the host supplied a flow that starts elsewhere (e.g. preselected doc flows).
+      // In that case, snap to the first configured step instead of throwing.
+      alignToFirstConfiguredStep();
       return;
     }
 
-    if (!configurationStepId) {
-      stepId = currentStepId;
+    if (activeStepId === stepId) return;
 
-      const flowStep = flowSteps.find(s => s.id === currentStepId) as IStepConfiguration;
-      step = steps.find(s => s.name === flowStep.name);
-    } else {
-      stepId = configurationStepId;
+    const flowStep = flowSteps.find(s => s.id === activeStepId) as IStepConfiguration | undefined;
+    if (!flowStep?.name) {
+      alignToFirstConfiguredStep();
+      return;
+    }
 
-      const flowStep = flowSteps.find(s => s.id === currentStepId) as IStepConfiguration;
-      step = steps.find(s => s.name === flowStep.name);
+    stepId = activeStepId;
+    step = steps.find(s => s.name === flowStep.name);
 
-      const newStepIndex = configurationStepIds.indexOf(stepId);
+    const newStepIndex = configurationStepIds.indexOf(stepId);
 
-      if (newStepIndex !== currentStepIdx) {
-        currentStepIdx = newStepIndex;
-
-        sendNavigationUpdateEvent();
-        visitedPage(currentStepId, $currentParams ? $currentParams.toString() : '');
-      } else {
-        // 404 error handling here
-      }
+    if (newStepIndex !== activeStepIdx) {
+      $currentStepIdx = newStepIndex;
+      sendNavigationUpdateEvent();
+      visitedPage(activeStepId, $currentParams ? $currentParams.toString() : '');
     }
   };
 
