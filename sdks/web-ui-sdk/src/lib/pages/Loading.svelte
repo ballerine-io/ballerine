@@ -20,9 +20,9 @@
   import { getFlowConfig, getFlowName } from '../contexts/flows/hooks';
   import { generateParams, getVerificationStatus, verifyDocuments } from '../services/http';
   import { DecisionStatus } from '../contexts/app-state/types';
+  import { IDocumentVerificationResponse } from '../services/http/types';
   import { preloadStepById } from '../services/preload-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { broofa } from '../utils/api-utils';
   import { sendFlowErrorEvent } from '../utils/event-service/utils';
 
   flowUploadLoader();
@@ -39,7 +39,40 @@
   let review = false;
   let showText = true;
 
-  const endUserId = $configuration.endUserInfo.id || broofa();
+  const endUserId = $configuration.endUserInfo.id;
+  if (!endUserId) {
+    console.error('endUserInfo.id is required but was not provided');
+  }
+
+  /**
+   * Handle a collection-flow response that contains idvResult directly
+   * (no polling needed — the backend processes inline during final-submission).
+   */
+  const handleCollectionFlowResponse = async (response: IDocumentVerificationResponse) => {
+    const params = generateParams(response);
+    sendVerificationUpdateEvent(response, response.idvResult === DecisionStatus.APPROVED);
+
+    showText = false;
+
+    if (
+      response.idvResult === DecisionStatus.DECLINED ||
+      response.idvResult === DecisionStatus.REVIEW
+    ) {
+      $currentParams = params;
+      await preloadStepById($configuration, configuration, 'decline', flowName);
+      $currentStepId = 'decline';
+    } else if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
+      $currentParams = params;
+      await preloadStepById($configuration, configuration, 'resubmission', flowName);
+      $currentStepId = 'resubmission';
+    } else {
+      // Approved or no specific idvResult — treat as success
+      $currentParams = params;
+      await preloadStepById($configuration, configuration, 'final', flowName);
+      $currentStepId = 'final';
+    }
+  };
+
   const checkStatus = async (data: ISendDocumentsResponse) => {
     try {
       const response = await getVerificationStatus(endUserId);
@@ -80,18 +113,28 @@
     let res;
     try {
       res = await verifyDocuments(data);
-    } catch (error: Error) {
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
       toast.push(t('general', 'errorDocuments'));
-      console.error('Error sending documents', error);
-      $currentParams = { message: error } as ISelectedParams;
+      console.error('Error sending documents', err);
+      $currentParams = { message: err.message } as ISelectedParams;
       await preloadStepById($configuration, configuration, 'error', flowName);
-      //$currentStepId = 'error';
+      $currentStepId = 'error';
 
-      sendFlowErrorEvent(error);
+      sendFlowErrorEvent(err);
 
       return;
     }
 
+    // Collection-flow mode: verifyDocuments returns IDocumentVerificationResponse directly
+    // (not a verificationId string). Handle the response inline — no polling needed.
+    // Discriminate by type: collection-flow returns an object, legacy returns a string.
+    if (typeof res !== 'string' && typeof res === 'object' && res !== null && 'status' in res) {
+      await handleCollectionFlowResponse(res as IDocumentVerificationResponse);
+      return;
+    }
+
+    // Legacy mode: verifyDocuments returned a verificationId string
     const flowConfig = getFlowConfig($configuration);
 
     if (flowConfig.syncFlow) {
@@ -116,7 +159,7 @@
     timeout = setTimeout(async () => {
       showText = false;
       await preloadStepById($configuration, configuration, 'decline', flowName);
-      //$currentStepId = 'decline';
+      $currentStepId = 'decline';
     }, WAITING_TIME);
   });
 

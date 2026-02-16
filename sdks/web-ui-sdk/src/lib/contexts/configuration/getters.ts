@@ -38,7 +38,18 @@ export const processStepDataEndpoint = (templateParams?: StringKV): string =>
 export const getConfigEndpoint = (templateParams?: StringKV): string =>
   resolveEndpoint('getConfig', templateParams);
 
+export const getFinalSubmissionEndpoint = (templateParams?: StringKV): string =>
+  resolveEndpoint('finalSubmission', templateParams);
+
+export const getSendEventEndpoint = (templateParams?: StringKV): string =>
+  resolveEndpoint('sendEvent', templateParams);
+
+export const getActiveFlowEndpoint = (templateParams?: StringKV): string =>
+  resolveEndpoint('activeFlow', templateParams);
+
 export const getAuthorizationHeader = (): string =>
   getBackendConfig().auth?.authorizationHeader || '';
 
 export const getIsDevelopment = () => get(configuration).isDevelopment;
+
+export const getEndUserInfo = () => get(configuration).endUserInfo;

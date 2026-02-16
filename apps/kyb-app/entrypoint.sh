@@ -22,5 +22,7 @@ if [ -d /usr/share/nginx/html/kyc-mobile ]; then
   cp /usr/share/nginx/html/config.js /usr/share/nginx/html/kyc-mobile/config.js
 fi
 
+echo "[entrypoint] config.js VITE_API_URL=${VITE_API_URL:-(empty)}"
+
 # Handle CMD command
 exec "$@"

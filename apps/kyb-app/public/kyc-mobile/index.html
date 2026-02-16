@@ -2,11 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
     <meta name="theme-color" content="#1a1a2e" />
     <meta name="referrer" content="no-referrer" />
     <title>MiKashBoks – Identity Verification</title>
+    <!-- Runtime config injected by entrypoint.sh (VITE_API_URL, etc.) -->
     <script type="text/javascript" src="/kyc-mobile/config.js"></script>
+    <!-- Ballerine Web UI SDK (built from sdks/web-ui-sdk/) -->
+    <script crossorigin src="/kyc-mobile/ballerine-sdk.umd.cjs"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -22,29 +28,12 @@
         padding: 0;
       }
 
-      :root {
-        --primary: #4f46e5;
-        --primary-dark: #4338ca;
-        --primary-light: #818cf8;
-        --bg: #f8fafc;
-        --surface: #ffffff;
-        --text: #1e293b;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
-        --success: #10b981;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-        --radius: 12px;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      }
-
       html,
       body {
         height: 100%;
         font-family: 'Inter', -apple-system, sans-serif;
-        background: var(--bg);
-        color: var(--text);
+        background: #f8fafc;
+        color: #1e293b;
       }
 
       body {
@@ -53,379 +42,43 @@
         overflow: hidden;
       }
 
-      .header {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #fff;
-        padding: 16px 20px;
-        text-align: center;
-        flex-shrink: 0;
-        position: relative;
-        z-index: 10;
-      }
-
-      .header h1 {
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-      }
-
-      .header .subtitle {
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.7);
-        margin-top: 2px;
-      }
-
-      .progress-bar {
-        height: 4px;
-        background: rgba(255, 255, 255, 0.15);
-        flex-shrink: 0;
-      }
-
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--primary-light), var(--success));
-        transition: width 0.4s ease;
-        border-radius: 0 2px 2px 0;
-      }
-
-      .content {
-        flex: 1;
-        overflow-y: auto;
-        /* -webkit-overflow-scrolling removed — deprecated and no-op in modern iOS */
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-      }
-
-      .step {
-        display: none;
-        flex-direction: column;
-        flex: 1;
-        animation: fadeIn 0.3s ease;
-      }
-
-      .step.active {
-        display: flex;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .step-icon {
-        font-size: 48px;
-        text-align: center;
-        margin-bottom: 16px;
-        width: 64px;
-        height: 64px;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .step-icon.shield {
-        background: #eef2ff;
-        color: var(--primary);
-      }
-      .step-icon.selfie {
-        background: #ecfdf5;
-        color: var(--success);
-      }
-      .step-icon.success {
-        background: #ecfdf5;
-        color: var(--success);
-        font-size: 32px;
-      }
-      .step-icon.error {
-        background: #fef2f2;
-        color: var(--danger);
-        font-size: 32px;
-      }
-      .step-icon.warn {
-        background: #fffbeb;
-        color: var(--warning);
-        font-size: 32px;
-      }
-
-      .step-title {
-        font-size: 22px;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 8px;
-        line-height: 1.2;
-      }
-
-      .step-desc {
-        font-size: 14px;
-        color: var(--text-muted);
-        text-align: center;
-        line-height: 1.5;
-        margin-bottom: 24px;
-      }
-
-      .doc-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .doc-card {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 16px;
-        background: var(--surface);
-        border: 2px solid var(--border);
-        border-radius: var(--radius);
-        cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: var(--shadow);
-      }
-
-      .doc-card:hover,
-      .doc-card:active {
-        border-color: var(--primary);
-        background: #eef2ff;
-      }
-
-      .doc-card.selected {
-        border-color: var(--primary);
-        background: #eef2ff;
-      }
-
-      .doc-card .doc-icon {
-        font-size: 28px;
-        flex-shrink: 0;
-      }
-
-      .doc-card .doc-label {
-        font-size: 15px;
-        font-weight: 500;
-      }
-
-      .doc-card .doc-hint {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-top: 2px;
-      }
-
-      .camera-container {
+      #kyc-host {
         flex: 1;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        min-height: 300px;
-        background: #000;
-        border-radius: var(--radius);
         overflow: hidden;
       }
 
-      .camera-container video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: var(--radius);
+      .init-message {
+        text-align: center;
+        padding: 40px 20px;
+        line-height: 1.5;
       }
 
-      .camera-overlay-container {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1;
+      .init-message.error {
+        color: #ef4444;
       }
 
-      .camera-overlay {
-        position: relative;
-        pointer-events: none;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-radius: 12px;
-        box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.6);
-        width: 85%;
-        transition: all 0.3s ease;
+      .init-message.muted {
+        color: #64748b;
       }
 
-      /* Document-type-specific overlays */
-      .camera-overlay.card {
-        aspect-ratio: 86 / 54; /* ISO/IEC 7810 ID-1 card ratio */
-        border-radius: 12px;
-      }
-
-      .camera-overlay.passport {
-        aspect-ratio: 3 / 4;
-        width: 75%;
-        border-radius: 12px;
-      }
-
-      .camera-overlay.selfie-frame {
-        aspect-ratio: 3 / 4;
-        width: 70%;
-        border-radius: 100%;
-        border-width: 4px;
-        border-color: rgba(255, 255, 255, 0.5);
-      }
-
-      /* Corner accents for document frames */
-      .camera-overlay:not(.selfie-frame)::before,
-      .camera-overlay:not(.selfie-frame)::after {
-        content: '';
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        border-color: #fff;
-        border-style: solid;
-      }
-
-      .camera-overlay:not(.selfie-frame)::before {
-        top: -2px;
-        left: -2px;
-        border-width: 3px 0 0 3px;
-        border-radius: 6px 0 0 0;
-      }
-
-      .camera-overlay:not(.selfie-frame)::after {
-        bottom: -2px;
-        right: -2px;
-        border-width: 0 3px 3px 0;
-        border-radius: 0 0 6px 0;
-      }
-
-      .overlay-label {
-        position: absolute;
-        top: -28px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: #fff;
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 500;
-        white-space: nowrap;
-        letter-spacing: 0.02em;
-      }
-
-      .camera-hint {
-        position: absolute;
-        bottom: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.6);
-        color: #fff;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 13px;
-        white-space: nowrap;
-      }
-
-      .preview-container {
-        flex: 1;
+      .init-loading {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 300px;
+        height: 100%;
+        gap: 16px;
       }
 
-      .preview-container img {
-        max-width: 100%;
-        max-height: 350px;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-lg);
-        object-fit: contain;
-      }
-
-      .preview-actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 20px;
-        width: 100%;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 14px 24px;
-        border: none;
-        border-radius: var(--radius);
-        font-family: inherit;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        flex: 1;
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        color: #fff;
-        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
-      }
-
-      .btn-primary:active {
-        transform: scale(0.98);
-      }
-
-      .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .btn-secondary {
-        background: var(--surface);
-        color: var(--text);
-        border: 2px solid var(--border);
-      }
-
-      .btn-secondary:active {
-        background: var(--bg);
-      }
-
-      .btn-capture {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: #fff;
-        border: 4px solid var(--primary);
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        transition: transform 0.15s;
-      }
-
-      .btn-capture:active {
-        transform: translateX(-50%) scale(0.9);
-      }
-
-      .spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid var(--border);
-        border-top-color: var(--primary);
+      .init-loading .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #4f46e5;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
-        margin: 0 auto 20px;
       }
 
       @keyframes spin {
@@ -434,1208 +87,341 @@
         }
       }
 
-      .error-banner {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        border-radius: var(--radius);
-        padding: 12px 16px;
-        margin: 0 20px;
+      .offline-banner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #ef4444;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        z-index: 9999;
+        font-size: 14px;
+        font-weight: 500;
         display: none;
       }
 
-      .error-banner.visible {
-        display: flex;
-        align-items: start;
-        gap: 10px;
-      }
-
-      .error-banner .error-text {
-        font-size: 13px;
-        color: #991b1b;
-        line-height: 1.4;
-      }
-
-      .spacer {
-        flex: 1;
-      }
-
-      .info-list {
-        list-style: none;
-        margin: 0 0 24px;
-      }
-
-      .info-list li {
-        display: flex;
-        align-items: start;
-        gap: 10px;
-        padding: 8px 0;
-        font-size: 14px;
-        line-height: 1.4;
-      }
-
-      .info-list li::before {
-        content: '✓';
-        color: var(--success);
-        font-weight: 700;
-        flex-shrink: 0;
-      }
-
-      .footer {
-        padding: 16px 20px;
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        flex-shrink: 0;
+      .offline-banner.visible {
+        display: block;
       }
     </style>
   </head>
-
   <body>
-    <div class="header">
-      <h1>Identity Verification</h1>
-      <div class="subtitle">MiKashBoks</div>
+    <div id="offline-banner" class="offline-banner" role="alert" aria-live="assertive">
+      You are offline. Please check your internet connection.
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-    </div>
-    <div id="errorBanner" class="error-banner">
-      <span>⚠️</span>
-      <span class="error-text" id="errorText"></span>
-    </div>
-
-    <div class="content">
-      <!-- STEP 0: Welcome -->
-      <div class="step active" id="step-welcome">
-        <div class="step-icon shield">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-        </div>
-        <div class="step-title">Verify Your Identity</div>
-        <div class="step-desc">
-          We need to verify your identity to keep your account secure. This takes about 2 minutes.
-        </div>
-        <ul class="info-list">
-          <li>Take a photo of your ID document</li>
-          <li>Take a selfie for face matching</li>
-          <li>Your data is encrypted and secure</li>
-        </ul>
-        <div class="spacer"></div>
-      </div>
-
-      <!-- STEP 1: Document Selection -->
-      <div class="step" id="step-doc-select">
-        <div class="step-title">Select Document Type</div>
-        <div class="step-desc">Choose the identity document you want to use</div>
-        <div class="doc-grid" id="docGrid">
-          <button
-            class="doc-card"
-            data-doc-type="id_card"
-            data-doc-category="identification_document"
-            role="radio"
-            aria-checked="false"
-            tabindex="0"
-          >
-            <span
-              class="doc-icon"
-              style="
-                font-size: 20px;
-                width: 40px;
-                height: 40px;
-                background: #eef2ff;
-                color: var(--primary);
-              "
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-                <circle cx="9" cy="12" r="2" />
-                <path d="M15 10h2M15 14h2" />
-              </svg>
-            </span>
-            <div>
-              <div class="doc-label">National ID Card</div>
-              <div class="doc-hint">SL national ID or ECOWAS card</div>
-            </div>
-          </button>
-          <button
-            class="doc-card"
-            data-doc-type="passport"
-            data-doc-category="identification_document"
-            role="radio"
-            aria-checked="false"
-            tabindex="0"
-          >
-            <span
-              class="doc-icon"
-              style="
-                font-size: 20px;
-                width: 40px;
-                height: 40px;
-                background: #eef2ff;
-                color: var(--primary);
-              "
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="4" y="2" width="16" height="20" rx="2" />
-                <circle cx="12" cy="10" r="3" />
-                <path d="M7 18h10" />
-              </svg>
-            </span>
-            <div>
-              <div class="doc-label">Passport</div>
-              <div class="doc-hint">Valid international passport</div>
-            </div>
-          </button>
-          <button
-            class="doc-card"
-            data-doc-type="voter_id"
-            data-doc-category="identification_document"
-            role="radio"
-            aria-checked="false"
-            tabindex="0"
-          >
-            <span
-              class="doc-icon"
-              style="
-                font-size: 20px;
-                width: 40px;
-                height: 40px;
-                background: #eef2ff;
-                color: var(--primary);
-              "
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-              </svg>
-            </span>
-            <div>
-              <div class="doc-label">Voter ID Card</div>
-              <div class="doc-hint">Sierra Leone voter registration card</div>
-            </div>
-          </button>
-          <button
-            class="doc-card"
-            data-doc-type="drivers_license"
-            data-doc-category="identification_document"
-            role="radio"
-            aria-checked="false"
-            tabindex="0"
-          >
-            <span
-              class="doc-icon"
-              style="
-                font-size: 20px;
-                width: 40px;
-                height: 40px;
-                background: #eef2ff;
-                color: var(--primary);
-              "
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-                <path d="M6 12h4M14 10h4M14 14h4" />
-              </svg>
-            </span>
-            <div>
-              <div class="doc-label">Driver's License</div>
-              <div class="doc-hint">Valid driver's license</div>
-            </div>
-          </button>
-        </div>
-        <div class="spacer"></div>
-      </div>
-
-      <!-- STEP 2: Document Photo (Front) -->
-      <div class="step" id="step-doc-photo">
-        <div class="step-title">Photo of Document Front</div>
-        <div class="step-desc">Position your document within the frame and take a clear photo</div>
-        <div class="camera-container" id="docCameraContainer">
-          <video id="docVideo" autoplay playsinline muted></video>
-          <div class="camera-overlay-container">
-            <div class="camera-overlay card" id="docOverlay">
-              <span class="overlay-label" id="docOverlayLabel">FRONT SIDE</span>
-            </div>
-          </div>
-          <div class="camera-hint">Hold steady &amp; ensure good lighting</div>
-          <button class="btn-capture" id="docCaptureBtn" aria-label="Take photo"></button>
-        </div>
-      </div>
-
-      <!-- STEP 3: Review Document Front Photo -->
-      <div class="step" id="step-doc-review">
-        <div class="step-title">Review Front Side</div>
-        <div class="step-desc">
-          Make sure the document is clearly visible and all text is readable
-        </div>
-        <div class="preview-container"><img id="docPreview" alt="Document front preview" /></div>
-        <div class="preview-actions">
-          <button class="btn btn-secondary" id="docRetakeBtn">↻ Retake</button>
-          <button class="btn btn-primary" id="docAcceptBtn">✓ Looks Good</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: Document Photo (Back) -->
-      <div class="step" id="step-doc-back-photo">
-        <div class="step-title">Photo of Document Back</div>
-        <div class="step-desc">Now flip your document over and photograph the back side</div>
-        <div class="camera-container" id="docBackCameraContainer">
-          <video id="docBackVideo" autoplay playsinline muted></video>
-          <div class="camera-overlay-container">
-            <div class="camera-overlay card" id="docBackOverlay">
-              <span class="overlay-label">BACK SIDE</span>
-            </div>
-          </div>
-          <div class="camera-hint">Hold steady &amp; ensure good lighting</div>
-          <button class="btn-capture" id="docBackCaptureBtn" aria-label="Take photo of back"></button>
-        </div>
-      </div>
-
-      <!-- STEP 5: Review Document Back Photo -->
-      <div class="step" id="step-doc-back-review">
-        <div class="step-title">Review Back Side</div>
-        <div class="step-desc">
-          Make sure the back of your document is clearly visible
-        </div>
-        <div class="preview-container"><img id="docBackPreview" alt="Document back preview" /></div>
-        <div class="preview-actions">
-          <button class="btn btn-secondary" id="docBackRetakeBtn">↻ Retake</button>
-          <button class="btn btn-primary" id="docBackAcceptBtn">✓ Looks Good</button>
-        </div>
-      </div>
-
-      <!-- STEP 6: Selfie intro -->
-      <div class="step" id="step-selfie-start">
-        <div class="step-icon selfie">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="8" r="4" />
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-          </svg>
-        </div>
-        <div class="step-title">Time for a Selfie</div>
-        <div class="step-desc">
-          We'll use your front camera to take a selfie. This helps us confirm the person submitting
-          matches the ID document.
-        </div>
-        <ul class="info-list">
-          <li>Face the camera directly</li>
-          <li>Ensure good lighting on your face</li>
-          <li>Remove hats or sunglasses</li>
-        </ul>
-        <div class="spacer"></div>
-      </div>
-
-      <!-- STEP 7: Selfie Photo -->
-      <div class="step" id="step-selfie">
-        <div class="step-title">Take Your Selfie</div>
-        <div class="step-desc">Look at the camera and hold steady</div>
-        <div class="camera-container" id="selfieCameraContainer">
-          <video id="selfieVideo" autoplay playsinline muted style="transform: scaleX(-1)"></video>
-          <div class="camera-overlay-container">
-            <div class="camera-overlay selfie-frame"></div>
-          </div>
-          <div class="camera-hint">Keep your face centered</div>
-          <button class="btn-capture" id="selfieCaptureBtn" aria-label="Take selfie"></button>
-        </div>
-      </div>
-
-      <!-- STEP 8: Review Selfie -->
-      <div class="step" id="step-selfie-review">
-        <div class="step-title">Review Your Selfie</div>
-        <div class="step-desc">Make sure your face is clearly visible</div>
-        <div class="preview-container">
-          <img
-            id="selfiePreview"
-            alt="Selfie preview"
-            style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover"
-          />
-        </div>
-        <div class="preview-actions">
-          <button class="btn btn-secondary" id="selfieRetakeBtn">↻ Retake</button>
-          <button class="btn btn-primary" id="selfieAcceptBtn">✓ Looks Good</button>
-        </div>
-      </div>
-
-      <!-- STEP 9: Submitting -->
-      <div class="step" id="step-loading">
-        <div class="spacer"></div>
+    <div id="kyc-host">
+      <div class="init-loading">
         <div class="spinner"></div>
-        <div class="step-title">Submitting Documents</div>
-        <div class="step-desc" id="loadingDesc">Uploading your documents securely...</div>
-        <div class="spacer"></div>
+        <span style="color: #64748b; font-size: 14px">Starting verification...</span>
       </div>
-
-      <!-- STEP 10: Complete -->
-      <div class="step" id="step-complete">
-        <div class="spacer"></div>
-        <div class="step-icon success">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-        </div>
-        <div class="step-title">Verification Submitted!</div>
-        <div class="step-desc">
-          Your documents have been submitted successfully. Verification is being processed — you'll
-          be notified of the result.
-        </div>
-        <div class="spacer"></div>
-      </div>
-
-      <!-- Resubmission request -->
-      <div class="step" id="step-resubmit">
-        <div class="spacer"></div>
-        <div class="step-icon warn">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M1 4v6h6M23 20v-6h-6" />
-            <path
-              d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"
-            />
-          </svg>
-        </div>
-        <div class="step-title" id="resubmitTitle">Resubmission Required</div>
-        <div class="step-desc" id="resubmitDesc">
-          Please review and resubmit the requested items.
-        </div>
-        <button class="btn btn-primary" id="resubmitActionBtn" style="margin-top: 16px">
-          Retake Photos
-        </button>
-        <button class="btn btn-secondary" id="resubmitCloseBtn" style="margin-top: 8px">Close</button>
-        <div class="spacer"></div>
-      </div>
-
-      <!-- Error fallback -->
-      <div class="step" id="step-error">
-        <div class="spacer"></div>
-        <div class="step-icon error">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="15" y1="9" x2="9" y2="15" />
-            <line x1="9" y1="9" x2="15" y2="15" />
-          </svg>
-        </div>
-        <div class="step-title">Something Went Wrong</div>
-        <div class="step-desc" id="errorDesc">An error occurred. Please try again.</div>
-        <button class="btn btn-primary" id="retryBtn" style="margin-top: 16px">Try Again</button>
-        <button class="btn btn-secondary" id="closeErrorBtn" style="margin-top: 8px">Close</button>
-        <div class="spacer"></div>
-      </div>
-    </div>
-
-    <div class="footer" id="footer">
-      <button class="btn btn-primary" id="nextBtn" style="width: 100%">Get Started</button>
     </div>
 
     <script>
       // ── Configuration ──
-      const params = new URLSearchParams(window.location.search);
-      const TOKEN = params.get('token') || '';
+      var params = new URLSearchParams(window.location.search);
+      var TOKEN = params.get('token') || '';
+      var preselectedDocType = params.get('docType');
+
       // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
       // Security: NEVER allow apiUrl override from query params (prevents credential theft)
-      const rawBase =
-        (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) ||
-        '/api/v1/';
-      const apiBase = rawBase.replace(/\/+$/, '');
-
-      // ── State ──
-      const STEPS = [
-        'step-welcome',
-        'step-doc-select',
-        'step-doc-photo',
-        'step-doc-review',
-        'step-doc-back-photo',
-        'step-doc-back-review',
-        'step-selfie-start',
-        'step-selfie',
-        'step-selfie-review',
-        'step-loading',
-        'step-complete',
-      ];
-      let currentStep = 0;
-      let selectedDocType = null;
-      let selectedDocCategory = null;
-      let docPhotoBlob = null;
-      let docBackPhotoBlob = null;
-      let selfieBlob = null;
-      let activeStream = null;
-      let isMirrored = false;
-      let workflowData = null; // populated from active-flow API
-      let previousObjectUrl = null; // track for revocation
-      let errorDismissTimer = null; // track error banner timeout
-
-      // ── Document overlay mapping (from Ballerine SDK) ──
-      // Maps document types to overlay frame classes
-      const CARD_DOC_TYPES = ['id_card', 'voter_id', 'drivers_license', 'residence_permit', 'work_permit', 'visa'];
-
-      function getOverlayClass(docType) {
-        if (CARD_DOC_TYPES.includes(docType)) return 'card';
-        if (docType === 'passport') return 'passport';
-        return 'card'; // default
+      var rawBase =
+        (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) || '';
+      var apiBase = rawBase.replace(/\/+$/, '');
+      // If config.js didn't provide an absolute API URL, derive it from the current host.
+      // The kyb-app runs on onboard.verify.X — the API runs on api.verify.X.
+      if (!apiBase.startsWith('http')) {
+        apiBase = window.location.origin.replace(/^(https?:\/\/)onboard\./, '$1api.') + '/api/v1';
+        console.warn('VITE_API_URL not configured; derived API base from origin:', apiBase);
       }
 
-      // Whether this document type needs a back-side photo
-      function needsBackSide(docType) {
-        // Passports are single-page; cards typically have a back side
-        return docType !== 'passport';
+      // ── Valid document types ──
+      var VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
+      var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
+
+      // ── Document info for pre-selected type ──
+      // When doc type is pre-selected from Android, the document-selection step is skipped.
+      // We must set `type` and `documentInfo` on photo steps so the SDK knows which
+      // document overlay to show and whether a back-side photo is needed.
+      var preselectedDocInfo = hasPreselectedDoc ? {
+        type: preselectedDocType,
+        kind: preselectedDocType,
+        variant: preselectedDocType === 'passport' ? 'a4' : 'regular',
+        backSide: preselectedDocType !== 'passport',
+        orderIndex: 0,
+      } : null;
+
+      // ── Build flow steps ──
+      // Skip welcome + document-selection when doc type is pre-selected from Android
+      var steps = [];
+      if (!hasPreselectedDoc) {
+        steps.push(
+          { name: 'welcome', id: 'welcome' },
+          {
+            name: 'document-selection',
+            id: 'document-selection',
+            documentOptions: [
+              { type: 'id_card', kind: 'id_card' },
+              { type: 'passport', kind: 'passport' },
+              { type: 'voter_id', kind: 'voter_id' },
+              { type: 'drivers_license', kind: 'drivers_license' },
+            ],
+          },
+        );
       }
 
-      // ── Error taxonomy for resubmission ──
-      // Maps server reason codes to user-facing messages and recovery actions
-      const RESUBMISSION_REASONS = {
-        DOCUMENT_BLURRY: {
-          title: 'Photo Quality Issue',
-          description: 'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
-          button: 'Retake Document Photo',
-          targetStep: 'step-doc-photo',
-        },
-        DOCUMENT_OBSCURED: {
-          title: 'Document Not Fully Visible',
-          description: 'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
-          button: 'Retake Document Photo',
-          targetStep: 'step-doc-photo',
-        },
-        DOCUMENT_EXPIRED: {
-          title: 'Document Expired',
-          description: 'The document you submitted has expired. Please use a valid, unexpired document.',
-          button: 'Choose Another Document',
-          targetStep: 'step-doc-select',
-        },
-        FACE_NOT_VISIBLE: {
-          title: 'Face Not Clearly Visible',
-          description: 'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
-          button: 'Retake Selfie',
-          targetStep: 'step-selfie',
-        },
-        FACE_MISMATCH: {
-          title: 'Face Does Not Match',
-          description: 'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
-          button: 'Retake Photos',
-          targetStep: 'step-doc-photo',
-        },
-        DOCUMENT_BACK_MISSING: {
-          title: 'Back of Document Missing',
-          description: 'We need a photo of the back of your document. Please capture it.',
-          button: 'Take Back Photo',
-          targetStep: 'step-doc-back-photo',
-        },
-        DOCUMENT_TYPE_UNSUPPORTED: {
-          title: 'Document Not Accepted',
-          description: 'The document type you submitted is not accepted. Please choose a different document.',
-          button: 'Choose Another Document',
-          targetStep: 'step-doc-select',
-        },
-        GENERIC: {
-          title: 'Resubmission Required',
-          description: 'There was an issue with your submission. Please try again.',
-          button: 'Try Again',
-          targetStep: 'step-doc-select',
-        },
+      // When pre-selected, set `type` on photo steps so SDK renders correct overlay.
+      // When not pre-selected, the SDK reads from selectedDocumentInfo store (set by
+      // document-selection step).
+      steps.push(
+        { name: 'document-photo', id: 'document-photo', type: hasPreselectedDoc ? preselectedDocType : undefined },
+        { name: 'check-document', id: 'check-document', type: hasPreselectedDoc ? preselectedDocType : undefined },
+        { name: 'document-photo-back-start', id: 'document-photo-back-start', documentInfo: preselectedDocInfo },
+        { name: 'document-photo-back', id: 'document-photo-back', type: hasPreselectedDoc ? preselectedDocType : undefined },
+        { name: 'check-document-photo-back', id: 'check-document-photo-back', documentInfo: preselectedDocInfo },
+        { name: 'selfie-start', id: 'selfie-start' },
+        { name: 'selfie', id: 'selfie' },
+        { name: 'check-selfie', id: 'check-selfie' },
+        { name: 'loading', id: 'loading' },
+        { name: 'resubmission', id: 'resubmission' },
+        { name: 'decline', id: 'decline' },
+        { name: 'final', id: 'final' },
+      );
+
+      // ── Signal completion to Android WebView ──
+      // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
+      function signalCompletion(status, idvResult) {
+        var url = new URL('/kyc-mobile/done', window.location.origin);
+        url.searchParams.set('close', 'true');
+        url.searchParams.set('status', status);
+        if (idvResult) url.searchParams.set('idvResult', idvResult);
+        url.searchParams.set('sync', 'true');
+        window.location.href = url.toString();
+      }
+
+      // ── Resubmission reason taxonomy ──
+      // Maps server reason codes to user-facing messages (preserved from legacy implementation)
+      var RESUBMISSION_REASONS = {
+        DOCUMENT_BLURRY: 'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
+        DOCUMENT_OBSCURED: 'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
+        DOCUMENT_EXPIRED: 'The document you submitted has expired. Please use a valid, unexpired document.',
+        FACE_NOT_VISIBLE: 'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+        FACE_MISMATCH: 'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+        DOCUMENT_BACK_MISSING: 'We need a photo of the back of your document. Please capture it.',
+        DOCUMENT_TYPE_UNSUPPORTED: 'The document type you submitted is not accepted. Please choose a different document.',
+        GENERIC: 'There was an issue with your submission. Please try again.',
       };
 
-      // ── DOM refs ──
-      const progressFill = document.getElementById('progressFill');
-      const nextBtn = document.getElementById('nextBtn');
-      const errorBanner = document.getElementById('errorBanner');
-      const errorText = document.getElementById('errorText');
-      const footer = document.getElementById('footer');
-
-      // ── Utilities ──
-      function showError(msg) {
-        errorText.textContent = msg;
-        errorBanner.classList.add('visible');
-        if (errorDismissTimer) clearTimeout(errorDismissTimer);
-        errorDismissTimer = setTimeout(() => errorBanner.classList.remove('visible'), 12000);
-      }
-
-      function stopCamera() {
-        if (activeStream) {
-          activeStream.getTracks().forEach(t => t.stop());
-          activeStream = null;
-        }
-      }
-
-      async function startCamera(videoEl, facingMode) {
-        stopCamera();
-        // Show loading state in camera container
-        const container = videoEl.closest('.camera-container');
-        const hint = container ? container.querySelector('.camera-hint') : null;
-        if (hint) hint.textContent = 'Starting camera...';
-
-        isMirrored = facingMode === 'user';
-
-        try {
-          // Try high resolution first, then fall back to lower
-          let stream;
-          try {
-            stream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
-              audio: false,
-            });
-          } catch (hiResErr) {
-            console.warn('High-res camera failed, trying fallback:', hiResErr.name, hiResErr.message);
-            // Fallback: no resolution constraints
-            stream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode },
-              audio: false,
-            });
-          }
-          activeStream = stream;
-          videoEl.srcObject = stream;
-          await videoEl.play();
-
-          // Detect camera disconnect (defensive: only react if stream is still active)
-          stream.getTracks().forEach(track => {
-            track.onended = () => {
-              if (activeStream && activeStream.active) {
-                showError('Camera disconnected. Please try again.');
-                goToStep(currentStep > 0 ? currentStep - 1 : 0);
-              }
-            };
-          });
-
-          if (hint) {
-            hint.textContent =
-              facingMode === 'user'
-                ? 'Keep your face centered'
-                : 'Hold steady & ensure good lighting';
-          }
-        } catch (err) {
-          console.error('Camera error:', err);
-          if (hint) hint.textContent = '';
-          showError('Could not access camera. Please allow camera permissions or use file upload.');
-          // Go back to previous step instead of leaving user stuck
-          if (currentStep > 0) {
-            setTimeout(() => goToStep(currentStep - 1), 2000);
-          }
-        }
-      }
-
-      function captureFrame(videoEl) {
-        // Ensure video is actually playing
-        if (videoEl.readyState < videoEl.HAVE_CURRENT_DATA) {
-          return Promise.resolve(null);
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = videoEl.videoWidth || 1280;
-        canvas.height = videoEl.videoHeight || 720;
-        const ctx = canvas.getContext('2d');
-        // Mirror selfie capture to match preview
-        if (isMirrored) {
-          ctx.translate(canvas.width, 0);
-          ctx.scale(-1, 1);
-        }
-        ctx.drawImage(videoEl, 0, 0);
-        return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.75));
-      }
-
-      function blobToPreview(blob, imgEl) {
-        // Revoke previous object URL to prevent memory leaks
-        if (previousObjectUrl) {
-          URL.revokeObjectURL(previousObjectUrl);
-        }
-        previousObjectUrl = URL.createObjectURL(blob);
-        imgEl.src = previousObjectUrl;
-      }
-
-      // ── API helpers ──
-      async function apiRequest(method, path, body, isFormData) {
-        const headers = {};
-        if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
-        if (!isFormData && body) headers['Content-Type'] = 'application/json';
-
-        const timeoutMs = isFormData ? 90000 : 20000; // 90s for uploads, 20s for API calls
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-        try {
-          const resp = await fetch(apiBase + path, {
-            method,
-            headers,
-            body: isFormData ? body : body ? JSON.stringify(body) : undefined,
-            signal: controller.signal,
-          });
-
-          if (!resp.ok) {
-            const text = await resp.text().catch(() => '');
-            // Don't expose server internals to user — log only
-            console.error(`API error: ${method} ${path}: ${resp.status} ${text.substring(0, 200)}`);
-            throw new Error(`Request failed (${resp.status}). Please try again.`);
-          }
-          return resp.json().catch(() => ({}));
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            throw new Error('Request timed out. Please check your connection and try again.');
-          }
-          throw err;
-        } finally {
-          clearTimeout(timeoutId);
-        }
-      }
-
-      // Retry wrapper for upload operations
-      async function apiRequestWithRetry(method, path, body, isFormData, maxRetries) {
-        const retries = maxRetries || 2;
-        for (let attempt = 0; attempt <= retries; attempt++) {
-          try {
-            return await apiRequest(method, path, body, isFormData);
-          } catch (err) {
-            if (attempt === retries) throw err;
-            // Wait before retry: 1s, 2s
-            await new Promise(r => setTimeout(r, (attempt + 1) * 1000));
-          }
-        }
-      }
-
-      // Fetch workflow data to get endUserId — BLOCKING: required for uploads
-      async function fetchWorkflowData() {
-        const result = await apiRequestWithRetry(
-          'GET',
-          '/collection-flow/active-flow',
-          null,
-          false,
-          2,
-        );
-        workflowData = result.result || result;
-        console.log('Workflow data loaded:', !!workflowData);
-      }
-
-      // Upload a document file via the collection-flow documents API
-      async function uploadDocument(
-        blob,
-        filename,
-        docType,
-        docCategory,
-        fileType,
-        fileVariant,
-        pageNum,
-      ) {
-        if (!blob) throw new Error('Missing image data. Please retake the photo.');
-
-        const endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || '';
-        if (!endUserId)
-          throw new Error('Could not determine user identity. Please close and try again.');
-
-        const formData = new FormData();
-        formData.append('file', blob, filename);
-        formData.append('category', docCategory);
-        formData.append('type', docType);
-        formData.append('issuingVersion', '1');
-        formData.append(
-          'issuingCountry',
-          workflowData?.context?.entity?.data?.country ||
-            workflowData?.context?.customData?.country ||
-            'SL',
-        );
-        formData.append('page', String(pageNum));
-        formData.append('documentType', fileType);
-        formData.append('documentVariant', fileVariant);
-        formData.append('endUserId', endUserId);
-
-        return apiRequestWithRetry('POST', '/collection-flow/documents', formData, true, 1);
-      }
-
-      // ── Navigation ──
-      function goToStep(idx) {
-        // Accept step ID string as well as numeric index
-        if (typeof idx === 'string') {
-          const found = STEPS.indexOf(idx);
-          if (found === -1) {
-            // Non-STEPS step (resubmit, error) — show directly
-            showNonLinearStep(idx);
-            return;
-          }
-          idx = found;
-        }
-
-        stopCamera();
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-        const stepId = STEPS[idx];
-        if (!stepId) return;
-        document.getElementById(stepId).classList.add('active');
-        currentStep = idx;
-        progressFill.style.width = Math.round((idx / (STEPS.length - 1)) * 100) + '%';
-        // ARIA for progress
-        progressFill.setAttribute('aria-valuenow', String(idx));
-        progressFill.setAttribute('aria-valuemax', String(STEPS.length - 1));
-        updateFooter();
-
-        // Camera steps
-        if (stepId === 'step-doc-photo') {
-          updateDocOverlay('docOverlay', selectedDocType);
-          startCamera(document.getElementById('docVideo'), 'environment');
-        }
-        if (stepId === 'step-doc-back-photo') {
-          updateDocOverlay('docBackOverlay', selectedDocType);
-          startCamera(document.getElementById('docBackVideo'), 'environment');
-        }
-        if (stepId === 'step-selfie') startCamera(document.getElementById('selfieVideo'), 'user');
-        if (stepId === 'step-loading') submitDocuments();
-      }
-
-      // Show a step that is not in the linear STEPS array (resubmit, error)
-      function showNonLinearStep(stepId) {
-        stopCamera();
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-        const el = document.getElementById(stepId);
-        if (el) el.classList.add('active');
-        footer.style.display = 'none';
-      }
-
-      // Update the document overlay frame to match the selected document type
-      function updateDocOverlay(overlayId, docType) {
-        const overlay = document.getElementById(overlayId);
-        if (!overlay) return;
-        // Reset classes and apply correct type
-        overlay.className = 'camera-overlay ' + getOverlayClass(docType || 'id_card');
-        // Keep the label if present
-        const label = overlay.querySelector('.overlay-label');
-        if (label && overlayId === 'docOverlay') label.textContent = 'FRONT SIDE';
-      }
-
-      function updateFooter() {
-        const step = STEPS[currentStep];
-        const hideFooter = [
-          'step-doc-photo',
-          'step-doc-review',
-          'step-doc-back-photo',
-          'step-doc-back-review',
-          'step-selfie',
-          'step-selfie-review',
-          'step-loading',
-          'step-error',
-          'step-resubmit',
-        ].includes(step);
-        footer.style.display = hideFooter ? 'none' : '';
-
-        if (step === 'step-welcome') {
-          nextBtn.textContent = 'Get Started';
-          nextBtn.disabled = false;
-        } else if (step === 'step-doc-select') {
-          nextBtn.textContent = 'Continue';
-          nextBtn.disabled = !selectedDocType;
-        } else if (step === 'step-selfie-start') {
-          nextBtn.textContent = 'Open Camera';
-          nextBtn.disabled = false;
-        } else if (step === 'step-complete') {
-          nextBtn.textContent = 'Done';
-          nextBtn.disabled = false;
-        }
-      }
-
-      function showErrorStep(msg) {
-        stopCamera();
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-        document.getElementById('step-error').classList.add('active');
-        document.getElementById('errorDesc').textContent = msg;
-        footer.style.display = 'none';
-      }
-
-      // Show the resubmission step with the appropriate reason
-      function showResubmitStep(reasonCode) {
-        const reason = RESUBMISSION_REASONS[reasonCode] || RESUBMISSION_REASONS.GENERIC;
-        document.getElementById('resubmitTitle').textContent = reason.title;
-        document.getElementById('resubmitDesc').textContent = reason.description;
-        document.getElementById('resubmitActionBtn').textContent = reason.button;
-        document.getElementById('resubmitActionBtn').onclick = () => {
-          // Reset the relevant blobs based on target step
-          if (reason.targetStep === 'step-doc-photo' || reason.targetStep === 'step-doc-select') {
-            docPhotoBlob = null;
-            docBackPhotoBlob = null;
-          }
-          if (reason.targetStep === 'step-selfie') {
-            selfieBlob = null;
-          }
-          goToStep(reason.targetStep);
-        };
-        showNonLinearStep('step-resubmit');
-      }
-
-      // Map free-text revision reasons from Ballerine backoffice to our structured reason codes.
-      // Operators type free-form reasons; we keyword-match to the closest structured code.
+      // Map free-text revision reasons from Ballerine backoffice to structured codes
       function mapRevisionReasonToCode(revisionReason) {
         if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
-        const lower = revisionReason.toLowerCase();
-        if (lower.includes('blur') || lower.includes('unclear') || lower.includes('quality') || lower.includes('unreadable') || lower.includes('sharp') || lower.includes('focus'))
-          return 'DOCUMENT_BLURRY';
-        if (lower.includes('obscur') || lower.includes('cut off') || lower.includes('partial') || lower.includes('crop'))
-          return 'DOCUMENT_OBSCURED';
-        if (lower.includes('expir') || lower.includes('expired'))
-          return 'DOCUMENT_EXPIRED';
-        if (lower.includes('face not') || lower.includes('selfie') || lower.includes('face visible'))
-          return 'FACE_NOT_VISIBLE';
-        if (lower.includes('face mismatch') || lower.includes('does not match') || lower.includes('face match'))
-          return 'FACE_MISMATCH';
-        if (lower.includes('back') || lower.includes('back side') || lower.includes('reverse'))
-          return 'DOCUMENT_BACK_MISSING';
-        if (lower.includes('unsupported') || lower.includes('not accepted') || lower.includes('wrong document'))
-          return 'DOCUMENT_TYPE_UNSUPPORTED';
+        var lower = revisionReason.toLowerCase();
+        if (/blur|unclear|quality|unreadable|sharp|focus/.test(lower)) return 'DOCUMENT_BLURRY';
+        if (/obscur|cut off|partial|crop/.test(lower)) return 'DOCUMENT_OBSCURED';
+        if (/expir/.test(lower)) return 'DOCUMENT_EXPIRED';
+        if (/face not|selfie|face visible/.test(lower)) return 'FACE_NOT_VISIBLE';
+        if (/face mismatch|does not match|face match/.test(lower)) return 'FACE_MISMATCH';
+        if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
+        if (/unsupported|not accepted|wrong document/.test(lower)) return 'DOCUMENT_TYPE_UNSUPPORTED';
         return 'GENERIC';
       }
 
-      // Check workflow state for revision/resubmission and extract reason
-      function checkWorkflowForResubmission() {
-        if (!workflowData) return null;
-        const state = workflowData.state || workflowData.status;
-        const REVISION_STATES = ['pending_resubmission', 'revision', 'revised'];
-        if (!REVISION_STATES.includes(state)) return null;
-
-        // Extract revision reason from document decisions or workflow context
-        const docs = workflowData.context?.documents || [];
-        for (const doc of docs) {
-          const decision = doc.decision || {};
-          if (decision.status === 'revision' && decision.revisionReason) {
-            return mapRevisionReasonToCode(decision.revisionReason);
-          }
-        }
-
-        // Check top-level workflow context for revisionReason
-        const ctxReason = workflowData.context?.revisionReason;
-        if (ctxReason) return mapRevisionReasonToCode(ctxReason);
-
-        // Workflow is in revision state but no specific reason found
-        return 'GENERIC';
-      }
-
-      // ── Event handlers ──
-      nextBtn.addEventListener('click', () => {
-        const step = STEPS[currentStep];
-        if (step === 'step-complete') {
-          // Signal completion to Android WebView via URL change.
-          // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
-          window.location.href =
-            window.location.origin + '/kyc-mobile/done?close=true&status=success';
-          return;
-        }
-        goToStep(currentStep + 1);
-      });
-
-      document.querySelectorAll('.doc-card').forEach(card => {
-        card.addEventListener('click', () => {
-          document.querySelectorAll('.doc-card').forEach(c => {
-            c.classList.remove('selected');
-            c.setAttribute('aria-checked', 'false');
-          });
-          card.classList.add('selected');
-          card.setAttribute('aria-checked', 'true');
-          selectedDocType = card.dataset.docType;
-          selectedDocCategory = card.dataset.docCategory;
-          nextBtn.disabled = false;
-        });
-      });
-
-      document.getElementById('docCaptureBtn').addEventListener('click', async () => {
-        const blob = await captureFrame(document.getElementById('docVideo'));
-        if (!blob) {
-          showError('Could not capture image. Please try again.');
-          return;
-        }
-        docPhotoBlob = blob;
-        blobToPreview(docPhotoBlob, document.getElementById('docPreview'));
-        goToStep(STEPS.indexOf('step-doc-review'));
-      });
-
-      document.getElementById('docRetakeBtn').addEventListener('click', () => {
-        docPhotoBlob = null;
-        goToStep(STEPS.indexOf('step-doc-photo'));
-      });
-
-      document.getElementById('docAcceptBtn').addEventListener('click', () => {
-        if (needsBackSide(selectedDocType)) {
-          goToStep(STEPS.indexOf('step-doc-back-photo'));
-        } else {
-          // Passports: skip back side, go straight to selfie
-          docBackPhotoBlob = null;
-          goToStep(STEPS.indexOf('step-selfie-start'));
-        }
-      });
-
-      // ── Back-side capture handlers ──
-      document.getElementById('docBackCaptureBtn').addEventListener('click', async () => {
-        const blob = await captureFrame(document.getElementById('docBackVideo'));
-        if (!blob) {
-          showError('Could not capture image. Please try again.');
-          return;
-        }
-        docBackPhotoBlob = blob;
-        blobToPreview(docBackPhotoBlob, document.getElementById('docBackPreview'));
-        goToStep(STEPS.indexOf('step-doc-back-review'));
-      });
-
-      document.getElementById('docBackRetakeBtn').addEventListener('click', () => {
-        docBackPhotoBlob = null;
-        goToStep(STEPS.indexOf('step-doc-back-photo'));
-      });
-
-      document
-        .getElementById('docBackAcceptBtn')
-        .addEventListener('click', () => goToStep(STEPS.indexOf('step-selfie-start')));
-
-      document.getElementById('selfieCaptureBtn').addEventListener('click', async () => {
-        const blob = await captureFrame(document.getElementById('selfieVideo'));
-        if (!blob) {
-          showError('Could not capture selfie. Please try again.');
-          return;
-        }
-        selfieBlob = blob;
-        blobToPreview(selfieBlob, document.getElementById('selfiePreview'));
-        goToStep(STEPS.indexOf('step-selfie-review'));
-      });
-
-      document.getElementById('selfieRetakeBtn').addEventListener('click', () => {
-        selfieBlob = null;
-        goToStep(STEPS.indexOf('step-selfie'));
-      });
-
-      document
-        .getElementById('selfieAcceptBtn')
-        .addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
-
-      document
-        .getElementById('retryBtn')
-        .addEventListener('click', () => goToStep(STEPS.indexOf('step-loading')));
-
-      document.getElementById('closeErrorBtn').addEventListener('click', () => {
-        window.location.href = window.location.origin + '/kyc-mobile/done?close=true&status=error';
-      });
-
-      document.getElementById('resubmitCloseBtn').addEventListener('click', () => {
-        window.location.href = window.location.origin + '/kyc-mobile/done?close=true&status=resubmit';
-      });
-
-      // ── Submission ──
-      async function submitDocuments() {
-        const loadingDesc = document.getElementById('loadingDesc');
-
-        // Pre-flight check
-        if (!navigator.onLine) {
-          showErrorStep('You are offline. Please check your internet connection and try again.');
-          return;
-        }
-        if (!docPhotoBlob || !selfieBlob) {
-          showErrorStep('Missing photos. Please go back and retake them.');
-          return;
-        }
-        if (needsBackSide(selectedDocType) && !docBackPhotoBlob) {
-          showErrorStep('Back-side photo is required. Please go back and capture it.');
+      // ── Main initialization ──
+      async function initFlow() {
+        // Check SDK availability — script may fail to load on slow networks
+        if (typeof BallerineSDK === 'undefined') {
+          document.getElementById('kyc-host').innerHTML =
+            '<p class="init-message error">Verification SDK failed to load. Please check your internet connection and try again.</p>';
           return;
         }
 
+        if (!TOKEN) {
+          document.getElementById('kyc-host').innerHTML =
+            '<p class="init-message muted">No verification token provided. Please open this page from the MiKashBoks app.</p>';
+          return;
+        }
+
+        // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
+        var workflowData = null;
         try {
-          // 1. Upload all photos in parallel
-          loadingDesc.textContent = 'Uploading photos...';
-          const uploads = [
-            uploadDocument(
-              docPhotoBlob,
-              selectedDocType + '_front.jpeg',
-              selectedDocType,
-              selectedDocCategory,
-              'document',
-              'front',
-              1,
-            ),
-            uploadDocument(
-              selfieBlob,
-              'selfie.jpeg',
-              selectedDocType,
-              selectedDocCategory,
-              'selfie',
-              'front',
-              docBackPhotoBlob ? 3 : 2,
-            ),
-          ];
-          // Include back-side if captured
-          if (docBackPhotoBlob) {
-            uploads.push(
-              uploadDocument(
-                docBackPhotoBlob,
-                selectedDocType + '_back.jpeg',
-                selectedDocType,
-                selectedDocCategory,
-                'document',
-                'back',
-                2,
-              ),
-            );
-          }
-          await Promise.all(uploads);
+          var resp = await fetch(apiBase + '/collection-flow/active-flow', {
+            headers: { Authorization: 'Bearer ' + TOKEN },
+          });
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          var json = await resp.json();
+          workflowData = json.result || json;
+        } catch (e) {
+          console.error('Failed to load workflow:', e);
+          document.getElementById('kyc-host').innerHTML =
+            '<p class="init-message error">Could not connect to the verification service. Please close and try again.</p>';
+          return;
+        }
 
-          // 2. Final submission — fires the workflow event
-          loadingDesc.textContent = 'Processing verification...';
+        var endUserId =
+          workflowData?.endUserId || workflowData?.context?.entity?.id || 'unknown';
+        var issuingCountry =
+          workflowData?.context?.entity?.data?.country ||
+          workflowData?.context?.customData?.country ||
+          'SL';
 
-          // Re-fetch context for the final-submission body (uses cached workflowData if available)
-          let context = workflowData?.context || {};
+        // 2. Check for resubmission state
+        var resubmitReason = params.get('reason') || params.get('reasonCode');
+        var workflowState = workflowData?.state || workflowData?.status;
+        var isRevision = ['pending_resubmission', 'revision', 'revised'].includes(workflowState);
 
-          // Ensure collectionFlow state is present
-          if (!context.collectionFlow) {
-            context.collectionFlow = {};
-          }
-          if (!context.collectionFlow.state) {
-            context.collectionFlow.state = { status: 'pending', steps: [] };
-          }
-
-          // Call final-submission to trigger the COLLECTION_FLOW_FINISHED event
-          let submissionResult = null;
-          let submissionSucceeded = false;
-          try {
-            submissionResult = await apiRequest('POST', '/collection-flow/final-submission', {
-              eventName: 'COLLECTION_FLOW_FINISHED',
-              context: context,
-            });
-            submissionSucceeded = true;
-          } catch (finalErr) {
-            console.warn('final-submission failed, trying send-event:', finalErr);
-            // Fallback: just fire the event directly
-            try {
-              submissionResult = await apiRequest('POST', '/collection-flow/send-event', {
-                eventName: 'COLLECTION_FLOW_FINISHED',
-              });
-              submissionSucceeded = true;
-            } catch (eventErr) {
-              console.error('Both final-submission and send-event failed:', eventErr);
+        // Detect revision reason from workflow context
+        var detectedReasonCode = null;
+        if (isRevision) {
+          var docs = workflowData?.context?.documents || [];
+          for (var i = 0; i < docs.length; i++) {
+            var decision = docs[i].decision || {};
+            if (decision.status === 'revision' && decision.revisionReason) {
+              detectedReasonCode = mapRevisionReasonToCode(decision.revisionReason);
+              break;
             }
           }
-
-          if (!submissionSucceeded) {
-            showErrorStep(
-              'Your photos were uploaded but we could not start processing. ' +
-                'Please try again, or contact support if the problem persists.',
-            );
-            return;
+          if (!detectedReasonCode && workflowData?.context?.revisionReason) {
+            detectedReasonCode = mapRevisionReasonToCode(workflowData.context.revisionReason);
           }
-
-          // 3. Check for resubmission requests in the response
-          const idvResult = submissionResult?.idvResult || submissionResult?.result?.idvResult;
-          const reasonCode = submissionResult?.reasonCode || submissionResult?.result?.reasonCode;
-
-          if (idvResult === 'resubmission_requested' && reasonCode) {
-            showResubmitStep(reasonCode);
-          } else if (idvResult === 'declined') {
-            showErrorStep(
-              'Your verification could not be completed. Please contact support for assistance.',
-            );
-          } else {
-            goToStep(STEPS.indexOf('step-complete'));
+          if (!detectedReasonCode) {
+            detectedReasonCode = 'GENERIC';
           }
-        } catch (err) {
-          console.error('Submission failed:', err);
-
-          // Check if the error response contains a resubmission reason
-          if (err.reasonCode && RESUBMISSION_REASONS[err.reasonCode]) {
-            showResubmitStep(err.reasonCode);
-            return;
-          }
-
-          showErrorStep(
-            err.message || 'Something went wrong. Please check your connection and try again.',
-          );
         }
-      }
 
-      // ── Init ──
-      if (!TOKEN) {
-        showError('No verification token provided. Please open this page from the MiKashBoks app.');
-        nextBtn.disabled = true;
-      } else {
-        // Check if we were redirected back with a resubmission reason
-        const resubmitReason = params.get('reason') || params.get('reasonCode');
-        if (resubmitReason && RESUBMISSION_REASONS[resubmitReason]) {
-          // Load workflow data in background, then show resubmission step
-          fetchWorkflowData()
-            .then(() => showResubmitStep(resubmitReason))
-            .catch(err => {
-              console.error('Failed to load workflow data:', err);
-              showResubmitStep(resubmitReason); // Show resubmit even if workflow fetch fails
-            });
-        } else {
-          // Normal flow: blocking fetch of workflow data — required for uploads to work
-          fetchWorkflowData()
-            .then(() => {
-              // After loading workflow data, check if we're in a revision state
-              const revisionCode = checkWorkflowForResubmission();
-              if (revisionCode) {
-                console.log('Workflow in revision state, reason:', revisionCode);
-                showResubmitStep(revisionCode);
+        // Use URL param reason if present
+        var reasonCode =
+          resubmitReason && RESUBMISSION_REASONS[resubmitReason]
+            ? resubmitReason
+            : detectedReasonCode;
+
+        // 3. Initialize Ballerine SDK
+        var sdkConfig = {
+          endUserInfo: {
+            id: endUserId,
+            endUserMetadata: {
+              issuingCountry: issuingCountry,
+              workflowContext: JSON.stringify(workflowData?.context || {}),
+              preselectedDocType: preselectedDocType || '',
+            },
+          },
+          backendConfig: {
+            baseUrl: apiBase,
+            auth: {
+              method: 'jwt',
+              authorizationHeader: 'Bearer ' + TOKEN,
+            },
+            endpoints: {
+              uploadFile: '/collection-flow/documents',
+              updateContext: '/collection-flow/sync/context',
+              finalSubmission: '/collection-flow/final-submission',
+              sendEvent: '/collection-flow/send-event',
+              activeFlow: '/collection-flow/active-flow',
+            },
+          },
+          uiConfig: {
+            general: {
+              progress: true,
+              colors: {
+                primary: '#4f46e5',
+              },
+              fonts: {
+                name: 'Inter',
+                link: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+                weight: [400, 500, 600, 700],
+              },
+            },
+            flows: {
+              'mikashboks-kyc': {
+                steps: steps,
+                syncFlow: true,
+                useFinalQueryParams: true,
+                showCloseButton: false,
+              },
+            },
+          },
+          translations: {
+            overrides: {
+              en: {
+                welcome: {
+                  title: 'Verify Your Identity',
+                  description:
+                    'Complete this quick verification to unlock loans, higher savings limits, and faster transactions.',
+                  button: 'Get Started',
+                },
+                document_selection: {
+                  title: 'Choose Your Document',
+                  description: 'Select the type of identity document you would like to use.',
+                },
+                loader: {
+                  'text-one': 'Uploading photos...',
+                  'text-two': 'Processing verification...',
+                  'text-three': 'Manual review may be needed...',
+                },
+                final: {
+                  title: 'Verification Complete',
+                  description:
+                    'Your documents have been submitted successfully. You can now close this page.',
+                  button: 'Done',
+                },
+                resubmission: {
+                  title: 'Resubmission Required',
+                  description: reasonCode
+                    ? RESUBMISSION_REASONS[reasonCode] || RESUBMISSION_REASONS.GENERIC
+                    : 'There was an issue with your submission. Please try again.',
+                  button: 'Try Again',
+                },
+                decline: {
+                  title: 'Verification Could Not Be Completed',
+                  description: 'Please contact support for assistance.',
+                },
+              },
+            },
+          },
+        };
+
+        await BallerineSDK.flows.init(sdkConfig);
+
+        BallerineSDK.flows.mount({
+          flowName: 'mikashboks-kyc',
+          elementId: 'kyc-host',
+          jwt: TOKEN,
+          callbacks: {
+            onFlowComplete: function (payload) {
+              var idvResult = payload && payload.payload ? payload.payload.idvResult : '';
+              if (idvResult === 'declined') {
+                signalCompletion('error', idvResult);
+              } else if (idvResult === 'resubmission_requested') {
+                signalCompletion('resubmit', idvResult);
+              } else {
+                signalCompletion('success', idvResult || 'approved');
               }
-            })
-            .catch(err => {
-              console.error('Failed to load workflow data:', err);
-              showError('Could not connect to the verification service. Please close and try again.');
-              nextBtn.disabled = true;
-            });
-        }
+            },
+            onFlowExit: function () {
+              signalCompletion('exit', '');
+            },
+            onFlowError: function (error) {
+              console.error('Flow error:', error);
+              signalCompletion('error', '');
+            },
+          },
+        });
       }
-      updateFooter();
+
+      // ── Start ──
+      initFlow().catch(function (err) {
+        console.error('Init failed:', err);
+        document.getElementById('kyc-host').innerHTML =
+          '<p class="init-message error">Could not start verification. Please close and try again.</p>';
+      });
 
       // ── Offline detection ──
-      window.addEventListener('offline', () =>
-        showError('You appear to be offline. Please check your internet connection.'),
-      );
-      window.addEventListener('online', () => {
-        // Only dismiss the error if it was the offline message
-        if (errorText.textContent.includes('offline')) {
-          errorBanner.classList.remove('visible');
-        }
+      var offlineBanner = document.getElementById('offline-banner');
+      window.addEventListener('offline', function () {
+        offlineBanner.classList.add('visible');
+      });
+      window.addEventListener('online', function () {
+        offlineBanner.classList.remove('visible');
       });
     </script>
   </body>

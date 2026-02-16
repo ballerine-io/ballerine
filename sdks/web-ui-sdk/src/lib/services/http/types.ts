@@ -9,5 +9,9 @@ export interface IDocumentVerificationResponse {
   status: TVerificationStatuses;
   idvResult?: TDecisionStatus;
   code?: number;
-  reasonCode?: number;
+  reasonCode?: number | string;
+  result?: {
+    idvResult?: TDecisionStatus;
+    reasonCode?: number | string;
+  };
 }

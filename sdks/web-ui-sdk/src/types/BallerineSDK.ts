@@ -99,6 +99,12 @@ export interface FlowsBackendConfigEndpoints {
   getConfig?: string;
   uploadFile?: string;
   updateContext?: string;
+  /** Collection-flow final submission endpoint (triggers workflow completion) */
+  finalSubmission?: string;
+  /** Collection-flow send-event fallback endpoint */
+  sendEvent?: string;
+  /** Collection-flow active-flow endpoint (fetches workflow context) */
+  activeFlow?: string;
 }
 
 export interface FlowsBackendConfig {
