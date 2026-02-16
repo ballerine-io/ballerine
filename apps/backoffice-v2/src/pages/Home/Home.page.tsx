@@ -63,7 +63,7 @@ export const Home: FunctionComponent = () => {
       <div className="flex h-[90vh] items-center justify-center">
         <div className={'m-auto max-w-xl text-center'}>
           <WelcomeSvg />
-          <h3 className={'text-lg font-bold'}>Welcome to Ballerine's Risk Management Dashboard!</h3>
+          <h3 className={'text-lg font-bold'}>Welcome to MiKashBoks Risk Management Dashboard!</h3>
 
           <div>
             <p>Use the sidebar to navigate and start managing your risk flows and processes.</p>

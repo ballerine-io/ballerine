@@ -5,7 +5,7 @@ import { ReportSchema } from '@ballerine/common';
 import { TextWithNAFallback } from '@ballerine/ui';
 
 import { ctw } from '@/common/utils/ctw/ctw';
-import { BallerineLogo } from '@/common/components/atoms/icons';
+
 import { MerchantMonitoringReportStatus } from '@/pages/MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 
 interface ReportPDFContainerProps {
@@ -32,7 +32,7 @@ export const ReportPDFContainer = forwardRef<
     >
       <div className="flex justify-between p-5">
         <div className="flex flex-col space-y-2">
-          <BallerineLogo />
+          <span className="text-lg font-bold">MiKashBoks</span>
 
           <div className="flex items-center space-x-5">
             <div className="flex flex-col space-y-1">
@@ -89,45 +89,45 @@ export const ReportPDFContainer = forwardRef<
 
       <div className="flex flex-col gap-4 opacity-50">
         <div className="flex justify-between p-5 text-sm font-normal">
-          <BallerineLogo />
+          <span className="font-bold">MiKashBoks</span>
 
           <div className="flex flex-col space-y-2">
-            <span>Report powered by Ballerine.</span>
+            <span>Report powered by MiKashBoks.</span>
             <span>All rights reserved.</span>
           </div>
 
           <div className="flex flex-col space-y-2">
             <span>For support and inquiries:</span>
-            <span>support@ballerine.com</span>
+            <span>support@mikashboks.com</span>
           </div>
 
-          <span>www.ballerine.com</span>
+          <span>www.mikashboks.com</span>
         </div>
         <div className="flex flex-col text-[8px]">
           <div className="font-bold">Disclaimer:</div>
           <div>
             This report (<span className="font-bold">&quot;Report&quot;</span>) is provided by
-            Ballerine, Inc., its affiliates, and third-party licensors (collectively,
-            <span className="font-bold">&quot;Ballerine&quot;</span> or{' '}
+            MiKashBoks, its affiliates, and third-party licensors (collectively,
+            <span className="font-bold">&quot;MiKashBoks&quot;</span> or{' '}
             <span className="font-bold">&quot;We&quot;</span>) solely to the client to whom it is
             addressed (<span className="font-bold">&quot;You&quot;</span>) for internal business
             purposes, in accordance with Your Master Services Agreement (
-            <span className="font-bold">&quot;MSA&quot;</span>) with Ballerine. The Report is for
+            <span className="font-bold">&quot;MSA&quot;</span>) with MiKashBoks. The Report is for
             general informational purposes only and is provided{' '}
             <span className="font-bold">&quot;AS IS&quot;</span>, without warranties of any kind,
             express or implied, including but not limited to accuracy, completeness, reliability,
             suitability, or availability for any purpose. Whilst We endeavor to keep the information
-            up to date and correct, Ballerine makes no representations or warranties regarding the
+            up to date and correct, MiKashBoks makes no representations or warranties regarding the
             completeness, accuracy, reliability, or availability of the Report or any related
             information and will not be liable for any false, inaccurate, inappropriate, or
             incomplete information presented. You are solely responsible for ensuring compliance
             with all applicable laws, including privacy regulations (e.g.,{' '}
             <span className="font-bold">GDPR, CCPA</span>), and may not disclose, distribute, or
-            share this Report or its contents with any third party without Ballerine’s prior written
-            consent. To the maximum extent permitted by law, Ballerine disclaims all liability for
-            any direct, indirect, incidental, special, punitive, or consequential damages arising
-            from the use of this Report, and You assume full responsibility for any misuse,
-            regulatory breaches, or violations of the MSA.
+            share this Report or its contents with any third party without MiKashBoks&apos; prior
+            written consent. To the maximum extent permitted by law, MiKashBoks disclaims all
+            liability for any direct, indirect, incidental, special, punitive, or consequential
+            damages arising from the use of this Report, and You assume full responsibility for any
+            misuse, regulatory breaches, or violations of the MSA.
           </div>
         </div>
       </div>

@@ -37,9 +37,9 @@ export const WelcomeModal = () => {
     <Dialog open={open} onOpenChange={toggleOpen}>
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="items-center px-6">
-          <DialogTitle className={`text-2xl`}>Welcome to Ballerine</DialogTitle>
+          <DialogTitle className={`text-2xl`}>Welcome to MiKashBoks</DialogTitle>
           <DialogDescription className={`text-md`}>
-            Welcome to Ballerine’s Web Presence Free Trial! 🚀
+            Welcome to MiKashBoks Risk Management!
           </DialogDescription>
         </DialogHeader>
         <div className="px-6">

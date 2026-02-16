@@ -795,7 +795,7 @@
             formData.append('category', docCategory);
             formData.append('type', docType);
             formData.append('issuingVersion', '1');
-            formData.append('issuingCountry', 'SL');
+            formData.append('issuingCountry', workflowData?.context?.entity?.data?.country || workflowData?.context?.customData?.country || 'SL');
             formData.append('page', String(pageNum));
             formData.append('documentType', fileType);
             formData.append('documentVariant', fileVariant);
