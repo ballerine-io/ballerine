@@ -9,7 +9,7 @@ import {
   FlowsGeneralTheme,
 } from '../../../types/BallerineSDK';
 import { ICSSProperties } from '../../services/css-manager';
-import { ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
+import { IDocumentInfo, ObjectValues, TDocumentKind, TDocumentType } from '../app-state/types';
 import { MetricsConfig } from '../../../types/BallerineSDK';
 
 export const Steps = {
@@ -112,6 +112,8 @@ export interface IStepConfiguration {
   namespace?: string;
   cameraConfig?: CaptureConfigOption;
   documentOptions?: { type: TDocumentType; kind: TDocumentKind }[];
+  /** Pre-selected document info — used when document-selection step is skipped. */
+  documentInfo?: IDocumentInfo;
 }
 
 export interface IOverlayStyles {
