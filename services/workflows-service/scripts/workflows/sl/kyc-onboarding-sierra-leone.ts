@@ -99,12 +99,14 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
+              // Some clients (e.g., NAMK) may not have `nationalId` on file.
+              // Coalesce from entity, then from collected identity document properties.
               mapping: `{
 	                person: {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId,
+                  idNumber: entity.data.nationalId || entity.data.passportNumber || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
                   idType: 'NATIONAL_ID',
                   dateOfBirth: entity.data.dateOfBirth,
                   phoneNumber: entity.data.phoneNumber,
@@ -152,12 +154,14 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
+              // Some clients (e.g., NAMK) may not have `nationalId` on file.
+              // Coalesce from entity, then from collected identity document properties.
               mapping: `{
 	                person: {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId,
+                  idNumber: entity.data.nationalId || entity.data.passportNumber || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
                   dateOfBirth: entity.data.dateOfBirth,
                   documents: documents[?category=='proof_of_identity'].{
                     type: type,
