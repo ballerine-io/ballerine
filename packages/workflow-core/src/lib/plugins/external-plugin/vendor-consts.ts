@@ -281,10 +281,7 @@ type TPluginFactory = Record<
   Record<
     'document-verification',
     {
-      [TKey in ApiDocumentVerificationVendors]: PluginVendorFnHelper<
-        'document-verification',
-        TKey
-      >;
+      [TKey in ApiDocumentVerificationVendors]: PluginVendorFnHelper<'document-verification', TKey>;
     }
   > &
   Record<
@@ -759,26 +756,26 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
       },
       request: {
         transform: [
-	          {
-	            transformer: 'jmespath',
-	            // #TODO: create new token (new using old one)
-	            mapping: `{
+          {
+            transformer: 'jmespath',
+            // #TODO: create new token (new using old one)
+            mapping: `{
 	              ${options.dataMapping || ''}
 	              kybCompanyName: entity.data.companyName || entity.data.businessName || entity.data.tradingName || '',
 	              customerCompanyName: metadata.customerName,
 	              firstName: entity.data.additionalInfo.mainRepresentative.firstName || entity.data.firstName || entity.data.additionalInfo.owner.firstName || entity.data.ownerFirstName || entity.data.additionalInfo.directors[0].firstName || 'Customer',
-	              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+	              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',(workflowRuntimeConfig.language || 'en')]),
 	              supportEmail: join('',['support@',metadata.customerName,'.com']),
 	              from: 'no-reply@ballerine.com',
 	              name: join(' ',[metadata.customerName,'Team']),
 	              receivers: ((entity.data.additionalInfo.mainRepresentative.email || entity.data.email || entity.data.additionalInfo.owner.email || entity.data.additionalInfo.directors[0].email) != null) && [entity.data.additionalInfo.mainRepresentative.email || entity.data.email || entity.data.additionalInfo.owner.email || entity.data.additionalInfo.directors[0].email] || [],
 	              templateId: ${
-	                options.templateId
-	                  ? `'${options.templateId}'`
-	                  : `'d-7305991b3e5840f9a14feec767ea7301'`
-	              },
+                  options.templateId
+                    ? `'${options.templateId}'`
+                    : `'d-7305991b3e5840f9a14feec767ea7301'`
+                },
               revisionReason: documents[].decision[].revisionReason | [0],
-              language: workflowRuntimeConfig.language,
+              language: workflowRuntimeConfig.language || 'en',
               adapter: '{secret.MAIL_ADAPTER}'
             }`, // TODO: figure out about adapter from env or secrets
           },
@@ -818,7 +815,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
                   : `(documents[].decision[].revisionReason | [0] != null) && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065'`
               },
               revisionReason: documents[].decision[].revisionReason | [0],
-              language: workflowRuntimeConfig.language,
+              language: workflowRuntimeConfig.language || 'en',
               supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany || entity.data.customerCompany,'.com']),
               adapter: '{secret.MAIL_ADAPTER}'
             }`, // jmespath
@@ -846,10 +843,10 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             mapping: `{
               ${options.dataMapping || ''}
               customerName: metadata.customerName,
-              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',(workflowRuntimeConfig.language || 'en')]),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              language: workflowRuntimeConfig.language,
+              language: workflowRuntimeConfig.language || 'en',
               templateId: ${
                 options.templateId
                   ? `'${options.templateId}'`
@@ -883,11 +880,11 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               context: @,
               companyName: data.companyName,
               customerName: metadata.customerName,
-              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',(workflowRuntimeConfig.language || 'en')]),
               from: 'no-reply@ballerine.com',
               name: join(' ',[metadata.customerName,'Onboarding']),
               receivers: [entity.data.additionalInfo.bdEmail],
-              language: workflowRuntimeConfig.language,
+              language: workflowRuntimeConfig.language || 'en',
               templateId: ${
                 options.templateId
                   ? `'${options.templateId}'`
@@ -975,9 +972,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     }),
   },
   [BALLERINE_API_PLUGINS['document-verification']]: {
-    [DOCUMENT_VERIFICATION_VENDORS['mikashboks']]: (
-      options: DocumentVerificationOptions,
-    ) => ({
+    [DOCUMENT_VERIFICATION_VENDORS['mikashboks']]: (options: DocumentVerificationOptions) => ({
       name: 'document-verification',
       displayName: 'Document Verification',
       pluginKind: 'api',
@@ -1030,9 +1025,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
     }),
   },
   [BALLERINE_API_PLUGINS['facial-verification']]: {
-    [FACIAL_VERIFICATION_VENDORS['mikashboks']]: (
-      options: FacialVerificationOptions,
-    ) => ({
+    [FACIAL_VERIFICATION_VENDORS['mikashboks']]: (options: FacialVerificationOptions) => ({
       name: 'facial-verification',
       displayName: 'Facial Verification',
       pluginKind: 'api',
