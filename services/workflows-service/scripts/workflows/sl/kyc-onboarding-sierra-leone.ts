@@ -106,7 +106,7 @@ export const kycOnboardingSierraLeoneDefinition = {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId || entity.data.passportNumber || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
+                  idNumber: entity.data.nationalId || entity.data.passportNumber,
                   idType: 'NATIONAL_ID',
                   dateOfBirth: entity.data.dateOfBirth,
                   phoneNumber: entity.data.phoneNumber,
@@ -161,7 +161,7 @@ export const kycOnboardingSierraLeoneDefinition = {
                   id: entity.id,
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
-                  idNumber: entity.data.nationalId || entity.data.passportNumber || documents[?category=='proof_of_identity'][0].properties.nationalIdNumber || documents[?category=='proof_of_identity'][0].properties.documentNumber,
+                  idNumber: entity.data.nationalId || entity.data.passportNumber,
                   dateOfBirth: entity.data.dateOfBirth,
                   documents: documents[?category=='proof_of_identity'].{
                     type: type,

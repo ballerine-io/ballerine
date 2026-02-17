@@ -4,6 +4,8 @@ import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { Base64FileService } from '@/providers/file/file-provider/base64-file.service';
+import { GcpGcsFileConfig } from '@/providers/file/file-provider/gcp-gcs-file.config';
+import { GcpGcsFileService } from '@/providers/file/file-provider/gcp-gcs-file.service';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
 import { StorageService } from '@/storage/storage.service';
@@ -18,7 +20,12 @@ import { Readable } from 'stream';
 import * as tmp from 'tmp';
 import { z } from 'zod';
 import { TFileServiceProvider } from './types';
-import { TLocalFilePath, TRemoteFileConfig, TS3BucketConfig } from './types/files-types';
+import {
+  TGcsBucketConfig,
+  TLocalFilePath,
+  TRemoteFileConfig,
+  TS3BucketConfig,
+} from './types/files-types';
 import { IStreamableFileProvider } from './types/interfaces';
 import { CustomerService } from '@/customer/customer.service';
 
@@ -223,6 +230,26 @@ export class FileService {
       };
     }
 
+    if (provider == 'gcs' && z.string().parse(uri)) {
+      const bucketName = GcpGcsFileConfig.getBucketName(process.env);
+
+      if (!bucketName) {
+        throw new Error(`GCS bucket name is not set`);
+      }
+
+      const gcsBucketConfig: TGcsBucketConfig = {
+        provider: 'gcs',
+        bucketName,
+        fileNameInBucket: uri,
+        private: true,
+      };
+
+      return {
+        sourceServiceProvider: new GcpGcsFileService(this.logger),
+        sourceRemoteFileConfig: gcsBucketConfig,
+      };
+    }
+
     if (provider == 'base64' && z.string().refine(Base64.isValid).parse(uri)) {
       return {
         sourceServiceProvider: new Base64FileService(),
@@ -256,6 +283,24 @@ export class FileService {
       fileName,
       directory: entityId,
     };
+
+    const gcsBucketName = GcpGcsFileConfig.getBucketName(process.env);
+    if (gcsBucketName) {
+      const gcsFileService = new GcpGcsFileService(this.logger);
+      const remoteFileNameInBucket = gcsFileService.generateRemotePath(properties);
+      const gcsConfigForClient: TGcsBucketConfig = {
+        provider: 'gcs',
+        bucketName: gcsBucketName,
+        fileNameInBucket: remoteFileNameInBucket,
+        private: true,
+      };
+
+      return {
+        targetServiceProvider: gcsFileService,
+        targetRemoteFileConfig: gcsConfigForClient,
+        remoteFileNameInDirectory: gcsConfigForClient.fileNameInBucket,
+      };
+    }
 
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);

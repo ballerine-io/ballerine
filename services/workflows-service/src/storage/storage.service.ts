@@ -5,11 +5,13 @@ import { File, Prisma } from '@prisma/client';
 import type { TProjectId, TProjectIds } from '@/types';
 import * as errors from '@/errors';
 import mime from 'mime';
+import { Storage } from '@google-cloud/storage';
 import {
   createPresignedUrlWithClient,
   downloadFileFromS3,
 } from '@/storage/get-file-storage-manager';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
+import { GcpGcsFileConfig } from '@/providers/file/file-provider/gcp-gcs-file.config';
 import { isBase64 } from '@/common/utils/is-base64/is-base64';
 import path from 'path';
 import os from 'os';
@@ -18,6 +20,8 @@ import { z } from 'zod';
 import { HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { readFileSync } from 'fs';
+import * as tmp from 'tmp';
+import { createSignedPublicFileUrl } from './public-file-link';
 
 @Injectable()
 export class StorageService {
@@ -85,6 +89,18 @@ export class StorageService {
       'image/jpeg';
 
     if (persistedFile.fileNameInBucket && format === 'signed-url') {
+      // In GCP production we store documents in GCS and expose them to Unified API via
+      // short-lived, HMAC-signed links served by this service. This keeps the identity
+      // docs private and avoids the need for service-account key files for GCS signed URLs.
+      if (GcpGcsFileConfig.isConfigured(process.env)) {
+        const signedUrl = createSignedPublicFileUrl({
+          fileId: persistedFile.id,
+          projectId: persistedFile.projectId,
+        });
+
+        return { signedUrl, mimeType };
+      }
+
       const signedUrl = await createPresignedUrlWithClient({
         bucketName: AwsS3FileConfig.getBucketName(process.env) as string,
         fileNameInBucket: persistedFile.fileNameInBucket,
@@ -97,6 +113,23 @@ export class StorageService {
     mimeType ||= 'application/octet-stream';
 
     if (persistedFile.fileNameInBucket) {
+      if (GcpGcsFileConfig.isConfigured(process.env)) {
+        const bucketName = GcpGcsFileConfig.getBucketName(process.env);
+
+        if (!bucketName) {
+          throw new Error('DOCUMENT_STORAGE_BUCKET is not set');
+        }
+
+        const tmpFile = tmp.fileSync();
+
+        await new Storage()
+          .bucket(bucketName)
+          .file(persistedFile.fileNameInBucket)
+          .download({ destination: tmpFile.name });
+
+        return { filePath: path.resolve('/', tmpFile.name), mimeType };
+      }
+
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.getBucketName(process.env) as string,
         persistedFile.fileNameInBucket,
