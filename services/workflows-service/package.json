@@ -87,7 +87,7 @@
     "@sentry/node": "^7.52.1",
     "@sinclair/typebox": "0.32.15",
     "@t3-oss/env-core": "^0.6.1",
-    "ajv": "^8.17.1",
+    "ajv": "^8.18.0",
     "ajv-formats": "^2.1.1",
     "ajv-keywords": "^5.1.0",
     "aws-cloudfront-sign": "3.0.2",

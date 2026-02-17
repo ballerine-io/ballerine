@@ -82,7 +82,7 @@
   },
   "dependencies": {
     "@sinclair/typebox": "0.32.15",
-    "ajv": "^8.12.0",
+    "ajv": "^8.18.0",
     "country-state-city": "^3.1.4",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.6",

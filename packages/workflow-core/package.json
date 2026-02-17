@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@ballerine/common": "0.9.118",
-    "ajv": "^8.12.0",
+    "ajv": "^8.18.0",
     "country-state-city": "^3.1.4",
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",

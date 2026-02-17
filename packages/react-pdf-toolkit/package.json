@@ -30,7 +30,7 @@
     "@ballerine/ui": "0.7.171",
     "@react-pdf/renderer": "^3.1.14",
     "@sinclair/typebox": "^0.31.7",
-    "ajv": "^8.12.0",
+    "ajv": "^8.18.0",
     "ajv-formats": "^2.1.1",
     "class-variance-authority": "^0.7.0",
     "dayjs": "^1.11.6",
