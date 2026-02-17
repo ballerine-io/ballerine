@@ -18,6 +18,10 @@ import { AppLoggerService } from './common/app-logger/app-logger.service';
 import { exceptionValidationFactory } from './errors';
 import swagger from '@/swagger/swagger';
 import { applyFormats, patchNestJsSwagger } from 'ballerine-nestjs-typebox';
+import {
+  getEnvWebhookSharedSecret,
+  isPlaceholderWebhookSharedSecret,
+} from '@/events/resolve-webhook-shared-secret';
 
 // provide swagger OpenAPI generator support
 patchNestJsSwagger();
@@ -64,6 +68,16 @@ const main = async () => {
 
   app.useLogger(logger);
   app.use(new ClsMiddleware({}).use);
+
+  const envWebhookSharedSecret = getEnvWebhookSharedSecret(configService);
+  if (isPlaceholderWebhookSharedSecret(envWebhookSharedSecret)) {
+    logger.error(
+      'LOANCUBE_WEBHOOK_SECRET/BALLERINE_WEBHOOK_SECRET is missing or set to TODO_SET_ME. Outgoing webhooks may fail signature verification.',
+      {
+        environmentName: env.ENVIRONMENT_NAME,
+      },
+    );
+  }
 
   if (configService.get('SENTRY_DSN')) {
     app.use(Sentry.Handlers.requestHandler());

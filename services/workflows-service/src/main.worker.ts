@@ -3,6 +3,10 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { ClsMiddleware } from 'nestjs-cls';
 import { WorkerAppModule } from './app.worker.module';
 import { ConfigService } from '@nestjs/config';
+import {
+  getEnvWebhookSharedSecret,
+  isPlaceholderWebhookSharedSecret,
+} from '@/events/resolve-webhook-shared-secret';
 
 const workerMain = async () => {
   const app = await NestFactory.create(WorkerAppModule, {
@@ -32,6 +36,16 @@ const workerMain = async () => {
   process.once('SIGTERM', () => closeApp('SIGTERM'));
   process.once('SIGINT', () => closeApp('SIGINT'));
   const configService = app.get(ConfigService);
+
+  const envWebhookSharedSecret = getEnvWebhookSharedSecret(configService);
+  if (isPlaceholderWebhookSharedSecret(envWebhookSharedSecret)) {
+    logger.error(
+      'LOANCUBE_WEBHOOK_SECRET/BALLERINE_WEBHOOK_SECRET is missing or set to TODO_SET_ME. Outgoing webhooks may fail signature verification.',
+      {
+        environmentName: configService.get<string>('ENVIRONMENT_NAME'),
+      },
+    );
+  }
 
   const port = configService.getOrThrow<string>('WORKER_PORT');
   void app.listen(+port);

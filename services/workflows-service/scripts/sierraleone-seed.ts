@@ -25,6 +25,11 @@ import {
   generateLoanKycKybSierraLeone,
 } from './workflows/sl';
 
+const isPlaceholderSecret = (value?: string | null) => {
+  const normalized = String(value || '').trim();
+  return normalized.length === 0 || normalized === 'TODO_SET_ME';
+};
+
 async function upsertSLCustomer(
   client: PrismaClient,
   id: string,
@@ -1575,9 +1580,9 @@ async function main() {
       if (!apiKeyEnv) {
         throw new Error('Missing MK_SL_API_KEY (required for production seeding)');
       }
-      if (!webhookSecretEnv) {
+      if (isPlaceholderSecret(webhookSecretEnv)) {
         throw new Error(
-          'Missing LOANCUBE_WEBHOOK_SECRET (or BALLERINE_WEBHOOK_SECRET) (required for production seeding)',
+          'Missing/placeholder LOANCUBE_WEBHOOK_SECRET (or BALLERINE_WEBHOOK_SECRET). Refusing to seed production with TODO_SET_ME.',
         );
       }
     }
@@ -1588,9 +1593,9 @@ async function main() {
     if (!apiKeyEnv) {
       console.warn('  ⚠ MK_SL_API_KEY not set — using dev default. Set this in production!');
     }
-    if (!process.env.LOANCUBE_WEBHOOK_SECRET && !process.env.BALLERINE_WEBHOOK_SECRET) {
+    if (isPlaceholderSecret(webhookSecretEnv)) {
       console.warn(
-        '  ⚠ LOANCUBE_WEBHOOK_SECRET/BALLERINE_WEBHOOK_SECRET not set — using dev default. Set this in production!',
+        '  ⚠ LOANCUBE_WEBHOOK_SECRET/BALLERINE_WEBHOOK_SECRET missing or TODO_SET_ME — using dev default. Set this in production!',
       );
     }
 
