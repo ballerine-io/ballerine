@@ -296,6 +296,15 @@ export const verifyDocumentsCollectionFlow = async (
     }
   }
 
+  let workflowState: Record<string, unknown> | null = null;
+  if (endUserMetadata?.workflowState) {
+    try {
+      workflowState = JSON.parse(endUserMetadata.workflowState);
+    } catch (err) {
+      console.warn('Failed to parse workflowState from endUserMetadata:', err);
+    }
+  }
+
   if (!endUserId || endUserId === 'unknown') {
     throw new Error('Could not determine user identity. Please close and try again.');
   }
@@ -307,7 +316,10 @@ export const verifyDocumentsCollectionFlow = async (
   }
 
   const docType = primaryDoc.type || 'id_card';
-  const docCategory = primaryDoc.kind || 'identification_document';
+  const configuredDocumentCategory = endUserMetadata?.documentCategory?.trim();
+  const configuredSelfieCategory = endUserMetadata?.selfieCategory?.trim();
+  const docCategory = configuredDocumentCategory || primaryDoc.kind || 'identification_document';
+  const selfieCategory = configuredSelfieCategory || docCategory;
   const hasBack = needsBackSide(docType) && primaryDoc.pages.some(p => p.side === 'back');
 
   // Upload all pages in parallel
@@ -360,7 +372,7 @@ export const verifyDocumentsCollectionFlow = async (
         base64ToBlob(selfieData),
         'selfie.jpeg',
         docType,
-        docCategory,
+        selfieCategory,
         'selfie',
         'front',
         pageCounter++,
@@ -392,7 +404,19 @@ export const verifyDocumentsCollectionFlow = async (
     context.collectionFlow = {};
   }
   const collectionFlow = context.collectionFlow as Record<string, unknown>;
-  if (!collectionFlow.state) {
+
+  const currentState = collectionFlow.state as
+    | {
+        steps?: unknown[];
+      }
+    | undefined;
+  const currentStateStepsCandidate = currentState?.steps;
+  const currentStateSteps = Array.isArray(currentStateStepsCandidate) ? currentStateStepsCandidate : [];
+  const hasStateSteps = currentStateSteps.length > 0;
+
+  if (!hasStateSteps && workflowState) {
+    collectionFlow.state = workflowState;
+  } else if (!collectionFlow.state) {
     collectionFlow.state = { status: 'pending', steps: [] };
   }
 

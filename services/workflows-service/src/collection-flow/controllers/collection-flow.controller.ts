@@ -31,6 +31,7 @@ import { CollectionFlowStateService } from '../services/collection-flow-state.se
 import { PrismaService } from '@/prisma/prisma.service';
 import { DocumentService } from '@/document/document.service';
 import { isObject } from '@ballerine/common';
+import { merge } from 'lodash';
 
 @UseWorkflowAuthGuard()
 @ApiExcludeController()
@@ -157,10 +158,25 @@ export class CollectionFlowController {
   @common.Post('/final-submission')
   async finalSubmission(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     try {
-      const { eventName, context } = body;
+      const { eventName, context: incomingContext = {} } = body;
+      const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
+        tokenScope.workflowRuntimeDataId,
+        { select: { context: true } },
+        [tokenScope.projectId],
+      );
+      // final-submission payloads may be partial; preserve runtime context fields that are not sent
+      // by clients (e.g. entity/customData) before updating runtime data.
+      const context = merge(
+        {},
+        (workflowRuntimeData?.context ?? {}) as Record<string, unknown>,
+        incomingContext ?? {},
+      ) as AnyRecord;
 
-      const collectionFlowState = (context.collectionFlow as AnyRecord)
-        .state as TCollectionFlowState;
+      const collectionFlowState = ((context.collectionFlow as AnyRecord)?.state ??
+        {}) as TCollectionFlowState;
+      const collectionFlowSteps = Array.isArray(collectionFlowState?.steps)
+        ? collectionFlowState.steps
+        : [];
 
       if (collectionFlowState?.status === CollectionFlowStatusesEnum.edit) {
         const pluginsOutput = this.collectionFlowService.removePluginsOutput({
@@ -242,13 +258,11 @@ export class CollectionFlowController {
       await this.collectionFlowStateService.updateCollectionFlowState(
         tokenScope.workflowRuntimeDataId,
         {
-          ...((context.collectionFlow as AnyRecord).state as TCollectionFlowState),
-          steps: ((context.collectionFlow as AnyRecord).state as TCollectionFlowState).steps.map(
-            (step: TCollectionFlowStep) => ({
-              ...step,
-              state: CollectionFlowStepStatesEnum.completed,
-            }),
-          ),
+          ...collectionFlowState,
+          steps: collectionFlowSteps.map((step: TCollectionFlowStep) => ({
+            ...step,
+            state: CollectionFlowStepStatesEnum.completed,
+          })),
           status: CollectionFlowStatusesEnum.completed,
         },
         [tokenScope.projectId],

@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WebhooksService } from '@/webhooks/webhooks.service';
+import { resolveWebhookSharedSecret } from '@/events/resolve-webhook-shared-secret';
 
 const getExtensionFromMimeType = (mimeType: string) => {
   const parts = mimeType?.split('/');
@@ -127,6 +128,16 @@ export class DocumentChangedWebhookCaller {
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;
+    const resolvedWebhookSharedSecret = resolveWebhookSharedSecret({
+      configuredWebhookSharedSecret: webhookSharedSecret,
+      configService: this.configService,
+    });
+
+    if (!resolvedWebhookSharedSecret) {
+      this.logger.warn('No webhook shared secret configured; webhook will be sent unsigned.', {
+        projectId: data.updatedRuntimeData.projectId,
+      });
+    }
 
     for (const webhook of webhooks) {
       await this.sendWebhook({
@@ -134,7 +145,7 @@ export class DocumentChangedWebhookCaller {
         newDocumentsByIdentifier,
         oldDocuments,
         webhook,
-        webhookSharedSecret,
+        webhookSharedSecret: resolvedWebhookSharedSecret,
         forceDirect: customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled !== true,
       });
     }
@@ -152,7 +163,7 @@ export class DocumentChangedWebhookCaller {
     newDocumentsByIdentifier: Record<string, DefaultContextSchema['documents'][number]>;
     oldDocuments: DefaultContextSchema['documents'];
     webhook: Webhook;
-    webhookSharedSecret: string;
+    webhookSharedSecret?: string;
     forceDirect?: boolean;
   }) {
     const payload = {

@@ -12,6 +12,7 @@ import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WebhooksService } from '@/webhooks/webhooks.service';
+import { resolveWebhookSharedSecret } from '@/events/resolve-webhook-shared-secret';
 
 @Injectable()
 export class WorkflowCompletedWebhookCaller {
@@ -54,6 +55,16 @@ export class WorkflowCompletedWebhookCaller {
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;
+    const resolvedWebhookSharedSecret = resolveWebhookSharedSecret({
+      configuredWebhookSharedSecret: webhookSharedSecret,
+      configService: this.configService,
+    });
+
+    if (!resolvedWebhookSharedSecret) {
+      this.logger.warn('No webhook shared secret configured; webhook will be sent unsigned.', {
+        projectId: data.runtimeData.projectId,
+      });
+    }
 
     for (const webhook of webhooks) {
       let childWorkflowsRuntimeData;
@@ -76,7 +87,7 @@ export class WorkflowCompletedWebhookCaller {
           ...(webhook.config?.withChildWorkflows ? { childWorkflowsRuntimeData } : {}),
         },
         webhook,
-        webhookSharedSecret,
+        webhookSharedSecret: resolvedWebhookSharedSecret,
         forceDirect: customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled !== true,
       });
     }
@@ -90,7 +101,7 @@ export class WorkflowCompletedWebhookCaller {
   }: {
     data: ExtractWorkflowEventData<'workflow.completed'>;
     webhook: Webhook;
-    webhookSharedSecret: string;
+    webhookSharedSecret?: string;
     forceDirect?: boolean;
   }) {
     // Omit from data properties already sent as part of the webhook payload

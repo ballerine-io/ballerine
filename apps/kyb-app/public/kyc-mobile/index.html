@@ -105,6 +105,27 @@
       .offline-banner.visible {
         display: block;
       }
+
+      /* Use more of the viewport on preview/check steps while keeping proportions. */
+      #kyc-host #blrn-app img[alt='result'] {
+        width: min(94vw, 520px) !important;
+        max-height: 58vh !important;
+        object-fit: contain !important;
+      }
+
+      #kyc-host #blrn-app .overlay.card {
+        width: min(94vw, 520px) !important;
+      }
+
+      #kyc-host #blrn-app .overlay.passport {
+        width: min(86vw, 420px) !important;
+        max-height: 86% !important;
+      }
+
+      #kyc-host #blrn-app .overlay.selfie {
+        width: min(80vw, 360px) !important;
+        max-height: 82% !important;
+      }
     </style>
   </head>
   <body>
@@ -149,7 +170,8 @@
       // 'a4' is only for full-page documents (business registrations, etc.).
       var preselectedDocInfo = hasPreselectedDoc ? {
         type: preselectedDocType,
-        kind: preselectedDocType,
+        // Keep UI doc type specific, but normalize uploaded category for Unified API plugin mappings.
+        kind: 'proof_of_identity',
         variant: 'regular',
         backSide: preselectedDocType !== 'passport',
         orderIndex: 0,
@@ -172,10 +194,10 @@
               name: 'document-selection',
               id: 'document-selection',
               documentOptions: [
-                { type: 'id_card', kind: 'id_card' },
-                { type: 'passport', kind: 'passport' },
-                { type: 'voter_id', kind: 'voter_id' },
-                { type: 'drivers_license', kind: 'drivers_license' },
+                { type: 'id_card', kind: 'proof_of_identity' },
+                { type: 'passport', kind: 'proof_of_identity' },
+                { type: 'voter_id', kind: 'proof_of_identity' },
+                { type: 'drivers_license', kind: 'proof_of_identity' },
               ],
             },
           );
@@ -241,6 +263,36 @@
         if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
         if (/unsupported|not accepted|wrong document/.test(lower)) return 'DOCUMENT_TYPE_UNSUPPORTED';
         return 'GENERIC';
+      }
+
+      function safeJsonClone(value, fallback) {
+        try {
+          if (value == null) return fallback;
+          return JSON.parse(JSON.stringify(value));
+        } catch (e) {
+          console.warn('Failed to clone JSON payload:', e);
+          return fallback;
+        }
+      }
+
+      function buildWorkflowContextForSubmission(activeFlow) {
+        var context = safeJsonClone(activeFlow && activeFlow.context, {}) || {};
+        var activeState = safeJsonClone(activeFlow && activeFlow.state, null);
+
+        if (!context.collectionFlow || typeof context.collectionFlow !== 'object') {
+          context.collectionFlow = {};
+        }
+
+        // Prefer the computed state from /active-flow (contains canonical step tuple).
+        if (
+          activeState &&
+          Array.isArray(activeState.steps) &&
+          activeState.steps.length > 0
+        ) {
+          context.collectionFlow.state = activeState;
+        }
+
+        return context;
       }
 
       // ── Main initialization ──
@@ -334,17 +386,20 @@
             : detectedReasonCode;
 
         // 3. Initialize Ballerine SDK
+        var workflowContextPayload = buildWorkflowContextForSubmission(workflowData);
+        var workflowStatePayload = safeJsonClone(workflowData && workflowData.state, {});
+
         var sdkConfig = {
           endUserInfo: {
             id: endUserId,
             endUserMetadata: {
               issuingCountry: issuingCountry,
-              // Only pass the minimal context fields needed by the SDK's final-submission.
-              // The SDK spreads this into the COLLECTION_FLOW_FINISHED payload context.
-              // Passing the entire workflow context is wasteful (can be 100KB+) and fragile.
-              workflowContext: JSON.stringify({
-                collectionFlow: (workflowData?.context || {}).collectionFlow || {},
-              }),
+              // Keep full context required by workflow plugins (entity/customData) and
+              // use computed active-flow state to avoid invalid empty step arrays.
+              workflowContext: JSON.stringify(workflowContextPayload),
+              workflowState: JSON.stringify(workflowStatePayload),
+              documentCategory: 'proof_of_identity',
+              selfieCategory: 'proof_of_identity_ownership',
               preselectedDocType: preselectedDocType || '',
             },
           },
@@ -463,14 +518,14 @@
                 },
                 // ── End-state translations ──
                 loader: {
-                  'text-one': 'Uploading photos...',
-                  'text-two': 'Processing verification...',
-                  'text-three': 'Manual review may be needed...',
+                  'text-one': 'Step 1 of 3: Uploading your document photos...',
+                  'text-two': 'Step 2 of 3: Running document and face checks...',
+                  'text-three': 'Step 3 of 3: Finalizing your verification result...',
                 },
                 final: {
                   title: 'Verification Complete',
                   description:
-                    'Your documents have been submitted successfully. You can now close this page.',
+                    'Your ID and selfie were submitted successfully. We are now completing automated checks and will ask for more info only if needed.',
                   button: 'Done',
                 },
                 // ── Resubmission per-reason translations ──

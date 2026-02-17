@@ -5,6 +5,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
+import { resolveWebhookSharedSecret } from '@/events/resolve-webhook-shared-secret';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { WebhooksService } from '@/webhooks/webhooks.service';
@@ -48,6 +49,16 @@ export class WorkflowStateChangedWebhookCaller {
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;
+    const resolvedWebhookSharedSecret = resolveWebhookSharedSecret({
+      configuredWebhookSharedSecret: webhookSharedSecret,
+      configService: this.configService,
+    });
+
+    if (!resolvedWebhookSharedSecret) {
+      this.logger.warn('No webhook shared secret configured; webhook will be sent unsigned.', {
+        projectId: data.runtimeData.projectId,
+      });
+    }
 
     for (const webhook of webhooks) {
       let childWorkflowsRuntimeData;
@@ -67,7 +78,7 @@ export class WorkflowStateChangedWebhookCaller {
       await this.sendWebhook({
         data,
         webhook,
-        webhookSharedSecret,
+        webhookSharedSecret: resolvedWebhookSharedSecret,
         forceDirect: customer.features?.WEBHOOK_QUEUE_SYSTEM_ENABLED?.enabled !== true,
         childWorkflowsRuntimeData,
       });
@@ -83,7 +94,7 @@ export class WorkflowStateChangedWebhookCaller {
   }: {
     data: ExtractWorkflowEventData<'workflow.state.changed'>;
     webhook: Webhook;
-    webhookSharedSecret: string;
+    webhookSharedSecret?: string;
     forceDirect?: boolean;
     childWorkflowsRuntimeData?: unknown;
   }) {
