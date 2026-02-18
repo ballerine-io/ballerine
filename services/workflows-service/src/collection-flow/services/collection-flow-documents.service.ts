@@ -85,6 +85,7 @@ export class CollectionFlowDocumentsService {
           businessId: data.businessId,
           endUserId: data.endUserId,
           version: 1,
+          workflowRuntimeDataId: workflowId,
         },
         [projectId],
         transaction,

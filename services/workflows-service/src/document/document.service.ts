@@ -180,12 +180,14 @@ export class DocumentService {
       businessId,
       endUserId,
       version,
+      workflowRuntimeDataId,
     }: {
       category: string;
       type: string;
       businessId?: string;
       endUserId?: string;
       version: number;
+      workflowRuntimeDataId?: string;
     },
     projectIds: TProjectId[],
     transaction?: PrismaTransactionClient,
@@ -209,6 +211,7 @@ export class DocumentService {
           businessId,
           endUserId,
           version,
+          ...(workflowRuntimeDataId ? { workflowRuntimeDataId } : {}),
         },
       },
       transaction,
