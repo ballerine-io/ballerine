@@ -158,6 +158,7 @@ describe('WorkflowService', () => {
     businessRepo = new FakeBusinessRepo();
     businessService = new FakeBusinessRepo();
     businessReportService = new FakeBusinessRepo();
+    const endUserService = {} as any;
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
     customerService = new FakeCustomerRepo();
@@ -170,6 +171,13 @@ describe('WorkflowService', () => {
     workflowLogService = new FakeWorkflowLogService();
     assessmentsService = new FakeAssessmentsService();
     kycService = new FakeKycService();
+    projectScopeService = {} as any;
+    const fileService = {} as any;
+    const prismaService = {} as any;
+    const sentry = {} as any;
+    const secretsManagerFactory = {} as any;
+    const storageService = {} as any;
+    const documentService = {} as any;
     fakeHttpService = {
       requests: [],
 
@@ -212,13 +220,13 @@ describe('WorkflowService', () => {
       workflowDefinitionRepo as any,
       workflowRuntimeDataRepo,
       endUserRepo,
+      endUserService,
       businessReportService,
-      {} as any,
       businessRepo,
       businessService,
       entityRepo,
       customerService,
-      {} as any,
+      fileService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
       projectScopeService,
@@ -226,15 +234,16 @@ describe('WorkflowService', () => {
       salesforceService,
       workflowTokenService,
       uiDefinitionService,
-      {} as any,
+      prismaService,
       riskRuleService,
       ruleEngineService,
-      {} as any,
-      {} as any,
-      {} as any,
+      sentry,
+      secretsManagerFactory,
+      storageService,
       workflowLogService,
       assessmentsService,
       kycService,
+      documentService,
     );
   });
 

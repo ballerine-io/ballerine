@@ -288,14 +288,9 @@ export class WorkflowDefinitionRepository {
         workflowRuntimeData: {
           some: {
             id: workflowRuntimeDataId,
+            ...(projectIds ? { projectId: { in: projectIds } } : {}),
           },
         },
-        OR: [
-          // Project-scoped workflow definitions
-          { projectId: { in: projectIds } },
-          // Public workflow definitions (projectId is null but still valid)
-          { projectId: null, isPublic: true },
-        ],
       },
     });
   }
