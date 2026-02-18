@@ -5,6 +5,8 @@ import { setLogger } from '@ballerine/workflow-core';
 
 @Injectable()
 export class AppLoggerService implements LoggerService, OnModuleDestroy {
+  private isClosed = false;
+
   constructor(
     @Inject('LOGGER') private readonly logger: IAppLogger,
     private readonly cls: ClsService,
@@ -18,14 +20,17 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
+    this.isClosed = true;
     await this.logger.close();
   }
 
   log(message: string, logData: LogPayload = {}) {
+    if (this.isClosed) return;
     this.logger.info(message, { ...this.getLogMetadata(), logData });
   }
 
   error(error: unknown, logData: LogPayload = {}) {
+    if (this.isClosed) return;
     const payload: any = { ...this.getLogMetadata(), logData };
     const STACK_FRAMES_TO_REMOVE = 1;
 
@@ -42,10 +47,12 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
   }
 
   warn(message: string, logData: LogPayload = {}) {
+    if (this.isClosed) return;
     this.logger.warn(message, { ...this.getLogMetadata(), logData });
   }
 
   debug(message: string, logData: LogPayload = {}) {
+    if (this.isClosed) return;
     this.logger.debug(message, { ...this.getLogMetadata(), logData });
   }
 

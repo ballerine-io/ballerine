@@ -250,11 +250,15 @@ export class FileService {
       };
     }
 
-    if (provider == 'base64' && z.string().refine(Base64.isValid).parse(uri)) {
-      return {
-        sourceServiceProvider: new Base64FileService(),
-        sourceRemoteFileConfig: uri as TRemoteFileConfig,
-      };
+    if (provider == 'base64') {
+      const normalizedBase64 = this.normalizeBase64Payload(uri);
+
+      if (z.string().refine(Base64.isValid).parse(normalizedBase64)) {
+        return {
+          sourceServiceProvider: new Base64FileService(),
+          sourceRemoteFileConfig: normalizedBase64 as TRemoteFileConfig,
+        };
+      }
     }
 
     return {
@@ -428,5 +432,11 @@ export class FileService {
       customer.name,
       { shouldDownloadFromSource: false },
     );
+  }
+
+  private normalizeBase64Payload(uri: string): string {
+    const match = uri.match(/^data:.*;base64,(.+)$/);
+
+    return match && match[1] ? match[1] : uri;
   }
 }

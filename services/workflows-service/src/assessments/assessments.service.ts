@@ -90,14 +90,37 @@ export class AssessmentsService {
 
   async getLatestAssessmentsByWorkflowRuntimeDataId({
     workflowRuntimeDataId,
+    customerId,
     projectId,
   }: {
     workflowRuntimeDataId: string;
-    projectId: string;
+    customerId?: string;
+    projectId?: string;
   }) {
+    let resolvedCustomerId = customerId;
+    let resolvedProjectId = projectId;
+
+    // Back-compat: some call sites pass Ballerine projectId (e.g. "project-sl-default")
+    // while Unified API expects x-tenant-id/x-project-id (e.g. "mikashboks-default"/"sl-default").
+    // If customerId is missing, infer both from the Ballerine project record.
+    if ((!resolvedCustomerId || !resolvedProjectId) && projectId) {
+      try {
+        const customer = await this.customerService.getByProjectId(projectId);
+        resolvedCustomerId ||= customer?.name;
+
+        if (resolvedProjectId === projectId) {
+          const project = (customer?.projects ?? []).find((p: any) => p.id === projectId);
+          resolvedProjectId = project?.name || resolvedProjectId;
+        }
+      } catch {
+        // Best-effort inference only.
+      }
+    }
+
     return await this.unifiedApiClient.getLatestAssessmentsByWorkflowRuntimeDataId({
       workflowRuntimeDataId,
-      projectId,
+      customerId: resolvedCustomerId,
+      projectId: resolvedProjectId,
     });
   }
 }

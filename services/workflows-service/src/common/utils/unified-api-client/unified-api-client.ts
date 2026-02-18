@@ -321,14 +321,19 @@ export class UnifiedApiClient {
 
   public async getLatestAssessmentsByWorkflowRuntimeDataId({
     workflowRuntimeDataId,
+    customerId,
     projectId,
   }: {
     workflowRuntimeDataId: string;
-    projectId: string;
+    customerId?: string;
+    projectId?: string;
   }) {
     try {
       const response = await this.axiosInstance.get<Array<Record<string, any>>>(
-        `/assessments/latest-by-workflow-runtime-data-id/${workflowRuntimeDataId}?projectId=${projectId}`,
+        `/assessments/latest-by-workflow-runtime-data-id/${workflowRuntimeDataId}`,
+        {
+          headers: this.buildTenantHeaders(customerId, projectId),
+        },
       );
 
       return response.data;

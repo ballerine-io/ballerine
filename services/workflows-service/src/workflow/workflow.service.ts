@@ -322,15 +322,18 @@ export class WorkflowService {
 
   private async getIndividualVerificationsChecksWithFallback({
     workflowRuntimeDataId,
+    customerId,
     projectId,
   }: {
     workflowRuntimeDataId: string;
-    projectId: string;
+    customerId?: string;
+    projectId?: string;
   }) {
     try {
       const assessments = await this.assessmentsService.getLatestAssessmentsByWorkflowRuntimeDataId(
         {
           workflowRuntimeDataId,
+          customerId,
           projectId,
         },
       );
@@ -343,6 +346,7 @@ export class WorkflowService {
       if (!(error instanceof NotFoundException)) {
         this.logger.warn('Failed to fetch individual verification checks (non-fatal)', {
           workflowRuntimeDataId,
+          customerId,
           projectId,
           error: error instanceof Error ? error.message : String(error),
         });
@@ -414,11 +418,26 @@ export class WorkflowService {
         ReturnType<typeof this.getIndividualVerificationsChecksWithFallback>
       > = {};
 
+      const unifiedTenantId =
+        typeof (workflow.context as any)?.entity?.data?.tenantId === 'string'
+          ? String((workflow.context as any).entity.data.tenantId).trim()
+          : undefined;
+      const unifiedProjectId =
+        typeof (workflow.context as any)?.entity?.data?.projectId === 'string'
+          ? String((workflow.context as any).entity.data.projectId).trim()
+          : undefined;
+
       for (const workflowId of workflowIds) {
+        if (!unifiedTenantId || !unifiedProjectId) {
+          workflowIdsToIndividualVerificationsChecks[workflowId] = Promise.resolve([]);
+          continue;
+        }
+
         workflowIdsToIndividualVerificationsChecks[workflowId] =
           this.getIndividualVerificationsChecksWithFallback({
             workflowRuntimeDataId: workflowId,
-            projectId: workflow.projectId,
+            customerId: unifiedTenantId,
+            projectId: unifiedProjectId,
           });
       }
 
