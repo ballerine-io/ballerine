@@ -3,9 +3,11 @@ import { Param, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { unlink } from 'fs/promises';
 
+import { Public } from '@/common/decorators/public.decorator';
 import { StorageService } from './storage.service';
 import { getFileLinkSigningSecret, verifyFileLinkSignature } from './public-file-link';
 
+@Public()
 @common.Controller('public/files')
 export class StorageControllerPublic {
   constructor(protected readonly service: StorageService) {}
