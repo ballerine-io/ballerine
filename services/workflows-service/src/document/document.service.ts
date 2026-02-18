@@ -277,7 +277,7 @@ export class DocumentService {
 
     if (!workflowDefinition) {
       throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+        `Workflow definition for workflowRuntimeDataId "${workflowRuntimeDataId}" not found`,
       );
     }
 
@@ -311,7 +311,7 @@ export class DocumentService {
 
     if (!workflowDefinition) {
       throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
+        `Workflow definition for workflowRuntimeDataId "${workflowRuntimeDataId}" not found`,
       );
     }
 
