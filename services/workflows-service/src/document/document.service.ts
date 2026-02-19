@@ -236,15 +236,9 @@ export class DocumentService {
       [projectId],
     );
 
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" not found`,
-      );
-    }
-
     const formattedDocuments = await this.formatDocuments({
       documents: [document],
-      documentSchema: workflowDefinition.documentsSchema,
+      documentSchema: workflowDefinition?.documentsSchema ?? null,
     });
 
     return formattedDocuments[0];
@@ -396,12 +390,6 @@ export class DocumentService {
       ...(documentData.endUserId && { endUserId: documentData.endUserId }),
     });
 
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${data.workflowRuntimeDataId}" not found`,
-      );
-    }
-
     return await this.getByEntityIdAndWorkflowId(entityId, data.workflowRuntimeDataId, [projectId]);
   }
 
@@ -427,12 +415,6 @@ export class DocumentService {
       projectIds,
     );
 
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
-      );
-    }
-
     const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
       {
         ...document,
@@ -440,10 +422,11 @@ export class DocumentService {
           country: document.issuingCountry,
         },
       } as any,
-      workflowDefinition.documentsSchema,
+      workflowDefinition?.documentsSchema ?? null,
     );
     const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
-    const shouldValidateDocument = data.properties && Object.keys(propertiesSchema)?.length;
+    const shouldValidateDocument =
+      Boolean(workflowDefinition) && data.properties && Object.keys(propertiesSchema)?.length;
 
     if (shouldValidateDocument) {
       const validatePropertiesSchema = ajv.compile(propertiesSchema);
@@ -460,7 +443,7 @@ export class DocumentService {
 
     return this.formatDocuments({
       documents,
-      documentSchema: workflowDefinition.documentsSchema,
+      documentSchema: workflowDefinition?.documentsSchema ?? null,
     });
   }
 
@@ -497,12 +480,6 @@ export class DocumentService {
         projectIds,
       );
 
-      if (!workflowDefinition) {
-        throw new BadRequestException(
-          `Workflow definition for a workflow with an id of "${document.workflowRuntimeDataId}" was not found`,
-        );
-      }
-
       const documentWithPropertiesSchema = addPropertiesSchemaToDocument(
         {
           ...document,
@@ -510,11 +487,13 @@ export class DocumentService {
             country: document.issuingCountry,
           },
         } as any,
-        workflowDefinition.documentsSchema,
+        workflowDefinition?.documentsSchema ?? null,
       );
       const propertiesSchema = documentWithPropertiesSchema.propertiesSchema ?? {};
       const shouldValidateDocument =
-        data.decision === 'approve' && Object.keys(propertiesSchema)?.length;
+        Boolean(workflowDefinition) &&
+        data.decision === 'approve' &&
+        Object.keys(propertiesSchema)?.length;
 
       if (shouldValidateDocument) {
         const validatePropertiesSchema = ajv.compile(propertiesSchema);
@@ -552,7 +531,7 @@ export class DocumentService {
 
       return this.formatDocuments({
         documents,
-        documentSchema: workflowDefinition.documentsSchema,
+        documentSchema: workflowDefinition?.documentsSchema ?? null,
       });
     });
   }
@@ -790,15 +769,9 @@ export class DocumentService {
       projectIds,
     );
 
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for a workflow with an id of "${workflowRuntimeDataId}" not found`,
-      );
-    }
-
     return this.formatDocuments({
       documents,
-      documentSchema: workflowDefinition.documentsSchema,
+      documentSchema: workflowDefinition?.documentsSchema ?? null,
     });
   }
 
