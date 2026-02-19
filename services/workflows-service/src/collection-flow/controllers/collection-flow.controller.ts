@@ -65,6 +65,14 @@ export class CollectionFlowController {
       [tokenScope.projectId],
     );
 
+    // Refresh document URLs on every active-flow read so reopened sessions do not
+    // return expired links from persisted context.
+    await this.synthesizeContextDocumentsFromLatestFiles({
+      context: (activeWorkflow.context ?? {}) as AnyRecord,
+      workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+      projectId: tokenScope.projectId,
+    });
+
     try {
       const adapter = this.adapterManager.getAdapter(activeWorkflow.workflowDefinitionId);
 
@@ -199,53 +207,11 @@ export class CollectionFlowController {
       //
       // This keeps workflow definitions simple and ensures verification plugins have access to
       // signed URLs immediately after the end-user submits/resubmits their documents.
-      try {
-        const latestDocs = await this.documentService.getLatestDocumentsWithFilesByWorkflowId(
-          tokenScope.workflowRuntimeDataId,
-          [tokenScope.projectId],
-        );
-
-        const latestDocsWithSignedUrls = await this.documentService.fetchDocumentsFiles({
-          documents: latestDocs as any,
-          format: 'signed-url',
-        });
-
-        (context as AnyRecord).documents = (latestDocsWithSignedUrls as any[]).map(doc => ({
-          category: doc.category,
-          type: doc.type,
-          issuer: { country: doc.issuingCountry || 'SL' },
-          pages: (doc.files ?? [])
-            .slice()
-            .sort((a: any, b: any) => {
-              const variantOrder = (v: string) => (v === 'front' ? 0 : v === 'back' ? 1 : 2);
-              return (
-                variantOrder(a.variant) - variantOrder(b.variant) || (a.page || 0) - (b.page || 0)
-              );
-            })
-            .map((file: any) => ({
-              provider: 'http',
-              uri: file.imageUrl,
-              type: file.mimeType,
-              metadata: {
-                side: file.variant,
-                pageNumber: file.page != null ? String(file.page) : undefined,
-              },
-            })),
-          properties: isObject(doc.properties) ? doc.properties : {},
-          decision: doc.decision
-            ? {
-                status: doc.decision,
-                comment: doc.comment ?? undefined,
-              }
-            : undefined,
-        }));
-      } catch (error) {
-        // Non-fatal: allow flows without documents (or with external/programmatic docs) to proceed.
-        this.appLogger.warn('Failed to synthesize context.documents from documents service', {
-          workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
-          error,
-        });
-      }
+      await this.synthesizeContextDocumentsFromLatestFiles({
+        context: context as AnyRecord,
+        workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+        projectId: tokenScope.projectId,
+      });
 
       await this.workflowService.updateWorkflowRuntimeData(
         tokenScope.workflowRuntimeDataId,
@@ -319,6 +285,62 @@ export class CollectionFlowController {
       [tokenScope.projectId],
       tokenScope.projectId,
     );
+  }
+
+  private async synthesizeContextDocumentsFromLatestFiles({
+    context,
+    workflowRuntimeDataId,
+    projectId,
+  }: {
+    context: AnyRecord;
+    workflowRuntimeDataId: string;
+    projectId: string;
+  }) {
+    try {
+      const latestDocs = await this.documentService.getLatestDocumentsWithFilesByWorkflowId(
+        workflowRuntimeDataId,
+        [projectId],
+      );
+
+      const latestDocsWithSignedUrls = await this.documentService.fetchDocumentsFiles({
+        documents: latestDocs as any,
+        format: 'signed-url',
+      });
+
+      context.documents = (latestDocsWithSignedUrls as any[]).map(doc => ({
+        category: doc.category,
+        type: doc.type,
+        issuer: { country: doc.issuingCountry || 'SL' },
+        pages: (doc.files ?? [])
+          .slice()
+          .sort((a: any, b: any) => {
+            const variantOrder = (v: string) => (v === 'front' ? 0 : v === 'back' ? 1 : 2);
+            return variantOrder(a.variant) - variantOrder(b.variant) || (a.page || 0) - (b.page || 0);
+          })
+          .map((file: any) => ({
+            provider: 'http',
+            uri: file.imageUrl,
+            type: file.mimeType,
+            metadata: {
+              side: file.variant,
+              pageNumber: file.page != null ? String(file.page) : undefined,
+            },
+          })),
+        properties: isObject(doc.properties) ? doc.properties : {},
+        decision: doc.decision
+          ? {
+              status: doc.decision,
+              comment: doc.comment ?? undefined,
+            }
+          : undefined,
+      }));
+    } catch (error) {
+      // Non-fatal: allow flows without documents (or with external/programmatic docs) to proceed.
+      this.appLogger.warn('Failed to synthesize context.documents from documents service', {
+        workflowRuntimeDataId,
+        error,
+      });
+    }
   }
 
   @common.Get('/workflow-id')
