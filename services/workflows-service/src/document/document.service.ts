@@ -278,15 +278,9 @@ export class DocumentService {
       projectIds,
     );
 
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for workflowRuntimeDataId "${workflowRuntimeDataId}" not found`,
-      );
-    }
-
     const formattedDocuments = await this.formatDocuments({
       documents,
-      documentSchema: workflowDefinition.documentsSchema,
+      documentSchema: workflowDefinition?.documentsSchema ?? null,
     });
 
     return this.getLatestDocumentVersions(formattedDocuments);
@@ -312,15 +306,9 @@ export class DocumentService {
       projectIds,
     );
 
-    if (!workflowDefinition) {
-      throw new BadRequestException(
-        `Workflow definition for workflowRuntimeDataId "${workflowRuntimeDataId}" not found`,
-      );
-    }
-
     const formattedDocuments = await this.formatDocuments({
       documents,
-      documentSchema: workflowDefinition.documentsSchema,
+      documentSchema: workflowDefinition?.documentsSchema ?? null,
     });
 
     return this.getLatestDocumentVersions(formattedDocuments);
