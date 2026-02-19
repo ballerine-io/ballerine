@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import { env } from '@/env';
 import {
   Logger,
@@ -185,7 +185,11 @@ export class UnifiedApiClient {
   }
 
   private buildIdempotencyKey(input: Record<string, unknown>): string {
-    const payload = stableStringify(input) ?? '';
+    const payload = stableStringify(input);
+    if (!payload) {
+      this.logger.warn('[UnifiedApiClient] Failed to serialize input for idempotency key — skipping idempotency');
+      return `kyc-noidempotency-${randomUUID()}`;
+    }
     const digest = createHash('sha256').update(payload).digest('hex');
     return `kyc-${digest}`;
   }
