@@ -6,7 +6,7 @@ import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-infor
 import { tw, Typography } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
-import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
+import poweredByLogo from '../../assets/title-page-mikashboks-logo.png';
 import { TBaseCaseInformationPdf } from '@/pages/Entity/pdfs/case-information/schemas/base-case-information-pdf.schema';
 
 export const EmptyIndividualSanctionsPage: FunctionComponent<TBaseCaseInformationPdf> = ({

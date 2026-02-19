@@ -38,6 +38,7 @@ export class BullMQPrometheusService implements OnModuleInit {
       };
 
       const queue = this.queues[0];
+
       if (!queue) {
         return '# No BullMQ queues available for metrics';
       }
@@ -45,10 +46,12 @@ export class BullMQPrometheusService implements OnModuleInit {
       const metrics = await Promise.all(
         this.queues.map(q => q.exportPrometheusMetrics(globalVariables)),
       );
-      return metrics.join('\n');
+      
+return metrics.join('\n');
     } catch (error) {
       this.logger.error('Failed to export BullMQ Prometheus metrics', { error });
-      return '# Error exporting BullMQ metrics';
+      
+return '# Error exporting BullMQ metrics';
     }
   }
 }

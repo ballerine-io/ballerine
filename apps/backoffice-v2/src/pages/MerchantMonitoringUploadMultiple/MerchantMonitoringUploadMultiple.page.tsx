@@ -1,4 +1,4 @@
-import { ErrorMessage, ErrorsList, Input } from '@ballerine/ui';
+import { ErrorsList, Input } from '@ballerine/ui';
 import { Link } from 'react-router-dom';
 import { ctw } from '@/common/utils/ctw/ctw';
 import React, { FunctionComponent } from 'react';
@@ -72,7 +72,7 @@ export const MerchantMonitoringUploadMultiplePage: FunctionComponent = () => {
                   className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
                 >
                   <Loader2
-                    className={ctw('me-2 h-4 w-4 animate-spin', {
+                    className={ctw('me-2 size-4 animate-spin', {
                       hidden: !isCreateReportBatchReady,
                     })}
                   />

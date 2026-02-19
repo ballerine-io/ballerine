@@ -6,4 +6,5 @@ export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
     <div ref={ref} className={ctw('flex flex-col space-y-1.5 p-6', className)} {...props} />
   ),
 );
+
 CardHeader.displayName = 'CardHeader';

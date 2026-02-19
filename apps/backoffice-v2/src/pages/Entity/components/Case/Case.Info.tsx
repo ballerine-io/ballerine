@@ -31,11 +31,15 @@ export const useInfo = ({
         const section = info[key] ?? {};
 
         // Don't render sections with no title
-        if (Object.keys(section).length === 0) return acc;
+        if (Object.keys(section).length === 0) {
+return acc;
+}
 
         const data = Object.entries(section).reduce((acc, [key, value]) => {
           // Don't render empty fields
-          if (isNullish(value) || value === '') return acc;
+          if (isNullish(value) || value === '') {
+return acc;
+}
 
           acc[key] = value;
 
@@ -43,7 +47,9 @@ export const useInfo = ({
         }, {});
 
         // Don't render sections with a title but no fields
-        if (Object.values(data).length === 0) return acc;
+        if (Object.values(data).length === 0) {
+return acc;
+}
 
         acc.push({
           title: toStartCase(camelCaseToSpace(key)),

@@ -1,5 +1,5 @@
-export const USER_CREATED_LABEL_CDN_LINK = 'https://cdn.ballerine.io/logos/label-user.svg';
-export const SYSTEM_CREATED_LABEL_CDN_LINK = 'https://cdn.ballerine.io/logos/label-system.svg';
+export const USER_CREATED_LABEL_CDN_LINK = '/assets/logos/label-user.svg';
+export const SYSTEM_CREATED_LABEL_CDN_LINK = '/assets/logos/label-system.svg';
 
 export const userCreatedIconCell = {
   type: 'image',

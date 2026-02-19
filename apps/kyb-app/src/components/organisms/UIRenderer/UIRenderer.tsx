@@ -8,7 +8,7 @@ import { ComponentProps, FunctionComponent, useMemo } from 'react';
 import { UiRendererContext } from './ui-renderer.context';
 
 export interface UIRendererProps {
-  schema: UIElement<AnyObject>[];
+  schema: Array<UIElement<AnyObject>>;
   elements?: ElementsMap;
 }
 

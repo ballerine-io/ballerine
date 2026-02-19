@@ -1,9 +1,13 @@
 import { Rule } from '@/domains/collection-flow';
 
 export const injectIndexesAtRulesPaths = (rules: Rule[], index: number | null = null) => {
-  if (index === null) return rules;
+  if (index === null) {
+return rules;
+}
 
-  if (!Array.isArray(rules)) return rules;
+  if (!Array.isArray(rules)) {
+return rules;
+}
 
   const result = rules.map(rule => {
     if (rule.type === 'json-logic') {

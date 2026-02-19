@@ -31,7 +31,7 @@ export const JsonDialog = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl">
-        <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+        <Suspense fallback={<Loader2 className="size-8 animate-spin" />}>
           <ReactJson
             name={null}
             theme={'bright'}

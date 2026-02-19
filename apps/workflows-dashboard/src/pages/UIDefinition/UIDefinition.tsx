@@ -39,7 +39,9 @@ export const UIDefinition = () => {
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+return null;
+}
 
   return (
     <DashboardLayout pageName={`UI Definition - ${data?.id}`}>

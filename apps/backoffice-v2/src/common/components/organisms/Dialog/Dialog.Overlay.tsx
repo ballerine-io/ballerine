@@ -15,4 +15,5 @@ export const DialogOverlay = React.forwardRef<
     ref={ref}
   />
 ));
+
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;

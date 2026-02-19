@@ -15,7 +15,10 @@ const cache = new Map<string, TIdTokenCacheEntry>();
 
 const decodeJwtExpMs = (jwt: string): number | null => {
   const parts = jwt.split('.');
-  if (parts.length < 2) return null;
+
+  if (parts.length < 2) {
+return null;
+}
 
   const payloadB64 = parts[1]!.replace(/-/g, '+').replace(/_/g, '/');
   const padded = payloadB64.padEnd(Math.ceil(payloadB64.length / 4) * 4, '=');
@@ -24,8 +27,13 @@ const decodeJwtExpMs = (jwt: string): number | null => {
     const payload = JSON.parse(Buffer.from(padded, 'base64').toString('utf8')) as {
       exp?: number;
     };
-    if (!payload.exp) return null;
-    return payload.exp * 1000;
+
+    if (!payload.exp) {
+return null;
+}
+
+    
+return payload.exp * 1000;
   } catch {
     return null;
   }
@@ -33,10 +41,15 @@ const decodeJwtExpMs = (jwt: string): number | null => {
 
 export const getGcpIdToken = async (audience: string): Promise<string | null> => {
   // Cloud Run sets K_SERVICE; avoid metadata calls in local/dev and other runtimes.
-  if (!process.env.K_SERVICE) return null;
+  if (!process.env.K_SERVICE) {
+return null;
+}
 
   const cached = cache.get(audience);
-  if (cached && Date.now() < cached.expMs - 60_000) return cached.token;
+
+  if (cached && Date.now() < cached.expMs - 60_000) {
+return cached.token;
+}
 
   const url = new URL(
     'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity',
@@ -48,11 +61,13 @@ export const getGcpIdToken = async (audience: string): Promise<string | null> =>
     const res = await fetch(url.toString(), {
       headers: { 'Metadata-Flavor': 'Google' },
     });
+
     if (!res.ok) {
       console.warn(
         `[getGcpIdToken] Metadata server returned ${res.status} for audience=${audience}`,
       );
-      return null;
+      
+return null;
     }
 
     const token = await res.text();
@@ -62,6 +77,7 @@ export const getGcpIdToken = async (audience: string): Promise<string | null> =>
     return token;
   } catch (err) {
     console.warn('[getGcpIdToken] Failed to fetch ID token from metadata server', err);
-    return null;
+    
+return null;
   }
 };

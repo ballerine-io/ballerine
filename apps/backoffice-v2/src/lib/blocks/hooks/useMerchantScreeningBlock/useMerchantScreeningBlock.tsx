@@ -19,7 +19,7 @@ export const useMerchantScreeningBlock = ({
   terminatedMatchedMerchants,
   inquiredMatchedMerchants,
   merchantScreeningInput,
-  logoUrl = 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
+  logoUrl = '/assets/logos/Mastercard%20logo.svg',
   rawData,
   checkDate,
 }: {

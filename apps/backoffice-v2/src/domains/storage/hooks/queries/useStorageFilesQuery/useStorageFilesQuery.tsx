@@ -3,7 +3,7 @@ import { isString } from '../../../../../common/utils/is-string/is-string';
 import { storageQueryKeys } from '../../../query-keys';
 import { useIsAuthenticated } from '../../../../auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
-export const useStorageFilesQuery = (fileIds: Array<string>) => {
+export const useStorageFilesQuery = (fileIds: string[]) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQueries({

@@ -202,7 +202,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             {value.text}
             {isReuploadResetable && (
               <X
-                className="h-4 w-4 cursor-pointer"
+                className="size-4 cursor-pointer"
                 onClick={event => {
                   event.stopPropagation();
                   onReuploadReset?.();

@@ -3,7 +3,9 @@
  * @param value
  */
 export const checkIsFormattedDatetime = (value: unknown): value is string => {
-  if (typeof value !== 'string') return false;
+  if (typeof value !== 'string') {
+return false;
+}
 
   return /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value);
 };

@@ -126,7 +126,7 @@ export const useIdentityVerificationPageLogic = () => {
           <div className="flex items-center gap-2">
             {/* Assuming Flag component is available in scope, using placeholder */}
             {/* Replace with actual Flag component if available */}
-            <span title="Flag Placeholder" className="inline-block h-4 w-4 text-red-600">
+            <span title="Flag Placeholder" className="inline-block size-4 text-red-600">
               🚩
             </span>
             <p className="text-gray-600">United Kingdom</p>

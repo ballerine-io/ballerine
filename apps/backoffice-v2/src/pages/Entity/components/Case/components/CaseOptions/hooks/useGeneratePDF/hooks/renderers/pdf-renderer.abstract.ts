@@ -1,7 +1,7 @@
 import { svgToPng } from '@/common/utils/svg-to-png/svg-to-png';
 import { TCustomer } from '@/domains/customer/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import poweredByLogo from '../../../../../../../pdfs/case-information/assets/title-page-ballerine-logo.png';
+import poweredByLogo from '../../../../../../../pdfs/case-information/assets/title-page-mikashboks-logo.png';
 
 export abstract class IPDFRenderer<TPDFData = unknown> {
   static PDF_NAME: string;

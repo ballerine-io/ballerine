@@ -289,6 +289,7 @@ export class FileService {
     };
 
     const gcsBucketName = GcpGcsFileConfig.getBucketName(process.env);
+
     if (gcsBucketName) {
       const gcsFileService = new GcpGcsFileService(this.logger);
       const remoteFileNameInBucket = gcsFileService.generateRemotePath(properties);

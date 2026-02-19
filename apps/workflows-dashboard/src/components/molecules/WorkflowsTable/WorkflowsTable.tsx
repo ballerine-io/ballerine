@@ -30,15 +30,19 @@ interface Props {
 
 export const WorkflowsTable = memo(({ items, isFetching, sorting, columns, onSort }: Props) => {
   // merging column parameters if provided
-  const tableColumns = useMemo((): WorkflowTableColumnDef<IWorkflow>[] => {
-    if (!Array.isArray(columns) || !columns.length) return defaultColumns;
+  const tableColumns = useMemo((): Array<WorkflowTableColumnDef<IWorkflow>> => {
+    if (!Array.isArray(columns) || !columns.length) {
+return defaultColumns;
+}
 
     const columnsMap = keyBy(columns, 'id');
 
     return defaultColumns.map(defaultColumn => {
       const columnParams = columnsMap[defaultColumn.accessorKey];
 
-      if (!columnParams) return defaultColumn;
+      if (!columnParams) {
+return defaultColumn;
+}
 
       return mergeColumns(defaultColumn, columnParams);
     });

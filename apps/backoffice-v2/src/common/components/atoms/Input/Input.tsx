@@ -21,4 +21,5 @@ export const Input = forwardRef<HTMLInputElement, TInputProps>(
     );
   },
 );
+
 Input.displayName = 'Input';

@@ -62,7 +62,7 @@ export const AssignDropdown: FunctionComponent<IAssignDropdownProps> = ({
           </div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-[14rem]" align="start">
+      <DropdownMenuContent className="min-w-56" align="start">
         {Array.isArray(sortedAssignees) &&
           sortedAssignees.map(assignee => (
             <DropdownMenuItem

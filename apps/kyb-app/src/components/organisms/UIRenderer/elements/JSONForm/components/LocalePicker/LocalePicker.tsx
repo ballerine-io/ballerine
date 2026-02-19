@@ -6,10 +6,10 @@ import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 export const LocalePicker = (props: RJSFInputProps) => {
   const { t } = useTranslation();
 
-  props.schema.oneOf = useMemo(() => t('languages', { returnObjects: true }), [t]) as {
+  props.schema.oneOf = useMemo(() => t('languages', { returnObjects: true }), [t]) as Array<{
     const: string;
     title: string;
-  }[];
+  }>;
 
   return <TextInputAdapter {...(props as any)} />;
 };

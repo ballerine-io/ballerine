@@ -36,7 +36,7 @@ export interface BackendEndpoint {
 
 export interface BackendOptions {
   /**
-   * @default 'https://api-dev.ballerine.io'
+   * Base URL for the backend API.
    */
   baseUrl: URL | string;
   /**

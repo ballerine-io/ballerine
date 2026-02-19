@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
+import { createHash } from 'crypto';
 import { env } from '@/env';
 import {
   Logger,
@@ -24,7 +25,10 @@ export type BusinessPayload = Pick<
   Business,
   'id' | 'correlationId' | 'companyName' | 'metadata' | 'createdAt' | 'updatedAt'
 > & {
-  project: { customer: { id: string; config: TCustomerConfig | null } };
+  project: {
+    id: string;
+    customer: { id: string; config: TCustomerConfig | null };
+  };
 };
 
 export type TOcrImages = Array<
@@ -102,11 +106,16 @@ export class UnifiedApiClient {
   private readonly logger = new Logger(UnifiedApiClient.name);
 
   constructor() {
+    const unifiedApiToken = env.UNIFIED_API_TOKEN;
+    if (!unifiedApiToken || unifiedApiToken.trim().length === 0) {
+      throw new Error('UNIFIED_API_TOKEN is required to initialize UnifiedApiClient.');
+    }
+
     this.axiosInstance = axios.create({
       baseURL: env.UNIFIED_API_URL,
       headers: {
-        Authorization: `Bearer ${env.UNIFIED_API_TOKEN as string}`,
-        'x-api-key': env.UNIFIED_API_TOKEN as string,
+        Authorization: `Bearer ${unifiedApiToken}`,
+        'x-api-key': unifiedApiToken,
       },
     });
 
@@ -123,7 +132,10 @@ export class UnifiedApiClient {
         const idToken = await getGcpIdToken(audience);
 
         if (idToken) {
-          if (!config.headers) config.headers = {} as any;
+          if (!config.headers) {
+            config.headers = {} as any;
+          }
+
           // Use the GCP standard header when Authorization is already occupied by app-level credentials.
           // This allows the request to pass Cloud Run IAM if allUsers is ever removed.
           (config.headers as any)['X-Serverless-Authorization'] = `Bearer ${idToken}`;
@@ -146,9 +158,19 @@ export class UnifiedApiClient {
    */
   private buildTenantHeaders(customerId?: string, projectId?: string): Record<string, string> {
     const headers: Record<string, string> = {};
-    if (customerId) headers['x-tenant-id'] = customerId;
-    if (projectId) headers['x-project-id'] = projectId;
+    if (customerId) {
+      headers['x-tenant-id'] = customerId;
+    }
+    if (projectId) {
+      headers['x-project-id'] = projectId;
+    }
     return headers;
+  }
+
+  private buildIdempotencyKey(input: Record<string, unknown>): string {
+    const payload = JSON.stringify(input);
+    const digest = createHash('sha256').update(payload).digest('hex');
+    return `kyc-${digest}`;
   }
 
   async runOcr({
@@ -207,16 +229,27 @@ export class UnifiedApiClient {
     );
   }
 
-  public async createCustomer(payload: Customer) {
-    return await this.axiosInstance.post('/customers', payload);
+  public async createCustomer(payload: Customer, customerId?: string, projectId?: string) {
+    return await this.axiosInstance.post('/customers', payload, {
+      headers: this.buildTenantHeaders(customerId, projectId),
+    });
   }
 
-  public async updateCustomer(id: string, payload: Customer) {
-    return await this.axiosInstance.put(`/customers/${id}`, payload);
+  public async updateCustomer(
+    id: string,
+    payload: Customer,
+    customerId?: string,
+    projectId?: string,
+  ) {
+    return await this.axiosInstance.put(`/customers/${id}`, payload, {
+      headers: this.buildTenantHeaders(customerId, projectId),
+    });
   }
 
-  public async deleteCustomer(id: string) {
-    return await this.axiosInstance.delete(`/customers/${id}`);
+  public async deleteCustomer(id: string, customerId?: string, projectId?: string) {
+    return await this.axiosInstance.delete(`/customers/${id}`, {
+      headers: this.buildTenantHeaders(customerId, projectId),
+    });
   }
 
   public async createOrUpdateBusiness(payload: BusinessPayload) {
@@ -230,7 +263,7 @@ export class UnifiedApiClient {
       `/customers/${payload.project.customer.id}/businesses/${payload.id}`,
       formattedPayload,
       {
-        headers: this.buildTenantHeaders(payload.project.customer.id),
+        headers: this.buildTenantHeaders(payload.project.customer.id, payload.project.id),
       },
     );
   }
@@ -267,12 +300,20 @@ export class UnifiedApiClient {
     entity1: string;
     entity2: string;
     includeAnalysis: boolean;
+    customerId?: string;
+    projectId?: string;
   }) {
-    return await this.axiosInstance.post('/entity-matching-v2', {
-      entity1: { value: payload.entity1 },
-      entity2: { value: payload.entity2 },
-      includeAnalysis: payload.includeAnalysis,
-    });
+    return await this.axiosInstance.post(
+      '/entity-matching-v2',
+      {
+        entity1: { value: payload.entity1 },
+        entity2: { value: payload.entity2 },
+        includeAnalysis: payload.includeAnalysis,
+      },
+      {
+        headers: this.buildTenantHeaders(payload.customerId, payload.projectId),
+      },
+    );
   }
 
   public async getAssessmentsByType(
@@ -282,17 +323,21 @@ export class UnifiedApiClient {
       page: number;
       limit: number;
     },
+    customerId?: string,
   ) {
     return await this.axiosInstance.get(`/assessments/${assessmentType}`, {
       params: {
         ...queryParams,
         projectId,
       },
+      headers: this.buildTenantHeaders(customerId, projectId),
     });
   }
 
-  public async getAssessmentById(id: string, projectId: string) {
-    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`);
+  public async getAssessmentById(id: string, projectId: string, customerId?: string) {
+    return await this.axiosInstance.get(`/assessments/by-id/${id}?projectId=${projectId}`, {
+      headers: this.buildTenantHeaders(customerId, projectId),
+    });
   }
 
   public async createAssessment(
@@ -304,19 +349,29 @@ export class UnifiedApiClient {
       projectId: string;
       businessId?: string;
     },
+    customerId?: string,
   ) {
-    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload);
+    return await this.axiosInstance.post(`/assessments/${assessmentType}`, payload, {
+      headers: this.buildTenantHeaders(customerId, payload.projectId),
+    });
   }
 
   public async updateAssessmentStatus(
     id: string,
     status: UpdateableAssessmentStatus,
     projectId: string,
+    customerId?: string,
   ) {
-    return await this.axiosInstance.put(`/assessments/${id}/status`, {
-      status,
-      projectId,
-    });
+    return await this.axiosInstance.put(
+      `/assessments/${id}/status`,
+      {
+        status,
+        projectId,
+      },
+      {
+        headers: this.buildTenantHeaders(customerId, projectId),
+      },
+    );
   }
 
   public async getLatestAssessmentsByWorkflowRuntimeDataId({
@@ -368,6 +423,8 @@ export class UnifiedApiClient {
     country,
     methods,
     performDeduplication,
+    requireLivenessForEnrollment,
+    facialDeduplication,
   }: {
     clientId: string;
     endUserId: string;
@@ -396,34 +453,65 @@ export class UnifiedApiClient {
     country?: string;
     methods?: string[];
     performDeduplication?: boolean;
+    requireLivenessForEnrollment?: boolean;
+    facialDeduplication?: {
+      enabled?: boolean;
+      threshold?: number;
+      maxResults?: number;
+    };
   }) {
-    return await this.axiosInstance.post(
-      `/individual-verification-sessions`,
-      {
-        clientId,
-        endUserId: `${endUserId}__${sessionId ?? ''}`,
-        workflowRuntimeDataId,
-        vendor,
-        withAml,
-        ongoingMonitoring,
-        callbackUrl,
-        firstName,
-        lastName,
-        dateOfBirth,
-        projectId,
-        // Bio-facial fields — omitted from payload when undefined
-        ...(documents && { documents }),
-        ...(biometricData && { biometricData }),
-        ...(idNumber && { idNumber }),
-        ...(phoneNumber && { phoneNumber }),
-        ...(country && { country }),
-        ...(methods && { methods }),
-        ...(performDeduplication !== undefined && { performDeduplication }),
+    const requestPayload = {
+      clientId,
+      endUserId: `${endUserId}__${sessionId ?? ''}`,
+      workflowRuntimeDataId,
+      vendor,
+      withAml,
+      ongoingMonitoring,
+      callbackUrl,
+      firstName,
+      lastName,
+      dateOfBirth,
+      projectId,
+      // Bio-facial fields — omitted from payload when undefined
+      ...(documents && { documents }),
+      ...(biometricData && { biometricData }),
+      ...(idNumber && { idNumber }),
+      ...(phoneNumber && { phoneNumber }),
+      ...(country && { country }),
+      ...(methods && { methods }),
+      ...(performDeduplication !== undefined && { performDeduplication }),
+      ...(requireLivenessForEnrollment !== undefined && {
+        requireLivenessForEnrollment,
+      }),
+      ...(facialDeduplication && { facialDeduplication }),
+    };
+    const idempotencyKey = this.buildIdempotencyKey({
+      customerId,
+      clientId,
+      endUserId,
+      workflowRuntimeDataId,
+      callbackUrl,
+      firstName,
+      lastName,
+      dateOfBirth,
+      projectId,
+      documents,
+      biometricData,
+      idNumber,
+      phoneNumber,
+      country,
+      methods,
+      performDeduplication,
+      requireLivenessForEnrollment,
+      facialDeduplication,
+    });
+
+    return await this.axiosInstance.post(`/individual-verification-sessions`, requestPayload, {
+      headers: {
+        ...this.buildTenantHeaders(customerId, projectId),
+        'x-idempotency-key': idempotencyKey,
       },
-      {
-        headers: this.buildTenantHeaders(customerId, projectId),
-      },
-    );
+    });
   }
 
   public async runAml({

@@ -7,4 +7,5 @@ export const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody ref={ref} className={ctw('[&_tr:last-child]:border-0', className)} {...props} />
 ));
+
 TableBody.displayName = 'TableBody';

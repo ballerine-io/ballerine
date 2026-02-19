@@ -1,6 +1,5 @@
 import { ctw } from '@ballerine/ui';
-import { Loader2, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
@@ -29,7 +28,7 @@ export const Notes = ({
   const { form, users, onSubmit, isLoading } = useNotesLogic();
 
   return (
-    <div className={`flex h-full w-full flex-col bg-slate-50`}>
+    <div className={`flex size-full flex-col bg-slate-50`}>
       <div className={`h-12 flex-row items-center justify-between border-b p-4`}>
         <span className={`text-sm font-medium`}>Notes</span>
       </div>
@@ -76,7 +75,7 @@ export const Notes = ({
                   'mt-3 h-5 self-end p-4 text-sm font-medium enabled:bg-primary enabled:hover:bg-primary/90 aria-disabled:pointer-events-none aria-disabled:opacity-50'
                 }
               >
-                <Loader2 className={ctw('me-2 h-4 w-4 animate-spin', { hidden: !isLoading })} />
+                <Loader2 className={ctw('me-2 size-4 animate-spin', { hidden: !isLoading })} />
                 Submit
               </Button>
             </form>

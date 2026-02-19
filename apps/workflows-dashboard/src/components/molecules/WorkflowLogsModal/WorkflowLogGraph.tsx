@@ -1,5 +1,5 @@
 import { WorkflowLog } from '@/domains/workflows/api/workflow-logs';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -61,7 +61,9 @@ const findTriggeringEvent = (
   // Look for the most recent event before this state transition
   const eventLogs = logs.filter(log => log.type === 'EVENT_RECEIVED' && log.id < stateTransitionId);
 
-  if (eventLogs.length === 0) return null;
+  if (eventLogs.length === 0) {
+return null;
+}
 
   // Return the most recent event (highest ID lower than stateTransitionId)
   return eventLogs.reduce((latest, current) => (current.id > latest.id ? current : latest));
@@ -73,7 +75,9 @@ export const WorkflowLogGraph = ({ logs }: WorkflowLogGraphProps) => {
 
   // Process logs to create nodes and edges for visualization
   useEffect(() => {
-    if (!logs.length) return;
+    if (!logs.length) {
+return;
+}
 
     // Sort logs by ID (which should be sequential)
     const sortedLogs = [...logs].sort((a, b) => a.id - b.id);

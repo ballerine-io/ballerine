@@ -11,7 +11,7 @@
     <title>MiKashBoks – Identity Verification</title>
     <!-- Runtime config injected by entrypoint.sh (VITE_API_URL, etc.) -->
     <script type="text/javascript" src="/kyc-mobile/config.js"></script>
-    <!-- MiKashBoks Web UI SDK (Ballerine SDK runtime) -->
+    <!-- MiKashBoks Web UI SDK runtime -->
     <script crossorigin src="/kyc-mobile/ballerine-sdk.umd.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -76,7 +76,7 @@
         width: 36px;
         height: 36px;
         border: 3px solid #e2e8f0;
-        border-top-color: #4f46e5;
+        border-top-color: #7b15ff;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
@@ -159,7 +159,7 @@
       }
 
       .status-btn.primary {
-        background: #4f46e5;
+        background: #7b15ff;
         color: #ffffff;
       }
 
@@ -172,7 +172,7 @@
         width: 22px;
         height: 22px;
         border: 3px solid #e2e8f0;
-        border-top-color: #4f46e5;
+        border-top-color: #7b15ff;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
         display: inline-block;
@@ -461,7 +461,9 @@
       // ── Main initialization ──
       async function initFlow() {
         // Check SDK availability — script may fail to load on slow networks
-        if (typeof BallerineSDK === 'undefined') {
+        var MiKashBoksSDK = window.BallerineSDK;
+
+        if (typeof MiKashBoksSDK === 'undefined') {
           document.getElementById('kyc-host').innerHTML =
             '<p class="init-message error">Verification SDK failed to load. Please check your internet connection and try again.</p>';
           return;
@@ -666,7 +668,7 @@
             general: {
               progress: true,
               colors: {
-                primary: '#4f46e5',
+                primary: '#7b15ff',
               },
               fonts: {
                 name: 'Inter',
@@ -853,9 +855,9 @@
           },
         };
 
-        await BallerineSDK.flows.init(sdkConfig);
+        await MiKashBoksSDK.flows.init(sdkConfig);
 
-        BallerineSDK.flows.mount({
+        MiKashBoksSDK.flows.mount({
           flowName: 'mikashboks-kyc',
           elementId: 'kyc-host',
           jwt: TOKEN,

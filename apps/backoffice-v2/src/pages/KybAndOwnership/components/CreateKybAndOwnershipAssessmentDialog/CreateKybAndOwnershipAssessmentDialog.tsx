@@ -70,7 +70,7 @@ const CreateKybAndUboCheckDialogSuccessContent = () => {
   return (
     <div className="mx-6 text-center">
       <div className="my-12 space-y-2">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-green-500">
           <CheckIcon className="text-white d-12" />
         </div>
 

@@ -21,7 +21,9 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({ editor, close })
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
 
-      if (!files?.length) return;
+      if (!files?.length) {
+return;
+}
 
       const insertImages = async () => {
         const contentBucket = [];

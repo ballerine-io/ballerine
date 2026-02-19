@@ -25,7 +25,7 @@ export const PaginationLast: FunctionComponent<
     >
       Last
     </span>
-    <ChevronLast className="h-4 w-4" />
+    <ChevronLast className="size-4" />
   </PaginationLink>
 );
 

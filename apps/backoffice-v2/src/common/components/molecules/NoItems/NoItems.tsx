@@ -20,7 +20,7 @@ export const NoItems: FunctionComponent<{
 }> = ({ resource, resourceMissingFrom, suggestions, illustration }) => {
   return (
     <div className="flex items-center justify-center p-4 pb-64">
-      <div className="inline-flex flex-col  items-start gap-4 rounded-md border-[1px] border-[#CBD5E1] p-6">
+      <div className="inline-flex flex-col  items-start gap-4 rounded-md border border-[#CBD5E1] p-6">
         <div className="flex w-[464px] items-center justify-center">{illustration}</div>
 
         <div className="flex w-[464px] flex-col items-start gap-2">

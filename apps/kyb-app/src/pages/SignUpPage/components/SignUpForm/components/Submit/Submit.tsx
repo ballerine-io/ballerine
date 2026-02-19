@@ -11,7 +11,9 @@ export const Submit: FunctionComponent<SubmitButtonProps> = ({ uiSchema }) => {
   // 'isLoading' does not exist on 'submitButtonOptions'
   const isLoading = !!uiSchema?.['ui:options']?.submitButtonOptions?.isLoading;
 
-  if (norender) return null;
+  if (norender) {
+return null;
+}
 
   return (
     <div className={ctw('flex justify-end', props?.layoutClassName)}>

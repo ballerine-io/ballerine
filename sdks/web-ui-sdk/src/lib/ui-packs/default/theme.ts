@@ -16,7 +16,7 @@ const backIconButton: IElement = {
   type: Elements.IconButton,
   props: {
     attributes: {
-      src: 'https://cdn.ballerine.io/ui-packs/default/images/back.svg',
+      src: '/assets/ui-packs/default/images/back.svg',
       alt: 'back',
       width: '28px',
       height: '28px',
@@ -34,7 +34,7 @@ const closeIconButton: IElement = {
   type: Elements.IconCloseButton,
   props: {
     attributes: {
-      src: 'https://cdn.ballerine.io/ui-packs/default/images/close.svg',
+      src: '/assets/ui-packs/default/images/close.svg',
       alt: 'back',
       width: '18px',
       height: '18px',
@@ -53,7 +53,7 @@ const backWhiteIconButton: IElement = {
   props: {
     attributes: {
       ...backIconButton.props.attributes,
-      src: 'https://cdn.ballerine.io/ui-packs/default/images/back-white.svg',
+      src: '/assets/ui-packs/default/images/back-white.svg',
     },
     style: backIconButton.props.style,
   },
@@ -85,7 +85,7 @@ const stepsTheme: TStepsConfigurations = [
         id: 'image',
         props: {
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
+            src: '/assets/ui-packs/default/images/welcome.svg',
             alt: 'welcome',
             width: '248px',
             height: '212px',
@@ -136,7 +136,7 @@ const stepsTheme: TStepsConfigurations = [
         type: Elements.Image,
         props: {
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/welcome.svg',
+            src: '/assets/ui-packs/default/images/welcome.svg',
             alt: 'welcome',
             width: '248px',
             height: '212px',
@@ -312,7 +312,7 @@ const stepsTheme: TStepsConfigurations = [
         type: Elements.Image,
         props: {
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/document-photo-back-start.svg',
+            src: '/assets/ui-packs/default/images/document-photo-back-start.svg',
             alt: 'document-photo-back-start',
             width: '260px',
             height: '212px',
@@ -423,7 +423,7 @@ const stepsTheme: TStepsConfigurations = [
         type: Elements.Image,
         props: {
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/selfie-start.svg',
+            src: '/assets/ui-packs/default/images/selfie-start.svg',
             alt: 'selfie-start',
             width: '300x',
             height: '300px',
@@ -529,7 +529,7 @@ const stepsTheme: TStepsConfigurations = [
             margin: '40% 0 0 0',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/resubmit.svg',
+            src: '/assets/ui-packs/default/images/resubmit.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
@@ -581,7 +581,7 @@ const stepsTheme: TStepsConfigurations = [
             margin: '40% 0 0 0',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
+            src: '/assets/ui-packs/default/images/decline.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
@@ -633,7 +633,7 @@ const stepsTheme: TStepsConfigurations = [
             margin: '40% 0 0 0',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/decline.svg',
+            src: '/assets/ui-packs/default/images/decline.svg',
             alt: 'decline',
             width: '80px',
             height: '80px',
@@ -686,7 +686,7 @@ const stepsTheme: TStepsConfigurations = [
             margin: '40% 0 0 0',
           },
           attributes: {
-            src: 'https://cdn.ballerine.io/ui-packs/default/images/final.svg',
+            src: '/assets/ui-packs/default/images/final.svg',
             alt: 'final',
             width: '80px',
             height: '80px',

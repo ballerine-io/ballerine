@@ -12,13 +12,16 @@ const SECRET_TEMPLATE_URL_REGEX = /^\{secret\.[A-Za-z0-9_]+\}$/;
 
 const SubscriptionUrlSchema = z.string().refine(value => {
   // Allow secret placeholders (resolved later in webhooks.service.ts)
-  if (SECRET_TEMPLATE_URL_REGEX.test(value)) return true;
+  if (SECRET_TEMPLATE_URL_REGEX.test(value)) {
+return true;
+}
 
   // Match Zod's built-in url() semantics (WHATWG URL parsing)
   try {
     // eslint-disable-next-line no-new
     new URL(value);
-    return true;
+    
+return true;
   } catch {
     return false;
   }

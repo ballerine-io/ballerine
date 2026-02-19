@@ -15,4 +15,5 @@ export const SelectLabel = React.forwardRef<
     {...props}
   />
 ));
+
 SelectLabel.displayName = SelectPrimitive.Label.displayName;

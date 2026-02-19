@@ -22,7 +22,9 @@ export const useSignInMutation = () => {
     onSuccess: (data, { callbackUrl, redirect }) => {
       queryClient.setQueryData(getSession.queryKey, data);
 
-      if (!callbackUrl || !redirect) return;
+      if (!callbackUrl || !redirect) {
+return;
+}
 
       void navigate(callbackUrl, {
         replace: true,

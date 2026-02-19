@@ -12,4 +12,5 @@ export const SheetDescription = React.forwardRef<
     {...props}
   />
 ));
+
 SheetDescription.displayName = SheetPrimitive.Description.displayName;

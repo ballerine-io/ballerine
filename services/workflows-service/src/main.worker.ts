@@ -38,6 +38,7 @@ const workerMain = async () => {
   const configService = app.get(ConfigService);
 
   const envWebhookSharedSecret = getEnvWebhookSharedSecret(configService);
+
   if (isPlaceholderWebhookSharedSecret(envWebhookSharedSecret)) {
     logger.error(
       'LOANCUBE_WEBHOOK_SECRET/BALLERINE_WEBHOOK_SECRET is missing or set to TODO_SET_ME. Outgoing webhooks may fail signature verification.',

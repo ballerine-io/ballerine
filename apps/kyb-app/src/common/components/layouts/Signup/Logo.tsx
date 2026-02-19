@@ -10,7 +10,9 @@ export const Logo: FunctionComponent<ILogoProps> = props => {
   const { themeParams } = useSignupLayout();
   const { imageSrc, styles } = { ...props, ...themeParams?.companyLogo };
 
-  if (!imageSrc) return null;
+  if (!imageSrc) {
+return null;
+}
 
   return <img src={imageSrc} style={styles} />;
 };

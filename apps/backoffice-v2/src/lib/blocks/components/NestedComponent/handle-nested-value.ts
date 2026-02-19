@@ -15,9 +15,15 @@ export const handleNestedValue = ({
     return formatDate(dayjs(value).toDate());
   }
 
-  if (value === undefined && showUndefined) return 'undefined';
+  if (value === undefined && showUndefined) {
+return 'undefined';
+}
 
-  if (value === null && showNull) return 'null';
+  if (value === null && showNull) {
+return 'null';
+}
 
-  if (!isNullish(value)) return value?.toString();
+  if (!isNullish(value)) {
+return value?.toString();
+}
 };

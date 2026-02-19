@@ -69,7 +69,7 @@ export const NavFooter = () => {
           className="flex h-9 items-center gap-x-2 rounded-md py-0 text-sm font-medium normal-case"
           onClick={onSignOut}
         >
-          <LogOutSvg className="h-4 w-4" />
+          <LogOutSvg className="size-4" />
           Log out
         </SidebarMenuButton>
       </SidebarMenuItem>

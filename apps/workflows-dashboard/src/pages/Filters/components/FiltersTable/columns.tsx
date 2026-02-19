@@ -72,7 +72,8 @@ export const filtersTableColumns = [
   columnHelper.accessor(
     row => {
       const query = row.query as { where?: { workflowDefinitionId?: { in?: string[] } } };
-      return query.where?.workflowDefinitionId?.in?.[0] ?? '';
+      
+return query.where?.workflowDefinitionId?.in?.[0] ?? '';
     },
     {
       id: 'workflowDefinitionId',

@@ -46,7 +46,10 @@ export const SectionObserver = <TSection extends Section>({
   useEffect(() => {
     const determineActiveSection = () => {
       const now = Date.now();
-      if (now - lastScrollTime.current < 100) return;
+
+      if (now - lastScrollTime.current < 100) {
+return;
+}
 
       lastScrollTime.current = now;
       const viewportHeight = window.innerHeight;
@@ -82,15 +85,25 @@ export const SectionObserver = <TSection extends Section>({
                 Math.abs(viewportHeight - b.bottomPosition),
             );
             const newId = bottomSections.at(0)?.id;
-            if (newId) setActiveSection(newId);
-            return;
+
+            if (newId) {
+setActiveSection(newId);
+}
+
+            
+return;
           }
         }
 
         if (scrollPosition + viewportHeight >= documentHeight - 50 && sections.length > 0) {
           const newActive = sections[sections.length - 1]?.id;
-          if (newActive) setActiveSection(newActive);
-          return;
+
+          if (newActive) {
+setActiveSection(newActive);
+}
+
+          
+return;
         }
       }
 
@@ -108,8 +121,13 @@ export const SectionObserver = <TSection extends Section>({
 
       if (topSections.length > 0) {
         const newId = topSections.at(0)?.id;
-        if (newId) setActiveSection(newId);
-        return;
+
+        if (newId) {
+setActiveSection(newId);
+}
+
+        
+return;
       }
 
       const visibleSections = sectionEntries
@@ -127,13 +145,21 @@ export const SectionObserver = <TSection extends Section>({
 
       if (visibleSections.length > 0) {
         const newId = visibleSections.at(0)?.id;
-        if (newId) setActiveSection(newId);
-        return;
+
+        if (newId) {
+setActiveSection(newId);
+}
+
+        
+return;
       }
 
       if (scrollPosition < 50 && sections.length > 0) {
         const newId = sections.at(0)?.id;
-        if (newId) setActiveSection(newId);
+
+        if (newId) {
+setActiveSection(newId);
+}
       }
     };
 
@@ -150,13 +176,18 @@ export const SectionObserver = <TSection extends Section>({
   };
 
   useEffect(() => {
-    if (onActiveSectionChange) onActiveSectionChange(activeSection);
+    if (onActiveSectionChange) {
+onActiveSectionChange(activeSection);
+}
   }, [activeSection, onActiveSectionChange]);
 
   const handleSidebarToggle = () => {
     const newState = !isSidebarOpen;
     setIsSidebarOpen(newState);
-    if (onSidebarToggle) onSidebarToggle(newState);
+
+    if (onSidebarToggle) {
+onSidebarToggle(newState);
+}
   };
 
   return (

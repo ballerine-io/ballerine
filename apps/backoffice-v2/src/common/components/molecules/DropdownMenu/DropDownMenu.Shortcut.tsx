@@ -9,4 +9,5 @@ export const DropdownMenuShortcut = ({
     <span className={ctw('ml-auto text-xs tracking-widest text-slate-500', className)} {...props} />
   );
 };
+
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut';

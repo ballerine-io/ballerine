@@ -5,7 +5,7 @@ import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, EndUserActiveMonitoringsSchema, ProcessStatus } from '@ballerine/common';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
 import { get, isObject, set } from 'lodash';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -24,11 +24,19 @@ const removeLastKeyFromPath = (path: string) => {
 const UNIFIED_ERROR_STATUSES = new Set(['ERROR', 'EXPIRED']);
 
 const getProcessStatusFromUnifiedPayload = (payload: AnyRecord): keyof typeof ProcessStatus => {
-  if (payload?.error) return ProcessStatus.ERROR;
+  if (payload?.error) {
+    return ProcessStatus.ERROR;
+  }
 
   const status = typeof payload?.status === 'string' ? payload.status : undefined;
-  if (status === 'PENDING') return ProcessStatus.IN_PROGRESS;
-  if (status && UNIFIED_ERROR_STATUSES.has(status)) return ProcessStatus.ERROR;
+
+  if (status === 'PENDING') {
+    return ProcessStatus.IN_PROGRESS;
+  }
+
+  if (status && UNIFIED_ERROR_STATUSES.has(status)) {
+    return ProcessStatus.ERROR;
+  }
 
   return ProcessStatus.SUCCESS;
 };
@@ -39,9 +47,14 @@ const getPluginNameFromResultDestination = (resultDestinationPath: string): stri
   // - pluginsOutput.document-verification
   // - pluginsOutput.facial_verification
   const parts = resultDestinationPath?.split('.');
-  if (!Array.isArray(parts) || parts.length < 2) return;
 
-  if (parts[0] !== 'pluginsOutput') return;
+  if (!Array.isArray(parts) || parts.length < 2) {
+    return;
+  }
+
+  if (parts[0] !== 'pluginsOutput') {
+    return;
+  }
 
   return parts[1] || undefined;
 };
@@ -61,7 +74,9 @@ const normalizeUnifiedApiCallbackPayloadToPluginsOutput = ({
     ? removeLastKeyFromPath(resultDestinationPath)
     : resultDestinationPath;
 
-  if (!basePath) return context;
+  if (!basePath) {
+    return context;
+  }
 
   const pluginName = getPluginNameFromResultDestination(basePath) || 'unified_api';
   const verificationStatus = typeof data?.status === 'string' ? data.status : undefined;
@@ -268,7 +283,9 @@ export class HookCallbackHandlerService {
     ]);
 
     if (!business) {
-      throw new BadRequestException('Business not found.');
+      this.logger.warn(
+        `Website monitoring callback received for unknown business correlationId=${context.entity.id}`,
+      );
     }
 
     return setPluginStatus({
@@ -294,11 +311,13 @@ export class HookCallbackHandlerService {
     // sessionId, skip re-processing to prevent duplicate document persistence
     // when the Unified API retries a callback delivery.
     const callbackSessionId = (data as Record<string, unknown>)?.sessionId;
+
     if (
       callbackSessionId &&
       (context as Record<string, any>)._processedCallbackIds?.includes(callbackSessionId)
     ) {
       this.logger.log(`Skipping duplicate KYC callback for sessionId=${callbackSessionId}`);
+
       return context;
     }
 

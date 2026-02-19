@@ -9,7 +9,9 @@ export const useEntityType = (defaultEntityType: TEntityType = 'individuals'): T
   const { data: filters, isLoading } = useFiltersQuery();
 
   const entityType = useMemo(() => {
-    if (isLoading || !Array.isArray(filters)) return null;
+    if (isLoading || !Array.isArray(filters)) {
+return null;
+}
 
     const matchedFilter = filters.find(filter => filter.id === filterId);
 

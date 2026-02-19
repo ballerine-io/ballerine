@@ -3,7 +3,6 @@ import { defineConfig } from 'vitest/config';
 import terminal from 'vite-plugin-terminal';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import topLevelAwait from 'vite-plugin-top-level-await';
-import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';

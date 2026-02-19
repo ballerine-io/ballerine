@@ -2,7 +2,7 @@ import { ctw } from '@ballerine/ui';
 import { ArrowRightIcon, CrownIcon } from 'lucide-react';
 
 import { Button } from '@/common/components/atoms/Button/Button';
-import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
+import { MIKASHBOKS_CALENDLY_LINK } from '@/common/constants';
 import dashboardImage from './dashboard.png';
 
 export type GetFullAccessCardProps = {
@@ -24,11 +24,11 @@ export const GetFullAccessCard = ({ className }: GetFullAccessCardProps) => {
         </div>
 
         <p className="w-3/5 leading-relaxed 2xl:w-1/2">
-          Get unlimited access to Ballerine, for smarter onboarding and monitoring decisions.
+          Get unlimited access to MiKashBoks, for smarter onboarding and monitoring decisions.
         </p>
 
         <Button asChild variant="wp-primary" className="justify-start space-x-2 text-base">
-          <a href={BALLERINE_CALENDLY_LINK} target="_blank" rel="noreferrer">
+          <a href={MIKASHBOKS_CALENDLY_LINK} target="_blank" rel="noreferrer">
             <span>Book a quick call</span>
             <ArrowRightIcon className="d-4" />
           </a>

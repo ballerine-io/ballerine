@@ -13,7 +13,8 @@ export const WorkflowChartDetails = ({ data }: Props) => {
     <div className="flex flex-col gap-2">
       {data.map((item, index) => {
         const percentOfTotal = ((item.value / totalValue) * 100).toFixed(2);
-        return (
+        
+return (
           <div
             key={`chart-details-item-${index}`}
             className="flex md:flex-col md:items-start md:gap-1 lg:flex-row lg:items-center lg:gap-4 "

@@ -129,7 +129,7 @@ export const useManageUbosBlock = ({
                   className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
                   aria-disabled={!caseState.writeEnabled}
                 >
-                  <Trash2Icon className="h-4 w-4 text-destructive" />
+                  <Trash2Icon className="size-4 text-destructive" />
                 </Button>
               }
               title={'UBO removal confirmation'}

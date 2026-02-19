@@ -3,7 +3,7 @@ import { TCheckboxGroupState } from './types';
 import { FunctionComponentWithChildren } from '../../../types';
 
 export interface IProviderProps {
-  values: Array<unknown>;
+  values: unknown[];
   onChange: (value: unknown) => void;
 }
 
@@ -42,7 +42,9 @@ export const Provider: FunctionComponentWithChildren<IProviderProps> = ({
   };
 
   useEffect(() => {
-    if (!values) return;
+    if (!values) {
+return;
+}
 
     setChecked(values);
   }, [values]);

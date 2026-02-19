@@ -42,7 +42,9 @@ export const useUIElementProps = (
   const { isLoading, isDisabled } = uiElementState;
 
   const disabled = useMemo(() => {
-    if (isLoading || isDisabled || state.isRevision) return true;
+    if (isLoading || isDisabled || state.isRevision) {
+return true;
+}
 
     return availabilityTestResults.length
       ? availabilityTestResults.some(result => !result.isValid)
@@ -50,7 +52,9 @@ export const useUIElementProps = (
   }, [availabilityTestResults, isLoading, isDisabled, state.isRevision]);
 
   const hidden = useMemo(() => {
-    if (!definition.visibleOn || !definition.visibleOn.length) return false;
+    if (!definition.visibleOn || !definition.visibleOn.length) {
+return false;
+}
 
     const isVisible = visibilityTestResults.every(result => result.isValid);
 

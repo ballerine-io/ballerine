@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useMemo } from 'react';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';

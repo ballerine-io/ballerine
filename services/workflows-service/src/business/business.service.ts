@@ -118,6 +118,7 @@ export class BusinessService {
           updatedAt: true,
           project: {
             select: {
+              id: true,
               customer: {
                 select: {
                   id: true,

@@ -37,7 +37,9 @@ export const queryClient = new QueryClient({
         return;
       }
 
-      if (!isErrorWithCode(error)) throw error;
+      if (!isErrorWithCode(error)) {
+throw error;
+}
 
       const status = error.code;
 
@@ -46,7 +48,9 @@ export const queryClient = new QueryClient({
       }
 
       // Dont toast for no important errors
-      if ([401, 403, 404].includes(status)) return;
+      if ([401, 403, 404].includes(status)) {
+return;
+}
 
       if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null') {
         return;

@@ -15,11 +15,11 @@ export const formSchema: RJSFSchema = {
 
 export const uiSchema: UiSchema = {
   name: {
-    'ui:placeholder': 'ballerine',
+    'ui:placeholder': 'mikashboks',
     'ui:label': 'Name',
   },
   displayName: {
-    'ui:placeholder': 'Ballerine',
+    'ui:placeholder': 'MiKashBoks',
     'ui:label': 'Display Name',
   },
 };

@@ -163,7 +163,7 @@ export const useDirectorBlock = ({
                 <React.Fragment>
                   Re-upload needed
                   <X
-                    className="h-4 w-4 cursor-pointer"
+                    className="size-4 cursor-pointer"
                     onClick={() =>
                       onRemoveDecision({
                         directorId: director.id,

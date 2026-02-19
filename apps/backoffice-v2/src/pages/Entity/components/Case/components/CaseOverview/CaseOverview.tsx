@@ -83,7 +83,7 @@ export const CaseOverview = ({ processes }: { processes: string[] }) => {
           {isDemoOnly && !workflow?.workflowDefinition?.config?.disableVideoGuide && (
             <CaseVideoGuide
               title="Onboarding Introduction"
-              description="Learn about Ballerine complete onboarding and underwriting capabilities"
+              description="Learn about MiKashBoks onboarding and underwriting capabilities"
             />
           )}
           {isCaseRiskOverviewEnabled && (

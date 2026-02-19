@@ -43,7 +43,9 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
       const ctx = stateApi.getContext();
       const dataArray = get(ctx, definition.valueDestination as string);
 
-      if (!dataArray) return;
+      if (!dataArray) {
+return;
+}
 
       pullAt(dataArray, index);
 

@@ -47,6 +47,7 @@ const meta: Meta<typeof KycBlocks> = {
 };
 
 export default meta;
+
 type Story = StoryObj<typeof KycBlocks>;
 
 export const Default: Story = {

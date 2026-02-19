@@ -11,8 +11,8 @@ export interface ICheckboxChildren {
 export interface IGroupProps {
   vertical?: boolean;
   label: string;
-  onChange: (values: Array<unknown>) => void;
-  values?: Array<unknown>;
+  onChange: (values: unknown[]) => void;
+  values?: unknown[];
   titleProps?: ComponentProps<'h4'>;
   innerContainerProps?: ComponentProps<'div'>;
 }

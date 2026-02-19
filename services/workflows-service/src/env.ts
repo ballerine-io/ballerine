@@ -44,6 +44,32 @@ const optionalBooleanSchema = z
   .transform(val => val === 'true' || val === true)
   .optional();
 
+const isProductionEnv = () => {
+  return (
+    process.env['NODE_ENV'] === 'production' || process.env['ENVIRONMENT_NAME'] === 'production'
+  );
+};
+
+const requireInProduction = (variableName: string, description: string, minLength: number = 1) =>
+  z
+    .string()
+    .optional()
+    .superRefine((value, ctx) => {
+      if (!isProductionEnv()) {
+        return;
+      }
+
+      if (!value || value.trim().length < minLength) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${variableName} is required in production${
+            minLength > 1 ? ` and must be at least ${minLength} characters` : ''
+          }.`,
+        });
+      }
+    })
+    .describe(description);
+
 export const serverEnvSchema = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
@@ -90,16 +116,20 @@ export const serverEnvSchema = {
       `Which mail adapter to use. Use "log" during development to log emails to the console. In production, use "sendgrid" to send emails via SendGrid.`,
     ),
   UNIFIED_API_URL: z.string().url().describe('The URL of the Unified API.'),
-  UNIFIED_API_TOKEN: z
+  UNIFIED_API_TOKEN: requireInProduction(
+    'UNIFIED_API_TOKEN',
+    'API token for the Unified API. Used for authenticating outgoing requests to the Unified API.',
+  ),
+  UNIFIED_API_SHARED_SECRET: requireInProduction(
+    'UNIFIED_API_SHARED_SECRET',
+    'Shared secret for the Unified API. Used for verifying incoming callbacks.',
+    32,
+  ),
+  UNIFIED_API_VERIFICATION_HOOK_ID: z
     .string()
-    .optional()
-    .describe(
-      'API token for the Unified API. Used for authenticating outgoing requests to the Unified API.',
-    ),
-  UNIFIED_API_SHARED_SECRET: z
-    .string()
-    .optional()
-    .describe('Shared secret for the Unified API. Used for verifying incoming callbacks.'),
+    .min(1)
+    .default('verification-result')
+    .describe('Hook ID used by Unified API callbacks on workflow hook endpoints.'),
   SALESFORCE_API_VERSION: z.string().optional().default('58.0').describe('Salesforce API version'),
   SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
   SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),

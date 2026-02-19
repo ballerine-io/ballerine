@@ -50,9 +50,11 @@ export const buildTree = ({
     const role = edge?.data?.role;
 
     let label = '';
+
     if (percentage) {
       label = percentage.toString().endsWith('%') ? percentage : `${percentage}%`;
     }
+
     if (role) {
       label = label ? `${label} (${role})` : role;
     }

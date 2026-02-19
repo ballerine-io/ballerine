@@ -24,7 +24,7 @@ export const VENDOR_DETAILS = {
       description: 'Company registry and business information services',
       vendors: {
         'asia-verify': {
-          logoUrl: 'https://cdn.ballerine.io/logos/AsiaVerify_Logo.png',
+          logoUrl: '/assets/logos/AsiaVerify_Logo.png',
           description:
             'Company screening, UBO verification and registry information services focused on APAC region',
           configExample: {
@@ -38,7 +38,7 @@ export const VENDOR_DETAILS = {
           },
         },
         kyckr: {
-          logoUrl: 'https://cdn.ballerine.io/logos/kyckr-logo.png',
+          logoUrl: '/assets/logos/kyckr-logo.png',
           description: 'UBO verification and company registry information services',
           configExample: {
             name: 'kyckrRegistryInfo',
@@ -51,7 +51,7 @@ export const VENDOR_DETAILS = {
           },
         },
         test: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Test vendor for development purposes',
           configExample: {
             name: 'testRegistryInfo',
@@ -70,7 +70,7 @@ export const VENDOR_DETAILS = {
       description: 'Individual sanctions screening and risk assessment',
       vendors: {
         'dow-jones': {
-          logoUrl: 'https://cdn.ballerine.io/logos/Dow_Jones_Logo.png',
+          logoUrl: '/assets/logos/Dow_Jones_Logo.png',
           description: 'Sanctions screening and risk data for individuals',
           configExample: {
             name: 'dowJonesSanctions',
@@ -83,7 +83,7 @@ export const VENDOR_DETAILS = {
           },
         },
         'comply-advantage': {
-          logoUrl: 'https://cdn.ballerine.io/logos/comply-advantage-logo.png',
+          logoUrl: '/assets/logos/comply-advantage-logo.png',
           description: 'AI-driven sanctions screening and monitoring for individuals',
           configExample: {
             name: 'complyAdvantageSanctions',
@@ -102,7 +102,7 @@ export const VENDOR_DETAILS = {
       description: 'Company sanctions screening and monitoring',
       vendors: {
         test: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Test vendor for company sanctions screening',
           configExample: {
             name: 'companySanctions',
@@ -121,7 +121,7 @@ export const VENDOR_DETAILS = {
       description: 'Ultimate Beneficial Owner verification services',
       vendors: {
         test: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Test vendor for UBO verification',
           configExample: {
             name: 'uboVerification',
@@ -140,7 +140,7 @@ export const VENDOR_DETAILS = {
       description: 'Ongoing merchant monitoring and risk assessment',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Merchant monitoring and risk assessment service',
           configExample: {
             name: 'merchantMonitoring',
@@ -160,7 +160,7 @@ export const VENDOR_DETAILS = {
       description: 'Merchant screening via Mastercard services',
       vendors: {
         mastercard: {
-          logoUrl: 'https://cdn.ballerine.io/logos/Mastercard%20logo.svg',
+          logoUrl: '/assets/logos/Mastercard%20logo.svg',
           description: 'Mastercard merchant screening service',
           configExample: {
             name: 'merchantScreening',
@@ -179,7 +179,7 @@ export const VENDOR_DETAILS = {
       description: 'Identity verification and KYC services',
       vendors: {
         veriff: {
-          logoUrl: 'https://cdn.ballerine.io/logos/Veriff_logo.svg.png',
+          logoUrl: '/assets/logos/Veriff_logo.svg.png',
           description: 'KYC verification and identity proofing services',
           configExample: {
             name: 'veriffKyc',
@@ -200,7 +200,7 @@ export const VENDOR_DETAILS = {
       description: 'Email template services',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Email template service',
           configExample: {
             name: 'invitation-email',
@@ -218,7 +218,7 @@ export const VENDOR_DETAILS = {
       description: 'Risk assessment rules engine',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Risk rules engine service',
           configExample: {
             name: 'riskEvaluation',
@@ -237,7 +237,7 @@ export const VENDOR_DETAILS = {
       description: 'Child workflow management',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Child workflow service',
           configExample: {
             name: 'veriff_kyc_child_plugin',
@@ -253,7 +253,7 @@ export const VENDOR_DETAILS = {
       description: 'Event dispatch service',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Event dispatch service',
           configExample: {
             name: 'dispatchEvent',
@@ -269,7 +269,7 @@ export const VENDOR_DETAILS = {
       description: 'Iterative plugin service',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Iterative plugin service',
           configExample: {
             name: 'ubos_iterative',
@@ -292,7 +292,7 @@ export const VENDOR_DETAILS = {
       description: 'Data transformation service',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'Data transformation service',
           configExample: {
             name: 'transformData',
@@ -313,7 +313,7 @@ export const VENDOR_DETAILS = {
       description: 'UI definition attachment service',
       vendors: {
         ballerine: {
-          logoUrl: 'https://cdn.ballerine.io/logos/ballerine-logo.png',
+          logoUrl: '/assets/logos/mikashboks-icon.png',
           description: 'UI definition attachment service',
           configExample: {
             name: 'Attach APAC Flow UI',
@@ -330,6 +330,17 @@ export const VENDOR_DETAILS = {
 } as const;
 
 export type VendorId = keyof typeof VENDOR_DETAILS;
+
+const formatVendorDisplayName = (vendorKey: string) => {
+  if (vendorKey === 'ballerine') {
+    return 'MiKashBoks';
+  }
+
+  return vendorKey
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 export const WorkflowDefinition = () => {
   const id = useParams<{ id: string }>().id;
@@ -377,7 +388,9 @@ export const WorkflowDefinition = () => {
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return null;
+  }
 
   return (
     <>
@@ -501,21 +514,14 @@ export const WorkflowDefinition = () => {
                                                       className="h-full w-full object-contain"
                                                       onError={e => {
                                                         e.currentTarget.src =
-                                                          'https://cdn.ballerine.io/logos/ballerine-logo.png';
+                                                          '/assets/logos/mikashboks-icon.png';
                                                       }}
                                                     />
                                                   </div>
                                                   <div className="flex flex-col gap-2">
                                                     <div className="flex items-center gap-2">
                                                       <h4 className="font-semibold text-slate-800">
-                                                        {vendorKey
-                                                          .split('-')
-                                                          .map(
-                                                            word =>
-                                                              word.charAt(0).toUpperCase() +
-                                                              word.slice(1),
-                                                          )
-                                                          .join(' ')}
+                                                        {formatVendorDisplayName(vendorKey)}
                                                       </h4>
                                                       <button
                                                         onClick={() => copyToClipboard(vendorKey)}
@@ -685,20 +691,19 @@ export const WorkflowDefinition = () => {
                                           // @ts-expect-error -- TODO: fix this
                                           (VENDOR_DETAILS?.['api-plugins']?.[plugin.pluginKind]
                                             ?.vendors?.[plugin.vendor]?.logoUrl as string) ||
-                                          `https://cdn.ballerine.io/logos/${plugin.vendor.toLowerCase()}-logo.png`
+                                          '/images/mikashboks-logo.png'
                                         }
                                         alt={plugin.vendor}
                                         className="h-full w-full object-contain"
                                         onError={e => {
-                                          e.currentTarget.src =
-                                            'https://cdn.ballerine.io/logos/ballerine-logo.png';
+                                          e.currentTarget.src = '/images/mikashboks-logo.png';
                                         }}
                                       />
                                     ) : (
                                       <img
-                                        src="https://cdn.ballerine.io/logos/ballerine-logo.png"
-                                        alt="Ballerine"
-                                        className="mx-auto h-12 w-12 rounded-full object-contain"
+                                        src="/images/mikashboks-logo.png"
+                                        alt="MiKashBoks"
+                                        className="h-full w-full object-contain"
                                       />
                                     )}
                                   </div>
@@ -714,7 +719,7 @@ export const WorkflowDefinition = () => {
                                       </p>
                                       {plugin.vendor && (
                                         <p className="text-sm font-medium text-slate-500">
-                                          by {plugin.vendor}
+                                          by {formatVendorDisplayName(plugin.vendor)}
                                         </p>
                                       )}
                                     </div>

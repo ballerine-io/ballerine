@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { env } from '@/env';
 import { verifySignature } from '../utils/verify-signature';
@@ -7,6 +13,11 @@ import { verifySignature } from '../utils/verify-signature';
 export class VerifyUnifiedApiSignatureGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
+    const sharedSecret = env.UNIFIED_API_SHARED_SECRET;
+
+    if (!sharedSecret) {
+      throw new InternalServerErrorException('UNIFIED_API_SHARED_SECRET is not configured.');
+    }
 
     const signature = request.headers['x-hmac-signature'] ?? '';
 
@@ -17,7 +28,7 @@ export class VerifyUnifiedApiSignatureGuard implements CanActivate {
     if (
       !verifySignature({
         payload: request.body,
-        key: env.UNIFIED_API_SHARED_SECRET ?? '',
+        key: sharedSecret,
         signature,
       })
     ) {

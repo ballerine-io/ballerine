@@ -9,7 +9,7 @@ export const SkeletonItem: FunctionComponent = () => {
         <div
           className={`mb-1
             h-[4.15rem]
-            w-[4rem]
+            w-16
             animate-pulse
             rounded-md
             bg-gray-200 theme-dark:bg-neutral-focus

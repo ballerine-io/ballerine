@@ -45,12 +45,21 @@ export const normalizeAddress = (
 function parseObjectAddress(address: Record<string, any>, countryCode?: string): NormalizedAddress {
   const parsedAddress = createDefaultAddress();
 
-  if (address.city) parsedAddress.city = address.city;
-  if (address.postcode) parsedAddress.postalCode = address.postcode;
-  if (address.municipality) parsedAddress.state = address.municipality;
+  if (address.city) {
+parsedAddress.city = address.city;
+}
+
+  if (address.postcode) {
+parsedAddress.postalCode = address.postcode;
+}
+
+  if (address.municipality) {
+parsedAddress.state = address.municipality;
+}
 
   if (address.streetName) {
     const streetMatch = address.streetName.match(/^(.+)\s(\d+)$/);
+
     if (streetMatch) {
       parsedAddress.street = streetMatch[1];
       parsedAddress.number = streetMatch[2];
@@ -98,6 +107,7 @@ export const enrichAddressWithGeocodeResults = (
         if (geoType === 'country' && updatedAddress.country !== DEFAULT_ADDRESS_VALUE) {
           continue;
         }
+
         updatedAddress[addressField] = component.long_name;
         break;
       }
@@ -110,9 +120,13 @@ export const enrichAddressWithGeocodeResults = (
 function setCountryFromCode(address: NormalizedAddress, countryCode: string): void {
   try {
     const [country] = countryCode.split('-');
-    if (!country) return;
+
+    if (!country) {
+return;
+}
 
     const countryName = countries.getName(country, 'en');
+
     if (countryName) {
       address.country = countryName;
     }
@@ -130,15 +144,18 @@ function extractPostalCode(addressString: string, target: NormalizedAddress): vo
 
   for (const pattern of postalCodePatterns) {
     const match = addressString.match(pattern);
+
     if (match) {
       target.postalCode = match[0];
-      return;
+      
+return;
     }
   }
 }
 
 function extractState(addressString: string, target: NormalizedAddress): void {
   const stateMatch = addressString.match(/\b([A-Z]{2})\b/);
+
   if (stateMatch && stateMatch[1]) {
     target.state = stateMatch[1];
   }
@@ -148,13 +165,16 @@ function extractCity(addressString: string, target: NormalizedAddress): void {
   // Try US-style "City, ST 12345" pattern
   const cityStatePattern = /([A-Za-z\s.]+),\s*[A-Z]{2}\s*\d{5}/;
   const cityMatch = addressString.match(cityStatePattern);
+
   if (cityMatch && cityMatch[1]) {
     target.city = cityMatch[1].trim();
-    return;
+    
+return;
   }
 
   // Try European style with all caps city
   const europeanCityMatch = addressString.match(/\b([A-Z]{3,})\b/);
+
   if (europeanCityMatch) {
     target.city = europeanCityMatch[0];
   }
@@ -171,6 +191,7 @@ function extractStreetInfo(addressString: string, target: NormalizedAddress): vo
 
   // Try US-style "123 Street Name" pattern
   const usStreetMatch = streetPart.match(/^(\d+)\s+(.+)$/);
+
   if (usStreetMatch && usStreetMatch[1] && usStreetMatch[2]) {
     target.number = usStreetMatch[1];
     target.street = usStreetMatch[2];
@@ -178,6 +199,7 @@ function extractStreetInfo(addressString: string, target: NormalizedAddress): vo
     // Try European-style "Street Name 123" pattern
   } else {
     const euStreetMatch = streetPart.match(/^(.+)\s(\d+)$/);
+
     if (euStreetMatch && euStreetMatch[1] && euStreetMatch[2]) {
       target.street = euStreetMatch[1];
       target.number = euStreetMatch[2];
@@ -189,6 +211,7 @@ function extractStreetInfo(addressString: string, target: NormalizedAddress): vo
   // Try to extract city if not already found
   if (target.city === DEFAULT_ADDRESS_VALUE && addressParts.length > 1 && addressParts[1]) {
     const cityPart = addressParts[1].split(' ')[0];
+
     if (cityPart) {
       target.city = cityPart;
     }

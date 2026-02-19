@@ -120,9 +120,9 @@ export class CollectionFlowService {
         projectIds,
       });
       throw new Error(
-        `Active workflow with runtimeId ${workflowRuntimeId} not found for projects: ${projectIds?.join(
-          ', ',
-        ) ?? 'unknown'}.`,
+        `Active workflow with runtimeId ${workflowRuntimeId} not found for projects: ${
+          projectIds?.join(', ') ?? 'unknown'
+        }.`,
       );
     }
 

@@ -12,8 +12,8 @@ export interface CaseVideoGuideProps {
 
 export const CaseVideoGuide: FunctionComponent<CaseVideoGuideProps> = ({
   title = 'Onboarding Introduction',
-  description = 'Learn about Ballerine complete onboarding and underwriting capabilities',
-  videoSrc = 'https://www.loom.com/embed/efb8b2fdadef4fa79b4f8b412f1e4f4d?sid=02b86870-55ba-4914-bb59-24ba02121852&hideEmbedTopBar=true',
+  description = 'Learn about MiKashBoks onboarding and underwriting capabilities',
+  videoSrc,
 }) => {
   return (
     <Card className="col-span-1 h-full xl:col-span-2">
@@ -26,30 +26,36 @@ export const CaseVideoGuide: FunctionComponent<CaseVideoGuideProps> = ({
           </div>
 
           <div className="relative w-2/3 overflow-hidden rounded-md">
-            <div className="relative h-full">
-              <div
-                id="case-video-iframe"
-                style={{
-                  position: 'relative',
-                  paddingBottom: '56.25%',
-                  height: 0,
-                }}
-              >
-                <Skeleton className="absolute inset-0 size-full" />
-                <iframe
-                  src={videoSrc}
-                  frameBorder="0"
-                  allowFullScreen
+            {videoSrc ? (
+              <div className="relative h-full">
+                <div
+                  id="case-video-iframe"
                   style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
+                    position: 'relative',
+                    paddingBottom: '56.25%',
+                    height: 0,
                   }}
-                />
+                >
+                  <Skeleton className="absolute inset-0 size-full" />
+                  <iframe
+                    src={videoSrc}
+                    frameBorder="0"
+                    allowFullScreen
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex min-h-[160px] items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
+                Introduction video coming soon.
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

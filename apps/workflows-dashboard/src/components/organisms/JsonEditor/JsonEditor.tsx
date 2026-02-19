@@ -17,8 +17,13 @@ export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
   const editorRef = useRef<JSONEditor | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    if (editorRef.current) return;
+    if (!containerRef.current) {
+return;
+}
+
+    if (editorRef.current) {
+return;
+}
 
     editorRef.current = new JSONEditor(containerRef.current!, {
       onChange: () => {
@@ -28,14 +33,18 @@ export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
   }, [containerRef, editorRef]);
 
   useEffect(() => {
-    if (!editorRef.current) return;
+    if (!editorRef.current) {
+return;
+}
 
     //TODO: Each set of value rerenders editor and loses focus, find workarounds
     editorRef.current.set(value);
   }, [editorRef, readOnly]);
 
   useEffect(() => {
-    if (!editorRef.current) return;
+    if (!editorRef.current) {
+return;
+}
 
     if (readOnly) {
       editorRef.current.set(value);
@@ -43,7 +52,9 @@ export const JSONEditorComponent: FunctionComponent<IJSONEditorProps> = ({
   }, [editorRef, readOnly, value]);
 
   useEffect(() => {
-    if (!editorRef.current) return;
+    if (!editorRef.current) {
+return;
+}
 
     editorRef.current.setMode(readOnly ? 'view' : 'code');
   }, [readOnly]);

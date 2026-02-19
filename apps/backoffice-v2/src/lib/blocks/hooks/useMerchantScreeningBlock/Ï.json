@@ -68,7 +68,7 @@
   "name": "merchantScreening",
   "status": "SUCCESS",
   "vendor": "mastercard",
-  "logoUrl": "https://cdn.ballerine.io/logos/Mastercard%20logo.svg",
+  "logoUrl": "/assets/logos/Mastercard%20logo.svg",
   "invokedAt": 1725307701422,
   "processed": {
     "checkDate": "9/2/2024",

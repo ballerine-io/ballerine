@@ -51,7 +51,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         })}
         {...restButton}
       >
-        <div className={`flex h-[4.375rem] w-[4rem]`}>
+        <div className={`flex h-[4.375rem] w-16`}>
           <BallerineImage
             withPlaceholder
             src={src}

@@ -587,10 +587,22 @@ export const useTabsToBlocksMap = ({
       const deviceLinking = (pluginsOutput as any)?.device_linking;
 
       const out: Record<string, any> = {};
-      if (entityDevice) out.providedDeviceSignals = entityDevice;
-      if (deviceDedup) out.deviceDeduplication = deviceDedup;
-      if (deviceIndexing) out.deviceIndexing = deviceIndexing;
-      if (deviceLinking) out.deviceLinking = deviceLinking;
+
+      if (entityDevice) {
+out.providedDeviceSignals = entityDevice;
+}
+
+      if (deviceDedup) {
+out.deviceDeduplication = deviceDedup;
+}
+
+      if (deviceIndexing) {
+out.deviceIndexing = deviceIndexing;
+}
+
+      if (deviceLinking) {
+out.deviceLinking = deviceLinking;
+}
 
       return out;
     })(),

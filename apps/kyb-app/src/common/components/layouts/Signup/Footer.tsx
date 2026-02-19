@@ -11,7 +11,9 @@ export const Footer: FunctionComponent<IFooterProps> = props => {
   const { themeParams } = useSignupLayout();
   const { rawHtml, styles } = { ...themeParams?.footer, ...props };
 
-  if (!rawHtml) return null;
+  if (!rawHtml) {
+return null;
+}
 
   return (
     <div

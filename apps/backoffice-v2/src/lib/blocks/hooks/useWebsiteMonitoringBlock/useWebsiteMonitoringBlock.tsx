@@ -237,13 +237,21 @@ export const useWebsiteMonitoringBlock = ({
                       const isSlate = ['low_risk'].includes(value);
                       const isSuccess = ['cleared'].includes(value);
 
-                      if (isDestructive) return 'destructive';
+                      if (isDestructive) {
+return 'destructive';
+}
 
-                      if (isWarning) return 'warning';
+                      if (isWarning) {
+return 'warning';
+}
 
-                      if (isSlate) return 'secondary';
+                      if (isSlate) {
+return 'secondary';
+}
 
-                      if (isSuccess) return 'success';
+                      if (isSuccess) {
+return 'success';
+}
 
                       return 'secondary';
                     };

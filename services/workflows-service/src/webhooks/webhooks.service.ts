@@ -24,12 +24,15 @@ const interpolateSecretTemplates = (template: string) => {
   const interpolated = template.replace(SECRET_TEMPLATE_REGEX, (_match, key: string) => {
     usedKeys.push(key);
     const value = process.env[key];
+
     if (typeof value !== 'string' || value.length === 0) {
       missingKeys.add(key);
       // Keep placeholder so we can detect unresolved templates downstream.
       return _match;
     }
-    return value;
+
+    
+return value;
   });
 
   return {
@@ -186,7 +189,8 @@ export class WebhooksService implements OnModuleInit {
         method,
         jobName: name,
       });
-      return;
+      
+return;
     }
 
     // Validate URL early to avoid noisy retries / queue churn on invalid templates.
@@ -199,7 +203,8 @@ export class WebhooksService implements OnModuleInit {
         method,
         jobName: name,
       });
-      return;
+      
+return;
     }
 
     this.logger.log('Sending webhook...', {

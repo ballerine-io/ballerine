@@ -42,7 +42,7 @@ export const CreateMerchantReportDialog = ({
       <DialogContent className="px-0 sm:max-w-xl">
         <DialogHeader className="block font-medium sm:text-center">
           <h2 className={`text-2xl font-bold`}>Create a Web Presence Report</h2>
-          {isDemoAccount && <p>Try out Ballerine&apos;s Web Presence Report!</p>}
+          {isDemoAccount && <p>Try out MiKashBoks Web Presence Report!</p>}
         </DialogHeader>
 
         {showSuccess ? (
@@ -68,7 +68,7 @@ const CreateMerchantReportDialogSuccessContent = () => {
   return (
     <div className="mx-6 text-center">
       <div className="my-12 space-y-2">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-green-500">
           <CheckIcon className="text-white d-12" />
         </div>
 
@@ -111,7 +111,7 @@ const CreateMerchantReportDialogFormContent = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
           {shouldDisableForm && (
-            <div className="absolute right-0 top-0 h-full w-full bg-white opacity-70" />
+            <div className="absolute right-0 top-0 size-full bg-white opacity-70" />
           )}
 
           <div className="my-12 border-y border-gray-200 bg-gray-50 py-6">

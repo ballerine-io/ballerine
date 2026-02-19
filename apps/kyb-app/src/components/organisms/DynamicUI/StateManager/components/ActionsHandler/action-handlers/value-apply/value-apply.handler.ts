@@ -26,7 +26,9 @@ export class ValueApplyHandler implements ActionHandler {
       const { valueDestination, selector: selectorParams, rule } = params;
       const isCanRun = rule?.length && rule.every(rule => testRule(context, rule));
 
-      if (!isCanRun) return;
+      if (!isCanRun) {
+return;
+}
 
       const selectorEngine = this.getSelector(selectorParams);
 
@@ -50,7 +52,9 @@ export class ValueApplyHandler implements ActionHandler {
 
     const selector = selectorsMap[selectorType.type];
 
-    if (!selector) throw new Error('Incorrect selector type');
+    if (!selector) {
+throw new Error('Incorrect selector type');
+}
 
     return selector;
   }

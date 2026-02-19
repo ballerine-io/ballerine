@@ -19,7 +19,7 @@ import { CardFooter } from '@/common/components/atoms/Card/Card.Footer';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { CardTitle } from '@/common/components/atoms/Card/Card.Title';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
-import { BALLERINE_CALENDLY_LINK } from '@/common/constants';
+import { MIKASHBOKS_CALENDLY_LINK } from '@/common/constants';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { BusinessReport } from '@/domains/business-reports/components/BusinessReport/BusinessReport';
 import { NotesButton } from '@/domains/notes/NotesButton';
@@ -101,7 +101,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
         <Card className="mx-auto w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mb-4 flex justify-center">
-              <FileQuestion className="h-16 w-16 text-muted-foreground" />
+              <FileQuestion className="size-16 text-muted-foreground" />
             </div>
             <CardTitle className="text-2xl font-bold">Report Not Ready</CardTitle>
           </CardHeader>
@@ -113,7 +113,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <CardFooter className="flex justify-center">
             <Link to={`/${locale}/merchant-monitoring`}>
               <Button variant="outline" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="size-4" />
                 Back to All Reports
               </Button>
             </Link>
@@ -138,7 +138,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <div className="space-x-6 text-sm">
             <span>Get a guided walkthrough of the report</span>
             <Button asChild variant="wp-primary" className="justify-start space-x-2" size="sm">
-              <a href={BALLERINE_CALENDLY_LINK} target="_blank" rel="noreferrer">
+              <a href={MIKASHBOKS_CALENDLY_LINK} target="_blank" rel="noreferrer">
                 <span>Book a quick call</span>
                 <ArrowRightIcon className="d-4" />
               </a>
@@ -223,11 +223,11 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <Skeleton className="h-6 w-72" />
           <Skeleton className="mt-6 h-4 w-40" />
 
-          <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+          <div className="mt-6 flex h-96 w-full flex-nowrap gap-8">
             <Skeleton className="w-2/3" />
             <Skeleton className="w-1/3" />
           </div>
-          <Skeleton className="mt-6 h-[16rem]" />
+          <Skeleton className="mt-6 h-64" />
         </>
       ) : (
         <BusinessReport report={businessReport} ref={reportRef} />

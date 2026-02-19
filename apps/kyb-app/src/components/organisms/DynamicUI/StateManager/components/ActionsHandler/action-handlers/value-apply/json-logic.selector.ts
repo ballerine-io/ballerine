@@ -9,7 +9,9 @@ import jsonLogic from 'json-logic-js';
 
 export class ValueApplyJsonLogicSelector implements ValueApplySelector {
   select<TResult>(value: ValueApplyValue, context: AnyObject): TResult {
-    if (!this.isJsonLogic(value)) throw new Error('Incorrect selector params.');
+    if (!this.isJsonLogic(value)) {
+throw new Error('Incorrect selector params.');
+}
 
     return jsonLogic.apply(value.selector, context) as TResult;
   }

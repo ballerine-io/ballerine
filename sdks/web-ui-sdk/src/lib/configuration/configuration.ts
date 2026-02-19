@@ -53,6 +53,6 @@ export const configuration: IAppConfiguration = {
     } as IFlow,
   },
   metricsConfig: {
-    enabled: true,
+    enabled: false,
   },
 };

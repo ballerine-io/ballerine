@@ -5,6 +5,7 @@ import posthog from 'posthog-js';
 
 export async function fetchSession(): Promise<IUser | null> {
   const result = await request.get<GetSessionResponse>('internal/auth/session');
+
   if (result.data.user) {
     try {
       posthog.identify(result.data.user.id, {

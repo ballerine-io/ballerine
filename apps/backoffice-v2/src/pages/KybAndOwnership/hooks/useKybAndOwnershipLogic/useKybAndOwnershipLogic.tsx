@@ -104,7 +104,7 @@ export const useKybAndOwnershipLogic = () => {
   const multiselectProps = useMemo(
     () => ({
       trigger: {
-        leftIcon: <SlidersHorizontal className="mr-2 h-4 w-4" />,
+        leftIcon: <SlidersHorizontal className="mr-2 size-4" />,
         title: {
           className: `font-normal text-sm`,
         },

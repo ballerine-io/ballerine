@@ -1,4 +1,4 @@
-import { BallerineLogo } from '@/components/atoms/icons/BallerineLogo';
+import { MiKashBoksLogo } from '@/components/atoms/icons/BallerineLogo';
 import { env } from '@/common/env/env';
 import { SignInForm } from '@/pages/SignIn/components/SignInForm';
 import { useSignInMutation } from '@/pages/SignIn/hooks/useSignInMutation';
@@ -41,7 +41,7 @@ export function SignIn() {
         {env.VITE_IMAGE_LOGO_URL ? (
           <img className={`w-40`} src={env.VITE_IMAGE_LOGO_URL} />
         ) : (
-          <BallerineLogo />
+          <MiKashBoksLogo />
         )}
       </div>
       <SignInForm

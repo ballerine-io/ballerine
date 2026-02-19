@@ -10,7 +10,9 @@ export const Background: FunctionComponent<IBackgroundProps> = props => {
   const { themeParams } = useSignupLayout();
   const { imageSrc, styles } = { ...props, ...themeParams?.background };
 
-  if (!imageSrc) return null;
+  if (!imageSrc) {
+return null;
+}
 
   return (
     <div

@@ -34,12 +34,16 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
   }, [dependancyQueries]);
 
   useEffect(() => {
-    if (!Array.isArray(errors) || !errors?.length) return;
+    if (!Array.isArray(errors) || !errors?.length) {
+return;
+}
 
     const handleErrors = async (errors: HTTPError[]) => {
       const isShouldIgnore = await isShouldIgnoreErrors(errors);
 
-      if (isShouldIgnore) return;
+      if (isShouldIgnore) {
+return;
+}
 
       const errorResponses = await getJsonErrors(errors);
 

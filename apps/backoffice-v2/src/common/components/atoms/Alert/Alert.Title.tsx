@@ -11,4 +11,5 @@ export const AlertTitle = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLHe
     />
   ),
 );
+
 AlertTitle.displayName = 'AlertTitle';

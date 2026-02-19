@@ -1662,6 +1662,7 @@ export class WorkflowService {
       // Ensure stable tenant/project identifiers exist in context for downstream services (Unified API, Document API, etc.).
       // This is required for cross-entity deduplication and tenant-scoped configuration.
       const entity = (contextToInsert as AnyRecord).entity;
+
       if (isObject(entity) && isObject(entity.data)) {
         entity.data.tenantId ??= customer.name;
         entity.data.projectId ??= currentProjectId;
@@ -2478,7 +2479,16 @@ export class WorkflowService {
           return;
         }
 
-        const callbackUrl = `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/NO_OP?processName=aml-unified-api`;
+        if (!env.UNIFIED_API_VERIFICATION_HOOK_ID) {
+          throw new Error('UNIFIED_API_VERIFICATION_HOOK_ID is not configured');
+        }
+        const callbackQuery = new URLSearchParams({
+          resultDestination: 'pluginsOutput.companySanctions.data',
+          processName: 'aml-unified-api',
+        });
+        const callbackUrl =
+          `${env.APP_API_URL}/api/v1/external/workflows/${workflowRuntimeData.id}/hook/` +
+          `${encodeURIComponent(env.UNIFIED_API_VERIFICATION_HOOK_ID)}?${callbackQuery.toString()}`;
         const peopleOfInterest: Array<{
           ballerineEntityId: string;
           firstName: string;
@@ -2520,6 +2530,8 @@ export class WorkflowService {
             callbackUrl,
             firstName: endUser.firstName,
             lastName: endUser.lastName,
+            projectId: currentProjectId,
+            customerId: customer.id,
           });
         }
 

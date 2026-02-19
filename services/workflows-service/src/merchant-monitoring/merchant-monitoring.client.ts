@@ -76,7 +76,10 @@ export class MerchantMonitoringClient {
         const idToken = await getGcpIdToken(audience);
 
         if (idToken) {
-          if (!config.headers) config.headers = {} as any;
+          if (!config.headers) {
+config.headers = {} as any;
+}
+
           (config.headers as any).Authorization = `Bearer ${idToken}`;
         }
       } catch {

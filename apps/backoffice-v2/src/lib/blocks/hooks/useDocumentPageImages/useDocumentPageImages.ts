@@ -16,6 +16,7 @@ export const useDocumentPageImages = (
         if (!list[documentIndex]) {
           list[documentIndex] = [];
         }
+
         list[documentIndex][pageIndex] = filesCopy?.shift()?.data as string;
       });
 

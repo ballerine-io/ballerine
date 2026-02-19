@@ -6,7 +6,7 @@ export type Serializable =
   | boolean
   | null
   | undefined
-  | Array<Serializable>
+  | Serializable[]
   | Record<string, Serializable>;
 
 export interface IJsonDumpProps {

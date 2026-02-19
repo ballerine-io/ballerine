@@ -96,7 +96,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             >
               {fullName}
               {workflow?.config?.example === true && (
-                <Badge className="ml-2 max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-gray-100 px-1 py-0.5 text-xs text-gray-600">
+                <Badge className="ml-2 max-w-full truncate rounded-full bg-gray-100 px-1 py-0.5 text-xs text-gray-600">
                   Sample Data
                 </Badge>
               )}

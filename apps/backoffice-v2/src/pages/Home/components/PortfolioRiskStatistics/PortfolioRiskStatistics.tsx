@@ -106,7 +106,7 @@ export const PortfolioRiskStatistics: FunctionComponent<
                     >
                       <span
                         className={ctw(
-                          'flex h-2 w-2 rounded-full',
+                          'flex size-2 rounded-full',
                           riskLevelToBackgroundColor[
                             riskLevel as keyof typeof riskLevelToBackgroundColor
                           ],

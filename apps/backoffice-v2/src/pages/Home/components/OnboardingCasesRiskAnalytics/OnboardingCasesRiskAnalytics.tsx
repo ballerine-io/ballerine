@@ -15,7 +15,7 @@ export const OnboardingCasesRiskAnalytics = ({
 }) => {
   return (
     <div className="space-y-6">
-      <Separator className="h-[1px] w-full bg-gray-300" />
+      <Separator className="h-px w-full bg-gray-300" />
 
       <div className="flex items-center justify-between">
         <h3 className={'text-xl font-bold'}>Onboarding Cases Risk Analytics</h3>

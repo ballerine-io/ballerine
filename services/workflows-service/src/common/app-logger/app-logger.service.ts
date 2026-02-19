@@ -25,12 +25,18 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
   }
 
   log(message: string, logData: LogPayload = {}) {
-    if (this.isClosed) return;
+    if (this.isClosed) {
+return;
+}
+
     this.logger.info(message, { ...this.getLogMetadata(), logData });
   }
 
   error(error: unknown, logData: LogPayload = {}) {
-    if (this.isClosed) return;
+    if (this.isClosed) {
+return;
+}
+
     const payload: any = { ...this.getLogMetadata(), logData };
     const STACK_FRAMES_TO_REMOVE = 1;
 
@@ -47,12 +53,18 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
   }
 
   warn(message: string, logData: LogPayload = {}) {
-    if (this.isClosed) return;
+    if (this.isClosed) {
+return;
+}
+
     this.logger.warn(message, { ...this.getLogMetadata(), logData });
   }
 
   debug(message: string, logData: LogPayload = {}) {
-    if (this.isClosed) return;
+    if (this.isClosed) {
+return;
+}
+
     this.logger.debug(message, { ...this.getLogMetadata(), logData });
   }
 

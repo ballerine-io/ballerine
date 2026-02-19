@@ -67,6 +67,7 @@ interface FlowsUIConfig {
 
 export interface MetricsConfig {
   enabled?: boolean;
+  baseUrl?: string;
 }
 
 export interface FlowsEventsConfig {

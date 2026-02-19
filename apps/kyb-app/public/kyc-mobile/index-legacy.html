@@ -23,7 +23,7 @@
       }
 
       :root {
-        --primary: #4f46e5;
+        --primary: #7b15ff;
         --primary-dark: #4338ca;
         --primary-light: #818cf8;
         --bg: #f8fafc;
@@ -760,16 +760,18 @@
             </div>
           </div>
           <div class="camera-hint">Hold steady &amp; ensure good lighting</div>
-          <button class="btn-capture" id="docBackCaptureBtn" aria-label="Take photo of back"></button>
+          <button
+            class="btn-capture"
+            id="docBackCaptureBtn"
+            aria-label="Take photo of back"
+          ></button>
         </div>
       </div>
 
       <!-- STEP 5: Review Document Back Photo -->
       <div class="step" id="step-doc-back-review">
         <div class="step-title">Review Back Side</div>
-        <div class="step-desc">
-          Make sure the back of your document is clearly visible
-        </div>
+        <div class="step-desc">Make sure the back of your document is clearly visible</div>
         <div class="preview-container"><img id="docBackPreview" alt="Document back preview" /></div>
         <div class="preview-actions">
           <button class="btn btn-secondary" id="docBackRetakeBtn">↻ Retake</button>
@@ -886,9 +888,7 @@
             stroke-width="2"
           >
             <path d="M1 4v6h6M23 20v-6h-6" />
-            <path
-              d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"
-            />
+            <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" />
           </svg>
         </div>
         <div class="step-title" id="resubmitTitle">Resubmission Required</div>
@@ -898,7 +898,9 @@
         <button class="btn btn-primary" id="resubmitActionBtn" style="margin-top: 16px">
           Retake Photos
         </button>
-        <button class="btn btn-secondary" id="resubmitCloseBtn" style="margin-top: 8px">Close</button>
+        <button class="btn btn-secondary" id="resubmitCloseBtn" style="margin-top: 8px">
+          Close
+        </button>
         <div class="spacer"></div>
       </div>
 
@@ -965,7 +967,9 @@
       // Pre-selected document type from Android (skips welcome + doc-select steps)
       const VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
       const preselectedDocType = params.get('docType');
-      let selectedDocType = VALID_DOC_TYPES.includes(preselectedDocType) ? preselectedDocType : null;
+      let selectedDocType = VALID_DOC_TYPES.includes(preselectedDocType)
+        ? preselectedDocType
+        : null;
       let selectedDocCategory = selectedDocType ? 'identification_document' : null;
       let docPhotoBlob = null;
       let docBackPhotoBlob = null;
@@ -976,9 +980,16 @@
       let previousObjectUrl = null; // track for revocation
       let errorDismissTimer = null; // track error banner timeout
 
-      // ── Document overlay mapping (from Ballerine SDK) ──
+      // ── Document overlay mapping (from MiKashBoks SDK) ──
       // Maps document types to overlay frame classes
-      const CARD_DOC_TYPES = ['id_card', 'voter_id', 'drivers_license', 'residence_permit', 'work_permit', 'visa'];
+      const CARD_DOC_TYPES = [
+        'id_card',
+        'voter_id',
+        'drivers_license',
+        'residence_permit',
+        'work_permit',
+        'visa',
+      ];
 
       function getOverlayClass(docType) {
         if (CARD_DOC_TYPES.includes(docType)) return 'card';
@@ -997,31 +1008,36 @@
       const RESUBMISSION_REASONS = {
         DOCUMENT_BLURRY: {
           title: 'Photo Quality Issue',
-          description: 'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
+          description:
+            'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
           button: 'Retake Document Photo',
           targetStep: 'step-doc-photo',
         },
         DOCUMENT_OBSCURED: {
           title: 'Document Not Fully Visible',
-          description: 'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
+          description:
+            'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
           button: 'Retake Document Photo',
           targetStep: 'step-doc-photo',
         },
         DOCUMENT_EXPIRED: {
           title: 'Document Expired',
-          description: 'The document you submitted has expired. Please use a valid, unexpired document.',
+          description:
+            'The document you submitted has expired. Please use a valid, unexpired document.',
           button: 'Choose Another Document',
           targetStep: 'step-doc-select',
         },
         FACE_NOT_VISIBLE: {
           title: 'Face Not Clearly Visible',
-          description: 'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+          description:
+            'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
           button: 'Retake Selfie',
           targetStep: 'step-selfie',
         },
         FACE_MISMATCH: {
           title: 'Face Does Not Match',
-          description: 'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+          description:
+            'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
           button: 'Retake Photos',
           targetStep: 'step-doc-photo',
         },
@@ -1033,7 +1049,8 @@
         },
         DOCUMENT_TYPE_UNSUPPORTED: {
           title: 'Document Not Accepted',
-          description: 'The document type you submitted is not accepted. Please choose a different document.',
+          description:
+            'The document type you submitted is not accepted. Please choose a different document.',
           button: 'Choose Another Document',
           targetStep: 'step-doc-select',
         },
@@ -1087,7 +1104,11 @@
               audio: false,
             });
           } catch (hiResErr) {
-            console.warn('High-res camera failed, trying fallback:', hiResErr.name, hiResErr.message);
+            console.warn(
+              'High-res camera failed, trying fallback:',
+              hiResErr.name,
+              hiResErr.message,
+            );
             // Fallback: no resolution constraints
             stream = await navigator.mediaDevices.getUserMedia({
               video: { facingMode },
@@ -1367,24 +1388,47 @@
         showNonLinearStep('step-resubmit');
       }
 
-      // Map free-text revision reasons from Ballerine backoffice to our structured reason codes.
+      // Map free-text revision reasons from MiKashBoks backoffice to our structured reason codes.
       // Operators type free-form reasons; we keyword-match to the closest structured code.
       function mapRevisionReasonToCode(revisionReason) {
         if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
         const lower = revisionReason.toLowerCase();
-        if (lower.includes('blur') || lower.includes('unclear') || lower.includes('quality') || lower.includes('unreadable') || lower.includes('sharp') || lower.includes('focus'))
+        if (
+          lower.includes('blur') ||
+          lower.includes('unclear') ||
+          lower.includes('quality') ||
+          lower.includes('unreadable') ||
+          lower.includes('sharp') ||
+          lower.includes('focus')
+        )
           return 'DOCUMENT_BLURRY';
-        if (lower.includes('obscur') || lower.includes('cut off') || lower.includes('partial') || lower.includes('crop'))
+        if (
+          lower.includes('obscur') ||
+          lower.includes('cut off') ||
+          lower.includes('partial') ||
+          lower.includes('crop')
+        )
           return 'DOCUMENT_OBSCURED';
-        if (lower.includes('expir') || lower.includes('expired'))
-          return 'DOCUMENT_EXPIRED';
-        if (lower.includes('face not') || lower.includes('selfie') || lower.includes('face visible'))
+        if (lower.includes('expir') || lower.includes('expired')) return 'DOCUMENT_EXPIRED';
+        if (
+          lower.includes('face not') ||
+          lower.includes('selfie') ||
+          lower.includes('face visible')
+        )
           return 'FACE_NOT_VISIBLE';
-        if (lower.includes('face mismatch') || lower.includes('does not match') || lower.includes('face match'))
+        if (
+          lower.includes('face mismatch') ||
+          lower.includes('does not match') ||
+          lower.includes('face match')
+        )
           return 'FACE_MISMATCH';
         if (lower.includes('back') || lower.includes('back side') || lower.includes('reverse'))
           return 'DOCUMENT_BACK_MISSING';
-        if (lower.includes('unsupported') || lower.includes('not accepted') || lower.includes('wrong document'))
+        if (
+          lower.includes('unsupported') ||
+          lower.includes('not accepted') ||
+          lower.includes('wrong document')
+        )
           return 'DOCUMENT_TYPE_UNSUPPORTED';
         return 'GENERIC';
       }
@@ -1516,7 +1560,8 @@
       });
 
       document.getElementById('resubmitCloseBtn').addEventListener('click', () => {
-        window.location.href = window.location.origin + '/kyc-mobile/done?close=true&status=resubmit';
+        window.location.href =
+          window.location.origin + '/kyc-mobile/done?close=true&status=resubmit';
       });
 
       // ── Submission ──
@@ -1680,7 +1725,9 @@
             })
             .catch(err => {
               console.error('Failed to load workflow data:', err);
-              showError('Could not connect to the verification service. Please close and try again.');
+              showError(
+                'Could not connect to the verification service. Please close and try again.',
+              );
               nextBtn.disabled = true;
             });
         }

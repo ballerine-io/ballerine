@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { toast } from 'sonner';
-import { isObject, MerchantReportType } from '@ballerine/common';
+import { MerchantReportType } from '@ballerine/common';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { HttpError } from '@/common/errors/http-error';

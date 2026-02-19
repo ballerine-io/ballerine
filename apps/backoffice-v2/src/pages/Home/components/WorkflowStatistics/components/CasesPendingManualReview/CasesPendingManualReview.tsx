@@ -70,7 +70,7 @@ export const CasesPendingManualReview: FunctionComponent<{
                 return (
                   <li key={name} className={'flex items-center space-x-4 text-xs'}>
                     <span
-                      className="flex h-2 w-2 rounded-full"
+                      className="flex size-2 rounded-full"
                       style={{
                         backgroundColor: color,
                       }}

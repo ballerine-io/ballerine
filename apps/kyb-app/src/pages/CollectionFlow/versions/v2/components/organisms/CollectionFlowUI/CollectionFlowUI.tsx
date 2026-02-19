@@ -131,6 +131,7 @@ export const CollectionFlowUI: FunctionComponent<ICollectionFlowUIProps> = ({
           setIsSyncing(true);
 
           const collectionFlowState = getCollectionFlowState(values);
+
           if (collectionFlowState) {
             collectionFlowState.steps = steps?.map(step => ({
               ...step,

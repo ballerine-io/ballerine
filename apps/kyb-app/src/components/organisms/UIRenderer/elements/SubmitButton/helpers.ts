@@ -1,5 +1,4 @@
 import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
-import { DocumentFieldParams } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
@@ -15,7 +14,9 @@ export const getElementByValueDestination = (
     elements: Array<UIElement<AnyObject>>,
   ): UIElement<AnyObject> | null => {
     for (const element of elements) {
-      if (element.valueDestination === targetDestination) return element;
+      if (element.valueDestination === targetDestination) {
+        return element;
+      }
 
       if (element.elements) {
         const foundElement = findByElementDefinitionByDestination(
@@ -23,7 +24,9 @@ export const getElementByValueDestination = (
           element.elements,
         );
 
-        if (foundElement) return foundElement;
+        if (foundElement) {
+          return foundElement;
+        }
       }
     }
 
@@ -48,15 +51,19 @@ export const getDocumentElementByDocumentError = (id: string, page: any): any =>
   const findElement = (
     id: string,
     elements: Array<UIElement<AnyObject>>,
-  ): UIElement<DocumentFieldParams> | null => {
+  ): UIElement<AnyObject> | null => {
     for (const element of elements) {
       //@ts-ignore
-      if (element.options?.documentData?.id === id.replace('document-error-', '')) return element;
+      if (element.options?.documentData?.id === id.replace('document-error-', '')) {
+        return element;
+      }
 
       if (element.elements) {
         const foundInElements = findElement(id, element.elements);
 
-        if (foundInElements) return foundInElements;
+        if (foundInElements) {
+          return foundInElements;
+        }
       }
     }
 

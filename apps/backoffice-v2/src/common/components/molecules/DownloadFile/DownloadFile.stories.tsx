@@ -6,6 +6,7 @@ const meta: Meta<typeof DownloadFile> = {
 };
 
 export default meta;
+
 type Story = StoryObj<typeof DownloadFile>;
 
 export const Default: Story = {

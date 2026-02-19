@@ -12,6 +12,35 @@ export class AssessmentsService {
     protected readonly customerService: CustomerService,
   ) {}
 
+  private async resolveUnifiedTenantContext({
+    customerId,
+    projectId,
+  }: {
+    customerId?: string;
+    projectId?: string;
+  }): Promise<{ customerId?: string; projectId?: string }> {
+    let resolvedCustomerId = customerId;
+    let resolvedProjectId = projectId;
+
+    // Back-compat: some call sites pass Ballerine projectId (e.g. "project-sl-default")
+    // while Unified API expects x-tenant-id/x-project-id (e.g. "mikashboks-default"/"sl-default").
+    if ((!resolvedCustomerId || !resolvedProjectId) && projectId) {
+      try {
+        const customer = await this.customerService.getByProjectId(projectId);
+        resolvedCustomerId ||= customer?.name;
+
+        if (resolvedProjectId === projectId) {
+          const project = (customer?.projects ?? []).find((p: any) => p.id === projectId);
+          resolvedProjectId = project?.name || resolvedProjectId;
+        }
+      } catch {
+        // Best-effort inference only.
+      }
+    }
+
+    return { customerId: resolvedCustomerId, projectId: resolvedProjectId };
+  }
+
   async getKybAndOwnershipAssessments(
     query: GetKybAndOwnershipAssessmentsDto,
     projectId: TProjectId,
@@ -21,11 +50,14 @@ export class AssessmentsService {
         page: query.page.number,
         limit: query.page.size,
       };
+      const tenantContext = await this.resolveUnifiedTenantContext({ projectId });
+      const resolvedProjectId = tenantContext.projectId || projectId;
 
       const result = await new UnifiedApiClient().getAssessmentsByType(
         'kyb_and_ownership',
-        projectId,
+        resolvedProjectId,
         queryParams,
+        tenantContext.customerId,
       );
 
       return result.data;
@@ -36,7 +68,13 @@ export class AssessmentsService {
 
   async getKybAndOwnershipAssessment(id: string, projectId: TProjectId) {
     try {
-      const result = await new UnifiedApiClient().getAssessmentById(id, projectId);
+      const tenantContext = await this.resolveUnifiedTenantContext({ projectId });
+      const resolvedProjectId = tenantContext.projectId || projectId;
+      const result = await new UnifiedApiClient().getAssessmentById(
+        id,
+        resolvedProjectId,
+        tenantContext.customerId,
+      );
 
       return result.data;
     } catch (error) {
@@ -60,13 +98,19 @@ export class AssessmentsService {
     projectId: TProjectId,
   ) {
     try {
+      const tenantContext = await this.resolveUnifiedTenantContext({ projectId });
+      const resolvedProjectId = tenantContext.projectId || projectId;
       const data = {
         ...payload,
         country: [country, state].filter(Boolean).join('-'),
-        projectId,
+        projectId: resolvedProjectId,
       };
 
-      const result = await new UnifiedApiClient().createAssessment(payload.type, data);
+      const result = await new UnifiedApiClient().createAssessment(
+        payload.type,
+        data,
+        tenantContext.customerId,
+      );
 
       return result.data;
     } catch (error) {
@@ -80,7 +124,14 @@ export class AssessmentsService {
     projectId: TProjectId,
   ) {
     try {
-      const result = await new UnifiedApiClient().updateAssessmentStatus(id, status, projectId);
+      const tenantContext = await this.resolveUnifiedTenantContext({ projectId });
+      const resolvedProjectId = tenantContext.projectId || projectId;
+      const result = await new UnifiedApiClient().updateAssessmentStatus(
+        id,
+        status,
+        resolvedProjectId,
+        tenantContext.customerId,
+      );
 
       return result.data;
     } catch (error) {
@@ -97,30 +148,15 @@ export class AssessmentsService {
     customerId?: string;
     projectId?: string;
   }) {
-    let resolvedCustomerId = customerId;
-    let resolvedProjectId = projectId;
-
-    // Back-compat: some call sites pass Ballerine projectId (e.g. "project-sl-default")
-    // while Unified API expects x-tenant-id/x-project-id (e.g. "mikashboks-default"/"sl-default").
-    // If customerId is missing, infer both from the Ballerine project record.
-    if ((!resolvedCustomerId || !resolvedProjectId) && projectId) {
-      try {
-        const customer = await this.customerService.getByProjectId(projectId);
-        resolvedCustomerId ||= customer?.name;
-
-        if (resolvedProjectId === projectId) {
-          const project = (customer?.projects ?? []).find((p: any) => p.id === projectId);
-          resolvedProjectId = project?.name || resolvedProjectId;
-        }
-      } catch {
-        // Best-effort inference only.
-      }
-    }
+    const tenantContext = await this.resolveUnifiedTenantContext({
+      customerId,
+      projectId,
+    });
 
     return await this.unifiedApiClient.getLatestAssessmentsByWorkflowRuntimeDataId({
       workflowRuntimeDataId,
-      customerId: resolvedCustomerId,
-      projectId: resolvedProjectId,
+      customerId: tenantContext.customerId,
+      projectId: tenantContext.projectId,
     });
   }
 }

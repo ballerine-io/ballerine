@@ -9,7 +9,9 @@ export const isPageCompleted = (page: UIPage, context: CollectionFlowContext) =>
     step => step.stepName === page.stateName,
   )?.isCompleted;
 
-  if (!page.stateName) return false;
+  if (!page.stateName) {
+return false;
+}
 
   return isStepCompleted;
 };

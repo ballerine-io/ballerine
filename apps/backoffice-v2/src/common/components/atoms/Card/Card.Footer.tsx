@@ -6,4 +6,5 @@ export const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
     <div ref={ref} className={ctw(' flex items-center p-6 pt-0', className)} {...props} />
   ),
 );
+
 CardFooter.displayName = 'CardFooter';

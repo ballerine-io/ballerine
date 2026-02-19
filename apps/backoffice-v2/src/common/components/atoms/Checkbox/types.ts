@@ -2,7 +2,7 @@ import { ChangeEventHandler } from 'react';
 
 export type TCheckboxGroupState =
   | {
-      values: Array<unknown>;
+      values: unknown[];
       onChange: ChangeEventHandler<HTMLInputElement>;
     }
   | undefined;

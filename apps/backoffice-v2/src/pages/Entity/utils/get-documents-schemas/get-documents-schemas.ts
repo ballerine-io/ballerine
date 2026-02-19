@@ -10,7 +10,9 @@ export const getDocumentsSchemas = (
   issuerCountryCode: Parameters<typeof getDocumentSchemaByCountry>[0],
   workflow: TWorkflowById,
 ) => {
-  if (!issuerCountryCode) return;
+  if (!issuerCountryCode) {
+return;
+}
 
   const documentSchemaByCountry = getDocumentSchemaByCountry(
     issuerCountryCode,
@@ -19,10 +21,13 @@ export const getDocumentsSchemas = (
     .concat(getDocumentsByCountry(issuerCountryCode))
     .reduce((unique: TDocument[], item: TDocument) => {
       const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
+
       if (!isDuplicate) {
         unique.push(item);
       }
-      return unique;
+
+      
+return unique;
     }, [] as TDocument[])
     .filter((documentSchema: TDocument) => {
       if (

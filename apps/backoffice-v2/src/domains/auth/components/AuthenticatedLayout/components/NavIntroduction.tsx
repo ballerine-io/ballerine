@@ -1,6 +1,4 @@
-import { PlayCircleIcon } from 'lucide-react';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { Skeleton } from '@ballerine/ui';
 
 export const NavIntroduction = () => {
   const { data: customer } = useCustomerQuery();
@@ -17,68 +15,11 @@ export const NavIntroduction = () => {
           <div className="w-2/3">
             <h3 className="text-sm font-bold">Introduction</h3>
             <p className="text-xs text-gray-700">
-              Watch this quick introduction to learn how to use Ballerine effectively.
+              Watch this quick introduction to learn how to use MiKashBoks effectively.
             </p>
           </div>
-          <div className="relative w-3/4 overflow-hidden rounded-md">
-            {/* Video player with thumbnail and iframe */}
-            <div className="relative">
-              {/* Thumbnail with play button */}
-              <button
-                className="group relative w-full"
-                onClick={() => {
-                  const thumbnail = document.getElementById('video-thumbnail');
-                  const iframe = document.getElementById('video-iframe');
-
-                  if (thumbnail && iframe) {
-                    thumbnail.style.display = 'none';
-                    iframe.style.display = 'block';
-
-                    // Update iframe src to autoplay
-                    const iframeElement = iframe.querySelector('iframe');
-                    if (iframeElement) {
-                      const currentSrc = iframeElement.src;
-                      iframeElement.src = currentSrc + '&autoplay=true';
-                    }
-                  }
-                }}
-                id="video-thumbnail"
-              >
-                <img
-                  src="https://cdn.loom.com/sessions/thumbnails/c80a7403d3b4483ab64f1a38b616fb63-62bfbec54aa2e74b-full-play.gif"
-                  alt="Introduction video thumbnail"
-                  className="w-full rounded-md"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <PlayCircleIcon className="h-10 w-10 text-white opacity-80 transition-opacity group-hover:opacity-100" />
-                </div>
-              </button>
-
-              {/* Video iframe (hidden initially) */}
-              <div
-                id="video-iframe"
-                style={{
-                  position: 'relative',
-                  paddingBottom: '56.25%',
-                  height: 0,
-                  display: 'none',
-                }}
-              >
-                <Skeleton className="absolute inset-0 size-full" />
-                <iframe
-                  src="https://www.loom.com/embed/c80a7403d3b4483ab64f1a38b616fb63?sid=cfae9630-2144-4b37-9169-21bbcc360a5f&hideEmbedTopBar=true"
-                  frameBorder="0"
-                  allowFullScreen
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
-              </div>
-            </div>
+          <div className="flex w-3/4 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 p-3 text-center text-xs text-slate-500">
+            Introduction video coming soon.
           </div>
         </div>
       </div>

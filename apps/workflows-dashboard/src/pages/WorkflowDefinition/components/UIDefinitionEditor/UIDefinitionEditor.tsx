@@ -1,5 +1,4 @@
 import { Button } from '@/components/atoms/Button';
-import { DialogContent } from '@/components/atoms/Dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/atoms/Tabs';
 import { JSONEditorComponent } from '@/components/organisms/JsonEditor';
 import { IUIDefinition } from '@/domains/ui-definitions';
@@ -60,7 +59,9 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                         {element.elements.map((el: any, i: number) => {
                           // Helper function to render form elements
                           const renderFormElement = (element: any) => {
-                            if (!element.type?.startsWith('json-form:')) return null;
+                            if (!element.type?.startsWith('json-form:')) {
+return null;
+}
 
                             const valueDestination = element.valueDestination?.split('.')?.pop();
 

@@ -26,10 +26,13 @@ type SortDirection = 'asc' | 'desc';
 
 // Highlight search matches
 const highlightText = (text: string, searchQuery: string) => {
-  if (!searchQuery) return text;
+  if (!searchQuery) {
+return text;
+}
 
   const parts = text.split(new RegExp(`(${searchQuery})`, 'gi'));
-  return parts.map((part, i) =>
+  
+return parts.map((part, i) =>
     part.toLowerCase() === searchQuery.toLowerCase() ? (
       <mark key={i} className="rounded bg-yellow-200 px-0.5">
         {part}
@@ -52,7 +55,9 @@ export const WorkflowLogsModal = ({ workflowId, isOpen, onClose }: WorkflowLogsM
   const pageSize = 100;
 
   const fetchLogs = useCallback(async () => {
-    if (!workflowId) return;
+    if (!workflowId) {
+return;
+}
 
     try {
       setIsLoading(true);
@@ -105,10 +110,13 @@ export const WorkflowLogsModal = ({ workflowId, isOpen, onClose }: WorkflowLogsM
   // Filter and sort logs
   const filteredAndSortedLogs = logs
     .filter(log => {
-      if (!searchQuery) return true;
+      if (!searchQuery) {
+return true;
+}
 
       const searchLower = searchQuery.toLowerCase();
-      return (
+      
+return (
         log.type.toLowerCase().includes(searchLower) ||
         log.message.toLowerCase().includes(searchLower) ||
         (log.eventName && log.eventName.toLowerCase().includes(searchLower)) ||
@@ -153,8 +161,12 @@ export const WorkflowLogsModal = ({ workflowId, isOpen, onClose }: WorkflowLogsM
   };
 
   const renderSortIndicator = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? (
+    if (sortField !== field) {
+return null;
+}
+
+    
+return sortDirection === 'asc' ? (
       <ArrowUp className="ml-1 inline h-3 w-3" />
     ) : (
       <ArrowDown className="ml-1 inline h-3 w-3" />

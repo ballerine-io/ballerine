@@ -64,7 +64,7 @@ export const getVariantTabs = (
         displayName: 'Custom Data',
         disabled: !tabBlocks[Tab.CUSTOM_DATA]?.length,
         tooltip:
-          'This tab displays customer data provided by API, allowing Ballerine AI to enrich its analysis.',
+          'This tab displays customer data provided by API, allowing MiKashBoks AI to enrich its analysis.',
       },
     ];
 

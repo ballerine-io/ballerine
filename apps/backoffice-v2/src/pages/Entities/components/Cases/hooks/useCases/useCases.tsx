@@ -131,34 +131,46 @@ export const useCases = () => {
   const handleDropdown = useCallback(e => {
     const dropdown = e.target.closest('.dropdown');
 
-    if (dropdown.classList.contains('dropdown-hover')) return;
+    if (dropdown.classList.contains('dropdown-hover')) {
+return;
+}
 
     dropdown.classList.add('dropdown-hover');
     dropdown.classList.remove('dropdown-open');
   }, []);
 
   useDocumentListener('keydown', event => {
-    if (!event.ctrlKey || !event.shiftKey) return;
+    if (!event.ctrlKey || !event.shiftKey) {
+return;
+}
 
     const listeners = ['k', 's', 'f'] as const;
 
-    if (!listeners.includes(event.key?.toLowerCase() as (typeof listeners)[number])) return;
+    if (!listeners.includes(event.key?.toLowerCase() as (typeof listeners)[number])) {
+return;
+}
 
     event.preventDefault();
 
     switch (event.key?.toLowerCase()) {
       case 'k':
-        if (!searchRef.current) break;
+        if (!searchRef.current) {
+break;
+}
 
         searchRef.current.focus();
         break;
       case 's':
-        if (!sortRef.current) break;
+        if (!sortRef.current) {
+break;
+}
 
         sortRef.current.focus();
         break;
       case 'f': {
-        if (!filterRef.current) break;
+        if (!filterRef.current) {
+break;
+}
 
         const dropdown = filterRef.current.closest('.dropdown');
 

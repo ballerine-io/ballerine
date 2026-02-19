@@ -12,10 +12,12 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
   insert<TContext extends AnyObject>(context: TContext, params: StrategyParams): TContext {
     const { schema, destination, bindingAnchorDestination } = params;
 
-    const value = (get(context, destination) as Array<AnyObject>) || [];
+    const value = (get(context, destination) as AnyObject[]) || [];
     const isAlreadyInserted = value.find(item => get(item, bindingAnchorDestination));
 
-    if (isAlreadyInserted) return context;
+    if (isAlreadyInserted) {
+return context;
+}
 
     const insertionValue: AnyObject = {};
 
@@ -45,14 +47,15 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
   remove<TContext extends AnyObject>(context: TContext, params: StrategyParams): TContext {
     const { destination } = params;
 
-    const value = (get(context, destination) as Array<AnyObject>) || [];
+    const value = (get(context, destination) as AnyObject[]) || [];
 
     if (
       !Array.isArray(value) ||
       !value.length ||
       !value.find((item: AnyObject) => get(item, params.bindingAnchorDestination))
-    )
-      return context;
+    ) {
+return context;
+}
 
     set(
       context,
@@ -73,8 +76,9 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
       typeof value === 'object' &&
       bindingAnchorDestination &&
       get(value, bindingAnchorDestination)
-    )
-      return true;
+    ) {
+return true;
+}
 
     return false;
   }

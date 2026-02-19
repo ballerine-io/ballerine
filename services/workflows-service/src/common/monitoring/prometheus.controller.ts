@@ -1,6 +1,5 @@
 import { Controller, Get, Header } from '@nestjs/common';
 import { BullMQPrometheusService } from './bullmq-prometheus.service';
-import { Public } from '@/common/decorators/public.decorator';
 
 @Controller('metrics')
 export class PrometheusController {

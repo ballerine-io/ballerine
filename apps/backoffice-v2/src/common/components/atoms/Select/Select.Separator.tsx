@@ -12,4 +12,5 @@ export const SelectSeparator = React.forwardRef<
     {...props}
   />
 ));
+
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;

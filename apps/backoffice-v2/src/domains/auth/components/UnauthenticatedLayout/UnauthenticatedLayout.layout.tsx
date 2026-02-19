@@ -7,7 +7,9 @@ export const UnauthenticatedLayout: FunctionComponent = () => {
   const { isLoading, shouldRedirect, redirectAuthenticatedTo, state } =
     useUnauthenticatedLayoutLogic();
 
-  if (isLoading) return <FullScreenLoader />;
+  if (isLoading) {
+return <FullScreenLoader />;
+}
 
   if (shouldRedirect) {
     return (

@@ -18,4 +18,5 @@ export const BadgeCell = forwardRef<
     </AnimatePresence>
   );
 });
+
 BadgeCell.displayName = 'BadgeCell';

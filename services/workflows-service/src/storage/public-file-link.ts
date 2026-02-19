@@ -45,6 +45,7 @@ export const verifyFileLinkSignature = ({
   secret: string;
 }) => {
   const now = Math.floor(Date.now() / 1000);
+
   if (!Number.isFinite(expires) || expires <= now) {
     return false;
   }
@@ -77,11 +78,13 @@ export const createSignedPublicFileUrl = ({
   ttlSeconds?: number;
 }) => {
   const baseUrl = process.env.APP_API_URL;
+
   if (!baseUrl) {
     throw new Error('APP_API_URL is not set (required to build public file URLs)');
   }
 
   const secret = getFileLinkSigningSecret();
+
   if (!secret) {
     throw new Error(
       'Missing signing secret for public file URLs (set FILE_LINK_SIGNING_SECRET or reuse existing secrets).',

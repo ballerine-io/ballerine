@@ -17,7 +17,9 @@ export const ThemeProvider = ({ children }: Props) => {
   const { data: uiSchema, isLoading, error } = useUISchemasQuery(language);
 
   const theme = useMemo(() => {
-    if (isLoading) return null;
+    if (isLoading) {
+return null;
+}
 
     if (error) {
       console.warn('Failed to load theme', error);
@@ -25,7 +27,9 @@ export const ThemeProvider = ({ children }: Props) => {
       return defaultTheme.theme;
     }
 
-    if (!uiSchema?.uiSchema?.theme) return defaultTheme.theme;
+    if (!uiSchema?.uiSchema?.theme) {
+return defaultTheme.theme;
+}
 
     return uiSchema.uiSchema.theme;
   }, [uiSchema, isLoading, error]);

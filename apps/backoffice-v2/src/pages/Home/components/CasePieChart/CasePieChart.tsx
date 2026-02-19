@@ -26,7 +26,7 @@ export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
 
   if (data.length === 0) {
     return (
-      <div className={'flex h-[184px] w-[184px] items-center justify-center text-slate-500'}>
+      <div className={'flex size-[184px] items-center justify-center text-slate-500'}>
         No Data Available
       </div>
     );
@@ -34,7 +34,7 @@ export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
 
   return (
     <>
-      <ChartContainer className="h-[184px] w-[184px]" config={config}>
+      <ChartContainer className="size-[184px]" config={config}>
         <PieChart width={184} height={184}>
           <text
             x={184 / 2}
@@ -75,10 +75,11 @@ export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
       <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
         {data.map((entry, index) => {
           const key = entry[nameKey] as string;
-          return (
+          
+return (
             <li key={index} className={'flex items-center space-x-4 border-b py-1 text-xs'}>
               <span
-                className={`flex h-2 w-2 rounded-full`}
+                className={`flex size-2 rounded-full`}
                 style={{ backgroundColor: getDefinition(key).color }}
               />
               <div className={'flex w-full justify-between'}>

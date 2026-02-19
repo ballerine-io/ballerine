@@ -3,7 +3,6 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { UnknownRecord } from '@/common/types';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';

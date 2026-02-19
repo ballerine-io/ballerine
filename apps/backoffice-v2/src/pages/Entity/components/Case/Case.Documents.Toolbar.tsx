@@ -170,7 +170,7 @@ export const DocumentsToolbar: FunctionComponent<{
       </div>
 
       {/* Subtle bounce indicator to draw attention */}
-      <div className="absolute -top-2 left-1/2 h-1 w-1 -translate-x-1/2 animate-bounce rounded-full bg-white/80 opacity-0 group-hover:opacity-100" />
+      <div className="absolute -top-2 left-1/2 size-1 -translate-x-1/2 animate-bounce rounded-full bg-white/80 opacity-0 group-hover:opacity-100" />
     </div>
   );
 };

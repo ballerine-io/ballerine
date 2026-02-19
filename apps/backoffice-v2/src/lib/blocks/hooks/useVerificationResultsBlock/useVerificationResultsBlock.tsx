@@ -97,7 +97,9 @@ const STATUS_DISPLAY: Record<string, { label: string; variant: string }> = {
 const toTitleCase = (str: string) => str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 const formatConfidence = (score: number | undefined): string => {
-  if (score === undefined || score === null) return 'N/A';
+  if (score === undefined || score === null) {
+return 'N/A';
+}
 
   // Normalize: scores > 1 are on 0-100 scale, scores <= 1 are on 0-1 scale
   const normalized = score > 1 ? score : score * 100;
@@ -106,7 +108,9 @@ const formatConfidence = (score: number | undefined): string => {
 };
 
 const formatQualityScore = (score: unknown): string => {
-  if (typeof score !== 'number' || Number.isNaN(score)) return 'N/A';
+  if (typeof score !== 'number' || Number.isNaN(score)) {
+return 'N/A';
+}
 
   // Normalize: scores > 1 are on 0-100 scale, scores <= 1 are on 0-1 scale.
   const normalized = score > 1 ? score : score * 100;
@@ -115,7 +119,10 @@ const formatQualityScore = (score: unknown): string => {
 };
 
 const extractNestedResult = (value: unknown): Record<string, unknown> | undefined => {
-  if (!value || typeof value !== 'object') return undefined;
+  if (!value || typeof value !== 'object') {
+return undefined;
+}
+
   const v = value as Record<string, unknown>;
 
   if (v['result'] && typeof v['result'] === 'object') {
@@ -126,15 +133,25 @@ const extractNestedResult = (value: unknown): Record<string, unknown> | undefine
 };
 
 const getResultsArray = (output: unknown): unknown[] => {
-  if (!output || typeof output !== 'object') return [];
+  if (!output || typeof output !== 'object') {
+return [];
+}
+
   const o = output as Record<string, unknown>;
   const direct = o['results'];
-  if (Array.isArray(direct)) return direct;
+
+  if (Array.isArray(direct)) {
+return direct;
+}
 
   const data = o['data'];
+
   if (data && typeof data === 'object') {
     const nested = (data as Record<string, unknown>)['results'];
-    if (Array.isArray(nested)) return nested;
+
+    if (Array.isArray(nested)) {
+return nested;
+}
   }
 
   return [];
@@ -282,6 +299,7 @@ export const useVerificationResultsBlock = ({
       addressVerification,
       marketCardVerification,
     );
+
     if (overallDetails.length > 0) {
       overallBlock.addCell({
         type: 'readOnlyDetails',
@@ -408,6 +426,7 @@ export const useVerificationResultsBlock = ({
 
       const extractedData = businessDocumentVerification.metadata?.extractedData;
       const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+
       if (extractedDetails.length > 0) {
         blocks.addCell({
           type: 'block',
@@ -448,6 +467,7 @@ export const useVerificationResultsBlock = ({
 
       const extractedData = addressVerification.metadata?.extractedData;
       const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+
       if (extractedDetails.length > 0) {
         blocks.addCell({
           type: 'block',
@@ -488,6 +508,7 @@ export const useVerificationResultsBlock = ({
 
       const extractedData = marketCardVerification.metadata?.extractedData;
       const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+
       if (extractedDetails.length > 0) {
         blocks.addCell({
           type: 'block',
@@ -530,6 +551,7 @@ export const useVerificationResultsBlock = ({
     const loanFinancialResults = getResultsArray(
       loanFinancialAnalysis,
     ) as FinancialAnalysisResult[];
+
     if (loanFinancialResults.length > 0) {
       blocks.addCell({
         type: 'block',
@@ -552,6 +574,7 @@ export const useVerificationResultsBlock = ({
     const businessPhotoResults = getResultsArray(
       businessPhotoClassification,
     ) as BusinessPhotoAnalysisResult[];
+
     if (businessPhotoResults.length > 0) {
       blocks.addCell({
         type: 'block',
@@ -663,6 +686,7 @@ function buildUnifiedVerificationDetails(
   }
 
   const duplicates = normalizePossibleDuplicates(plugin.metadata?.possibleDuplicates);
+
   if (duplicates?.length) {
     details.push({ label: 'Possible Duplicates', value: String(duplicates.length) });
   }
@@ -673,11 +697,15 @@ function buildUnifiedVerificationDetails(
 function normalizePossibleDuplicates(
   possibleDuplicates: unknown,
 ): Array<{ personId?: string; confidenceScore?: number }> {
-  if (!possibleDuplicates) return [];
+  if (!possibleDuplicates) {
+return [];
+}
 
   if (Array.isArray(possibleDuplicates)) {
     // Unified API currently returns string[] of ids; legacy might return {personId, confidenceScore}[].
-    if (possibleDuplicates.length === 0) return [];
+    if (possibleDuplicates.length === 0) {
+return [];
+}
 
     if (typeof possibleDuplicates[0] === 'string') {
       return (possibleDuplicates as string[]).map(id => ({ personId: id }));
@@ -726,17 +754,22 @@ function buildExtractedDataDetails(
       if (sectionValue !== null && sectionValue !== undefined && sectionValue !== '') {
         details.push({ label: toTitleCase(sectionKey), value: String(sectionValue) });
       }
+
       continue;
     }
 
     for (const [fieldKey, fieldValue] of Object.entries(sectionValue as Record<string, unknown>)) {
-      if (fieldValue === null || fieldValue === undefined || fieldValue === '') continue;
+      if (fieldValue === null || fieldValue === undefined || fieldValue === '') {
+continue;
+}
 
       const field = fieldValue as Record<string, unknown>;
       const value =
         field && typeof field === 'object' && 'value' in field ? field['value'] : fieldValue;
 
-      if (value === null || value === undefined || value === '') continue;
+      if (value === null || value === undefined || value === '') {
+continue;
+}
 
       details.push({
         label: `${toTitleCase(sectionKey)}: ${toTitleCase(fieldKey)}`,

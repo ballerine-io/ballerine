@@ -9,11 +9,15 @@ export const withSessionProtected = <TComponentProps extends object>(
   const Wrapper = (props: TComponentProps) => {
     const { user, isLoading } = useSessionQuery();
 
-    if (isLoading) return <LoadingScreen />;
+    if (isLoading) {
+return <LoadingScreen />;
+}
 
     const isAuthenticated = Boolean(user);
 
-    if (!isAuthenticated) return <AppNavigate to={signinPath} />;
+    if (!isAuthenticated) {
+return <AppNavigate to={signinPath} />;
+}
 
     return <Component {...props} />;
   };

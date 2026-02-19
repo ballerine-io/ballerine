@@ -6,4 +6,5 @@ export const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDi
     {...props}
   />
 );
+
 SheetFooter.displayName = 'SheetFooter';

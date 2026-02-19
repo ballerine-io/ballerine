@@ -25,6 +25,7 @@ const meta = {
 } satisfies Meta<typeof AssociatedCompaniesBlock>;
 
 export default meta;
+
 type Story = StoryObj<typeof AssociatedCompaniesBlock>;
 
 export const Default = {

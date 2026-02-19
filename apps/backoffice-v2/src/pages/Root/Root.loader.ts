@@ -14,11 +14,14 @@ export const rootLoader: LoaderFunction = async ({ request }) => {
       );
     } catch (e) {
       console.error('Error using magic link', e);
-      return redirect(`/en/auth/sign-in`);
+      
+return redirect(`/en/auth/sign-in`);
     }
   }
 
-  if (url.pathname.startsWith('/en') && !token) return null;
+  if (url.pathname.startsWith('/en') && !token) {
+return null;
+}
 
   const newUrl = new URL(request.url);
 

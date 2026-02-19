@@ -7,4 +7,5 @@ export const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLD
     {...props}
   />
 );
+
 DialogFooter.displayName = 'DialogFooter';

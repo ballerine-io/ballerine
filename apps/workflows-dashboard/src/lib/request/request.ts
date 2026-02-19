@@ -11,7 +11,10 @@ request.interceptors.request.use(config => {
     config.headers['Authorization'] = `Api-Key ${
       (globalThis as any).env?.VITE_API_KEY ?? import.meta.env.VITE_API_KEY
     }`;
-    return config;
+    
+return config;
   }
-  return config;
+
+  
+return config;
 });

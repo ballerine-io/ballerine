@@ -42,7 +42,7 @@ export const ImageOCR: FunctionComponent<IImageOCR> = ({
             ) : (
               <div className="relative z-10">
                 <ScanText className="text-white" />
-                <div className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-blue-400/80" />
+                <div className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-blue-400/80" />
               </div>
             )}
           </button>
@@ -54,7 +54,7 @@ export const ImageOCR: FunctionComponent<IImageOCR> = ({
         >
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-indigo-700">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+              <Sparkles className="size-3.5 text-indigo-500" />
               <span className="font-medium">AI Document Recognition</span>
             </div>
             <p className="max-w-full text-gray-600">

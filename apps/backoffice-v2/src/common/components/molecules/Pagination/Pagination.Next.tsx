@@ -25,7 +25,7 @@ export const PaginationNext: FunctionComponent<
     >
       Next
     </span>
-    <ChevronRightIcon className="h-4 w-4" />
+    <ChevronRightIcon className="size-4" />
   </PaginationLink>
 );
 

@@ -1,8 +1,8 @@
 export interface IUISchema {
-  elements: {
+  elements: Array<{
     number: string;
     stateName: string;
-  }[];
+  }>;
 }
 
 export interface IUIDefinition {

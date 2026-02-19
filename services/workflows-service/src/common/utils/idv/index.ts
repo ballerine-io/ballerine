@@ -202,7 +202,7 @@ export const handleIndividualVerificationDocuments = async ({
     } else {
       // Extract base64 content (strip data URI prefix if present)
       const base64ImageContent = kycDocumentImage.content.includes(',')
-        ? (kycDocumentImage.content.split(',')[1] ?? kycDocumentImage.content)
+        ? kycDocumentImage.content.split(',')[1] ?? kycDocumentImage.content
         : kycDocumentImage.content;
       buffer = Buffer.from(base64ImageContent, 'base64');
     }

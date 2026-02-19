@@ -6,12 +6,11 @@ import { Link } from 'react-router-dom';
 
 import { Button } from '@/common/components/atoms/Button/Button';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
-import { env } from '@/common/env/env';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { getDemoStateErrorText } from './getDemoStateErrorText';
 
-export type ExperienceBallerineCardProps = {
+export type ExperienceMiKashBoksCardProps = {
   firstName?: string | null;
   fullName?: string | null;
   avatarUrl?: string | null;
@@ -35,7 +34,7 @@ const CreateReportButton = ({
   onClick,
   locale,
   ...props
-}: Pick<ExperienceBallerineCardProps, 'onClick'> &
+}: Pick<ExperienceMiKashBoksCardProps, 'onClick'> &
   ComponentPropsWithoutRef<typeof Button> & {
     locale: ReturnType<typeof useLocale>;
   }) => {
@@ -61,13 +60,13 @@ const CreateReportButton = ({
   );
 };
 
-export const ExperienceBallerineCard = ({
+export const ExperienceMiKashBoksCard = ({
   firstName,
   fullName,
   avatarUrl,
   className,
   onClick,
-}: ExperienceBallerineCardProps) => {
+}: ExperienceMiKashBoksCardProps) => {
   const { data: customer } = useCustomerQuery();
   const locale = useLocale();
 

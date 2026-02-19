@@ -570,6 +570,7 @@ export class WorkflowControllerExternal {
         let derivedFromPlugin = false;
 
         const resultDestination = query.resultDestination;
+
         if (
           typeof resultDestination === 'string' &&
           resultDestination.startsWith('pluginsOutput.')

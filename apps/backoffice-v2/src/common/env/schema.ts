@@ -3,14 +3,15 @@ import { z } from 'zod';
 export const EnvSchema = z.object({
   MODE: z.enum(['development', 'production', 'test']),
   VITE_ENVIRONMENT_NAME: z.enum(['development', 'production', 'sandbox', 'local']),
-  VITE_API_URL: z.string().url().default('https://api-dev.ballerine.io/v2'),
+  VITE_API_URL: z.string().url(),
   VITE_API_KEY: z.string(),
   VITE_AUTH_ENABLED: z.preprocess(value => {
     try {
       return typeof value === 'string' ? JSON.parse(value) : value;
     } catch (error) {
       console.warn('Failed to parse VITE_AUTH_ENABLED, defaulting to true', error);
-      return true;
+      
+return true;
     }
   }, z.boolean().default(true)),
   VITE_POLLING_INTERVAL: z.coerce
@@ -29,7 +30,8 @@ export const EnvSchema = z.object({
       return typeof value === 'string' ? JSON.parse(value) : value;
     } catch (error) {
       console.warn('Failed to parse VITE_FETCH_SIGNED_URL, defaulting to true', error);
-      return true;
+      
+return true;
     }
   }, z.boolean().default(true)),
   VITE_POSTHOG_KEY: z.string().optional(),

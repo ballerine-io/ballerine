@@ -42,7 +42,8 @@ export const useFinalSubmission = <TValues extends object = CollectionFlowContex
 
         if (redirectUrls?.success) {
           location.href = redirectUrls.success;
-          return;
+          
+return;
         }
 
         await stateApi.sendEvent('NEXT');

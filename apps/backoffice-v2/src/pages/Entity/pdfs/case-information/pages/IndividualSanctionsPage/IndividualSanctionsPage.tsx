@@ -8,7 +8,7 @@ import { TIndividualSanctionsData } from '@/pages/Entity/pdfs/case-information/p
 import { tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
-import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
+import poweredByLogo from '../../assets/title-page-mikashboks-logo.png';
 
 export const IndividualSanctionsPage: FunctionComponent<TIndividualSanctionsData> = ({ items }) => {
   return (
@@ -16,7 +16,7 @@ export const IndividualSanctionsPage: FunctionComponent<TIndividualSanctionsData
       <View style={tw('mb-3')}>
         <CaseInformationPageHeader
           companyLogo={poweredByLogo}
-          companyName="Ballerine Onboarding Data Report"
+          companyName="MiKashBoks Onboarding Data Report"
         />
       </View>
       <View style={tw('flex flex-col gap-5')}>

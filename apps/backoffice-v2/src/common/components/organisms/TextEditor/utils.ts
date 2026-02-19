@@ -52,7 +52,9 @@ export const isUrl = (
   text: string,
   options: { requireHostname: boolean; allowBase64?: boolean } = { requireHostname: false },
 ): boolean => {
-  if (text.includes('\n')) return false;
+  if (text.includes('\n')) {
+return false;
+}
 
   try {
     const url = new URL(text);
@@ -63,7 +65,9 @@ export const isUrl = (
       ...(options.allowBase64 ? [] : ['data:']),
     ];
 
-    if (blockedProtocols.includes(url.protocol)) return false;
+    if (blockedProtocols.includes(url.protocol)) {
+return false;
+}
 
     if (options.allowBase64 && url.protocol === 'data:') {
       return /^data:image\/[a-z]+;base64,/.test(text);
@@ -87,7 +91,9 @@ export const sanitizeUrl = (
   url: string | null | undefined,
   options: { allowBase64?: boolean } = {},
 ): string | undefined => {
-  if (!url) return undefined;
+  if (!url) {
+return undefined;
+}
 
   if (options.allowBase64 && url.startsWith('data:image')) {
     return isUrl(url, { requireHostname: false, allowBase64: true }) ? url : undefined;
@@ -146,9 +152,13 @@ const validateFileOrBase64 = <T extends FileInput>(
   if (isValidType && isValidSize) {
     validFiles.push(originalFile);
   } else {
-    if (!isValidType) errors.push({ file: input, reason: 'type' });
+    if (!isValidType) {
+errors.push({ file: input, reason: 'type' });
+}
 
-    if (!isValidSize) errors.push({ file: input, reason: 'size' });
+    if (!isValidSize) {
+errors.push({ file: input, reason: 'size' });
+}
   }
 };
 

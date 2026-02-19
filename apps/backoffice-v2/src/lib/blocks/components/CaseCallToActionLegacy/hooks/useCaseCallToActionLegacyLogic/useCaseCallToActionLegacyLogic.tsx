@@ -3,7 +3,6 @@ import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkf
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { TDocument } from '@ballerine/common';
 import { useCallback, useMemo, useState } from 'react';
-import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useApproveCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';

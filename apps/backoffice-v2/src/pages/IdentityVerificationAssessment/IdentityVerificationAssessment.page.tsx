@@ -31,11 +31,11 @@ export const IdentityVerificationAssessmentPage = () => {
         <Skeleton className="h-6 w-72" />
         <Skeleton className="mt-6 h-4 w-40" />
 
-        <div className="mt-6 flex h-[24rem] w-full flex-nowrap gap-8">
+        <div className="mt-6 flex h-96 w-full flex-nowrap gap-8">
           <Skeleton className="w-2/3" />
           <Skeleton className="w-1/3" />
         </div>
-        <Skeleton className="mt-6 h-[16rem]" />
+        <Skeleton className="mt-6 h-64" />
       </>
     );
   }

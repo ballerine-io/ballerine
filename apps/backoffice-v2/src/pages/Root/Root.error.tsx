@@ -27,7 +27,7 @@ export const RootError: FunctionComponent = () => {
   return (
     <Providers>
       <section
-        className={`col-span-full mx-auto mt-32 grid h-full w-full max-w-4xl grid-cols-2 flex-col`}
+        className={`col-span-full mx-auto mt-32 grid size-full max-w-4xl grid-cols-2 flex-col`}
       >
         <div>
           <ErrorAlert>

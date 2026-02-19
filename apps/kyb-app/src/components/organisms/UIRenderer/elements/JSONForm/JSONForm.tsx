@@ -57,7 +57,9 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
   const formRef = useRef<any>(null);
 
   useEffect(() => {
-    if (definition?.options?.skipCompanyInfoInsertion) return;
+    if (definition?.options?.skipCompanyInfoInsertion) {
+return;
+}
 
     const elementValue = get(
       payload,

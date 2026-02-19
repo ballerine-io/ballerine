@@ -32,7 +32,9 @@ export const FileUploaderField = ({
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
 
-      if (!file) return;
+      if (!file) {
+return;
+}
 
       const uploadResult = await uploadFile(file);
 
@@ -51,7 +53,9 @@ export const FileUploaderField = ({
     (event: React.SyntheticEvent) => {
       event.stopPropagation();
 
-      if (!registeredFile || !fileId || !inputRef.current) return;
+      if (!registeredFile || !fileId || !inputRef.current) {
+return;
+}
 
       inputRef.current.value = '';
 

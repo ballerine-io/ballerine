@@ -20,7 +20,9 @@ export const useSelectEntityFilterOnMount = () => {
   );
 
   useEffect(() => {
-    if ((entity && filterId) || (!firstFilter && !prevFilterId)) return;
+    if ((entity && filterId) || (!firstFilter && !prevFilterId)) {
+return;
+}
 
     navigate(`/${locale}/case-management/entities?filterId=${prevFilterId || firstFilter?.id}`, {
       state: {

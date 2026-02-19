@@ -49,7 +49,7 @@ export const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
           crop={crop}
           onChange={onCrop}
           disabled={!isCropping || isPdf(image) || isCsv(image) || isRotatedOrTransformed}
-          className={ctw('h-full w-full overflow-hidden [&>div]:!w-full', {
+          className={ctw('size-full overflow-hidden [&>div]:!w-full', {
             'flex flex-row [&>div]:min-h-[600px]': isPdf(image) || isCsv(image),
           })}
         >

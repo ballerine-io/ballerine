@@ -53,7 +53,7 @@ export const OperationalOverviewSection = ({
 
   return (
     <>
-      <Separator className="mb-6 h-[1px] w-full bg-gray-300" />
+      <Separator className="mb-6 h-px w-full bg-gray-300" />
 
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-xl font-medium text-gray-900">Operational Overview</h3>
@@ -191,7 +191,8 @@ export const OperationalOverviewSection = ({
                   Revisions: { color: '#FFB74D', text: 'Revisions' },
                   Rejected: { color: '#F44336', text: 'Rejected' },
                 };
-                return statusMap[status] || { color: '#65AFFF', text: status };
+                
+return statusMap[status] || { color: '#65AFFF', text: status };
               }}
               nameKey="status"
               valueKey="count"

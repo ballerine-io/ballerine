@@ -11,7 +11,9 @@ export const Color = TiptapColor.extend({
             if (event.key === 'Enter') {
               this.editor.commands.unsetColor();
             }
-            return false;
+
+            
+return false;
           },
         },
       }),

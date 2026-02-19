@@ -8,7 +8,6 @@ import {
   Button,
 } from '@ballerine/ui';
 
-import { Upload } from 'lucide-react';
 import { FilePlus2 } from 'lucide-react';
 import { useState } from 'react';
 import { MoreVertical } from 'lucide-react';

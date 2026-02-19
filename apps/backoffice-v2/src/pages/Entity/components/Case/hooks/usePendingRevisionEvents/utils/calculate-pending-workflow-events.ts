@@ -1,4 +1,4 @@
-import { CommonWorkflowEvent, StateTag, TDocument } from '@ballerine/common';
+import { CommonWorkflowEvent, TDocument } from '@ballerine/common';
 import { IPendingEvent } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/interfaces';
 
 export const calculatePendingWorkflowRevisionEvents = ({
@@ -13,7 +13,7 @@ export const calculatePendingWorkflowRevisionEvents = ({
   workflowId: string;
   workflowState: string;
   token: string;
-}): Array<IPendingEvent> => {
+}): IPendingEvent[] => {
   return [...documents, ...directorsDocuments]
     .filter(document => document?.decision?.status === 'revision')
     .map(document => {

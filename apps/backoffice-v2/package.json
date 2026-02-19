@@ -1,14 +1,14 @@
 {
   "name": "@ballerine/backoffice-v2",
   "version": "0.7.171",
-  "description": "Ballerine - Backoffice",
+  "description": "MiKashBoks - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com:ballerine-io/backoffice-vanilla.git"
   },
-  "author": "Ballerine <dev@ballerine.com>",
+  "author": "MiKashBoks <support@mikashboks.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ballerine-io/ballerine/issues"

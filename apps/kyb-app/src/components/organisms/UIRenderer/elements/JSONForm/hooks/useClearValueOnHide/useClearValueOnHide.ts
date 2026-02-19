@@ -22,7 +22,9 @@ export const useClearValueOnHide = (definition: UIElement, inputIndex: number | 
   }, [stateApi.setContext, payload]);
 
   useEffect(() => {
-    if (!definition.clearValueOnHide) return;
+    if (!definition.clearValueOnHide) {
+return;
+}
 
     // Removing by id and valueDestination
     if (definition.clearValueOnHide.byId && definition.clearValueOnHide.valueDestination) {

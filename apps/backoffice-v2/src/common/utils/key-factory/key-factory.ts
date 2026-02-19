@@ -1,3 +1,3 @@
-export const keyFactory = (...keys: Array<string>) => {
+export const keyFactory = (...keys: string[]) => {
   return keys?.join(':');
 };

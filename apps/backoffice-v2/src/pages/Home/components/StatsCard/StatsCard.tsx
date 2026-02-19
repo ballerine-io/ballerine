@@ -6,7 +6,6 @@ import { Card } from '@/common/components/atoms/Card/Card';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { WarningSvg } from '@/common/components/atoms/icons';
 import { WarningFilledSvg } from '@ballerine/ui';
 
 type StatsCardProps = {

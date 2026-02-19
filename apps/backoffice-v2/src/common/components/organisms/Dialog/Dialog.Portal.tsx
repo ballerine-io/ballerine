@@ -13,4 +13,5 @@ export const DialogPortal = ({
     </div>
   </DialogPrimitive.Portal>
 );
+
 DialogPortal.displayName = DialogPrimitive.Portal.displayName;

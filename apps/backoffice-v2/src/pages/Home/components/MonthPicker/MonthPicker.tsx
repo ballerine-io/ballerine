@@ -53,7 +53,7 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
           )}
         >
           <span>{dayjsDate.format('MMMM YYYY')}</span>
-          <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
+          <ChevronDown className="ml-auto size-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[240px] p-0" align="start">
@@ -64,7 +64,7 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
             onClick={() => handleYearChange(-1)}
             disabled={dayjsMinDate && currentYear <= dayjsMinDate.year()}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="size-4" />
           </Button>
           <span>{currentYear}</span>
           <Button
@@ -73,7 +73,7 @@ export const MonthPicker = ({ date, setDate, minDate }: MonthPickerProps) => {
             onClick={() => handleYearChange(1)}
             disabled={currentYear >= today.year()}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="size-4" />
           </Button>
         </div>
         <div className="grid grid-cols-3 gap-2 p-2">

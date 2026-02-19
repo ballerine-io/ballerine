@@ -32,11 +32,13 @@ export class StorageControllerPublic {
     }
 
     const expires = Number(expiresRaw);
+
     if (!Number.isFinite(expires)) {
       throw new common.ForbiddenException('Invalid expires parameter');
     }
 
     const secret = getFileLinkSigningSecret();
+
     if (!secret) {
       throw new common.InternalServerErrorException(
         'Server is missing FILE_LINK_SIGNING_SECRET/HASHING_KEY_SECRET/SESSION_SECRET',

@@ -5,7 +5,7 @@ export const DOWNLOAD_ONLY_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 ] as const;
 
-export const BALLERINE_CALENDLY_LINK = 'https://calendly.com/d/cp53-ryw-4s3/ballerine-intro';
+export const MIKASHBOKS_CALENDLY_LINK = 'https://calendly.com/mikashboks';
 
 // Taken from https://gist.github.com/dperini/729294, changed a bit to allow only http/https and make protocol optional
 export const URL_REGEX =

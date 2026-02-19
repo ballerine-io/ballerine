@@ -11,4 +11,5 @@ export const TableFooter = React.forwardRef<
     {...props}
   />
 ));
+
 TableFooter.displayName = 'TableFooter';

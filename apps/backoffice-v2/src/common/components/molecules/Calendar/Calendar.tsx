@@ -26,7 +26,7 @@ export const Calendar = ({
           nav: 'space-x-1 flex items-center',
           nav_button: ctw(
             buttonVariants({ variant: 'outline' }),
-            'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+            'size-7 bg-transparent p-0 opacity-50 hover:opacity-100',
           ),
           nav_button_previous: 'absolute left-1',
           nav_button_next: 'absolute right-1',
@@ -42,7 +42,7 @@ export const Calendar = ({
           ),
           day: ctw(
             buttonVariants({ variant: 'ghost' }),
-            'h-8 w-8 p-0 font-normal aria-selected:opacity-100',
+            'size-8 p-0 font-normal aria-selected:opacity-100',
           ),
           day_range_start: 'day-range-start',
           day_range_end: 'day-range-end',
@@ -57,8 +57,8 @@ export const Calendar = ({
           ...classNames,
         }}
         components={{
-          IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
-          IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,
+          IconLeft: ({ ...props }) => <ChevronLeftIcon className="size-4" />,
+          IconRight: ({ ...props }) => <ChevronRightIcon className="size-4" />,
         }}
         {...props}
       />

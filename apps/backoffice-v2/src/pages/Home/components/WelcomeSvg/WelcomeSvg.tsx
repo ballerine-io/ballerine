@@ -1,6 +1,3 @@
-import { Card } from '@/common/components/atoms/Card/Card';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { CardHeader } from '@/common/components/atoms/Card/Card.Header';
 
 export const WelcomeSvg = () => (
   <svg

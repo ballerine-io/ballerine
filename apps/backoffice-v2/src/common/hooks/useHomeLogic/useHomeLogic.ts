@@ -129,8 +129,12 @@ export const useHomeLogic = () => {
   type ConfigItem = { label: string; color: string };
 
   const statusConfig = useMemo<Record<string, ConfigItem>>(() => {
-    if (!currentStats) return {};
-    return currentStats.casesByStatus.reduce(
+    if (!currentStats) {
+return {};
+}
+
+    
+return currentStats.casesByStatus.reduce(
       (acc, curr) => ({
         ...acc,
         [curr.status]: {
@@ -143,8 +147,12 @@ export const useHomeLogic = () => {
   }, [currentStats]);
 
   const ongoingRiskConfig = useMemo<Record<string, ConfigItem>>(() => {
-    if (!currentStats) return {};
-    return currentStats.ongoingCasesByRisk.reduce(
+    if (!currentStats) {
+return {};
+}
+
+    
+return currentStats.ongoingCasesByRisk.reduce(
       (acc, curr) => ({
         ...acc,
         [curr.riskLevel]: {
@@ -157,8 +165,12 @@ export const useHomeLogic = () => {
   }, [currentStats]);
 
   const approvedRiskConfig = useMemo<Record<string, ConfigItem>>(() => {
-    if (!currentStats) return {};
-    return currentStats.approvedCasesByRisk.reduce(
+    if (!currentStats) {
+return {};
+}
+
+    
+return currentStats.approvedCasesByRisk.reduce(
       (acc, curr) => ({
         ...acc,
         [curr.riskLevel]: {

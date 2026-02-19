@@ -38,6 +38,7 @@ export class KycService {
     lastName: string;
     dateOfBirth?: string;
     projectId: string;
+    customerId?: string;
     // Bio-facial fields — optional, forwarded to Unified API when provided
     documents?: Array<{
       type?: string;
@@ -51,6 +52,12 @@ export class KycService {
     country?: string;
     methods?: string[];
     performDeduplication?: boolean;
+    requireLivenessForEnrollment?: boolean;
+    facialDeduplication?: {
+      enabled?: boolean;
+      threshold?: number;
+      maxResults?: number;
+    };
   }) {
     const response = await this.unifiedApiClient.runIndividualVerification(data);
 
@@ -142,6 +149,8 @@ export class KycService {
     country,
     methods,
     performDeduplication,
+    requireLivenessForEnrollment,
+    facialDeduplication,
   }: {
     endUserId: string;
     workflowRuntimeDataId: string;
@@ -163,6 +172,12 @@ export class KycService {
     country?: string;
     methods?: string[];
     performDeduplication?: boolean;
+    requireLivenessForEnrollment?: boolean;
+    facialDeduplication?: {
+      enabled?: boolean;
+      threshold?: number;
+      maxResults?: number;
+    };
   }) {
     const APP_API_URL = this.configService.get('APP_API_URL');
 
@@ -195,12 +210,29 @@ export class KycService {
 
     const customer = await this.customerService.getByProjectId(projectId, {
       select: {
+        id: true,
         name: true,
         displayName: true,
       },
     });
 
-    const callbackUrl = `${APP_API_URL}/api/v1/external/workflows/${workflowRuntimeDataId}/hook/NO_OP?processName=kyc-unified-api`;
+    const unifiedApiVerificationHookId = this.configService.get<string>(
+      'UNIFIED_API_VERIFICATION_HOOK_ID',
+    );
+
+    if (!unifiedApiVerificationHookId) {
+      throw new InternalServerErrorException(
+        'UNIFIED_API_VERIFICATION_HOOK_ID is not defined',
+      );
+    }
+
+    const callbackQuery = new URLSearchParams({
+      resultDestination: 'pluginsOutput.kyc_session.kyc_session_1.result',
+      processName: 'kyc-unified-api',
+    });
+    const callbackUrl =
+      `${APP_API_URL}/api/v1/external/workflows/${workflowRuntimeDataId}/hook/` +
+      `${encodeURIComponent(unifiedApiVerificationHookId)}?${callbackQuery.toString()}`;
     const {
       id: sessionId,
       url: kycLink,
@@ -219,6 +251,7 @@ export class KycService {
       lastName: endUser.lastName,
       dateOfBirth: endUser.dateOfBirth?.toISOString().split('T')[0] ?? undefined,
       projectId,
+      customerId: customer.id,
       // Bio-facial fields — forwarded only when provided by the caller
       documents,
       biometricData,
@@ -227,6 +260,8 @@ export class KycService {
       country,
       methods,
       performDeduplication,
+      requireLivenessForEnrollment,
+      facialDeduplication,
     });
 
     await this.sendIndividualVerificationEmail({
@@ -256,6 +291,8 @@ export class KycService {
     firstName,
     lastName,
     dateOfBirth,
+    projectId,
+    customerId,
   }: {
     endUserId: string;
     clientId: string;
@@ -266,6 +303,8 @@ export class KycService {
     firstName: string;
     lastName: string;
     dateOfBirth?: string;
+    projectId?: string;
+    customerId?: string;
   }) {
     return await this.unifiedApiClient.runAml({
       endUserId,
@@ -277,6 +316,8 @@ export class KycService {
       firstName,
       lastName,
       dateOfBirth,
+      projectId,
+      customerId,
     });
   }
 }

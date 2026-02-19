@@ -44,7 +44,7 @@ export const Combobox = forwardRef<ElementRef<typeof CommandInput>, IComboboxPro
               <ChevronsUpDown
                 {...props?.chevronsUpDown}
                 className={ctw(
-                  'ml-2 h-4 w-4 shrink-0 opacity-50',
+                  'ml-2 size-4 shrink-0 opacity-50',
                   props?.chevronsUpDown?.className,
                 )}
               />
@@ -80,7 +80,7 @@ export const Combobox = forwardRef<ElementRef<typeof CommandInput>, IComboboxPro
                       <Check
                         {...props?.check}
                         className={ctw(
-                          'mr-2 h-4 w-4',
+                          'mr-2 size-4',
                           {
                             'opacity-100': value === item.value,
                             'opacity-0': value !== item.value,

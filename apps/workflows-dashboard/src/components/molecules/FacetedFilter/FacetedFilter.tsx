@@ -73,7 +73,8 @@ export function FacetedFilter({ title, options, value, onChange }: Props) {
             <CommandGroup>
               {options.map(option => {
                 const isSelected = value.includes(option.value);
-                return (
+                
+return (
                   <CommandItem
                     key={option.value}
                     onSelect={() => {

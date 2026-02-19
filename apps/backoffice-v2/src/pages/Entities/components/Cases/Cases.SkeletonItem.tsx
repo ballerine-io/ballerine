@@ -12,9 +12,9 @@ export const SkeletonItem: FunctionComponent = () => {
       <div className={`flex items-center gap-x-4 outline-none`}>
         <div className={`indicator`}>
           <div
-            className={`indicator-item indicator-bottom h-4 w-4 animate-pulse rounded-full bg-gray-200 theme-dark:bg-neutral-focus`}
+            className={`indicator-item indicator-bottom size-4 animate-pulse rounded-full bg-gray-200 theme-dark:bg-neutral-focus`}
           ></div>
-          <Avatar src={''} alt={`User's avatar - loading`} className={`h-8 w-8`} isLoading />
+          <Avatar src={''} alt={`User's avatar - loading`} className={`size-8`} isLoading />
         </div>
         <div>
           <span
@@ -25,7 +25,7 @@ export const SkeletonItem: FunctionComponent = () => {
           ></span>
         </div>
         <div className={`ml-auto mr-2 flex -space-x-2 overflow-hidden`}>
-          <Avatar src={''} alt={`Operator's avatar  - loading`} className={`h-4 w-4`} isLoading />
+          <Avatar src={''} alt={`Operator's avatar  - loading`} className={`size-4`} isLoading />
         </div>
       </div>
     </li>

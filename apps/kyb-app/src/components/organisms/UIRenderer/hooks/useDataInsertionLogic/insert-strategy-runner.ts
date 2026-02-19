@@ -24,7 +24,8 @@ export class InsertStrategyRunner {
 
     if (!strategy) {
       console.warn(`Insertion strategy with type ${params.insertionStrategy} not found.`);
-      return context;
+      
+return context;
     }
 
     const insertionResult = strategy.insert(context, this.getStrategyParams(params));
@@ -37,7 +38,8 @@ export class InsertStrategyRunner {
 
     if (!strategy) {
       console.warn(`Insertion strategy with type ${params.insertionStrategy} not found.`);
-      return context;
+      
+return context;
     }
 
     const removalResult = strategy.remove(context, this.getStrategyParams(params));

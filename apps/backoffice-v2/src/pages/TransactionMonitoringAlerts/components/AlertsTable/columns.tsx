@@ -69,7 +69,7 @@ export const columns = [
       const correlationId = info.getValue();
 
       return (
-        <Badge variant="secondary" className="max-w-[8rem]" title={correlationId}>
+        <Badge variant="secondary" className="max-w-32" title={correlationId}>
           <div className="truncate">{correlationId}</div>
         </Badge>
       );

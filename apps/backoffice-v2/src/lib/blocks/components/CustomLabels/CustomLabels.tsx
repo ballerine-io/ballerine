@@ -13,7 +13,8 @@ const PRESET_LABELS = [
 
 function getLabelColor(label: string): string {
   const preset = PRESET_LABELS.find(p => p.value === label);
-  return preset?.color ?? 'bg-gray-100 text-gray-600';
+  
+return preset?.color ?? 'bg-gray-100 text-gray-600';
 }
 
 interface CustomLabelsProps {
@@ -41,7 +42,8 @@ export const CustomLabels: FunctionComponent<CustomLabelsProps> = ({
     };
 
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    
+return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   const availablePresets = PRESET_LABELS.filter(p => !labels.includes(p.value));
@@ -81,7 +83,7 @@ export const CustomLabels: FunctionComponent<CustomLabelsProps> = ({
       {/* Add button */}
       {!isDisabled && (
         <button
-          className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-dashed border-gray-300 text-[10px] text-gray-400 hover:border-gray-400 hover:text-gray-500"
+          className="inline-flex size-5 items-center justify-center rounded-full border border-dashed border-gray-300 text-[10px] text-gray-400 hover:border-gray-400 hover:text-gray-500"
           onClick={() => setIsDropdownOpen(prev => !prev)}
           title="Add label"
         >
@@ -98,7 +100,7 @@ export const CustomLabels: FunctionComponent<CustomLabelsProps> = ({
               className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
               onClick={() => handleAddPreset(preset.value)}
             >
-              <span className={ctw('inline-block h-2 w-2 rounded-full', preset.color)} />
+              <span className={ctw('inline-block size-2 rounded-full', preset.color)} />
               {preset.value.replace(/_/g, ' ')}
             </button>
           ))}

@@ -23,7 +23,7 @@ export const CopyToClipboardButton: FunctionComponent<ICopyToClipboardProps> = (
         await copyToClipboard(textToCopy)();
       }}
       className={ctw(
-        `h-[unset] w-[unset] p-1 opacity-80 hover:bg-transparent hover:opacity-100`,
+        `size-[unset] p-1 opacity-80 hover:bg-transparent hover:opacity-100`,
         {
           '!bg-transparent opacity-50': disabled,
         },

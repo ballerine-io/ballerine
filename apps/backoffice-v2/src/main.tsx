@@ -10,7 +10,6 @@ import { Toaster } from '@/common/components/organisms/Toaster/Toaster';
 // Uncomment once react-pdf is back in use
 // import { Font } from '@react-pdf/renderer';
 import { Router } from './router';
-import { env } from './common/env/env';
 import './i18n';
 import './index.css';
 import dayjs from 'dayjs';

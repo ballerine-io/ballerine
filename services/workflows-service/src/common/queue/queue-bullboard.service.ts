@@ -12,10 +12,13 @@ export class QueueBullboardService {
       const adapter = new BullMQAdapter(queue);
       const currentQueues = bullBoardInstance.boardInstance.queues || [];
       const existingAdapter = currentQueues.find((q: any) => q.queue.name === queue.name);
+
       if (existingAdapter) {
         this.logger.debug(`Queue ${queue.name} is already registered with BullBoard`);
-        return;
+        
+return;
       }
+
       bullBoardInstance.boardInstance.setQueues([...currentQueues, adapter]);
       this.logger.log(`Queue ${queue.name} registered with BullBoard`);
     } catch (error) {

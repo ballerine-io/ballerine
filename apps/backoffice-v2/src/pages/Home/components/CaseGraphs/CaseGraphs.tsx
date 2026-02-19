@@ -16,7 +16,7 @@ export const CaseGraphs: FunctionComponent<{
 
   return (
     <div className="grid grid-cols-6">
-      <div className={'col-span-4 min-h-[24rem] rounded-xl bg-[#F6F6F6] p-2'}>
+      <div className={'col-span-4 min-h-96 rounded-xl bg-[#F6F6F6] p-2'}>
         <Card className={'flex h-full flex-col px-3'}>
           <CardHeader className={'flex flex-row items-center justify-between pb-1 font-bold'}>
             Live Cases Per Day

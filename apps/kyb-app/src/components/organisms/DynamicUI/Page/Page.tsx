@@ -55,7 +55,9 @@ export const Page = ({ page, children }: PageProps) => {
   const context = useMemo(() => {
     const ctx: PageContext = {
       errors: fieldErrors.reduce((map, item) => {
-        if (!item.fieldId) return map;
+        if (!item.fieldId) {
+return map;
+}
 
         const isExists = map[item.fieldId];
 

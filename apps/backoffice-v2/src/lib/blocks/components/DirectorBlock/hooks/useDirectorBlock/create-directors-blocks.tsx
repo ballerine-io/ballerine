@@ -1,8 +1,6 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { ComponentProps } from 'react';
 import { DirectorBlock } from '../../DirectorBlock';
-import { getDocumentsByCountry } from '@ballerine/common';
-import { extractCountryCodeFromDocuments } from '@/pages/Entity/hooks/useEntityLogic/utils';
 
 export const createDirectorsBlocks = ({
   workflowId,

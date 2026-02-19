@@ -1,7 +1,6 @@
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { CommunicationChannel, CommunicationChannelEvent } from '@/common/enums';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { BroadcastChannel } from 'broadcast-channel';
 import { useParams } from 'react-router-dom';

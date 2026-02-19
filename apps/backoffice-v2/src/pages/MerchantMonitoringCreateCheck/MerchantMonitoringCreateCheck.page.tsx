@@ -233,7 +233,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                 className={'aria-disabled:pointer-events-none aria-disabled:opacity-50'}
               >
                 <Loader2
-                  className={ctw('me-2 h-4 w-4 animate-spin', { hidden: !isCreateReportReady })}
+                  className={ctw('me-2 size-4 animate-spin', { hidden: !isCreateReportReady })}
                 />
                 Start Analyzing
               </Button>

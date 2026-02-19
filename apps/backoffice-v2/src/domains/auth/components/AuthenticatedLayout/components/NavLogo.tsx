@@ -3,7 +3,7 @@ import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
 import { AspectRatio } from '@/common/components/atoms/AspectRatio/AspectRatio';
-import { BallerineLogo } from '@/common/components/atoms/icons';
+import { MiKashBoksLogo } from '@/common/components/atoms/icons';
 import { env } from '@/common/env/env';
 import { useRedirectToRootUrl } from '@/common/hooks/useRedirectToRootUrl/useRedirectToRootUrl';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -25,7 +25,7 @@ const LogoContent = () => {
     );
   }
 
-  return <BallerineLogo />;
+  return <MiKashBoksLogo />;
 };
 
 export const NavLogo: FunctionComponent<{ className?: string }> = ({ className }) => {

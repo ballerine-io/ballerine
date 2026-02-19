@@ -6,7 +6,7 @@ import { Form } from '../../common/components/organisms/Form/Form';
 import { Button } from '../../common/components/atoms/Button/Button';
 import { Input } from '../../common/components/atoms/Input/Input';
 import { Card } from '../../common/components/atoms/Card/Card';
-import { BallerineLogo } from '../../common/components/atoms/icons';
+import { MiKashBoksLogo } from '../../common/components/atoms/icons';
 import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
 import { FunctionComponent, useCallback } from 'react';
 import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
@@ -55,7 +55,9 @@ export const SignIn: FunctionComponent = () => {
   });
 
   // Handles a flash of content on sign in
-  if (isAuthenticated) return <FullScreenLoader />;
+  if (isAuthenticated) {
+return <FullScreenLoader />;
+}
 
   return (
     <section className={`flex h-full flex-col items-center justify-center`}>
@@ -63,7 +65,7 @@ export const SignIn: FunctionComponent = () => {
         {env.VITE_IMAGE_LOGO_URL ? (
           <img className={`w-40`} src={env.VITE_IMAGE_LOGO_URL} />
         ) : (
-          <BallerineLogo />
+          <MiKashBoksLogo />
         )}
       </div>
       <Card className={`w-full max-w-lg`}>

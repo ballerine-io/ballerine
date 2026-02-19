@@ -36,7 +36,9 @@ export class ApiActionHandler implements ActionHandler {
   ): Promise<TContext> {
     const isCanInvoke = this.canInvoke(context, action);
 
-    if (!isCanInvoke) return Promise.resolve(context);
+    if (!isCanInvoke) {
+return Promise.resolve(context);
+}
 
     const { params } = action;
 
@@ -62,8 +64,13 @@ export class ApiActionHandler implements ActionHandler {
     context: TContext,
     actionParams: ApiActionParams,
   ): AnyObject | undefined {
-    if (actionParams.type !== 'json') return undefined;
-    if (!actionParams.map) return undefined;
+    if (actionParams.type !== 'json') {
+return undefined;
+}
+
+    if (!actionParams.map) {
+return undefined;
+}
 
     const { toBody = '' } = actionParams.map;
 
@@ -77,7 +84,10 @@ export class ApiActionHandler implements ActionHandler {
     params: ApiActionParams,
     requestResult: AnyObject = {},
   ): TContext {
-    if (!params.map?.toContext) return context;
+    if (!params.map?.toContext) {
+return context;
+}
+
     const requestPayload = jmespath.search(
       requestResult,
       // @ts-ignore
@@ -99,7 +109,9 @@ export class ApiActionHandler implements ActionHandler {
     return action.dispatchOn.rules.every(rule => {
       const engine = this.engineManager.getEngine(rule.type);
 
-      if (!engine) throw new Error(`Provided rule with engine ${rule.type} not supported`);
+      if (!engine) {
+throw new Error(`Provided rule with engine ${rule.type} not supported`);
+}
 
       //@ts-ignore
       return engine.validate(context, rule as IRule);

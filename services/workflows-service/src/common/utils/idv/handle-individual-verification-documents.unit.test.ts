@@ -46,19 +46,14 @@ describe('handleIndividualVerificationDocuments #unit', () => {
       person,
     });
 
-    expect(mockedFs.writeFileSync).toHaveBeenCalledWith(
-      '/tmp/test-file.jpg',
-      expect.any(Buffer),
-    );
+    expect(mockedFs.writeFileSync).toHaveBeenCalledWith('/tmp/test-file.jpg', expect.any(Buffer));
     expect(result.documents[0]!.pages[0]!.uri).toBe('file:///tmp/test-file.jpg');
     expect(mockedAxios.get).not.toHaveBeenCalled();
   });
 
   it('should handle image URL content with SSRF protections', async () => {
     const imageUrl = 'https://example.com/image.jpg';
-    const kycDocumentImages = [
-      { context: 'document-front', content: imageUrl },
-    ];
+    const kycDocumentImages = [{ context: 'document-front', content: imageUrl }];
     mockedAxios.get.mockResolvedValue({
       data: Buffer.from('remote-data'),
     } as any);
@@ -85,27 +80,29 @@ describe('handleIndividualVerificationDocuments #unit', () => {
 
   it('should throw error if URL fetch fails', async () => {
     const imageUrl = 'https://example.com/fail.jpg';
-    const kycDocumentImages = [
-      { context: 'document-front', content: imageUrl },
-    ];
+    const kycDocumentImages = [{ context: 'document-front', content: imageUrl }];
     mockedAxios.get.mockRejectedValue(new Error('Network error'));
 
-    await expect(handleIndividualVerificationDocuments({
-      kycDocument: kycDocument as any,
-      kycDocumentImages,
-      person,
-    })).rejects.toThrow('Network error');
+    await expect(
+      handleIndividualVerificationDocuments({
+        kycDocument: kycDocument as any,
+        kycDocumentImages,
+        person,
+      }),
+    ).rejects.toThrow('Network error');
   });
 
   describe('SSRF protection', () => {
     const testSsrfBlock = async (url: string, expectedError: string) => {
       const kycDocumentImages = [{ context: 'document-front', content: url }];
 
-      await expect(handleIndividualVerificationDocuments({
-        kycDocument: kycDocument as any,
-        kycDocumentImages,
-        person,
-      })).rejects.toThrow(expectedError);
+      await expect(
+        handleIndividualVerificationDocuments({
+          kycDocument: kycDocument as any,
+          kycDocumentImages,
+          person,
+        }),
+      ).rejects.toThrow(expectedError);
 
       // axios should never be called for blocked URLs
       expect(mockedAxios.get).not.toHaveBeenCalled();
@@ -173,9 +170,7 @@ describe('handleIndividualVerificationDocuments #unit', () => {
   });
 
   it('should invoke cleanupTempFiles successfully', async () => {
-    const kycDocumentImages = [
-      { context: 'document-front', content: 'YmFzZTY0ZGF0YQ==' },
-    ];
+    const kycDocumentImages = [{ context: 'document-front', content: 'YmFzZTY0ZGF0YQ==' }];
     mockedFs.existsSync.mockReturnValue(true);
 
     const result = await handleIndividualVerificationDocuments({

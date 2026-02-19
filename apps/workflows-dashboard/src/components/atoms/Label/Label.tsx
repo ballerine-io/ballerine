@@ -13,4 +13,5 @@ export const Label = forwardRef<
 >(({ className, ...props }, ref) => (
   <LabelPrimitive.Root ref={ref} className={ctw(labelVariants(), className)} {...props} />
 ));
+
 Label.displayName = LabelPrimitive.Root.displayName;

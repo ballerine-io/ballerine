@@ -6,7 +6,9 @@ export class FileRepository {
   private listeners: FileRepositoryListener[] = [];
 
   subscribe(listener: FileRepositoryListener) {
-    if (this.listeners.find(existingListener => existingListener === listener)) return;
+    if (this.listeners.find(existingListener => existingListener === listener)) {
+return;
+}
 
     this.listeners.push(listener);
   }

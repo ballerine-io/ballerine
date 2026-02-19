@@ -25,4 +25,5 @@ export const Alert = forwardRef<
 >(({ className, variant, ...props }, ref) => (
   <div ref={ref} role="alert" className={ctw(alertVariants({ variant }), className)} {...props} />
 ));
+
 Alert.displayName = 'Alert';

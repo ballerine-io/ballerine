@@ -98,7 +98,7 @@ export const KybAndOwnership: FunctionComponent = () => {
         </div>
         <div className="space-y-6">
           {isLoadingAssessments && (
-            <div className={`flex h-full w-full items-center justify-center`}>
+            <div className={`flex size-full items-center justify-center`}>
               <Loader2 className={`animate-spin d-[60px]`} />
             </div>
           )}

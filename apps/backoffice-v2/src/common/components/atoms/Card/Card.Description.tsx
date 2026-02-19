@@ -7,4 +7,5 @@ export const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p ref={ref} className={ctw('text-sm text-muted-foreground', className)} {...props} />
 ));
+
 CardDescription.displayName = 'CardDescription';

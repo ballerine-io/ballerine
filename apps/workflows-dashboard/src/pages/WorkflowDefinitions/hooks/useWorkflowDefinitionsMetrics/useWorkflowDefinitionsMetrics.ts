@@ -7,7 +7,9 @@ export const useWorkflowDefinitionsMetrics = () => {
   const { data, isLoading } = useWorkflowDefinitionsVariantsMetricQuery();
 
   const metricsByVariant: WFDefinitionByVariantChart[] = useMemo(() => {
-    if (isLoading || !data) return [];
+    if (isLoading || !data) {
+return [];
+}
 
     return data.map(({ workflowDefinitionVariant, count }) => ({
       variantName: workflowDefinitionVariant,

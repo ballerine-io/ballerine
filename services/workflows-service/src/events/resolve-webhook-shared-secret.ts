@@ -6,7 +6,8 @@ export const isPlaceholderWebhookSharedSecret = (value?: string | null) => {
   }
 
   const normalized = value.trim();
-  return normalized.length === 0 || normalized === 'TODO_SET_ME';
+  
+return normalized.length === 0 || normalized === 'TODO_SET_ME';
 };
 
 export const getEnvWebhookSharedSecret = (configService: ConfigService) =>

@@ -2,7 +2,7 @@ import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { ComponentProps } from 'react';
 
-export const createKycBlocks = (individuals: ComponentProps<typeof KycBlock>[]) => {
+export const createKycBlocks = (individuals: Array<ComponentProps<typeof KycBlock>>) => {
   const blocks = createBlocksTyped().addBlock();
 
   if (!individuals?.length) {

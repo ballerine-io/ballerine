@@ -31,18 +31,18 @@ const AITechIcon = () => {
   const pulseIntensity = Math.sin(animationFrame * 0.3) * 0.15 + 0.85;
 
   return (
-    <div className="relative h-9 w-9">
+    <div className="relative size-9">
       {/* Animated glow effect */}
       <div
         className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/60 to-indigo-600/60 blur-sm"
         style={{ transform: `scale(${pulseIntensity})`, transition: 'transform 0.2s ease-in-out' }}
       />
       <div className="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-indigo-700">
-        <Brain className="h-5 w-5 text-white" />
+        <Brain className="size-5 text-white" />
       </div>
       {/* Neural network nodes effect */}
-      <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-400/80" />
-      <div className="absolute -bottom-0.5 -left-0.5 h-2 w-2 rounded-full bg-indigo-300/80" />
+      <div className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-blue-400/80" />
+      <div className="absolute -bottom-0.5 -left-0.5 size-2 rounded-full bg-indigo-300/80" />
     </div>
   );
 };
@@ -105,7 +105,7 @@ const AskAIPanel = ({
       <div className="flex gap-3">
         <div className="relative flex flex-1 items-center">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <MessagesSquare className="h-4 w-4 text-indigo-500" />
+            <MessagesSquare className="size-4 text-indigo-500" />
           </div>
           <input
             type="text"
@@ -116,9 +116,9 @@ const AskAIPanel = ({
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             {activeQuestion ? (
-              <div className="h-3.5 w-3.5 animate-pulse rounded-full bg-indigo-500"></div>
+              <div className="size-3.5 animate-pulse rounded-full bg-indigo-500"></div>
             ) : (
-              <MessagesSquare className="h-3.5 w-3.5 text-gray-400" />
+              <MessagesSquare className="size-3.5 text-gray-400" />
             )}
           </div>
         </div>
@@ -135,16 +135,16 @@ const AskAIPanel = ({
         >
           {isLoading ? (
             <>
-              <span className="relative mr-1 flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-white"></span>
+              <span className="relative mr-1 flex size-3">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex size-3 rounded-full bg-white"></span>
               </span>
               Processing...
             </>
           ) : (
             <>
               <span>Ask AI</span>
-              <div className="absolute -bottom-1 -right-1 h-2 w-2 animate-pulse rounded-full bg-purple-300" />
+              <div className="absolute -bottom-1 -right-1 size-2 animate-pulse rounded-full bg-purple-300" />
             </>
           )}
         </button>
@@ -171,7 +171,7 @@ const AskAIPanel = ({
       {/* Actions suggested by AI - integration with actions */}
       <div className="mt-4 border-t border-indigo-100 pt-3">
         <div className="flex items-center gap-2 text-xs">
-          <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+          <Sparkles className="size-3.5 text-indigo-500" />
           <span className="bg-gradient-to-r from-indigo-700 to-violet-700 bg-clip-text font-medium text-transparent">
             AI Recommended Actions
           </span>
@@ -222,7 +222,7 @@ const AskAIPanel = ({
             <div className="flex items-start justify-between">
               <div className="flex gap-2">
                 <div className="rounded-full bg-gradient-to-r from-indigo-100 to-violet-100 p-1.5">
-                  <Sparkles className="h-4 w-4 text-indigo-600" />
+                  <Sparkles className="size-4 text-indigo-600" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-800">Premium Feature</p>
@@ -237,7 +237,7 @@ const AskAIPanel = ({
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
+                  className="size-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -288,14 +288,14 @@ const ActionButton = ({
         onMouseEnter={() => setShowPremiumTooltip(true)}
         onMouseLeave={() => setShowPremiumTooltip(false)}
       >
-        <Icon className="h-4 w-4" />
+        <Icon className="size-4" />
         <span>{label}</span>
       </button>
 
       {showPremiumTooltip && (
         <div className="absolute bottom-full left-0 z-50 mb-1 w-56 rounded-xl border border-indigo-200 bg-white/95 p-2 text-xs shadow-lg backdrop-blur-sm">
           <div className="flex items-center gap-1.5 text-indigo-700">
-            <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+            <Sparkles className="size-3.5 text-indigo-500" />
             <span className="font-medium">Premium feature</span>
           </div>
           <p className="mt-1 text-gray-600">Upgrade your plan to unlock this action</p>
@@ -328,7 +328,7 @@ const RiskIndicator = ({ score, size = 'md' }: { score: number; size?: 'sm' | 'm
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`${color} h-2.5 w-2.5 rounded-full`} />
+      <div className={`${color} size-2.5 rounded-full`} />
       <span className={`font-semibold ${textColor} ${sizeClasses[size]}`}>
         {label} Risk ({score}/100)
       </span>
@@ -384,9 +384,9 @@ interface AISummaryContentProps {
 // Component for showing a high-tech "neural connection" visualization
 const NeuralConnectionDot = () => {
   return (
-    <div className="relative h-1 w-1">
-      <div className="absolute h-1 w-1 animate-ping rounded-full bg-indigo-400" />
-      <div className="absolute h-1 w-1 rounded-full bg-indigo-500" />
+    <div className="relative size-1">
+      <div className="absolute size-1 animate-ping rounded-full bg-indigo-400" />
+      <div className="absolute size-1 rounded-full bg-indigo-500" />
     </div>
   );
 };
@@ -408,14 +408,14 @@ const FindingWithSource = ({ finding }: { finding: Finding }) => {
         onMouseLeave={() => setShowTooltip(false)}
       >
         <span className="font-medium">· Source</span>
-        <Info className="ml-0.5 h-3 w-3 text-indigo-500" />
+        <Info className="ml-0.5 size-3 text-indigo-500" />
 
         {showTooltip && (
           <div className="absolute -right-2 top-0 z-50 mt-6 w-80 rounded-md border border-indigo-100 bg-white p-3 text-xs shadow-lg">
             <div className="space-y-2">
               <div className="flex items-start gap-2">
                 <div className="rounded-full bg-indigo-100 p-1.5">
-                  <Brain className="h-4 w-4 text-indigo-600" />
+                  <Brain className="size-4 text-indigo-600" />
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
@@ -631,7 +631,7 @@ const SimpleAISummaryContent = ({
             } transition-colors`}
             onClick={() => setFeedbackGiven('like')}
           >
-            <ThumbsUp className="h-3.5 w-3.5" />
+            <ThumbsUp className="size-3.5" />
             <span>{feedbackGiven === 'like' ? 'Thank you!' : 'Yes'}</span>
           </button>
           <button
@@ -640,7 +640,7 @@ const SimpleAISummaryContent = ({
             } transition-colors`}
             onClick={() => setFeedbackGiven('dislike')}
           >
-            <ThumbsDown className="h-3.5 w-3.5" />
+            <ThumbsDown className="size-3.5" />
             <span>{feedbackGiven === 'dislike' ? 'Feedback recorded' : 'No'}</span>
           </button>
         </div>
@@ -712,7 +712,7 @@ const AISummaryContent = ({
             } transition-colors`}
             onClick={() => setFeedbackGiven('like')}
           >
-            <ThumbsUp className="h-3.5 w-3.5" />
+            <ThumbsUp className="size-3.5" />
             <span>{feedbackGiven === 'like' ? 'Thank you!' : 'Yes'}</span>
           </button>
           <button
@@ -721,7 +721,7 @@ const AISummaryContent = ({
             } transition-colors`}
             onClick={() => setFeedbackGiven('dislike')}
           >
-            <ThumbsDown className="h-3.5 w-3.5" />
+            <ThumbsDown className="size-3.5" />
             <span>{feedbackGiven === 'dislike' ? 'Feedback recorded' : 'No'}</span>
           </button>
         </div>

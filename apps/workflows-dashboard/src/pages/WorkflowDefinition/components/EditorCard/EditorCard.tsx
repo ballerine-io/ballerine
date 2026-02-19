@@ -65,7 +65,9 @@ export const EditorCard: FunctionComponent<
   }, [internalValue, onSave]);
 
   const renderDialogContent = () => {
-    if (dialogContent) return dialogContent;
+    if (dialogContent) {
+return dialogContent;
+}
 
     switch (dialogMode) {
       case 'view':

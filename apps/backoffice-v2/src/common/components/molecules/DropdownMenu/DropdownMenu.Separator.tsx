@@ -12,4 +12,5 @@ export const DropdownMenuSeparator = React.forwardRef<
     {...props}
   />
 ));
+
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;

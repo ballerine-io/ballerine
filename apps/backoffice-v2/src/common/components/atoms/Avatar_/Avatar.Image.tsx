@@ -9,8 +9,9 @@ export const AvatarImage = forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={ctw('aspect-square h-full w-full', className)}
+    className={ctw('aspect-square size-full', className)}
     {...props}
   />
 ));
+
 AvatarImage.displayName = AvatarPrimitive.Image.displayName;

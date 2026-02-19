@@ -52,7 +52,9 @@ export const FieldTemplate = (props: FieldTemplateProps) => {
 
   useClearValueOnHide(fieldDefinition, inputIndex);
 
-  if (hidden) return null;
+  if (hidden) {
+return null;
+}
 
   return (
     <div className="max-w-[385px]">

@@ -45,7 +45,8 @@ const FILTER_OPTIONS = [
 
 function formatTimestamp(isoString: string): string {
   const date = new Date(isoString);
-  return date.toLocaleString('en-GB', {
+  
+return date.toLocaleString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -57,11 +58,22 @@ function formatTimestamp(isoString: string): string {
 }
 
 function formatDuration(current: TWorkflowLog, previous: TWorkflowLog | undefined): string | null {
-  if (!previous) return null;
+  if (!previous) {
+return null;
+}
+
   const ms = new Date(current.createdAt).getTime() - new Date(previous.createdAt).getTime();
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${Math.round(ms / 60_000)}min`;
+
+  if (ms < 1000) {
+return `${ms}ms`;
+}
+
+  if (ms < 60_000) {
+return `${(ms / 1000).toFixed(1)}s`;
+}
+
+  
+return `${Math.round(ms / 60_000)}min`;
 }
 
 function getLogDescription(log: TWorkflowLog): string {
@@ -159,7 +171,7 @@ export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({ workflowId 
       {/* Timeline */}
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute bottom-0 left-[15px] top-0 w-px bg-gray-200" />
+        <div className="absolute inset-y-0 left-[15px] w-px bg-gray-200" />
 
         <ul className="space-y-0">
           {sortedLogs.map((log, idx) => {
@@ -173,7 +185,7 @@ export const CaseTimeline: FunctionComponent<CaseTimelineProps> = ({ workflowId 
               <li key={log.id} className="relative flex gap-3 pb-4 pl-9">
                 {/* Dot */}
                 <div
-                  className={`absolute left-[10px] top-[6px] h-[12px] w-[12px] rounded-full border-2 border-white ${config.color}`}
+                  className={`absolute left-[10px] top-[6px] size-[12px] rounded-full border-2 border-white ${config.color}`}
                 />
 
                 <div className="flex flex-1 flex-col gap-0.5">

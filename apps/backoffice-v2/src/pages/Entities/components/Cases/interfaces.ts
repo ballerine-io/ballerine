@@ -13,7 +13,7 @@ export interface ICasesChildren {
 
 export interface ICasesProps extends DivComponent {
   onSearch: ChangeEventHandler<HTMLInputElement>;
-  onFilter: (filterBy: keyof TIndividual) => (filters: Array<string>) => void;
+  onFilter: (filterBy: keyof TIndividual) => (filters: string[]) => void;
   onSortBy: ChangeEventHandler<HTMLSelectElement>;
   onSortDirToggle: () => void;
   search: string;

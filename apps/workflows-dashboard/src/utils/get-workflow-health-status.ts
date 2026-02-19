@@ -11,9 +11,13 @@ export enum HealthStatus {
 export function getWorkflowHealthStatus(workflow: IWorkflow): HealthStatus {
   const { status, createdAt } = workflow;
 
-  if (status === 'failed') return HealthStatus.failed;
+  if (status === 'failed') {
+return HealthStatus.failed;
+}
 
-  if (status === 'completed') return HealthStatus.healthy;
+  if (status === 'completed') {
+return HealthStatus.healthy;
+}
 
   const hourDifference = calculateHourDifference(new Date(createdAt), new Date());
   const TWO_HOURS = 2;

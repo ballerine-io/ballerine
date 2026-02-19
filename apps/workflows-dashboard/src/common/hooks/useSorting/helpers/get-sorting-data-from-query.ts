@@ -13,7 +13,11 @@ export function getSortingDataFromQuery(string_: string, regex: RegExp) {
     .transform(sortingString => {
       regex.lastIndex = 0;
       const parseResult = regex.exec(sortingString);
-      if (!parseResult) return null;
+
+      if (!parseResult) {
+return null;
+}
+
       const parseValues = [parseResult[1], parseResult[2], parseResult[3]];
 
       const [keyWithPrefix, key, value] = parseValues;

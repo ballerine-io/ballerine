@@ -27,7 +27,9 @@ export const useSelectEntityOnMount = () => {
   }, [state?.from?.pathname]);
 
   useEffect(() => {
-    if (caseId || (!firstCaseId && !prevCaseId)) return;
+    if (caseId || (!firstCaseId && !prevCaseId)) {
+return;
+}
 
     onSelectEntity(prevCaseId || firstCaseId)();
   }, [entity, firstCaseId, caseId, onSelectEntity, prevCaseId]);

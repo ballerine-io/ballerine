@@ -7,4 +7,5 @@ export const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption ref={ref} className={ctw('mt-4 text-sm text-muted-foreground', className)} {...props} />
 ));
+
 TableCaption.displayName = 'TableCaption';

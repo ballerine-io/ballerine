@@ -7,6 +7,7 @@ import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { env } from '@/common/env/env';
 import { NormalizedAddress } from '../types';
 import { enrichAddressWithGeocodeResults, normalizeAddress } from '../utils/addressUtils';
+
 const googleMapsLibraries = ['places', 'geometry'] satisfies Parameters<
   typeof useJsApiLoader
 >[0]['libraries'];
@@ -82,7 +83,8 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
           scrollPositionRef.current = window.scrollY;
           setPosition(panoramaResult);
           setStreetViewStatus('OK');
-          return;
+          
+return;
         }
 
         const widerPanoramaResult = await checkStreetViewAvailability(
@@ -90,11 +92,13 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
           initialPosition,
           2000,
         );
+
         if (widerPanoramaResult) {
           scrollPositionRef.current = window.scrollY;
           setPosition(widerPanoramaResult);
           setStreetViewStatus('OK');
-          return;
+          
+return;
         }
 
         setStreetViewStatus('NOT_AVAILABLE');
@@ -125,7 +129,9 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
   );
 
   useEffect(() => {
-    if (!isLoaded || !address) return;
+    if (!isLoaded || !address) {
+return;
+}
 
     setStreetViewStatus('LOADING');
     const initialAddressDetails = normalizeAddress(address, countryCode);
@@ -150,15 +156,19 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
 
         if (!geocodeResultRaw) {
           setStreetViewStatus('GEOCODE_FAILED');
-          return;
+          
+return;
         }
 
         const geocodeResult = geocodeResultRaw.at(0);
         const location = geocodeResult?.geometry.location;
+
         if (!location) {
           setStreetViewStatus('ERROR');
-          return;
+          
+return;
         }
+
         const initialPosition = { lat: location.lat(), lng: location.lng() };
         setPosition(initialPosition);
 
@@ -177,7 +187,8 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
 
     geocodeAddress();
   }, [isLoaded, address, countryCode, findNearestStreetViewPanorama]);
-  return (
+  
+return (
     <Card>
       <CardContent className="p-6">
         <div className="flex flex-row">
@@ -205,7 +216,7 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
               />
             ) : (
               <div className="flex h-64 items-center justify-center rounded-md bg-gray-100">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+                <Loader2 className="size-8 animate-spin text-gray-500" />
               </div>
             )}
           </div>
@@ -273,7 +284,7 @@ const PanoramaContainer: React.FC<{
           {streetViewStatus === 'LOADING' && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="rounded bg-white/80 p-4">
-                <Loader2 className="h-6 w-6 animate-spin text-gray-700" />
+                <Loader2 className="size-6 animate-spin text-gray-700" />
               </div>
             </div>
           )}

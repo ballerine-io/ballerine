@@ -62,7 +62,9 @@ export const StateUpdaterColumn: FunctionComponent<IStateUpdaterColumnProps> = (
   );
 
   const handleSendEventClick = useCallback(() => {
-    if (!pickedEvent) return;
+    if (!pickedEvent) {
+return;
+}
 
     sendWorkflowEvent({
       workflowId: workflow.id,

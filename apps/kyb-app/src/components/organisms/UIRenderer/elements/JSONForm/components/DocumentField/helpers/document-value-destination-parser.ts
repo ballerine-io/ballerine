@@ -5,7 +5,9 @@ export class DocumentValueDestinationParser {
     const rootPathRegexp = /(documents|.+documents).+/g;
     const match = rootPathRegexp.exec(this.valueDestination);
 
-    if (!match) return null;
+    if (!match) {
+return null;
+}
 
     return match[1] || null;
   }
@@ -14,7 +16,9 @@ export class DocumentValueDestinationParser {
     const pagePathRegexp = /documents\[\d+\]\.(.*?pages\[\d+\])/g;
     const match = pagePathRegexp.exec(this.valueDestination);
 
-    if (!match) return null;
+    if (!match) {
+return null;
+}
 
     return match[1] || null;
   }
@@ -23,7 +27,9 @@ export class DocumentValueDestinationParser {
     const fileIdRegex = /pages(?:\[\d+\])?(?:\.(.+)|(.+))/g;
     const match = fileIdRegex.exec(this.valueDestination);
 
-    if (!match || !match[1]) return null;
+    if (!match || !match[1]) {
+return null;
+}
 
     return match[1];
   }

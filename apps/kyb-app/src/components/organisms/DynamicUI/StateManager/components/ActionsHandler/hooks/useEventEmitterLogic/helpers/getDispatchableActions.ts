@@ -22,7 +22,9 @@ export const getDispatchableActions = (
       new JmespathRuleEngine(),
     ]);
 
-    if (!action.dispatchOn.rules) return true;
+    if (!action.dispatchOn.rules) {
+return true;
+}
 
     return (
       action.dispatchOn?.rules?.length &&

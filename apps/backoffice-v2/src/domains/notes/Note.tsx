@@ -24,7 +24,7 @@ export const Note = ({
 
   return (
     <div
-      className={`flex min-h-[80px] flex-col rounded-lg border-[1px] bg-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.05)]`}
+      className={`flex min-h-[80px] flex-col rounded-lg border bg-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.05)]`}
     >
       <div
         className={`flex max-h-[40px] items-center justify-between rounded-t-lg border-b bg-slate-100 p-2`}

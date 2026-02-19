@@ -18,7 +18,7 @@ export const PaginationPrevious: FunctionComponent<
     )}
     {...props}
   >
-    <ChevronLeftIcon className="h-4 w-4" />
+    <ChevronLeftIcon className="size-4" />
     <span
       className={ctw({
         'sr-only': iconOnly,

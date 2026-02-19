@@ -1,10 +1,10 @@
 {
-  "logo": "/app-logo.svg",
-  "title": "Account activation process",
-  "subtitle": "Activate your account with PayLynk by completing the verification process.",
-  "contactInformation": "Contact PayLynk for support <br /> example@example.com (000) 123-4567",
-  "appName": "App",
-  "leaveText": "Return to PayLynk Portal.",
+  "logo": "/mikashboks-logo-horizontal.png",
+  "title": "MiKashBoks Verification",
+  "subtitle": "Complete verification to activate your MiKashBoks account.",
+  "contactInformation": "Contact MiKashBoks for support <br /> support@mikashboks.com",
+  "appName": "MiKashBoks",
+  "leaveText": "Return to MiKashBoks.",
   "theme": {
     "pallete": {
       "primary": {

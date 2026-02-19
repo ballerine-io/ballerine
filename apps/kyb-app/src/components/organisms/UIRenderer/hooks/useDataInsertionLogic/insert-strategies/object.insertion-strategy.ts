@@ -31,7 +31,9 @@ export class ObjectInsertionStrategy implements InsertionStrategy {
     const { schema, destination } = params;
     const value = (get(context, destination) as AnyObject) || {};
 
-    if (!Object.keys(value).length) return context;
+    if (!Object.keys(value).length) {
+return context;
+}
 
     Object.entries(schema).forEach(([insertAt]) => {
       set(value, insertAt, undefined);

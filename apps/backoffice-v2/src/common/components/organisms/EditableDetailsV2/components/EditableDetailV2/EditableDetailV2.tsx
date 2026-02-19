@@ -2,7 +2,7 @@ import { ChangeEvent, useCallback } from 'react';
 import { checkIsFormattedDatetime } from '@/common/utils/check-is-formatted-datetime';
 import { FileJson2 } from 'lucide-react';
 import { BallerineLink, CountrySelect, ctw, Input, JsonDialog } from '@ballerine/ui';
-import { checkIsCountry, checkIsUrl, isNullish, isObject } from '@ballerine/common';
+import { checkIsUrl, isNullish, isObject } from '@ballerine/common';
 import { Select } from '../../../../atoms/Select/Select';
 import { SelectTrigger } from '../../../../atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../atoms/Select/Select.Value';

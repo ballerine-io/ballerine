@@ -40,7 +40,9 @@ export const fetcher: IFetcher = async ({
     }),
   );
 
-  if (timeoutRef) clearTimeout(timeoutRef);
+  if (timeoutRef) {
+clearTimeout(timeoutRef);
+}
 
   if (fetchError) {
     console.error(fetchError);
@@ -59,6 +61,7 @@ export const fetcher: IFetcher = async ({
       } else if (json.message) {
         message = json.message;
       }
+
       throw new HttpError(res.status, message, json?.errors);
     }
 

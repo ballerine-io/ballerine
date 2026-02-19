@@ -8,10 +8,11 @@ export const Avatar = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
-    className={ctw('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}
+    className={ctw('relative flex size-10 shrink-0 overflow-hidden rounded-full', className)}
     {...props}
   >
     {children}
   </AvatarPrimitive.Root>
 ));
+
 Avatar.displayName = AvatarPrimitive.Root.displayName;
