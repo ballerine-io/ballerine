@@ -207,6 +207,38 @@ export class WorkflowControllerExternal {
     return workflowRuntimeData;
   }
 
+  /**
+   * Backward-compatible endpoint for clients still calling GET /external/workflows/:id/events.
+   * Returns the current machine's next available events.
+   */
+  @common.Get('/:id/events')
+  @UseCustomerAuthGuard()
+  @swagger.ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        events: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+      },
+      required: ['events'],
+    },
+  })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getRunnableWorkflowEvents(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    const workflow = await this.workflowService.getWorkflowByIdWithRelations(params.id, projectIds);
+    const events = Array.isArray((workflow as any)?.nextEvents)
+      ? ((workflow as any).nextEvents as string[])
+      : [];
+
+    return { events };
+  }
+
   // PATCH /workflows/:id
   @common.Patch('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
@@ -614,15 +646,31 @@ export class WorkflowControllerExternal {
         }
 
         if (eventToDispatch && eventToDispatch !== 'undefined') {
-          await this.workflowService.event(
-            {
-              id: params.id,
-              name: eventToDispatch,
-            },
-            [workflowRuntime.projectId],
-            workflowRuntime.projectId,
-            transaction,
-          );
+          try {
+            await this.workflowService.event(
+              {
+                id: params.id,
+                name: eventToDispatch,
+              },
+              [workflowRuntime.projectId],
+              workflowRuntime.projectId,
+              transaction,
+            );
+          } catch (eventError) {
+            const eventErrorMessage =
+              eventError instanceof Error ? eventError.message : String(eventError);
+
+            // Unified callbacks may arrive out-of-order (e.g. retry or delayed success callback)
+            // after the workflow has already transitioned to manual_review/revision. In that case,
+            // we still want to persist callback context and acknowledge the hook, instead of failing.
+            if (derivedFromPlugin && eventErrorMessage.includes('does not exist for workflow')) {
+              console.warn(
+                `[hook] Ignoring stale plugin callback event "${eventToDispatch}" for workflow ${params.id}: ${eventErrorMessage}`,
+              );
+            } else {
+              throw eventError;
+            }
+          }
         } else if (derivedFromPlugin) {
           // If we derived from a plugin and chose not to dispatch an event (e.g. PENDING),
           // do not fall back to dispatching the hook id.

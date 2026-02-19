@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   HttpCode,
   Param,
   ParseFilePipeBuilder,
@@ -184,6 +185,7 @@ export class DocumentControllerExternal {
   }
 
   @Get('/:entityId/:workflowRuntimeDataId')
+  @Header('Cache-Control', 'private, max-age=0, no-store')
   @ApiResponse({
     status: 200,
     description: 'Documents retrieved successfully',
@@ -215,6 +217,7 @@ export class DocumentControllerExternal {
   }
 
   @Get('/by-entity-ids/:entityIds/:workflowRuntimeDataId')
+  @Header('Cache-Control', 'private, max-age=0, no-store')
   @ApiResponse({
     status: 200,
     description: 'Documents retrieved successfully',

@@ -2186,7 +2186,10 @@ export class WorkflowService {
           // @ts-ignore
           propertiesSchema: _propertiesSchema,
           ...document
-        }) => document,
+        }) => ({
+          ...document,
+          properties: isObject((document as any)?.properties) ? (document as any).properties : {},
+        }),
       ),
     });
 

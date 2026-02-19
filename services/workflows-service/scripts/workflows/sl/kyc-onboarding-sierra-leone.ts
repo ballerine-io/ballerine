@@ -64,7 +64,7 @@ export const kycOnboardingSierraLeoneDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `pluginsOutput.document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.facial_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\``,
+                rule: `pluginsOutput.document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.facial_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\` && (pluginsOutput.facial_verification.confidenceScore || \`0\`) >= \`70\``,
               },
             },
           },
