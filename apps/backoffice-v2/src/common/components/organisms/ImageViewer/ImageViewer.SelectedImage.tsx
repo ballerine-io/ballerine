@@ -28,8 +28,8 @@ export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TS
 
     useEffect(() => {
       if (!isError || !selectedImage?.imageUrl) {
-return;
-}
+        return;
+      }
 
       setIsError(false);
     }, [isError, selectedImage?.imageUrl]);

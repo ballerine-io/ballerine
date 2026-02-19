@@ -97,7 +97,7 @@ export const FileField: TDynamicFormField<IFileFieldParams> = ({ element }) => {
           <Upload />
           <span className="select-none whitespace-nowrap text-base font-bold">{placeholder}</span>
         </div>
-        <span className="truncate text-sm">{file ? file.name : 'No File Choosen'}</span>
+        <span className="truncate text-sm">{file ? file.name : 'No file chosen'}</span>
         {file && (
           <Button
             variant="ghost"

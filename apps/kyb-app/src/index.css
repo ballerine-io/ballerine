@@ -15,7 +15,7 @@ textarea:-webkit-autofill:active {
 }
 
 @layer utilities {
-  .ring-ballerine {
+  .ring-primary-focus {
     @apply ring-primary outline-none ring-2;
   }
 

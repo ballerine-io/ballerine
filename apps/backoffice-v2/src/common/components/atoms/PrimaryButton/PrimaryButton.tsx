@@ -18,8 +18,8 @@ export const PrimaryButton: FunctionComponent<ButtonComponent> = ({
     <button
       className={ctw(
         `
-                focus-visible:ring-ballerine
-                active:ring-ballerine
+                focus-visible:ring-primary-focus
+                active:ring-primary-focus
                 flex
                 items-center
                 rounded-md

@@ -44,7 +44,7 @@ Add this code to your index.html header
 ```html
 <script
   async
-  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js"
+  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js <!-- NOTE: This is the upstream Ballerine CDN. For MiKashBoks, the SDK is bundled in kyb-app/public/kyc-mobile/ -->"
   integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
   crossorigin="anonymous"
   type="module"
@@ -110,7 +110,7 @@ Code example:
 
 ```html
 <script
-  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js"
+  src="https://cdn.ballerine.io/1.1.22/ballerine-sdk.umd.min.js <!-- NOTE: This is the upstream Ballerine CDN. For MiKashBoks, the SDK is bundled in kyb-app/public/kyc-mobile/ -->"
   integrity="sha384-cHxaE8mk7COVrdyKoDw4cdPC6PLoMItItHZ+LwA18bDaiWJLxV2f2zyVf6Q9Vtww"
   crossorigin="anonymous"
   type="module"

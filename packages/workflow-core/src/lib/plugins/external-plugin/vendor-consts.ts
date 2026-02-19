@@ -725,7 +725,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             firstName: entity.data.additionalInfo.mainRepresentative.firstName,
             collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token]),
             supportEmail: join('',['support@',metadata.customerName]),
-            from: 'no-reply@ballerine.com',
+            from: 'no-reply@mikashboks.com',
             receivers: [entity.data.additionalInfo.mainRepresentative.email],
             templateId: ${
               options.templateId
@@ -766,7 +766,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
 	              firstName: entity.data.additionalInfo.mainRepresentative.firstName || entity.data.firstName || entity.data.additionalInfo.owner.firstName || entity.data.ownerFirstName || entity.data.additionalInfo.directors[0].firstName || 'Customer',
 	              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',(workflowRuntimeConfig.language || 'en')]),
 	              supportEmail: join('',['support@',metadata.customerName,'.com']),
-	              from: 'no-reply@ballerine.com',
+	              from: 'no-reply@mikashboks.com',
 	              name: join(' ',[metadata.customerName,'Team']),
 	              receivers: ((entity.data.additionalInfo.mainRepresentative.email || entity.data.email || entity.data.additionalInfo.owner.email || entity.data.additionalInfo.directors[0].email) != null) && [entity.data.additionalInfo.mainRepresentative.email || entity.data.email || entity.data.additionalInfo.owner.email || entity.data.additionalInfo.directors[0].email] || [],
 	              templateId: ${
@@ -805,7 +805,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               customerCompanyName: entity.data.additionalInfo.customerCompany || entity.data.customerCompany,
               firstName: entity.data.firstName,
               kycLink: pluginsOutput.kyc_session.kyc_session_1.result.metadata.url,
-              from: 'no-reply@ballerine.com',
+              from: 'no-reply@mikashboks.com',
               name: join(' ',[entity.data.additionalInfo.customerCompany || entity.data.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
@@ -844,7 +844,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               ${options.dataMapping || ''}
               customerName: metadata.customerName,
               collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',(workflowRuntimeConfig.language || 'en')]),
-              from: 'no-reply@ballerine.com',
+              from: 'no-reply@mikashboks.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               language: workflowRuntimeConfig.language || 'en',
               templateId: ${
@@ -881,7 +881,7 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
               companyName: data.companyName,
               customerName: metadata.customerName,
               collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?workflowId=',workflowRuntimeId,'&token=',metadata.token,'&lng=',(workflowRuntimeConfig.language || 'en')]),
-              from: 'no-reply@ballerine.com',
+              from: 'no-reply@mikashboks.com',
               name: join(' ',[metadata.customerName,'Onboarding']),
               receivers: [entity.data.additionalInfo.bdEmail],
               language: workflowRuntimeConfig.language || 'en',
@@ -915,10 +915,10 @@ export const BALLERINE_API_PLUGIN_FACTORY = {
             transformer: 'jmespath',
             mapping: `{
               ${options.dataMapping || ''}
-              from: 'no-reply@ballerine.com',
+              from: 'no-reply@mikashboks.com',
               underwriterFirstName: entity.data.additionalInfo.underwriterFirstName,
               merchantName: entity.data.companyName,
-              backofficeLink: 'https://backoffice-sb.eu.ballerine.app',
+              backofficeLink: 'https://admin.verify.mikashboksapis.com',
               name: join(' ',[metadata.customerName,'Onboarding']),
               receivers: [entity.data.additionalInfo.underwriterEmail],
               templateId: ${

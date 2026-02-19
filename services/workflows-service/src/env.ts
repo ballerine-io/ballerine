@@ -119,6 +119,7 @@ export const serverEnvSchema = {
   UNIFIED_API_TOKEN: requireInProduction(
     'UNIFIED_API_TOKEN',
     'API token for the Unified API. Used for authenticating outgoing requests to the Unified API.',
+    32,
   ),
   UNIFIED_API_SHARED_SECRET: requireInProduction(
     'UNIFIED_API_SHARED_SECRET',
@@ -130,6 +131,8 @@ export const serverEnvSchema = {
     .min(1)
     .default('verification-result')
     .describe('Hook ID used by Unified API callbacks on workflow hook endpoints.'),
+  // Optional Salesforce CRM integration.
+  // Leave unset unless Salesforce OAuth + workflow runtime mapping are explicitly enabled.
   SALESFORCE_API_VERSION: z.string().optional().default('58.0').describe('Salesforce API version'),
   SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
   SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),

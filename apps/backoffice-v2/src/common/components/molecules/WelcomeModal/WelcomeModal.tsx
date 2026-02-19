@@ -14,7 +14,7 @@ import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
-import { Skeleton } from '@ballerine/ui';
+
 
 const benefits = [
   'Spot potential risks and violations',
@@ -43,21 +43,7 @@ export const WelcomeModal = () => {
           </DialogDescription>
         </DialogHeader>
         <div className="px-6">
-          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-            <Skeleton className="absolute inset-0 size-full" />
-            <iframe
-              src="https://www.loom.com/embed/c80a7403d3b4483ab64f1a38b616fb63?sid=cfae9630-2144-4b37-9169-21bbcc360a5f"
-              frameBorder="0"
-              allowFullScreen
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          </div>
+          {/* Introduction video placeholder — replace with MiKashBoks recording when available */}
         </div>
 
         <BusinessReportsLeftCard

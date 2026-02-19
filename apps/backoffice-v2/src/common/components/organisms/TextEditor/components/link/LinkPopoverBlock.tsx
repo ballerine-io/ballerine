@@ -51,8 +51,8 @@ export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({ url, onClear
           tooltipOptions={{
             onPointerDownOutside: e => {
               if (e.target === e.currentTarget) {
-e.preventDefault();
-}
+                e.preventDefault();
+              }
             },
           }}
         >

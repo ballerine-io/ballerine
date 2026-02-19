@@ -15,8 +15,8 @@ export class QueueBullboardService {
 
       if (existingAdapter) {
         this.logger.debug(`Queue ${queue.name} is already registered with BullBoard`);
-        
-return;
+
+        return;
       }
 
       bullBoardInstance.boardInstance.setQueues([...currentQueues, adapter]);

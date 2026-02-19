@@ -6,7 +6,7 @@ export const SkeletonItem: FunctionComponent = () => {
   return (
     <li
       className={ctw(
-        `focus-within:ring-ballerine h-[4.75rem] rounded-md p-2 hover:bg-primary/10 [&:has(.active)]:bg-primary/10`,
+        `focus-within:ring-primary-focus h-[4.75rem] rounded-md p-2 hover:bg-primary/10 [&:has(.active)]:bg-primary/10`,
       )}
     >
       <div className={`flex items-center gap-x-4 outline-none`}>

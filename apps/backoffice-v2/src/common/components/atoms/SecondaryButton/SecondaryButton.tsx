@@ -16,7 +16,7 @@ export const SecondaryButton: FunctionComponentWithChildren<TSecondaryButtonProp
   return (
     <PrimaryButton
       className={ctw(
-        `hover:ring-ballerine flex items-center justify-center !rounded-full bg-black/40 p-2 text-white d-8 hover:bg-black/40`,
+        `hover:ring-primary-focus flex items-center justify-center !rounded-full bg-black/40 p-2 text-white d-8 hover:bg-black/40`,
         className,
       )}
       {...rest}

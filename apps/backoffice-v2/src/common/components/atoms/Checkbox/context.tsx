@@ -43,8 +43,8 @@ export const Provider: FunctionComponentWithChildren<IProviderProps> = ({
 
   useEffect(() => {
     if (!values) {
-return;
-}
+      return;
+    }
 
     setChecked(values);
   }, [values]);

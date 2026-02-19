@@ -6,8 +6,8 @@ import { filtersQueryKeys } from '../../../filters/query-keys';
 
 export const authenticatedLayoutLoader: LoaderFunction = async ({ request }) => {
   if (!env.VITE_AUTH_ENABLED) {
-return null;
-}
+    return null;
+  }
 
   const authenticatedUser = authQueryKeys.authenticatedUser();
   const session = await queryClient.ensureQueryData(
@@ -16,8 +16,8 @@ return null;
   );
 
   if (!session?.user) {
-return null;
-}
+    return null;
+  }
 
   const filtersList = filtersQueryKeys.list();
   await queryClient.ensureQueryData(filtersList.queryKey, filtersList.queryFn);

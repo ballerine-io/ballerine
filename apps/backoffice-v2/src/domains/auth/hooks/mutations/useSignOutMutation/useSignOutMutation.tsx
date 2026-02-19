@@ -27,8 +27,8 @@ export const useSignOutMutation = () => {
       queryClient.setQueryData(customer.queryKey, undefined);
 
       if (!callbackUrl || !redirect) {
-return;
-}
+        return;
+      }
 
       void navigate(callbackUrl, {
         replace: true,

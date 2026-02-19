@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { TCollectionFlowEvents } from './enums';
 
-const DEFAULT_PREFIX = 'ballerine.collection-flow';
+const DEFAULT_PREFIX = 'mikashboks.collection-flow';
 
 interface IUseFlowTracking {
   prefix?: string;

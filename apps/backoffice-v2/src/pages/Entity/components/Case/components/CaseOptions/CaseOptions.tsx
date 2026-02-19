@@ -33,8 +33,7 @@ export const CaseOptions = () => {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => generateAndOpenPDFInNewTab()}
-                // disabled={isGeneratingPDF}
-                disabled
+                disabled={isDemoAccount}
                 variant={'ghost'}
                 className="w-full justify-start px-8 py-1 disabled:!pointer-events-auto"
               >
@@ -44,7 +43,7 @@ export const CaseOptions = () => {
             <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
               This feature is not available for trial accounts.
               <br />
-              Talk to us to get full access.
+              Contact support@mikashboks.com to get full access.
             </TooltipContent>
           </Tooltip>
         </DropdownMenuItem>

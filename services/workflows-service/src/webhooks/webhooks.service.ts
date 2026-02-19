@@ -31,8 +31,7 @@ const interpolateSecretTemplates = (template: string) => {
       return _match;
     }
 
-    
-return value;
+    return value;
   });
 
   return {
@@ -189,8 +188,8 @@ export class WebhooksService implements OnModuleInit {
         method,
         jobName: name,
       });
-      
-return;
+
+      return;
     }
 
     // Validate URL early to avoid noisy retries / queue churn on invalid templates.
@@ -203,8 +202,8 @@ return;
         method,
         jobName: name,
       });
-      
-return;
+
+      return;
     }
 
     this.logger.log('Sending webhook...', {

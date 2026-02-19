@@ -10,8 +10,8 @@ export const useSelectEntity = () => {
   return useCallback(
     (entityId: string) => () => {
       if (!entityId) {
-return;
-}
+        return;
+      }
 
       void navigate(`/${locale}/case-management/entities/${entityId}${search}`, {
         replace: true,

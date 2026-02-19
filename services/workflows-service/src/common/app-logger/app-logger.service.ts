@@ -26,16 +26,16 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
 
   log(message: string, logData: LogPayload = {}) {
     if (this.isClosed) {
-return;
-}
+      return;
+    }
 
     this.logger.info(message, { ...this.getLogMetadata(), logData });
   }
 
   error(error: unknown, logData: LogPayload = {}) {
     if (this.isClosed) {
-return;
-}
+      return;
+    }
 
     const payload: any = { ...this.getLogMetadata(), logData };
     const STACK_FRAMES_TO_REMOVE = 1;
@@ -54,16 +54,16 @@ return;
 
   warn(message: string, logData: LogPayload = {}) {
     if (this.isClosed) {
-return;
-}
+      return;
+    }
 
     this.logger.warn(message, { ...this.getLogMetadata(), logData });
   }
 
   debug(message: string, logData: LogPayload = {}) {
     if (this.isClosed) {
-return;
-}
+      return;
+    }
 
     this.logger.debug(message, { ...this.getLogMetadata(), logData });
   }

@@ -200,8 +200,8 @@ export const useCallToActionLegacyLogic = ({
     (isOpen: boolean) => {
       // Calling callback only when dialog is closed.
       if (isOpen || !onDialogClose) {
-return;
-}
+        return;
+      }
 
       onDialogClose();
     },

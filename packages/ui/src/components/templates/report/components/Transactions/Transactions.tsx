@@ -18,15 +18,15 @@ export const Transactions: FunctionComponent = () => {
         className={`right-6 top-5 2xl:right-[4.5rem]`}
         content={
           <p className={`mt-3 text-xs`}>
-            Use Ballerine’s Transactions Analysis tool to leverage transaction data for additional
-            insights into your merchant’s activity.
+            Use the Transactions Analysis tool to leverage transaction data for additional insights
+            into your merchant’s activity.
           </p>
         }
         footer={
           <a
             target={`_blank`}
             className={`mt-3 flex items-center text-sm text-[#007AFF]`}
-            href={`https://calendly.com/d/cp53-ryw-4s3/ballerine-intro`}
+            href={`https://calendly.com/mikashboks`}
           >
             Talk to us <ArrowRight className={`ms-1`} size={16} />
           </a>

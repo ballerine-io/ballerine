@@ -17,8 +17,8 @@ export function useContainerSize(element: HTMLElement | null): DOMRect {
 
   const handleResize = useCallback(() => {
     if (!element) {
-return;
-}
+      return;
+    }
 
     const newRect = element.getBoundingClientRect();
 
@@ -32,15 +32,14 @@ return;
         return prevRect;
       }
 
-      
-return newRect;
+      return newRect;
     });
   }, [element]);
 
   useEffect(() => {
     if (!element) {
-return;
-}
+      return;
+    }
 
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(element);

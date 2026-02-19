@@ -77,8 +77,8 @@ export class MerchantMonitoringClient {
 
         if (idToken) {
           if (!config.headers) {
-config.headers = {} as any;
-}
+            config.headers = {} as any;
+          }
 
           (config.headers as any).Authorization = `Bearer ${idToken}`;
         }

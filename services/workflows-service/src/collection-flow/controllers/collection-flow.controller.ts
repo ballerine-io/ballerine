@@ -315,7 +315,9 @@ export class CollectionFlowController {
           .slice()
           .sort((a: any, b: any) => {
             const variantOrder = (v: string) => (v === 'front' ? 0 : v === 'back' ? 1 : 2);
-            return variantOrder(a.variant) - variantOrder(b.variant) || (a.page || 0) - (b.page || 0);
+            return (
+              variantOrder(a.variant) - variantOrder(b.variant) || (a.page || 0) - (b.page || 0)
+            );
           })
           .map((file: any) => ({
             provider: 'http',

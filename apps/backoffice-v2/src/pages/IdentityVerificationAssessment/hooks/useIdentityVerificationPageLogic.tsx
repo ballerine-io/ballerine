@@ -35,9 +35,11 @@ export const useIdentityVerificationPageLogic = () => {
   const { checkId } = useParams<{ checkId: string }>();
   const { data: customer } = useCustomerQuery();
 
+  // TODO: Wire to real assessment API (currently rendering placeholder mock data).
+  // Replace with actual query, e.g.: const { data: check, isLoading: isLoadingCheck } = useAssessmentQuery(checkId);
   const { data: check, isLoading: isLoadingCheck } = {
     data: {
-      id: 'checkId',
+      id: checkId ?? 'checkId',
       type: 'check',
       status: 'cleared',
       companyName: 'Company Name',

@@ -18,8 +18,8 @@ export const useSelectedImage = (initialImage: { imageUrl: string; fileType: str
   // If no image was selected yet, select the initial image.
   useEffect(() => {
     if (selectedImage?.imageUrl) {
-return;
-}
+      return;
+    }
 
     onSelectImage(initialImage)();
   }, [initialImage?.imageUrl, selectedImage?.imageUrl, onSelectImage]);

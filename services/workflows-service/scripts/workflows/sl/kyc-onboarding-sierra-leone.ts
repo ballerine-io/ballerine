@@ -38,6 +38,11 @@ export const kycOnboardingSierraLeoneDefinition = {
         on: {
           DOCUMENT_VERIFIED: [{ target: 'facial_verification' }],
           DOCUMENT_VERIFICATION_FAILED: [{ target: 'manual_review' }],
+          TIMEOUT: [{ target: 'manual_review' }],
+        },
+        after: {
+          // 24 hours — if we haven't received a callback by then, escalate to manual review.
+          86400000: [{ target: 'manual_review' }],
         },
       },
       facial_verification: {
@@ -45,6 +50,11 @@ export const kycOnboardingSierraLeoneDefinition = {
         on: {
           FACIAL_VERIFIED: [{ target: 'ncra_check' }],
           FACIAL_VERIFICATION_FAILED: [{ target: 'manual_review' }],
+          TIMEOUT: [{ target: 'manual_review' }],
+        },
+        after: {
+          // 24 hours — if we haven't received a callback by then, escalate to manual review.
+          86400000: [{ target: 'manual_review' }],
         },
       },
       ncra_check: {
@@ -88,6 +98,7 @@ export const kycOnboardingSierraLeoneDefinition = {
         stateNames: ['document_verification'],
         successAction: 'DOCUMENT_VERIFIED',
         errorAction: 'DOCUMENT_VERIFICATION_FAILED',
+        timeout: 120000, // 2 minutes
         headers: {
           Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
           'x-api-key': '{secret.UNIFIED_API_TOKEN}',
@@ -143,6 +154,7 @@ export const kycOnboardingSierraLeoneDefinition = {
         stateNames: ['facial_verification'],
         successAction: 'FACIAL_VERIFIED',
         errorAction: 'FACIAL_VERIFICATION_FAILED',
+        timeout: 120000, // 2 minutes
         headers: {
           Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
           'x-api-key': '{secret.UNIFIED_API_TOKEN}',

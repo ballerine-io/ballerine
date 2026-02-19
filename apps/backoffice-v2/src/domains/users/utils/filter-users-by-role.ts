@@ -7,13 +7,13 @@ export const filterUsersByRole = (
   excludedRoles: TUserRole[],
 ) => {
   if (!Array.isArray(users)) {
-return [];
-}
+    return [];
+  }
 
   return users.filter(user => {
     if (!user) {
-return false;
-}
+      return false;
+    }
 
     if (!('roles' in user) || !Array.isArray(user.roles)) {
       return true;

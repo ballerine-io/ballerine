@@ -16,8 +16,8 @@ export const useCrop = () => {
   const cropImage = useCallback(
     async (image: HTMLImageElement) => {
       if (!image || !crop) {
-return;
-}
+        return;
+      }
 
       const canvas = document.createElement('canvas');
 
@@ -30,8 +30,8 @@ return;
       const ctx = canvas.getContext('2d');
 
       if (!ctx) {
-return;
-}
+        return;
+      }
 
       // Handle pixel ratio
       const pixelRatio = window.devicePixelRatio;
@@ -65,8 +65,8 @@ return;
   // Cancel cropping on escape key
   useDocumentListener('keydown', event => {
     if (event.key !== 'Escape') {
-return;
-}
+      return;
+    }
 
     onCancelCrop();
   });

@@ -34,13 +34,13 @@ export class BusinessReportService {
     if (customer.config?.isDemoAccount) {
       if (accessDetails.demoDaysLeft <= 0) {
         throw new BadRequestException(
-          'Your demo account has expired. Talk to us to unlock additional features and continue effective risk management with Ballerine.',
+          'Your demo account has expired. Contact support@mikashboks.com to unlock additional features and continue effective risk management.',
         );
       }
 
       if (accessDetails.reportsLeft <= 0) {
         throw new BadRequestException(
-          "You've hit your reports limit. Talk to us to unlock additional features and continue effective risk management with Ballerine.",
+          "You've hit your reports limit. Contact support@mikashboks.com to unlock additional features and continue effective risk management.",
         );
       }
     }
@@ -183,7 +183,7 @@ export class BusinessReportService {
       throw new BadRequestException(
         `This batch will exceed your reports limit. You have ${reportsLeft} report${
           reportsLeft > 1 ? 's' : ''
-        } remaining from a quota of ${maxBusinessReports}. Talk to us to unlock additional features and continue effective risk management with Ballerine.`,
+        } remaining from a quota of ${maxBusinessReports}. Contact support@mikashboks.com to unlock additional features and continue effective risk management.`,
       );
     }
 

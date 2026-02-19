@@ -5,16 +5,16 @@
  */
 export const parseNullAndEmptyArrayDeep = (value: unknown) => {
   if (value === '__emptyArray') {
-return [];
-}
+    return [];
+  }
 
   if (value === '__null') {
-return null;
-}
+    return null;
+  }
 
   if (Array.isArray(value)) {
-return value.map(parseNullAndEmptyArrayDeep);
-}
+    return value.map(parseNullAndEmptyArrayDeep);
+  }
 
   if (typeof value === 'object' && value !== null) {
     return Object.entries(value).reduce((acc, [key, value]) => {

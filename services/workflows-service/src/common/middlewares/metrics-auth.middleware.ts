@@ -18,8 +18,8 @@ export class MetricsAuthMiddleware implements NestMiddleware {
       };
       this.cls.set('entity', entity);
       (req as any).user = entity;
-      
-return next();
+
+      return next();
     }
 
     return res.status(401).send('Unauthorized');

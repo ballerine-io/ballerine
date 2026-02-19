@@ -42,7 +42,17 @@ export const router = sentryCreateBrowserRouter([
             path: 'signup',
             Component: SignUpPage,
           },
-          // TODO: 404 Page?
+          {
+            path: '*',
+            element: (
+              <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+                <h1 className="text-2xl font-bold">Page Not Found</h1>
+                <p className="text-muted-foreground">
+                  The page you are looking for does not exist.
+                </p>
+              </div>
+            ),
+          },
         ],
       },
     ],

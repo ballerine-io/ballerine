@@ -203,8 +203,9 @@ export const loanKycKybSierraLeoneDefinition = {
                 // Auto-approve if:
                 // 1. KYC child approved
                 // 2. KYB child approved (or no KYB required)
+                // 3. Financial analysis (if present) does not flag document as likely forged
                 // Guard against missing childWorkflows to avoid length(null) runtime errors.
-                rule: `(childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) > \`0\`) && (childWorkflows.kyb_onboarding_sierra_leone_formal == null && childWorkflows.kyb_onboarding_sierra_leone_informal == null || length(childWorkflows.kyb_onboarding_sierra_leone_formal.*[?tags[?@ == 'approved']] || childWorkflows.kyb_onboarding_sierra_leone_informal.*[?tags[?@ == 'approved']] || []) > \`0\`)`,
+                rule: `(childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) > \`0\`) && (childWorkflows.kyb_onboarding_sierra_leone_formal == null && childWorkflows.kyb_onboarding_sierra_leone_informal == null || length(childWorkflows.kyb_onboarding_sierra_leone_formal.*[?tags[?@ == 'approved']] || childWorkflows.kyb_onboarding_sierra_leone_informal.*[?tags[?@ == 'approved']] || []) > \`0\`) && (pluginsOutput.loan_financial_analysis == null || pluginsOutput.loan_financial_analysis.data == null || pluginsOutput.loan_financial_analysis.data.authenticityConfidence == null || pluginsOutput.loan_financial_analysis.data.authenticityConfidence >= \`0.4\`)`,
               },
             },
           },

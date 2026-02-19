@@ -161,9 +161,21 @@ export class HookCallbackHandlerService {
         currentProjectId,
       );
 
-      const aml = data.aml as
-        | { endUserId: string; hits: Array<Record<string, unknown>> }
-        | undefined;
+      const rawAml = data.aml;
+      const aml =
+        rawAml &&
+        typeof rawAml === 'object' &&
+        !Array.isArray(rawAml) &&
+        typeof (rawAml as Record<string, unknown>).endUserId === 'string' &&
+        Array.isArray((rawAml as Record<string, unknown>).hits)
+          ? (rawAml as { endUserId: string; hits: Array<Record<string, unknown>> })
+          : undefined;
+
+      if (data.aml && !aml) {
+        this.logger.warn('AML data has unexpected shape — skipping', {
+          rawAml: data.aml,
+        });
+      }
 
       if (aml) {
         await this.updateEndUserWithAmlData({
@@ -180,12 +192,25 @@ export class HookCallbackHandlerService {
     }
 
     if (processName === 'aml-unified-api') {
+      const rawAmlData = data.data;
+      const validAmlData =
+        rawAmlData &&
+        typeof rawAmlData === 'object' &&
+        !Array.isArray(rawAmlData) &&
+        typeof (rawAmlData as Record<string, unknown>).id === 'string' &&
+        typeof (rawAmlData as Record<string, unknown>).endUserId === 'string' &&
+        Array.isArray((rawAmlData as Record<string, unknown>).hits)
+          ? (rawAmlData as { id: string; endUserId: string; hits: Array<Record<string, unknown>> })
+          : undefined;
+
+      if (!validAmlData) {
+        this.logger.warn('AML session data has unexpected shape — skipping AML update', {
+          rawData: data.data,
+        });
+      }
+
       const aml = {
-        ...(data.data as {
-          id: string;
-          endUserId: string;
-          hits: Array<Record<string, unknown>>;
-        }),
+        ...(validAmlData ?? { id: '', endUserId: '', hits: [] }),
         vendor: data.vendor,
       };
 
@@ -343,8 +368,9 @@ export class HookCallbackHandlerService {
 
     // F8: Only remove identification_document entries — preserve all non-ID documents
     // (e.g., business docs, financial docs) that may already exist in the context.
-    // This is safe with ARRAY_MERGE_OPTION.REPLACE at the controller level because
-    // we return the full filtered array, not an empty one.
+    // NOTE: The controller uses ARRAY_MERGE_OPTION.REPLACE, meaning this returned
+    // context fully replaces the existing one (not a deep merge). We return the
+    // full filtered array so non-ID documents are preserved.
     (context as Record<string, any>).documents =
       (context as Record<string, any>).documents?.filter(
         (document: any) => document.type !== 'identification_document',

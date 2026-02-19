@@ -86,8 +86,8 @@ const handleImageUrl = async (src: string): Promise<{ blob: Blob; extension: str
   const response = await fetch(src);
 
   if (!response.ok) {
-throw new Error('Failed to fetch image');
-}
+    throw new Error('Failed to fetch image');
+  }
 
   const blob = await response.blob();
   const extension = blob.type.split(/\/|\+/)[1];
@@ -261,8 +261,8 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
 
   onTransaction({ transaction }) {
     if (!transaction.docChanged) {
-return;
-}
+      return;
+    }
 
     const oldDoc = transaction.before;
     const newDoc = transaction.doc;

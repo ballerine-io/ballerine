@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 export const useSelectNextCase = () => {
   return useCallback(() => {
-    // @TODO: Implement
-    throw new Error('Not implemented');
+    // @TODO: Implement — for now, no-op to avoid crashing the UI
+    console.warn('useSelectNextCase: not yet implemented');
   }, []);
 };

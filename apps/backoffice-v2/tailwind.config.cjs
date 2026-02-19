@@ -25,9 +25,6 @@ module.exports = {
         inter: ['Inter', 'sans-serif'],
       },
       colors: {
-        'ballerine-black': '#4D4D4D',
-        'ballerine-blue': '#3F77FF',
-        'ballerine-dark-blue': '#1540A8',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

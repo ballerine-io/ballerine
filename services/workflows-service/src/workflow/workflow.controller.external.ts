@@ -58,6 +58,8 @@ export const WORKFLOW_TAG = 'Workflows';
 @swagger.ApiTags(WORKFLOW_TAG)
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
+  private readonly logger = new common.Logger(WorkflowControllerExternal.name);
+
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
@@ -664,7 +666,7 @@ export class WorkflowControllerExternal {
             // after the workflow has already transitioned to manual_review/revision. In that case,
             // we still want to persist callback context and acknowledge the hook, instead of failing.
             if (derivedFromPlugin && eventErrorMessage.includes('does not exist for workflow')) {
-              console.warn(
+              this.logger.warn(
                 `[hook] Ignoring stale plugin callback event "${eventToDispatch}" for workflow ${params.id}: ${eventErrorMessage}`,
               );
             } else {
@@ -681,7 +683,7 @@ export class WorkflowControllerExternal {
           // F11: Log when we expected to derive an event from a plugin but couldn't find
           // the matching plugin in the workflow definition. This helps diagnose stuck
           // workflows where callbacks arrive but no state transition occurs.
-          console.warn(
+          this.logger.warn(
             `[hook] Could not derive plugin event for resultDestination="${resultDestination}" ` +
               `on workflow ${params.id} (definition: ${workflowRuntime.workflowDefinitionId}). ` +
               `Dispatching fallback event "${params.event}".`,

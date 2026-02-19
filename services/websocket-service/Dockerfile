@@ -9,7 +9,7 @@ EXPOSE 3500
 
 ENV PORT=3500
 ENV NODE_ENV=development
-ENV COMPOSE_PROJECT_NAME=ballerine-x
+ENV COMPOSE_PROJECT_NAME=mikashboks-identity
 
 CMD [ "npm", "run", "dev", "--host"]
 
@@ -24,7 +24,7 @@ COPY .env.example /app/.env
 ENV PATH="$PATH:./node_modules/.bin"
 ENV PORT=3500
 ENV NODE_ENV=development
-ENV COMPOSE_PROJECT_NAME=ballerine-x
+ENV COMPOSE_PROJECT_NAME=mikashboks-identity
 
 EXPOSE 3500
 

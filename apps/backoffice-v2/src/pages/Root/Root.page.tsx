@@ -53,6 +53,12 @@ export const Root: FunctionComponent = () => {
       <div className="flex h-screen flex-col items-center justify-center gap-8 text-center">
         <MiKashBoksLogo />
         <h2>If you’re on a mobile device, please switch to a desktop for the best experience.</h2>
+        <p className="text-sm text-gray-500">
+          Need help? Contact{‘ ‘}
+          <a href="mailto:support@mikashboks.com" className="text-blue-600 underline">
+            support@mikashboks.com
+          </a>
+        </p>
       </div>
     );
   }

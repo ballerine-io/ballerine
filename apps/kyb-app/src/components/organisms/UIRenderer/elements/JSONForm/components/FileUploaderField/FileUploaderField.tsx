@@ -78,7 +78,7 @@ return;
         <span className="select-none whitespace-nowrap text-base font-bold">Choose file</span>
       </div>
       <span className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-        {registeredFile ? registeredFile.name : 'No File Choosen'}
+        {registeredFile ? registeredFile.name : 'No file chosen'}
       </span>
       {registeredFile && (
         <Button

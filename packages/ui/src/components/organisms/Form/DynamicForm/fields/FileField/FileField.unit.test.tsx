@@ -81,7 +81,7 @@ describe('FileField', () => {
     render(<FileField element={mockElement} />);
 
     expect(screen.getByText('Test Placeholder')).toBeInTheDocument();
-    expect(screen.getByText('No File Choosen')).toBeInTheDocument();
+    expect(screen.getByText('No file chosen')).toBeInTheDocument();
   });
 
   it('shows file name when file is selected', () => {

@@ -221,9 +221,7 @@ export class KycService {
     );
 
     if (!unifiedApiVerificationHookId) {
-      throw new InternalServerErrorException(
-        'UNIFIED_API_VERIFICATION_HOOK_ID is not defined',
-      );
+      throw new InternalServerErrorException('UNIFIED_API_VERIFICATION_HOOK_ID is not defined');
     }
 
     const callbackQuery = new URLSearchParams({

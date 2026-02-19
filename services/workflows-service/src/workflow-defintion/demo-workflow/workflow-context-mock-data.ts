@@ -300,7 +300,7 @@ export const getMockWorkflowContext = async (
       metadata: {
         token: 'dd228d09-6e3f-4471-a4b4-14845fe83c8e',
         customerId: 'ballerinedemo_ongoing_monitoring',
-        customerName: 'Ballerine Demo',
+        customerName: 'MiKashBoks Demo',
         collectionFlowUrl: 'https://collection-dev.ballerine.io',
         customerNormalizedName: 'ballerinedemo_ongoing_monitoring',
       },
@@ -451,7 +451,7 @@ export const getMockWorkflowContext = async (
           apiUrl: 'https://api-dev.ballerine.io',
         },
         additionalInformation: {
-          customerCompany: 'Ballerine Demo',
+          customerCompany: 'MiKashBoks Demo',
         },
       },
       customerName: 'GreenTech Solutions Ltd.',
@@ -1754,7 +1754,7 @@ export const getMockWorkflowContext = async (
                   role: 'CPO',
                   companyName: '1618 AIR CONDITIONING PTE. LTD.',
                   dateOfBirth: '1986-12-11T22:00:00.000Z',
-                  customerCompany: 'Ballerine Demo',
+                  customerCompany: 'MiKashBoks Demo',
                   __isGeneratedAutomatically: true,
                 },
               },

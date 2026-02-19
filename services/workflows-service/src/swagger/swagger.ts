@@ -29,35 +29,28 @@ class SwaggerSingleton {
     }
 
     const swaggerDocBuilder = new DocumentBuilder()
-      .setTitle('Ballerine Backend API')
+      .setTitle('MiKashBoks Identity Workflows API')
       .setDescription(
-        "Ballerine's Workflows API is an open-source solution designed to democratize access to enterprise-grade risk management systems in the fintech sector. This API offers a comprehensive suite of tools for efficient workflow automation, sophisticated data management, and detailed transaction analysis. Financial institutions companies to streamline their risk operations, leveraging advanced functionalities like customizable workflow definitions, user and business data processing, and integrative transaction handling. The API facilitates a standardized, yet flexible approach to managing financial risks, ensuring scalability and adaptability. It serves as a foundational platform for fintech companies aiming to enhance their operational efficiency and compliance with evolving regulatory landscapes.",
+        "MiKashBoks Identity Workflows API provides KYC/KYB verification workflow orchestration, case management, and decision automation for West African financial services. Built on top of the Ballerine open-source workflow engine.",
       )
       .setVersion('1.3.10')
-      .setTermsOfService('https://www.ballerine.com/terms-of-service')
-      .setContact('Ballerine', 'https://ballerine.com', 'support@ballerine.com')
+      .setContact('MiKashBoks', 'https://mikashboks.com', 'support@mikashboks.com')
       .setBasePath('api/v1')
-      .setExternalDoc('Ballerine Website', 'https://ballerine.com')
-      .setExternalDoc('Ballerine API Documentation', 'https://docs.ballerine.com')
-      .setExternalDoc('Ballerine Github Page', 'https://github.com/ballerine-io/ballerine')
+      .setExternalDoc('MiKashBoks Documentation', 'https://mikashboks.com')
       .addBearerAuth();
 
     if (env.ENVIRONMENT_NAME === 'local') {
       swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
-      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
+      swaggerDocBuilder.addServer(`https://api.verify-dev.mikashboksapis.com`, 'Development Server');
     }
 
     if (env.ENVIRONMENT_NAME === 'development') {
-      swaggerDocBuilder.addServer(`https://api-dev.ballerine.io`, 'Development Server');
+      swaggerDocBuilder.addServer(`https://api.verify-dev.mikashboksapis.com`, 'Development Server');
     }
 
     if (env.ENVIRONMENT_NAME === 'production') {
-      swaggerDocBuilder.addServer(`https://api.ballerine.app`, 'Production Server');
+      swaggerDocBuilder.addServer(`https://api.verify.mikashboksapis.com`, 'Production Server');
     }
-
-    swaggerDocBuilder.addServer(`https://api-sb.ballerine.app`, 'Sandbox Server');
-
-    swaggerDocBuilder.addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server');
 
     const swaggerDocumentOptions = swaggerDocBuilder.build();
 

@@ -28,8 +28,8 @@ export const useSelectEntityOnMount = () => {
 
   useEffect(() => {
     if (caseId || (!firstCaseId && !prevCaseId)) {
-return;
-}
+      return;
+    }
 
     onSelectEntity(prevCaseId || firstCaseId)();
   }, [entity, firstCaseId, caseId, onSelectEntity, prevCaseId]);

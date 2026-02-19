@@ -68,9 +68,7 @@ export class CustomerService {
       );
 
       if (env.SYNC_UNIFIED_API) {
-        await retry(() =>
-          new UnifiedApiClient().createCustomer(customer, customer.name),
-        );
+        await retry(() => new UnifiedApiClient().createCustomer(customer, customer.name));
       }
 
       void this.analyticsService.trackSafe({
@@ -112,9 +110,7 @@ export class CustomerService {
       )) as unknown as TCustomerWithFeatures;
 
       if (env.SYNC_UNIFIED_API) {
-        await retry(() =>
-          new UnifiedApiClient().updateCustomer(id, customer, customer.name),
-        );
+        await retry(() => new UnifiedApiClient().updateCustomer(id, customer, customer.name));
       }
 
       return customer;

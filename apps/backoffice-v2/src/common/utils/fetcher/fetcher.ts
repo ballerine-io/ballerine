@@ -41,8 +41,8 @@ export const fetcher: IFetcher = async ({
   );
 
   if (timeoutRef) {
-clearTimeout(timeoutRef);
-}
+    clearTimeout(timeoutRef);
+  }
 
   if (fetchError) {
     console.error(fetchError);

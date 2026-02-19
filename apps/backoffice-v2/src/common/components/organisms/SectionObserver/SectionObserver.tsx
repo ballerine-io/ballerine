@@ -48,8 +48,8 @@ export const SectionObserver = <TSection extends Section>({
       const now = Date.now();
 
       if (now - lastScrollTime.current < 100) {
-return;
-}
+        return;
+      }
 
       lastScrollTime.current = now;
       const viewportHeight = window.innerHeight;
@@ -87,11 +87,10 @@ return;
             const newId = bottomSections.at(0)?.id;
 
             if (newId) {
-setActiveSection(newId);
-}
+              setActiveSection(newId);
+            }
 
-            
-return;
+            return;
           }
         }
 
@@ -99,11 +98,10 @@ return;
           const newActive = sections[sections.length - 1]?.id;
 
           if (newActive) {
-setActiveSection(newActive);
-}
+            setActiveSection(newActive);
+          }
 
-          
-return;
+          return;
         }
       }
 
@@ -123,11 +121,10 @@ return;
         const newId = topSections.at(0)?.id;
 
         if (newId) {
-setActiveSection(newId);
-}
+          setActiveSection(newId);
+        }
 
-        
-return;
+        return;
       }
 
       const visibleSections = sectionEntries
@@ -147,19 +144,18 @@ return;
         const newId = visibleSections.at(0)?.id;
 
         if (newId) {
-setActiveSection(newId);
-}
+          setActiveSection(newId);
+        }
 
-        
-return;
+        return;
       }
 
       if (scrollPosition < 50 && sections.length > 0) {
         const newId = sections.at(0)?.id;
 
         if (newId) {
-setActiveSection(newId);
-}
+          setActiveSection(newId);
+        }
       }
     };
 
@@ -177,8 +173,8 @@ setActiveSection(newId);
 
   useEffect(() => {
     if (onActiveSectionChange) {
-onActiveSectionChange(activeSection);
-}
+      onActiveSectionChange(activeSection);
+    }
   }, [activeSection, onActiveSectionChange]);
 
   const handleSidebarToggle = () => {
@@ -186,8 +182,8 @@ onActiveSectionChange(activeSection);
     setIsSidebarOpen(newState);
 
     if (onSidebarToggle) {
-onSidebarToggle(newState);
-}
+      onSidebarToggle(newState);
+    }
   };
 
   return (

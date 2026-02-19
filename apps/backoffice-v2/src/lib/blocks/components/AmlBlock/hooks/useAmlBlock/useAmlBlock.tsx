@@ -25,8 +25,8 @@ export const useAmlBlock = ({
 
     return data.flatMap(aml => {
       if (!aml || !Object.keys(aml ?? {}).length) {
-return [];
-}
+        return [];
+      }
 
       const { totalMatches, fullReport, dateOfCheck, matches } = amlAdapter(aml);
 

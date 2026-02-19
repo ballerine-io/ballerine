@@ -8,5 +8,3 @@ import { ComponentPropsWithoutRef, FunctionComponent } from 'react';
 export const MiKashBoksLogo: FunctionComponent<ComponentPropsWithoutRef<'img'>> = props => {
   return <img src="/images/mikashboks-logo-horizontal.svg" alt="MiKashBoks" {...props} />;
 };
-
-export const BallerineLogo = MiKashBoksLogo;

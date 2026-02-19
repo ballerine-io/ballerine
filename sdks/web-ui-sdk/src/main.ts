@@ -15,7 +15,7 @@ export const flows: BallerineSDKFlows = {
   init: config => {
     return new Promise((resolve, reject) => {
       console.log(
-        'BallerineSDK: Initializing BallerineSDK with version: ',
+        'MiKashBoksSDK: Initializing with version: ',
         __APP_VERSION__,
         config,
       );

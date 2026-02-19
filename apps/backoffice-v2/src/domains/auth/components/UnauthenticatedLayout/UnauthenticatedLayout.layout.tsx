@@ -8,8 +8,8 @@ export const UnauthenticatedLayout: FunctionComponent = () => {
     useUnauthenticatedLayoutLogic();
 
   if (isLoading) {
-return <FullScreenLoader />;
-}
+    return <FullScreenLoader />;
+  }
 
   if (shouldRedirect) {
     return (

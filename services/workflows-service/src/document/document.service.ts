@@ -916,7 +916,7 @@ export class DocumentService {
           document: expectedDoc,
           entity,
         },
-      } satisfies z.output<typeof DocumentTrackerDocumentSchema>);
+      }) satisfies z.output<typeof DocumentTrackerDocumentSchema>;
 
     const result: z.output<typeof DocumentTrackerResponseSchema> = {
       business: parsedUIDocuments.business.map(expectedDoc => {
@@ -1197,26 +1197,29 @@ export class DocumentService {
   }
 
   getLatestDocumentVersions(documents: Document[]) {
-    const documentsByType = documents.reduce((acc, document) => {
-      const documentId = document.businessId
-        ? getDocumentId(
-            {
-              type: document.type,
-              category: document.category,
-              issuingCountry: document.issuingCountry,
-            },
-            false,
-          )
-        : `${document.endUserId}-${document.type}-${document.category}-${document.issuingCountry}`;
+    const documentsByType = documents.reduce(
+      (acc, document) => {
+        const documentId = document.businessId
+          ? getDocumentId(
+              {
+                type: document.type,
+                category: document.category,
+                issuingCountry: document.issuingCountry,
+              },
+              false,
+            )
+          : `${document.endUserId}-${document.type}-${document.category}-${document.issuingCountry}`;
 
-      if (!acc[documentId]) {
-        acc[documentId] = [];
-      }
+        if (!acc[documentId]) {
+          acc[documentId] = [];
+        }
 
-      acc[documentId]?.push(document);
+        acc[documentId]?.push(document);
 
-      return acc;
-    }, {} as Record<string, Document[]>);
+        return acc;
+      },
+      {} as Record<string, Document[]>,
+    );
 
     return Object.values(documentsByType).map(docs => {
       return docs.reduce((acc, curr) => {

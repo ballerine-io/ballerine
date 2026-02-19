@@ -9,7 +9,7 @@
 @tailwind utilities;
 
 @layer utilities {
-  .ring-ballerine {
+  .ring-primary-focus {
     @apply outline-none ring-2 ring-primary;
   }
 

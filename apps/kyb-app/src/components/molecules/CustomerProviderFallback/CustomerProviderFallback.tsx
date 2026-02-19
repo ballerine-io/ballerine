@@ -31,7 +31,7 @@ export const CustomerProviderFallback: FallbackComponent = ({ statusCode }) => {
     <AppErrorScreen
       title={`Failed to load application information.`}
       description={
-        <p className="text-muted-foreground opacity-50">Please contact support@example.com.</p>
+        <p className="text-muted-foreground opacity-50">Please contact support@mikashboks.com.</p>
       }
     />
   );

@@ -17,8 +17,8 @@ const decodeJwtExpMs = (jwt: string): number | null => {
   const parts = jwt.split('.');
 
   if (parts.length < 2) {
-return null;
-}
+    return null;
+  }
 
   const payloadB64 = parts[1]!.replace(/-/g, '+').replace(/_/g, '/');
   const padded = payloadB64.padEnd(Math.ceil(payloadB64.length / 4) * 4, '=');
@@ -29,11 +29,10 @@ return null;
     };
 
     if (!payload.exp) {
-return null;
-}
+      return null;
+    }
 
-    
-return payload.exp * 1000;
+    return payload.exp * 1000;
   } catch {
     return null;
   }
@@ -42,14 +41,14 @@ return payload.exp * 1000;
 export const getGcpIdToken = async (audience: string): Promise<string | null> => {
   // Cloud Run sets K_SERVICE; avoid metadata calls in local/dev and other runtimes.
   if (!process.env.K_SERVICE) {
-return null;
-}
+    return null;
+  }
 
   const cached = cache.get(audience);
 
   if (cached && Date.now() < cached.expMs - 60_000) {
-return cached.token;
-}
+    return cached.token;
+  }
 
   const url = new URL(
     'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity',
@@ -66,8 +65,8 @@ return cached.token;
       console.warn(
         `[getGcpIdToken] Metadata server returned ${res.status} for audience=${audience}`,
       );
-      
-return null;
+
+      return null;
     }
 
     const token = await res.text();
@@ -77,7 +76,7 @@ return null;
     return token;
   } catch (err) {
     console.warn('[getGcpIdToken] Failed to fetch ID token from metadata server', err);
-    
-return null;
+
+    return null;
   }
 };

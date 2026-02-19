@@ -4,8 +4,8 @@ export const unauthenticatedLayoutLoader: LoaderFunction = async ({ request }) =
   const url = new URL(request.url);
 
   if (url.pathname === `/en/auth/sign-in`) {
-return null;
-}
+    return null;
+  }
 
   return redirect(`/en/auth/sign-in`);
 };

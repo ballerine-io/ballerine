@@ -89,7 +89,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
             <p>
               This feature is not available for trial accounts.
               <br />
-              Talk to us to get full access
+              Contact support@mikashboks.com to get full access
             </p>
           }
           props={{
@@ -124,7 +124,7 @@ export const BusinessReportOptionsDropdown: FunctionComponent<
             <p>
               This feature is not available for trial accounts.
               <br />
-              Talk to us to get full access
+              Contact support@mikashboks.com to get full access
             </p>
           }
           props={{

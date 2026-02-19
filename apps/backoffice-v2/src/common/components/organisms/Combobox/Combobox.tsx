@@ -43,10 +43,7 @@ export const Combobox = forwardRef<ElementRef<typeof CommandInput>, IComboboxPro
               )}
               <ChevronsUpDown
                 {...props?.chevronsUpDown}
-                className={ctw(
-                  'ml-2 size-4 shrink-0 opacity-50',
-                  props?.chevronsUpDown?.className,
-                )}
+                className={ctw('ml-2 size-4 shrink-0 opacity-50', props?.chevronsUpDown?.className)}
               />
             </Button>
           </PopoverTrigger>

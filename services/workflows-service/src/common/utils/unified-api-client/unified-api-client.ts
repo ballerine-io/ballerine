@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
 import { createHash } from 'crypto';
 import { env } from '@/env';
 import {
@@ -18,6 +19,7 @@ import { FEATURE_LIST, TCustomerWithFeatures } from '@/customer/types';
 import { TCustomerConfig } from '@/customer/schemas/zod-schemas';
 import { UpdateableAssessmentStatus } from '@ballerine/common';
 import { isType } from '@ballerine/common';
+import stableStringify from 'json-stable-stringify';
 import z from 'zod';
 import { getGcpIdToken } from '@/common/utils/gcp-id-token';
 
@@ -119,6 +121,21 @@ export class UnifiedApiClient {
       },
     });
 
+    // Retry transient failures (network errors, 429, 5xx) with exponential backoff.
+    axiosRetry(this.axiosInstance, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay, // ~100ms, ~200ms, ~400ms (jittered)
+      retryCondition: err =>
+        axiosRetry.isNetworkOrIdempotentRequestError(err) ||
+        err.response?.status === 429 ||
+        (err.response?.status !== undefined && err.response.status >= 500),
+      onRetry: (retryCount, error) => {
+        this.logger.warn(
+          `[UnifiedApiClient] Retry #${retryCount}: ${error.config?.method?.toUpperCase()} ${error.config?.url} — ${error.message}`,
+        );
+      },
+    });
+
     // In Cloud Run, Unified API is protected by IAM; attach an ID token per request.
     // Local/dev keeps using UNIFIED_API_TOKEN (app-level auth) without metadata calls.
     //
@@ -168,7 +185,7 @@ export class UnifiedApiClient {
   }
 
   private buildIdempotencyKey(input: Record<string, unknown>): string {
-    const payload = JSON.stringify(input);
+    const payload = stableStringify(input) ?? '';
     const digest = createHash('sha256').update(payload).digest('hex');
     return `kyc-${digest}`;
   }

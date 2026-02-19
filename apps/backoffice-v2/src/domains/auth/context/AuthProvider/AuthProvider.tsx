@@ -43,8 +43,8 @@ export const AuthProvider: FunctionComponentWithChildren = ({ children }) => {
 
   // Don't render the children to avoid a flash of wrong state (i.e. authenticated layout).
   if (isLoading && env.VITE_AUTH_ENABLED) {
-return <FullScreenLoader />;
-}
+    return <FullScreenLoader />;
+  }
 
   return <AuthContext.Provider value={contextValues}>{children}</AuthContext.Provider>;
 };

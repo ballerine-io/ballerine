@@ -35,11 +35,9 @@ applyFormats();
 global.__rootdir__ = __dirname || process.cwd();
 
 const devOrigins = [
-  /\.ballerine\.dev$/,
-  /\.ballerine\.io$/,
+  /\.mikashboks\.com$/,
+  /\.mikashboksapis\.com$/,
   /^http:\/\/localhost:\d+$/,
-  'api-dev.eu.ballerine.io',
-  'api-dev.ballerine.io',
 ];
 
 const corsOrigins = [
@@ -47,9 +45,7 @@ const corsOrigins = [
   ...env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
   ...env.KYB_EXAMPLE_CORS_ORIGIN,
   ...(env.KYC_EXAMPLE_CORS_ORIGIN ?? []),
-  'api-sb.eu.ballerine.app',
-  'api-sb.ballerine.app',
-  /\.ballerine\.app$/,
+  /\.mikashboksapis\.com$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
 
@@ -97,10 +93,7 @@ const main = async () => {
           defaultSrc: ["'self'"],
           connectSrc: [
             "'self'",
-            'https://api-dev.ballerine.io',
-            'https://api-sb.ballerine.app',
-            'https://api-sb.eu.ballerine.app',
-            'https://api-dev.eu.ballerine.io',
+            'https://*.mikashboksapis.com',
           ],
         },
       },

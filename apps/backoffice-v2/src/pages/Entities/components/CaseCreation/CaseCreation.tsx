@@ -44,7 +44,7 @@ export const CaseCreation = withCaseCreation(() => {
             <TooltipContent align="center" side="top" hidden={!isDemoAccount}>
               This feature is not available for trial accounts.
               <br />
-              Talk to us to get full access.
+              Contact support@mikashboks.com to get full access.
             </TooltipContent>
           </Tooltip>
         </div>

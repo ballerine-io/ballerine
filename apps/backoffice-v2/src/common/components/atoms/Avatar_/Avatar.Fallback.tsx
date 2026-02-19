@@ -8,10 +8,7 @@ export const AvatarFallback = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AvatarPrimitive.Fallback
     ref={ref}
-    className={ctw(
-      'flex size-full items-center justify-center rounded-full bg-muted',
-      className,
-    )}
+    className={ctw('flex size-full items-center justify-center rounded-full bg-muted', className)}
     {...props}
   >
     {children}
