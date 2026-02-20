@@ -192,10 +192,13 @@ const main = async () => {
     res.status(HttpStatus.NO_CONTENT).send();
   };
 
-  app.get('/_health/live', handleLegacyHealthLive);
-  app.get('/_health/ready', handleLegacyHealthReady);
-  app.get('/api/_health/live', handleLegacyHealthLive);
-  app.get('/api/_health/ready', handleLegacyHealthReady);
+  // Register legacy health-check routes on the raw Express instance
+  // (NestJS app.get() is the DI container lookup, not Express route binding)
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.get('/_health/live', handleLegacyHealthLive);
+  expressApp.get('/_health/ready', handleLegacyHealthReady);
+  expressApp.get('/api/_health/live', handleLegacyHealthLive);
+  expressApp.get('/api/_health/ready', handleLegacyHealthReady);
 
   app.enableShutdownHooks();
 
