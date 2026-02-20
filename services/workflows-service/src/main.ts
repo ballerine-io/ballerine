@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { HttpStatus, ValidationPipe, VersioningType } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helmet types
 import helmet from 'helmet';
@@ -18,6 +18,7 @@ import { AppLoggerService } from './common/app-logger/app-logger.service';
 import { exceptionValidationFactory } from './errors';
 import swagger from '@/swagger/swagger';
 import { applyFormats, patchNestJsSwagger } from 'ballerine-nestjs-typebox';
+import { HealthService } from './health/health.service';
 import {
   getEnvWebhookSharedSecret,
   isPlaceholderWebhookSharedSecret,
@@ -171,6 +172,30 @@ const main = async () => {
   });
 
   swagger.initialize(app);
+
+  const healthService = app.get(HealthService);
+  const handleLegacyHealthReady = async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const [dbReady, redisReady] = await Promise.all([
+        healthService.isDbReady(),
+        healthService.isRedisReady(),
+      ]);
+      const readyStatus = dbReady && redisReady ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND;
+      res.status(readyStatus).send();
+    } catch (error) {
+      logger.error('Legacy health check failed', { error });
+      res.status(HttpStatus.NOT_FOUND).send();
+    }
+  };
+
+  const handleLegacyHealthLive = (_req: Request, res: Response): void => {
+    res.status(HttpStatus.NO_CONTENT).send();
+  };
+
+  app.get('/_health/live', handleLegacyHealthLive);
+  app.get('/_health/ready', handleLegacyHealthReady);
+  app.get('/api/_health/live', handleLegacyHealthLive);
+  app.get('/api/_health/ready', handleLegacyHealthReady);
 
   app.enableShutdownHooks();
 
