@@ -32,6 +32,7 @@ export const Steps = {
   Loading: 'loading',
   Resubmission: 'resubmission',
   Decline: 'decline',
+  ManualReview: 'manual-review',
   Error: 'error',
 } as const;
 

@@ -70,13 +70,14 @@
 
     showText = false;
 
-    if (
-      response.idvResult === DecisionStatus.DECLINED ||
-      response.idvResult === DecisionStatus.REVIEW
-    ) {
+    if (response.idvResult === DecisionStatus.DECLINED) {
       $currentParams = params;
       await preloadStepById($configuration, configuration, 'decline', flowName);
       $currentStepId = 'decline';
+    } else if (response.idvResult === DecisionStatus.REVIEW) {
+      $currentParams = params;
+      await preloadStepById($configuration, configuration, 'manual-review', flowName);
+      $currentStepId = 'manual-review';
     } else if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
       // Resolve the smart re-entry target step from the reason code
       const reason = typeof response.reasonCode === 'string' ? response.reasonCode : '';
@@ -112,15 +113,15 @@
       sendVerificationUpdateEvent(response, response.idvResult === DecisionStatus.APPROVED);
 
       showText = false;
-      if (
-        response.idvResult === DecisionStatus.DECLINED ||
-        response.idvResult === DecisionStatus.REVIEW
-      ) {
+      if (response.idvResult === DecisionStatus.DECLINED) {
         $currentParams = params;
         await preloadStepById($configuration, configuration, 'decline', flowName);
         $currentStepId = 'decline';
-      }
-      if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
+      } else if (response.idvResult === DecisionStatus.REVIEW) {
+        $currentParams = params;
+        await preloadStepById($configuration, configuration, 'manual-review', flowName);
+        $currentStepId = 'manual-review';
+      } else if (response.idvResult === DecisionStatus.RESUBMISSION_REQUESTED) {
         const reason = typeof response.reasonCode === 'string' ? response.reasonCode : '';
         const targetStepId = REASON_TARGET_STEP[reason] || undefined;
         const hasDocSelection = $configuration.flows?.['mikashboks-kyc']?.steps?.some(
@@ -133,8 +134,12 @@
         $currentParams = { ...params, targetStepId: resolvedTarget } as ISelectedParams;
         await preloadStepById($configuration, configuration, 'resubmission', flowName);
         $currentStepId = 'resubmission';
-      }
-      if (response.idvResult === DecisionStatus.APPROVED) {
+      } else if (response.idvResult === DecisionStatus.APPROVED) {
+        $currentParams = params;
+        await preloadStepById($configuration, configuration, 'final', flowName);
+        $currentStepId = 'final';
+      } else {
+        // Unexpected status — treat as completed to avoid stuck loading screen
         $currentParams = params;
         await preloadStepById($configuration, configuration, 'final', flowName);
         $currentStepId = 'final';
@@ -194,8 +199,8 @@
 
     timeout = setTimeout(async () => {
       showText = false;
-      await preloadStepById($configuration, configuration, 'decline', flowName);
-      $currentStepId = 'decline';
+      await preloadStepById($configuration, configuration, 'error', flowName);
+      $currentStepId = 'error';
     }, WAITING_TIME);
   });
 
@@ -215,8 +220,9 @@
       <div class="text-container">
         <FlyingText
           texts={[
-            { text: t('loader', 'text-one'), startTime: 10, endTime: 5000 },
-            { text: t('loader', 'text-two'), startTime: 6000, endTime: 'infinity' },
+            { text: t('loader', 'text-one'), startTime: 10, endTime: 7000 },
+            { text: t('loader', 'text-two'), startTime: 8000, endTime: 25000 },
+            { text: t('loader', 'text-three'), startTime: 26000, endTime: 'infinity' },
           ]}
         />
       </div>

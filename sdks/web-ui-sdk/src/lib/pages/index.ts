@@ -14,4 +14,5 @@ export { default as CheckSelfie } from './CheckSelfie.svelte';
 export { default as Loading } from './Loading.svelte';
 export { default as Resubmission } from './Resubmission.svelte';
 export { default as Decline } from './Decline.svelte';
+export { default as ManualReview } from './ManualReview.svelte';
 export { default as ErrorPage } from './ErrorPage.svelte';

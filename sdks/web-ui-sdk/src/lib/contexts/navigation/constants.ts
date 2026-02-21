@@ -15,6 +15,7 @@ import {
   Loading,
   Resubmission,
   Decline,
+  ManualReview,
   ErrorPage,
 } from '../../pages';
 
@@ -49,6 +50,7 @@ export const steps = [
     type: 'no-flow-part',
   },
   { name: Steps.Decline, component: Decline, type: 'no-flow-part' },
+  { name: Steps.ManualReview, component: ManualReview, type: 'no-flow-part' },
   { name: Steps.Error, component: ErrorPage, type: 'no-flow-part' },
   { name: Steps.Final, component: Final, type: 'no-flow-part' },
 ];

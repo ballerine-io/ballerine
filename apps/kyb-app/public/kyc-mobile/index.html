@@ -1,921 +1,1030 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
-    />
-    <meta name="theme-color" content="#1a1a2e" />
-    <meta name="referrer" content="no-referrer" />
-    <title>MiKashBoks – Identity Verification</title>
-    <!-- Runtime config injected by entrypoint.sh (VITE_API_URL, etc.) -->
-    <script type="text/javascript" src="/kyc-mobile/config.js"></script>
-    <!-- MiKashBoks Web UI SDK runtime -->
-    <script crossorigin src="/kyc-mobile/ballerine-sdk.umd.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
 
-      html,
-      body {
-        height: 100%;
-        font-family: 'Inter', -apple-system, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="referrer" content="no-referrer" />
+  <title>MiKashBoks – Identity Verification</title>
+  <!-- Runtime config injected by entrypoint.sh (VITE_API_URL, etc.) -->
+  <script type="text/javascript" src="/kyc-mobile/config.js"></script>
+  <!-- MiKashBoks Web UI SDK runtime -->
+  <script crossorigin src="/kyc-mobile/ballerine-sdk.umd.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      body {
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
+    html,
+    body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
 
-      #kyc-host {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-      .init-message {
-        text-align: center;
-        padding: 40px 20px;
-        line-height: 1.5;
-      }
+    #kyc-host {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-      .init-message.error {
-        color: #ef4444;
-      }
+    .init-message {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
 
-      .init-message.muted {
-        color: #64748b;
-      }
+    .init-message.error {
+      color: #ef4444;
+    }
 
-      .init-loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        gap: 16px;
-      }
+    .init-message.muted {
+      color: #64748b;
+    }
 
-      .init-loading .spinner {
-        width: 36px;
-        height: 36px;
-        border: 3px solid #e2e8f0;
-        border-top-color: #7b15ff;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
+    .init-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+    }
 
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+    .init-loading .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #7b15ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
 
-      .offline-banner {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: #ef4444;
-        color: white;
-        padding: 12px;
-        text-align: center;
-        z-index: 9999;
-        font-size: 14px;
-        font-weight: 500;
-        display: none;
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
+    }
 
-      .offline-banner.visible {
-        display: block;
-      }
+    .offline-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ef4444;
+      color: white;
+      padding: 12px;
+      text-align: center;
+      z-index: 9999;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+    }
 
-      .status-wrap {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-      }
+    .offline-banner.visible {
+      display: block;
+    }
 
-      .status-card {
-        width: min(92vw, 520px);
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 22px;
-        box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
-      }
+    .status-wrap {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
 
-      .status-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 8px;
-      }
+    .status-card {
+      width: min(92vw, 520px);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
+    }
 
-      .status-body {
-        font-size: 14px;
-        line-height: 1.5;
-        color: #475569;
-        margin-bottom: 14px;
-      }
+    .status-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
 
-      .status-meta {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 12px;
-      }
+    .status-body {
+      font-size: 18px;
+      line-height: 1.65;
+      color: #475569;
+      margin-bottom: 16px;
+    }
 
-      .status-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 16px;
-      }
+    .status-meta {
+      font-size: 15px;
+      color: #64748b;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
 
-      .status-btn {
-        flex: 1;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-weight: 600;
-        cursor: pointer;
-      }
+    .status-next-steps {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-top: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #334155;
+    }
 
-      .status-btn.primary {
-        background: #7b15ff;
-        color: #ffffff;
-      }
+    .status-next-steps strong {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #0f172a;
+    }
 
-      .status-btn.secondary {
-        background: #e2e8f0;
-        color: #0f172a;
-      }
+    .status-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
 
-      .status-spinner {
-        width: 22px;
-        height: 22px;
-        border: 3px solid #e2e8f0;
-        border-top-color: #7b15ff;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        display: inline-block;
-        vertical-align: -5px;
-        margin-right: 10px;
-      }
+    .status-btn {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-      /* Use more of the viewport on preview/check steps while keeping proportions. */
-      #kyc-host #blrn-app img[alt='result'] {
-        width: min(94vw, 520px) !important;
-        max-height: 58vh !important;
-        object-fit: contain !important;
-      }
+    .status-btn.primary {
+      background: #7b15ff;
+      color: #ffffff;
+    }
 
-      #kyc-host #blrn-app .overlay.card {
-        width: min(94vw, 520px) !important;
-      }
+    .status-btn.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
 
-      #kyc-host #blrn-app .overlay.passport {
-        width: min(86vw, 420px) !important;
-        max-height: 86% !important;
-      }
+    .status-spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #7b15ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: -5px;
+      margin-right: 10px;
+    }
 
-      #kyc-host #blrn-app .overlay.selfie {
-        width: min(80vw, 360px) !important;
-        max-height: 82% !important;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="offline-banner" class="offline-banner" role="alert" aria-live="assertive">
-      You are offline. Please check your internet connection.
+    /* Use more of the viewport on preview/check steps while keeping proportions. */
+    #kyc-host #blrn-app img[alt='result'] {
+      width: min(94vw, 520px) !important;
+      max-height: 58vh !important;
+      object-fit: contain !important;
+    }
+
+    #kyc-host #blrn-app .overlay.card {
+      width: min(94vw, 520px) !important;
+    }
+
+    #kyc-host #blrn-app .overlay.passport {
+      width: min(86vw, 420px) !important;
+      max-height: 86% !important;
+    }
+
+    #kyc-host #blrn-app .overlay.selfie {
+      width: min(80vw, 360px) !important;
+      max-height: 82% !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="offline-banner" class="offline-banner" role="alert" aria-live="assertive">
+    You are offline. Please check your internet connection.
+  </div>
+  <div id="kyc-host">
+    <div class="init-loading">
+      <div class="spinner"></div>
+      <span style="color: #64748b; font-size: 14px">Starting verification...</span>
     </div>
-    <div id="kyc-host">
-      <div class="init-loading">
-        <div class="spinner"></div>
-        <span style="color: #64748b; font-size: 14px">Starting verification...</span>
-      </div>
-    </div>
+  </div>
 
-    <script>
-      // ── Configuration ──
-      var params = new URLSearchParams(window.location.search);
-      var TOKEN = params.get('token') || '';
-      var preselectedDocType = params.get('docType');
-      var initRetryAttempted = false;
+  <script>
+    // ── Configuration ──
+    var params = new URLSearchParams(window.location.search);
+    var TOKEN = params.get('token') || '';
+    var preselectedDocType = params.get('docType');
+    var initRetryAttempted = false;
 
-      // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
-      // Security: NEVER allow apiUrl override from query params (prevents credential theft)
-      var rawBase =
-        (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) || '';
-      var apiBase = rawBase.replace(/\/+$/, '');
-      // If config.js didn't provide an absolute API URL, derive it from the current host.
-      // The kyb-app runs on onboard.verify.X — the API runs on api.verify.X.
-      if (!apiBase.startsWith('http')) {
-        apiBase = window.location.origin.replace(/^(https?:\/\/)onboard\./, '$1api.') + '/api/v1';
-        console.warn('VITE_API_URL not configured; derived API base from origin:', apiBase);
+    // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
+    // Security: NEVER allow apiUrl override from query params (prevents credential theft)
+    var rawBase =
+      (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) || '';
+    var apiBase = rawBase.replace(/\/+$/, '');
+    // If config.js didn't provide an absolute API URL, derive it from the current host.
+    // The kyb-app runs on onboard.verify.X — the API runs on api.verify.X.
+    if (!apiBase.startsWith('http')) {
+      apiBase = window.location.origin.replace(/^(https?:\/\/)onboard\./, '$1api.') + '/api/v1';
+      console.warn('VITE_API_URL not configured; derived API base from origin:', apiBase);
+    }
+
+    // ── Valid document types ──
+    var VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
+    var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
+
+    // ── Document info for pre-selected type ──
+    // When doc type is pre-selected from Android, the document-selection step is skipped.
+    // We must set `type` and `documentInfo` on photo steps so the SDK knows which
+    // document overlay to show and whether a back-side photo is needed.
+    // Variant must match the SDK theme: passport = 'regular' (same as cards).
+    // 'a4' is only for full-page documents (business registrations, etc.).
+    var preselectedDocInfo = hasPreselectedDoc
+      ? {
+        type: preselectedDocType,
+        // Keep UI doc type specific, but normalize uploaded category for Unified API plugin mappings.
+        kind: 'proof_of_identity',
+        variant: 'regular',
+        backSide: preselectedDocType !== 'passport',
+        orderIndex: 0,
       }
+      : null;
 
-      // ── Valid document types ──
-      var VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
-      var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
-
-      // ── Document info for pre-selected type ──
-      // When doc type is pre-selected from Android, the document-selection step is skipped.
-      // We must set `type` and `documentInfo` on photo steps so the SDK knows which
-      // document overlay to show and whether a back-side photo is needed.
-      // Variant must match the SDK theme: passport = 'regular' (same as cards).
-      // 'a4' is only for full-page documents (business registrations, etc.).
-      var preselectedDocInfo = hasPreselectedDoc
-        ? {
-            type: preselectedDocType,
-            // Keep UI doc type specific, but normalize uploaded category for Unified API plugin mappings.
-            kind: 'proof_of_identity',
-            variant: 'regular',
-            backSide: preselectedDocType !== 'passport',
-            orderIndex: 0,
-          }
-        : null;
-
-      // ── Build flow steps ──
-      // Skip welcome + document-selection when doc type is pre-selected from Android
-      function buildSteps(usePreselectedDoc) {
-        var builtSteps = [];
-        if (!usePreselectedDoc) {
-          builtSteps.push(
-            {
-              name: 'welcome',
-              id: 'welcome',
-              elements: [{ id: 'list', type: 'list', orderIndex: 45, props: {} }],
-            },
-            {
-              name: 'document-selection',
-              id: 'document-selection',
-              documentOptions: [
-                { type: 'id_card', kind: 'proof_of_identity' },
-                { type: 'passport', kind: 'proof_of_identity' },
-                { type: 'voter_id', kind: 'proof_of_identity' },
-                { type: 'drivers_license', kind: 'proof_of_identity' },
-              ],
-            },
-          );
-        }
-
-        // Pass `type` and `documentInfo` on steps that need them when pre-selected.
-        // `type` → used by getDocumentType() to resolve the document overlay.
-        // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
-        //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
-        // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
+    // ── Build flow steps ──
+    // Skip welcome + document-selection when doc type is pre-selected from Android
+    function buildSteps(usePreselectedDoc) {
+      var builtSteps = [];
+      if (!usePreselectedDoc) {
         builtSteps.push(
           {
-            name: 'document-photo',
-            id: 'document-photo',
-            type: usePreselectedDoc ? preselectedDocType : undefined,
+            name: 'welcome',
+            id: 'welcome',
+            elements: [{ id: 'list', type: 'list', orderIndex: 45, props: {} }],
           },
           {
-            name: 'check-document',
-            id: 'check-document',
-            type: usePreselectedDoc ? preselectedDocType : undefined,
-            documentInfo: preselectedDocInfo,
+            name: 'document-selection',
+            id: 'document-selection',
+            documentOptions: [
+              { type: 'id_card', kind: 'proof_of_identity' },
+              { type: 'passport', kind: 'proof_of_identity' },
+              { type: 'voter_id', kind: 'proof_of_identity' },
+              { type: 'drivers_license', kind: 'proof_of_identity' },
+            ],
           },
-          {
-            name: 'document-photo-back-start',
-            id: 'document-photo-back-start',
-            documentInfo: preselectedDocInfo,
-          },
-          {
-            name: 'document-photo-back',
-            id: 'document-photo-back',
-            type: usePreselectedDoc ? preselectedDocType : undefined,
-          },
-          {
-            name: 'check-document-photo-back',
-            id: 'check-document-photo-back',
-            documentInfo: preselectedDocInfo,
-          },
-          { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
-          { name: 'selfie', id: 'selfie' },
-          { name: 'check-selfie', id: 'check-selfie' },
-          { name: 'loading', id: 'loading' },
-          { name: 'resubmission', id: 'resubmission' },
-          { name: 'decline', id: 'decline' },
-          { name: 'final', id: 'final' },
         );
-        return builtSteps;
       }
 
-      var steps = buildSteps(hasPreselectedDoc);
+      // Pass `type` and `documentInfo` on steps that need them when pre-selected.
+      // `type` → used by getDocumentType() to resolve the document overlay.
+      // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
+      //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
+      // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
+      builtSteps.push(
+        {
+          name: 'document-photo',
+          id: 'document-photo',
+          type: usePreselectedDoc ? preselectedDocType : undefined,
+        },
+        {
+          name: 'check-document',
+          id: 'check-document',
+          type: usePreselectedDoc ? preselectedDocType : undefined,
+          documentInfo: preselectedDocInfo,
+        },
+        {
+          name: 'document-photo-back-start',
+          id: 'document-photo-back-start',
+          documentInfo: preselectedDocInfo,
+        },
+        {
+          name: 'document-photo-back',
+          id: 'document-photo-back',
+          type: usePreselectedDoc ? preselectedDocType : undefined,
+        },
+        {
+          name: 'check-document-photo-back',
+          id: 'check-document-photo-back',
+          documentInfo: preselectedDocInfo,
+        },
+        { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
+        { name: 'selfie', id: 'selfie' },
+        { name: 'check-selfie', id: 'check-selfie' },
+        { name: 'loading', id: 'loading' },
+        { name: 'resubmission', id: 'resubmission' },
+        { name: 'decline', id: 'decline' },
+        { name: 'manual-review', id: 'manual-review' },
+        { name: 'error', id: 'error' },
+        { name: 'final', id: 'final' },
+      );
+      return builtSteps;
+    }
 
-      // ── Signal completion to Android WebView ──
-      // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
-      function signalCompletion(status, idvResult) {
-        var url = new URL('/kyc-mobile/done', window.location.origin);
-        url.searchParams.set('close', 'true');
-        url.searchParams.set('status', status);
-        if (idvResult) url.searchParams.set('idvResult', idvResult);
-        url.searchParams.set('sync', 'true');
-        window.location.href = url.toString();
+    // ── Server-driven step builder ──
+    // Maps config.kycSdkSteps (an array of SDK step name strings) from the
+    // workflow config to SDK step objects.  This is distinct from
+    // collectionFlow.state.steps which contains form-page names
+    // (personal_information, kyc_documents, etc.) — a different namespace.
+    // Falls back to buildSteps() when the config provides no step data.
+    function buildStepsFromConfig(stepNames, usePreselectedDoc) {
+      return stepNames.map(function (name) {
+        var step = { name: name, id: name };
+
+        // Enrich steps that need extra SDK props — mirrors buildSteps() enrichment
+        if (name === 'welcome') {
+          step.elements = [{ id: 'list', type: 'list', orderIndex: 45, props: {} }];
+        }
+        if (name === 'document-selection') {
+          step.documentOptions = [
+            { type: 'id_card', kind: 'proof_of_identity' },
+            { type: 'passport', kind: 'proof_of_identity' },
+            { type: 'voter_id', kind: 'proof_of_identity' },
+            { type: 'drivers_license', kind: 'proof_of_identity' },
+          ];
+        }
+        if (['document-photo', 'check-document', 'document-photo-back'].includes(name)) {
+          if (usePreselectedDoc) step.type = preselectedDocType;
+        }
+        if (
+          [
+            'check-document',
+            'document-photo-back-start',
+            'check-document-photo-back',
+            'selfie-start',
+          ].includes(name)
+        ) {
+          step.documentInfo = preselectedDocInfo;
+        }
+        return step;
+      });
+    }
+
+    // NOTE: `steps` is resolved after the workflow fetch (see below) so we can
+    // prefer config-driven steps from workflowData.config.kycSdkSteps.
+
+    // ── Signal completion to Android WebView ──
+    // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
+    function signalCompletion(status, idvResult, reasonCode) {
+      var url = new URL('/kyc-mobile/done', window.location.origin);
+      url.searchParams.set('close', 'true');
+      url.searchParams.set('status', status);
+      if (idvResult) url.searchParams.set('idvResult', idvResult);
+      if (reasonCode) url.searchParams.set('reasonCode', reasonCode);
+      url.searchParams.set('sync', 'true');
+      window.location.href = url.toString();
+    }
+
+    function escapeHtml(input) {
+      return String(input || '').replace(/[&<>"']/g, function (ch) {
+        return (
+          {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+          }[ch] || ch
+        );
+      });
+    }
+
+    function setHostHtml(html) {
+      var host = document.getElementById('kyc-host');
+      if (host) host.innerHTML = html;
+    }
+
+    function renderStatusCard(options) {
+      var title = options && options.title ? String(options.title) : '';
+      var body = options && options.body ? String(options.body) : '';
+      var meta = options && options.meta ? String(options.meta) : '';
+      var nextSteps = options && options.nextSteps ? String(options.nextSteps) : '';
+      var showSpinner = Boolean(options && options.showSpinner);
+
+      var primaryLabel = options && options.primaryLabel ? String(options.primaryLabel) : 'Close';
+      var secondaryLabel =
+        options && options.secondaryLabel ? String(options.secondaryLabel) : '';
+
+      setHostHtml(
+        '<div class="status-wrap">' +
+        '<div class="status-card">' +
+        '<div class="status-title">' +
+        escapeHtml(title) +
+        '</div>' +
+        '<div class="status-body">' +
+        (showSpinner ? '<span class="status-spinner"></span>' : '') +
+        escapeHtml(body) +
+        '</div>' +
+        (meta ? '<div class="status-meta">' + escapeHtml(meta) + '</div>' : '') +
+        (nextSteps ? '<div class="status-next-steps"><strong>What happens next?</strong>' + escapeHtml(nextSteps) + '</div>' : '') +
+        '<div class="status-actions">' +
+        (secondaryLabel
+          ? '<button id="status-secondary" class="status-btn secondary" type="button">' +
+          escapeHtml(secondaryLabel) +
+          '</button>'
+          : '') +
+        '<button id="status-primary" class="status-btn primary" type="button">' +
+        escapeHtml(primaryLabel) +
+        '</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>',
+      );
+
+      var primaryBtn = document.getElementById('status-primary');
+      if (primaryBtn && options && typeof options.onPrimary === 'function') {
+        primaryBtn.addEventListener('click', options.onPrimary);
       }
 
-      function escapeHtml(input) {
-        return String(input || '').replace(/[&<>"']/g, function (ch) {
-          return (
-            {
-              '&': '&amp;',
-              '<': '&lt;',
-              '>': '&gt;',
-              '"': '&quot;',
-              "'": '&#39;',
-            }[ch] || ch
-          );
+      var secondaryBtn = document.getElementById('status-secondary');
+      if (secondaryBtn && options && typeof options.onSecondary === 'function') {
+        secondaryBtn.addEventListener('click', options.onSecondary);
+      }
+    }
+
+    // ── Resubmission reason taxonomy ──
+    // Maps server reason codes to user-facing messages (preserved from legacy implementation)
+    var RESUBMISSION_REASONS = {
+      DOCUMENT_BLURRY:
+        'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
+      DOCUMENT_OBSCURED:
+        'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
+      DOCUMENT_EXPIRED:
+        'The document you submitted has expired. Please use a valid, unexpired document.',
+      FACE_NOT_VISIBLE:
+        'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+      FACE_MISMATCH:
+        'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+      DOCUMENT_BACK_MISSING: 'We need a photo of the back of your document. Please capture it.',
+      DOCUMENT_TYPE_UNSUPPORTED:
+        'The document type you submitted is not accepted. Please choose a different document.',
+      GENERIC: 'There was an issue with your submission. Please try again.',
+    };
+
+    // Map free-text revision reasons from MiKashBoks backoffice to structured codes
+    function mapRevisionReasonToCode(revisionReason) {
+      if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
+      var lower = revisionReason.toLowerCase();
+      if (/blur|unclear|quality|unreadable|sharp|focus/.test(lower)) return 'DOCUMENT_BLURRY';
+      if (/obscur|cut off|partial|crop/.test(lower)) return 'DOCUMENT_OBSCURED';
+      if (/expir/.test(lower)) return 'DOCUMENT_EXPIRED';
+      if (/face not|selfie|face visible/.test(lower)) return 'FACE_NOT_VISIBLE';
+      if (/face mismatch|does not match|face match/.test(lower)) return 'FACE_MISMATCH';
+      if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
+      if (/unsupported|not accepted|wrong document/.test(lower))
+        return 'DOCUMENT_TYPE_UNSUPPORTED';
+      return 'GENERIC';
+    }
+
+    function safeJsonClone(value, fallback) {
+      try {
+        if (value == null) return fallback;
+        return JSON.parse(JSON.stringify(value));
+      } catch (e) {
+        console.warn('Failed to clone JSON payload:', e);
+        return fallback;
+      }
+    }
+
+    function buildWorkflowContextForSubmission(activeFlow) {
+      var context = safeJsonClone(activeFlow && activeFlow.context, {}) || {};
+      var activeState = safeJsonClone(activeFlow && activeFlow.state, null);
+
+      if (!context.collectionFlow || typeof context.collectionFlow !== 'object') {
+        context.collectionFlow = {};
+      }
+
+      // Prefer the computed state from /active-flow (contains canonical step tuple).
+      if (activeState && Array.isArray(activeState.steps) && activeState.steps.length > 0) {
+        context.collectionFlow.state = activeState;
+      }
+
+      return context;
+    }
+
+    // ── Main initialization ──
+    async function initFlow() {
+      // Check SDK availability — script may fail to load on slow networks
+      var MiKashBoksSDK = window.BallerineSDK;
+
+      if (typeof MiKashBoksSDK === 'undefined') {
+        document.getElementById('kyc-host').innerHTML =
+          '<p class="init-message error">Verification SDK failed to load. Please check your internet connection and try again.</p>';
+        return;
+      }
+
+      if (!TOKEN) {
+        document.getElementById('kyc-host').innerHTML =
+          '<p class="init-message muted">No verification token provided. Please open this page from the MiKashBoks app.</p>';
+        return;
+      }
+
+      // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
+      // Retry once (2 attempts total) with 20s timeout per attempt.
+      // Mobile networks in Sierra Leone can be unreliable — a single attempt is insufficient.
+      var FETCH_TIMEOUT_MS = 20000;
+      var MAX_ATTEMPTS = 2;
+      var workflowData = null;
+      var lastFetchError = null;
+
+      for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          var controller = new AbortController();
+          var timeoutId = setTimeout(function () {
+            controller.abort();
+          }, FETCH_TIMEOUT_MS);
+          var resp = await fetch(apiBase + '/collection-flow/active-flow', {
+            headers: { Authorization: 'Bearer ' + TOKEN },
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          var json = await resp.json();
+          workflowData = json.result || json;
+          break; // success — exit retry loop
+        } catch (e) {
+          lastFetchError = e;
+          console.warn('Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:', e);
+          if (attempt < MAX_ATTEMPTS) {
+            // Brief pause before retry (1s)
+            await new Promise(function (r) {
+              setTimeout(r, 1000);
+            });
+          }
+        }
+      }
+
+      if (!workflowData) {
+        console.error(
+          'Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:',
+          lastFetchError,
+        );
+        document.getElementById('kyc-host').innerHTML =
+          '<p class="init-message error">Could not connect to the verification service. Please check your internet connection and try again.</p>';
+        return;
+      }
+
+      var endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || 'unknown';
+      var issuingCountry =
+        workflowData?.context?.entity?.data?.country ||
+        workflowData?.context?.customData?.country ||
+        'SL';
+
+      // 2. Handle non-collection states (user may reopen an existing link)
+      var workflowStateRaw = workflowData?.state || workflowData?.status || '';
+      var workflowState = String(workflowStateRaw || '')
+        .trim()
+        .toLowerCase();
+
+      var approvedStates = ['approved', 'auto_approved'];
+      var rejectedStates = ['rejected', 'auto_rejected', 'declined'];
+      var inReviewStates = ['manual_review', 'review'];
+      var processingStates = [
+        'document_verification',
+        'facial_verification',
+        'dedup_evaluation',
+        'device_dedup_check',
+        'ncra_check',
+        'risk_evaluation',
+        'awaiting_3rd_party_data',
+      ];
+
+      if (approvedStates.includes(workflowState)) {
+        renderStatusCard({
+          title: 'Identity Verified \u2705',
+          body: 'Your identity has been verified. You now have access to loans, higher savings limits, and faster transactions.',
+          meta: 'Tap Done to return to MiKashBoks and explore your new features.',
+          primaryLabel: 'Done',
+          onPrimary: function () {
+            signalCompletion('success', 'approved');
+          },
         });
+        return;
       }
 
-      function setHostHtml(html) {
-        var host = document.getElementById('kyc-host');
-        if (host) host.innerHTML = html;
+      if (rejectedStates.includes(workflowState)) {
+        renderStatusCard({
+          title: 'Verification Unsuccessful',
+          body: 'We could not verify your identity from the photos you submitted. You can try again with clearer photos, or contact MiKashBoks support for help.',
+          meta: 'Common reasons: blurry photo, face not matching ID, or expired document.',
+          primaryLabel: 'Close',
+          onPrimary: function () {
+            signalCompletion('error', 'rejected');
+          },
+        });
+        return;
       }
 
-      function renderStatusCard(options) {
-        var title = options && options.title ? String(options.title) : '';
-        var body = options && options.body ? String(options.body) : '';
-        var meta = options && options.meta ? String(options.meta) : '';
-        var showSpinner = Boolean(options && options.showSpinner);
+      if (inReviewStates.includes(workflowState)) {
+        renderStatusCard({
+          title: 'Under Review',
+          body: 'Your photos were submitted successfully. Our team is reviewing your verification \u2014 you do not need to upload anything again.',
+          meta: 'You will receive an SMS notification when the review is complete, usually within 24 hours. You can safely close this screen.',
+          primaryLabel: 'Done',
+          secondaryLabel: 'Refresh Status',
+          onPrimary: function () {
+            signalCompletion('exit', 'manual_review');
+          },
+          onSecondary: function () {
+            window.location.reload();
+          },
+        });
+        return;
+      }
 
-        var primaryLabel = options && options.primaryLabel ? String(options.primaryLabel) : 'Close';
-        var secondaryLabel =
-          options && options.secondaryLabel ? String(options.secondaryLabel) : '';
+      if (processingStates.includes(workflowState)) {
+        renderStatusCard({
+          title: 'Checking Your Photos...',
+          body: 'We received your photos and are running verification checks. This usually takes 1\u20132 minutes.',
+          meta: 'You can close this screen and continue using MiKashBoks. We will notify you by SMS when the result is ready.',
+          showSpinner: true,
+          primaryLabel: 'Done',
+          secondaryLabel: 'Refresh Status',
+          onPrimary: function () {
+            signalCompletion('exit', 'processing');
+          },
+          onSecondary: function () {
+            window.location.reload();
+          },
+        });
+        return;
+      }
 
-        setHostHtml(
-          '<div class="status-wrap">' +
-            '<div class="status-card">' +
-            '<div class="status-title">' +
-            escapeHtml(title) +
-            '</div>' +
-            '<div class="status-body">' +
-            (showSpinner ? '<span class="status-spinner"></span>' : '') +
-            escapeHtml(body) +
-            '</div>' +
-            (meta ? '<div class="status-meta">' + escapeHtml(meta) + '</div>' : '') +
-            '<div class="status-actions">' +
-            (secondaryLabel
-              ? '<button id="status-secondary" class="status-btn secondary" type="button">' +
-                escapeHtml(secondaryLabel) +
-                '</button>'
-              : '') +
-            '<button id="status-primary" class="status-btn primary" type="button">' +
-            escapeHtml(primaryLabel) +
-            '</button>' +
-            '</div>' +
-            '</div>' +
-            '</div>',
+      // 3. Check for resubmission state
+      var resubmitReason = params.get('reason') || params.get('reasonCode');
+      var isRevision = ['pending_resubmission', 'revision', 'revised'].includes(workflowState);
+
+      // Detect revision reason from workflow context
+      var detectedReasonCode = null;
+      if (isRevision) {
+        var docs = workflowData?.context?.documents || [];
+        for (var i = 0; i < docs.length; i++) {
+          var decision = docs[i].decision || {};
+          if (decision.status === 'revision' && decision.revisionReason) {
+            detectedReasonCode = mapRevisionReasonToCode(decision.revisionReason);
+            break;
+          }
+        }
+        if (!detectedReasonCode && workflowData?.context?.revisionReason) {
+          detectedReasonCode = mapRevisionReasonToCode(workflowData.context.revisionReason);
+        }
+        if (!detectedReasonCode) {
+          detectedReasonCode = 'GENERIC';
+        }
+      }
+
+      // Use URL param reason if present
+      var reasonCode =
+        resubmitReason && RESUBMISSION_REASONS[resubmitReason]
+          ? resubmitReason
+          : detectedReasonCode;
+
+      // 3. Resolve SDK steps — prefer config-driven, fallback to client-hardcoded
+      // NOTE: We read from config.kycSdkSteps (an array of SDK step name strings),
+      // NOT from collectionFlow.state.steps (which contains form-page names like
+      // 'personal_information' — a different namespace used by the collection flow app).
+      var configSteps =
+        workflowData &&
+          workflowData.config &&
+          Array.isArray(workflowData.config.kycSdkSteps) &&
+          workflowData.config.kycSdkSteps.length > 0
+          ? workflowData.config.kycSdkSteps
+          : null;
+
+      var steps;
+      if (configSteps) {
+        steps = buildStepsFromConfig(configSteps, hasPreselectedDoc);
+        console.log(
+          '[KYC] Using config-driven steps:',
+          steps.map(function (s) {
+            return s.name;
+          }),
         );
-
-        var primaryBtn = document.getElementById('status-primary');
-        if (primaryBtn && options && typeof options.onPrimary === 'function') {
-          primaryBtn.addEventListener('click', options.onPrimary);
-        }
-
-        var secondaryBtn = document.getElementById('status-secondary');
-        if (secondaryBtn && options && typeof options.onSecondary === 'function') {
-          secondaryBtn.addEventListener('click', options.onSecondary);
-        }
+      } else {
+        steps = buildSteps(hasPreselectedDoc);
+        console.log('[KYC] Using client-fallback steps (no config.kycSdkSteps found)');
       }
 
-      // ── Resubmission reason taxonomy ──
-      // Maps server reason codes to user-facing messages (preserved from legacy implementation)
-      var RESUBMISSION_REASONS = {
-        DOCUMENT_BLURRY:
-          'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
-        DOCUMENT_OBSCURED:
-          'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
-        DOCUMENT_EXPIRED:
-          'The document you submitted has expired. Please use a valid, unexpired document.',
-        FACE_NOT_VISIBLE:
-          'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
-        FACE_MISMATCH:
-          'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
-        DOCUMENT_BACK_MISSING: 'We need a photo of the back of your document. Please capture it.',
-        DOCUMENT_TYPE_UNSUPPORTED:
-          'The document type you submitted is not accepted. Please choose a different document.',
-        GENERIC: 'There was an issue with your submission. Please try again.',
+      // 4. Initialize MiKashBoks SDK
+      var workflowContextPayload = buildWorkflowContextForSubmission(workflowData);
+      var workflowStatePayload = safeJsonClone(workflowData && workflowData.state, {});
+
+      var sdkConfig = {
+        endUserInfo: {
+          id: endUserId,
+          endUserMetadata: {
+            issuingCountry: issuingCountry,
+            // Keep full context required by workflow plugins (entity/customData) and
+            // use computed active-flow state to avoid invalid empty step arrays.
+            workflowContext: JSON.stringify(workflowContextPayload),
+            workflowState: JSON.stringify(workflowStatePayload),
+            documentCategory: 'proof_of_identity',
+            selfieCategory: 'proof_of_identity_ownership',
+            preselectedDocType: preselectedDocType || '',
+          },
+        },
+        backendConfig: {
+          baseUrl: apiBase,
+          auth: {
+            method: 'jwt',
+            authorizationHeader: 'Bearer ' + TOKEN,
+          },
+          endpoints: {
+            uploadFile: '/collection-flow/documents',
+            updateContext: '/collection-flow/sync/context',
+            finalSubmission: '/collection-flow/final-submission',
+            sendEvent: '/collection-flow/send-event',
+            activeFlow: '/collection-flow/active-flow',
+          },
+        },
+        uiConfig: {
+          general: {
+            progress: true,
+            colors: {
+              primary: '#7b15ff',
+            },
+            fonts: {
+              name: 'Inter',
+              link: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+              weight: [400, 500, 600, 700],
+            },
+          },
+          components: {
+            paragraph: { 'font-size': '18px', 'line-height': '1.65' },
+            title: { 'font-size': '26px' },
+          },
+          flows: {
+            'mikashboks-kyc': {
+              steps: steps,
+              syncFlow: true,
+              useFinalQueryParams: true,
+              showCloseButton: false,
+            },
+          },
+        },
+        translations: {
+          overrides: {
+            en: {
+              welcome: {
+                title: 'Verify Your Identity',
+                description:
+                  'This quick check takes about 2 minutes. Once verified, you unlock loans, higher savings limits, and faster transactions.',
+                button: 'Get Started',
+              },
+              // ── Welcome page benefit list ──
+              // The List component reads from `list-${flowName}` namespace.
+              // `title` is the list heading; `item-N` are the bullet items.
+              // Number of items is auto-detected from key count minus 1 (for title).
+              'list-mikashboks-kyc': {
+                title: 'What you will need:',
+                'item-1': 'A valid ID document (National ID, passport, voter ID, or licence)',
+                'item-2': 'A clear selfie of your face',
+                'item-3': 'Good lighting \u2014 avoid dark rooms and direct sunlight',
+                'item-4': 'Your data is encrypted and secure',
+              },
+              'document-selection': {
+                title: 'Choose Your Document',
+                description: 'Select the type of identity document you would like to use.',
+              },
+              // ── SL-specific document option descriptions ──
+              'document-options': {
+                'id_card-title': 'National ID Card',
+                'id_card-description': 'SL national ID or ECOWAS card',
+                'passport-title': 'Passport',
+                'passport-description': 'Valid international passport',
+                'voter_id-title': 'Voter ID',
+                'voter_id-description': 'Sierra Leone voter registration card',
+                'drivers_license-title': "Driver's Licence",
+                'drivers_license-description': 'Valid Sierra Leone driving licence',
+              },
+              // ── Capture-step translations ──
+              // The SDK resolves document-photo / document-photo-back with nested
+              // doc-type keys: e.g. t('document-photo.id_card', 'title').
+              'document-photo': {
+                title: 'Take Document Photo',
+                description:
+                  'Place your document flat on a surface with good lighting. Make sure all four corners are visible, all text is readable, and there is no glare or shadow.',
+                id_card: {
+                  title: 'National ID \u2014 Front',
+                  description: 'Place your National ID flat on a table or surface. Tips: use indoor lighting, avoid shadows, make sure all 4 corners and all text are visible.',
+                },
+                passport: {
+                  title: 'Passport Photo Page',
+                  description: 'Open to the photo page and lay it flat. Tips: avoid glare on the laminated surface, tilt slightly if you see a reflection.',
+                },
+                voter_id: {
+                  title: 'Voter ID \u2014 Front',
+                  description: 'Place your Voter ID flat on a table or surface. Tips: use indoor lighting, avoid shadows, make sure all 4 corners and all text are visible.',
+                },
+                drivers_license: {
+                  title: "Driver's Licence \u2014 Front",
+                  description: "Place your Licence flat on a table or surface. Tips: use indoor lighting, avoid shadows, make sure all 4 corners and all text are visible.",
+                },
+              },
+              'check-document': {
+                title: 'Check Your Photo',
+                description: 'Look carefully: Is all the text clear and readable? Are all 4 corners visible? No blur or glare? If not, tap the back arrow to retake.',
+              },
+              'document-photo-back-start': {
+                title: 'Back of Document',
+                description: 'Now take a photo of the back of your document.',
+                button: 'Take Photo',
+              },
+              'document-photo-back': {
+                title: 'Document – Back Side',
+                description: 'Position the back of your document inside the frame.',
+                id_card: {
+                  title: 'National ID – Back',
+                  description: 'Position the back of your National ID inside the frame.',
+                },
+                voter_id: {
+                  title: 'Voter ID – Back',
+                  description: 'Position the back of your Voter ID inside the frame.',
+                },
+                drivers_license: {
+                  title: "Driver's Licence – Back",
+                  description: "Position the back of your Driver's Licence inside the frame.",
+                },
+              },
+              'check-document-photo-back': {
+                title: 'Check Back Photo',
+                description: 'Make sure the back side is clear and readable.',
+              },
+              'selfie-start': {
+                title: 'Take a Selfie',
+                description:
+                  'We need a clear photo of your face to match it with your ID. Tips: face a window or light source, remove hats and sunglasses, hold the phone at eye level, and look straight at the camera.',
+                button: 'Take Selfie',
+              },
+              selfie: {
+                title: 'Selfie',
+                description: 'Position your face inside the oval. Look straight at the camera and keep your expression natural. Make sure there are no shadows on your face.',
+              },
+              'check-selfie': {
+                title: 'Check Your Selfie',
+                description: 'Is your face clearly visible and well-lit? Can you see both eyes? If the photo is dark, blurry, or partially covered, tap the back arrow to retake.',
+              },
+              // ── End-state translations ──
+              loader: {
+                'text-one': 'Step 1 of 3: Uploading your document photos...',
+                'text-two': 'Step 2 of 3: Running document and face checks...',
+                'text-three': 'Step 3 of 3: Finalizing your verification result...',
+              },
+              final: {
+                title: 'Submitted Successfully',
+                description:
+                  'Your ID and selfie have been submitted. We are now running automated checks. You will receive an SMS with the result \u2014 no further action is needed unless we ask for better photos.',
+                button: 'Done',
+              },
+              // ── Resubmission per-reason translations ──
+              // The SDK's Resubmission.svelte renders `${reasonCode}-title`,
+              // `${reasonCode}-description`, `${reasonCode}-button`.
+              // Each reason gets a specific title, description, and button label.
+              resubmission: {
+                // Fallback for unknown/null reason codes
+                title: 'Resubmission Required',
+                description: 'There was an issue with your submission. Please try again.',
+                button: 'Try Again',
+                // Per-reason overrides
+                'DOCUMENT_BLURRY-title': 'Photo Quality Issue',
+                'DOCUMENT_BLURRY-description':
+                  'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
+                'DOCUMENT_BLURRY-button': 'Retake Document Photo',
+                'DOCUMENT_OBSCURED-title': 'Document Not Fully Visible',
+                'DOCUMENT_OBSCURED-description':
+                  'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
+                'DOCUMENT_OBSCURED-button': 'Retake Document Photo',
+                'DOCUMENT_EXPIRED-title': 'Document Expired',
+                'DOCUMENT_EXPIRED-description':
+                  'The document you submitted has expired. Please use a valid, unexpired document.',
+                'DOCUMENT_EXPIRED-button': 'Choose Another Document',
+                'FACE_NOT_VISIBLE-title': 'Face Not Clearly Visible',
+                'FACE_NOT_VISIBLE-description':
+                  'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+                'FACE_NOT_VISIBLE-button': 'Retake Selfie',
+                'FACE_MISMATCH-title': 'Face Does Not Match',
+                'FACE_MISMATCH-description':
+                  'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+                'FACE_MISMATCH-button': 'Retake Photos',
+                'DOCUMENT_BACK_MISSING-title': 'Back of Document Missing',
+                'DOCUMENT_BACK_MISSING-description':
+                  'We need a photo of the back of your document. Please capture it.',
+                'DOCUMENT_BACK_MISSING-button': 'Take Back Photo',
+                'DOCUMENT_TYPE_UNSUPPORTED-title': 'Document Not Accepted',
+                'DOCUMENT_TYPE_UNSUPPORTED-description':
+                  'The document type you submitted is not accepted. Please choose a different document.',
+                'DOCUMENT_TYPE_UNSUPPORTED-button': 'Choose Another Document',
+                'GENERIC-title': 'Resubmission Required',
+                'GENERIC-description':
+                  'There was an issue with your submission. Please try again.',
+                'GENERIC-button': 'Try Again',
+              },
+              decline: {
+                title: 'Verification Unsuccessful',
+                description: 'We could not verify your identity from the submitted photos. Please try again with clearer images, or contact MiKashBoks support for help.',
+              },
+              'manual-review': {
+                title: 'Under Review',
+                description: 'Your photos were submitted successfully. Our team is reviewing your verification \u2014 you do not need to upload again. You will receive an SMS within 24 hours with the result.',
+                button: 'Done',
+              },
+              error: {
+                title: 'Something Went Wrong',
+                description: 'The verification is taking longer than expected. Please close this screen and try again. If the problem continues, contact MiKashBoks support.',
+                button: 'Close',
+              },
+              // ── General / shared strings ──
+              general: {
+                errorDocumentVerification: 'Verification check failed. Retrying...',
+                errorDocuments: 'Failed to upload documents. Please try again.',
+              },
+            },
+          },
+        },
       };
 
-      // Map free-text revision reasons from MiKashBoks backoffice to structured codes
-      function mapRevisionReasonToCode(revisionReason) {
-        if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
-        var lower = revisionReason.toLowerCase();
-        if (/blur|unclear|quality|unreadable|sharp|focus/.test(lower)) return 'DOCUMENT_BLURRY';
-        if (/obscur|cut off|partial|crop/.test(lower)) return 'DOCUMENT_OBSCURED';
-        if (/expir/.test(lower)) return 'DOCUMENT_EXPIRED';
-        if (/face not|selfie|face visible/.test(lower)) return 'FACE_NOT_VISIBLE';
-        if (/face mismatch|does not match|face match/.test(lower)) return 'FACE_MISMATCH';
-        if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
-        if (/unsupported|not accepted|wrong document/.test(lower))
-          return 'DOCUMENT_TYPE_UNSUPPORTED';
-        return 'GENERIC';
-      }
+      await MiKashBoksSDK.flows.init(sdkConfig);
 
-      function safeJsonClone(value, fallback) {
-        try {
-          if (value == null) return fallback;
-          return JSON.parse(JSON.stringify(value));
-        } catch (e) {
-          console.warn('Failed to clone JSON payload:', e);
-          return fallback;
-        }
-      }
-
-      function buildWorkflowContextForSubmission(activeFlow) {
-        var context = safeJsonClone(activeFlow && activeFlow.context, {}) || {};
-        var activeState = safeJsonClone(activeFlow && activeFlow.state, null);
-
-        if (!context.collectionFlow || typeof context.collectionFlow !== 'object') {
-          context.collectionFlow = {};
-        }
-
-        // Prefer the computed state from /active-flow (contains canonical step tuple).
-        if (activeState && Array.isArray(activeState.steps) && activeState.steps.length > 0) {
-          context.collectionFlow.state = activeState;
-        }
-
-        return context;
-      }
-
-      // ── Main initialization ──
-      async function initFlow() {
-        // Check SDK availability — script may fail to load on slow networks
-        var MiKashBoksSDK = window.BallerineSDK;
-
-        if (typeof MiKashBoksSDK === 'undefined') {
-          document.getElementById('kyc-host').innerHTML =
-            '<p class="init-message error">Verification SDK failed to load. Please check your internet connection and try again.</p>';
-          return;
-        }
-
-        if (!TOKEN) {
-          document.getElementById('kyc-host').innerHTML =
-            '<p class="init-message muted">No verification token provided. Please open this page from the MiKashBoks app.</p>';
-          return;
-        }
-
-        // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
-        // Retry once (2 attempts total) with 20s timeout per attempt.
-        // Mobile networks in Sierra Leone can be unreliable — a single attempt is insufficient.
-        var FETCH_TIMEOUT_MS = 20000;
-        var MAX_ATTEMPTS = 2;
-        var workflowData = null;
-        var lastFetchError = null;
-
-        for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-          try {
-            var controller = new AbortController();
-            var timeoutId = setTimeout(function () {
-              controller.abort();
-            }, FETCH_TIMEOUT_MS);
-            var resp = await fetch(apiBase + '/collection-flow/active-flow', {
-              headers: { Authorization: 'Bearer ' + TOKEN },
-              signal: controller.signal,
-            });
-            clearTimeout(timeoutId);
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            var json = await resp.json();
-            workflowData = json.result || json;
-            break; // success — exit retry loop
-          } catch (e) {
-            lastFetchError = e;
-            console.warn('Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:', e);
-            if (attempt < MAX_ATTEMPTS) {
-              // Brief pause before retry (1s)
-              await new Promise(function (r) {
-                setTimeout(r, 1000);
-              });
-            }
-          }
-        }
-
-        if (!workflowData) {
-          console.error(
-            'Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:',
-            lastFetchError,
-          );
-          document.getElementById('kyc-host').innerHTML =
-            '<p class="init-message error">Could not connect to the verification service. Please check your internet connection and try again.</p>';
-          return;
-        }
-
-        var endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || 'unknown';
-        var issuingCountry =
-          workflowData?.context?.entity?.data?.country ||
-          workflowData?.context?.customData?.country ||
-          'SL';
-
-        // 2. Handle non-collection states (user may reopen an existing link)
-        var workflowStateRaw = workflowData?.state || workflowData?.status || '';
-        var workflowState = String(workflowStateRaw || '')
-          .trim()
-          .toLowerCase();
-
-        var approvedStates = ['approved', 'auto_approved'];
-        var rejectedStates = ['rejected', 'auto_rejected', 'declined'];
-        var inReviewStates = ['manual_review', 'review'];
-        var processingStates = [
-          'document_verification',
-          'facial_verification',
-          'dedup_evaluation',
-          'device_dedup_check',
-          'ncra_check',
-          'risk_evaluation',
-          'awaiting_3rd_party_data',
-        ];
-
-        if (approvedStates.includes(workflowState)) {
-          renderStatusCard({
-            title: 'Identity Verified',
-            body: 'Your verification is complete and your identity is verified.',
-            primaryLabel: 'Done',
-            onPrimary: function () {
-              signalCompletion('success', 'approved');
-            },
-          });
-          return;
-        }
-
-        if (rejectedStates.includes(workflowState)) {
-          renderStatusCard({
-            title: 'Verification Unsuccessful',
-            body: 'We could not verify your identity from the submitted photos. Please contact support or try again later with clearer images.',
-            primaryLabel: 'Close',
-            onPrimary: function () {
-              signalCompletion('error', 'rejected');
-            },
-          });
-          return;
-        }
-
-        if (inReviewStates.includes(workflowState)) {
-          renderStatusCard({
-            title: 'Verification In Review',
-            body: 'Your photos were submitted successfully. Our team is reviewing your verification and you do not need to upload again.',
-            primaryLabel: 'Close',
-            secondaryLabel: 'Refresh',
-            onPrimary: function () {
+      MiKashBoksSDK.flows.mount({
+        flowName: 'mikashboks-kyc',
+        elementId: 'kyc-host',
+        jwt: TOKEN,
+        callbacks: {
+          onFlowComplete: function (payload) {
+            var idvResult = payload && payload.payload ? payload.payload.idvResult : '';
+            var reasonCode = payload && payload.payload ? payload.payload.reasonCode : '';
+            if (idvResult === 'declined') {
+              signalCompletion('error', idvResult);
+            } else if (idvResult === 'resubmission_requested') {
+              signalCompletion('resubmit', idvResult, reasonCode || detectedReasonCode);
+            } else if (idvResult === 'review') {
               signalCompletion('exit', 'manual_review');
-            },
-            onSecondary: function () {
-              window.location.reload();
-            },
-          });
-          return;
-        }
-
-        if (processingStates.includes(workflowState)) {
-          renderStatusCard({
-            title: 'Verification In Progress',
-            body: 'We received your photos and are running checks. This can take a few minutes on slower networks.',
-            meta: 'You can close this screen. If more information is needed, you will be prompted to resubmit.',
-            showSpinner: true,
-            primaryLabel: 'Close',
-            secondaryLabel: 'Refresh',
-            onPrimary: function () {
-              signalCompletion('exit', 'processing');
-            },
-            onSecondary: function () {
-              window.location.reload();
-            },
-          });
-          return;
-        }
-
-        // 3. Check for resubmission state
-        var resubmitReason = params.get('reason') || params.get('reasonCode');
-        var isRevision = ['pending_resubmission', 'revision', 'revised'].includes(workflowState);
-
-        // Detect revision reason from workflow context
-        var detectedReasonCode = null;
-        if (isRevision) {
-          var docs = workflowData?.context?.documents || [];
-          for (var i = 0; i < docs.length; i++) {
-            var decision = docs[i].decision || {};
-            if (decision.status === 'revision' && decision.revisionReason) {
-              detectedReasonCode = mapRevisionReasonToCode(decision.revisionReason);
-              break;
+            } else {
+              signalCompletion('success', idvResult || 'approved');
             }
-          }
-          if (!detectedReasonCode && workflowData?.context?.revisionReason) {
-            detectedReasonCode = mapRevisionReasonToCode(workflowData.context.revisionReason);
-          }
-          if (!detectedReasonCode) {
-            detectedReasonCode = 'GENERIC';
-          }
+          },
+          onFlowExit: function () {
+            signalCompletion('exit', '');
+          },
+          onFlowError: function (error) {
+            console.error('Flow error:', error);
+            signalCompletion('error', '');
+          },
+        },
+      });
+    }
+
+    // ── Start ──
+    initFlow().catch(async function (err) {
+      console.error('Init failed:', err);
+      // Hardening: If preselected doc mode fails to boot (SDK/config edge case),
+      // retry once in full-flow mode instead of failing immediately.
+      if (!initRetryAttempted && hasPreselectedDoc) {
+        initRetryAttempted = true;
+        hasPreselectedDoc = false;
+        preselectedDocType = null;
+        preselectedDocInfo = null;
+        steps = buildSteps(false);
+        console.warn(
+          'Retrying KYC init in full-flow mode after preselected-doc bootstrap failure',
+        );
+        try {
+          await initFlow();
+          return;
+        } catch (retryErr) {
+          console.error('Retry init failed:', retryErr);
         }
-
-        // Use URL param reason if present
-        var reasonCode =
-          resubmitReason && RESUBMISSION_REASONS[resubmitReason]
-            ? resubmitReason
-            : detectedReasonCode;
-
-        // 3. Initialize MiKashBoks SDK
-        var workflowContextPayload = buildWorkflowContextForSubmission(workflowData);
-        var workflowStatePayload = safeJsonClone(workflowData && workflowData.state, {});
-
-        var sdkConfig = {
-          endUserInfo: {
-            id: endUserId,
-            endUserMetadata: {
-              issuingCountry: issuingCountry,
-              // Keep full context required by workflow plugins (entity/customData) and
-              // use computed active-flow state to avoid invalid empty step arrays.
-              workflowContext: JSON.stringify(workflowContextPayload),
-              workflowState: JSON.stringify(workflowStatePayload),
-              documentCategory: 'proof_of_identity',
-              selfieCategory: 'proof_of_identity_ownership',
-              preselectedDocType: preselectedDocType || '',
-            },
-          },
-          backendConfig: {
-            baseUrl: apiBase,
-            auth: {
-              method: 'jwt',
-              authorizationHeader: 'Bearer ' + TOKEN,
-            },
-            endpoints: {
-              uploadFile: '/collection-flow/documents',
-              updateContext: '/collection-flow/sync/context',
-              finalSubmission: '/collection-flow/final-submission',
-              sendEvent: '/collection-flow/send-event',
-              activeFlow: '/collection-flow/active-flow',
-            },
-          },
-          uiConfig: {
-            general: {
-              progress: true,
-              colors: {
-                primary: '#7b15ff',
-              },
-              fonts: {
-                name: 'Inter',
-                link: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-                weight: [400, 500, 600, 700],
-              },
-            },
-            flows: {
-              'mikashboks-kyc': {
-                steps: steps,
-                syncFlow: true,
-                useFinalQueryParams: true,
-                showCloseButton: false,
-              },
-            },
-          },
-          translations: {
-            overrides: {
-              en: {
-                welcome: {
-                  title: 'Verify Your Identity',
-                  description:
-                    'Complete this quick verification to unlock loans, higher savings limits, and faster transactions.',
-                  button: 'Get Started',
-                },
-                // ── Welcome page benefit list ──
-                // The List component reads from `list-${flowName}` namespace.
-                // `title` is the list heading; `item-N` are the bullet items.
-                // Number of items is auto-detected from key count minus 1 (for title).
-                'list-mikashboks-kyc': {
-                  title: 'What you will need:',
-                  'item-1': 'Take a photo of your ID document',
-                  'item-2': 'Take a selfie for face matching',
-                  'item-3': 'Your data is encrypted and secure',
-                },
-                'document-selection': {
-                  title: 'Choose Your Document',
-                  description: 'Select the type of identity document you would like to use.',
-                },
-                // ── SL-specific document option descriptions ──
-                'document-options': {
-                  'id_card-title': 'National ID Card',
-                  'id_card-description': 'SL national ID or ECOWAS card',
-                  'passport-title': 'Passport',
-                  'passport-description': 'Valid international passport',
-                  'voter_id-title': 'Voter ID',
-                  'voter_id-description': 'Sierra Leone voter registration card',
-                  'drivers_license-title': "Driver's Licence",
-                  'drivers_license-description': 'Valid Sierra Leone driving licence',
-                },
-                // ── Capture-step translations ──
-                // The SDK resolves document-photo / document-photo-back with nested
-                // doc-type keys: e.g. t('document-photo.id_card', 'title').
-                'document-photo': {
-                  title: 'Take Document Photo',
-                  description:
-                    'Position the front of your document inside the frame. Ensure good lighting and no glare.',
-                  id_card: {
-                    title: 'National ID – Front',
-                    description: 'Position the front of your National ID inside the frame.',
-                  },
-                  passport: {
-                    title: 'Passport Photo Page',
-                    description: 'Position the photo page of your passport inside the frame.',
-                  },
-                  voter_id: {
-                    title: 'Voter ID – Front',
-                    description: 'Position the front of your Voter ID inside the frame.',
-                  },
-                  drivers_license: {
-                    title: "Driver's Licence – Front",
-                    description: "Position the front of your Driver's Licence inside the frame.",
-                  },
-                },
-                'check-document': {
-                  title: 'Check Your Photo',
-                  description: 'Make sure all text is clear and readable, with no blur or glare.',
-                },
-                'document-photo-back-start': {
-                  title: 'Back of Document',
-                  description: 'Now take a photo of the back of your document.',
-                  button: 'Take Photo',
-                },
-                'document-photo-back': {
-                  title: 'Document – Back Side',
-                  description: 'Position the back of your document inside the frame.',
-                  id_card: {
-                    title: 'National ID – Back',
-                    description: 'Position the back of your National ID inside the frame.',
-                  },
-                  voter_id: {
-                    title: 'Voter ID – Back',
-                    description: 'Position the back of your Voter ID inside the frame.',
-                  },
-                  drivers_license: {
-                    title: "Driver's Licence – Back",
-                    description: "Position the back of your Driver's Licence inside the frame.",
-                  },
-                },
-                'check-document-photo-back': {
-                  title: 'Check Back Photo',
-                  description: 'Make sure the back side is clear and readable.',
-                },
-                'selfie-start': {
-                  title: 'Take a Selfie',
-                  description:
-                    'Face the camera directly with good lighting. Remove any hats or sunglasses, and position your face inside the oval.',
-                  button: 'Take Selfie',
-                },
-                selfie: {
-                  title: 'Selfie',
-                  description: 'Look straight at the camera. Make sure your face is fully visible.',
-                },
-                'check-selfie': {
-                  title: 'Check Your Selfie',
-                  description: 'Make sure your face is clearly visible and well-lit.',
-                },
-                // ── End-state translations ──
-                loader: {
-                  'text-one': 'Step 1 of 3: Uploading your document photos...',
-                  'text-two': 'Step 2 of 3: Running document and face checks...',
-                  'text-three': 'Step 3 of 3: Finalizing your verification result...',
-                },
-                final: {
-                  title: 'Verification Complete',
-                  description:
-                    'Your ID and selfie were submitted successfully. We are now completing automated checks and will ask for more info only if needed.',
-                  button: 'Done',
-                },
-                // ── Resubmission per-reason translations ──
-                // The SDK's Resubmission.svelte renders `${reasonCode}-title`,
-                // `${reasonCode}-description`, `${reasonCode}-button`.
-                // Each reason gets a specific title, description, and button label.
-                resubmission: {
-                  // Fallback for unknown/null reason codes
-                  title: 'Resubmission Required',
-                  description: 'There was an issue with your submission. Please try again.',
-                  button: 'Try Again',
-                  // Per-reason overrides
-                  'DOCUMENT_BLURRY-title': 'Photo Quality Issue',
-                  'DOCUMENT_BLURRY-description':
-                    'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
-                  'DOCUMENT_BLURRY-button': 'Retake Document Photo',
-                  'DOCUMENT_OBSCURED-title': 'Document Not Fully Visible',
-                  'DOCUMENT_OBSCURED-description':
-                    'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
-                  'DOCUMENT_OBSCURED-button': 'Retake Document Photo',
-                  'DOCUMENT_EXPIRED-title': 'Document Expired',
-                  'DOCUMENT_EXPIRED-description':
-                    'The document you submitted has expired. Please use a valid, unexpired document.',
-                  'DOCUMENT_EXPIRED-button': 'Choose Another Document',
-                  'FACE_NOT_VISIBLE-title': 'Face Not Clearly Visible',
-                  'FACE_NOT_VISIBLE-description':
-                    'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
-                  'FACE_NOT_VISIBLE-button': 'Retake Selfie',
-                  'FACE_MISMATCH-title': 'Face Does Not Match',
-                  'FACE_MISMATCH-description':
-                    'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
-                  'FACE_MISMATCH-button': 'Retake Photos',
-                  'DOCUMENT_BACK_MISSING-title': 'Back of Document Missing',
-                  'DOCUMENT_BACK_MISSING-description':
-                    'We need a photo of the back of your document. Please capture it.',
-                  'DOCUMENT_BACK_MISSING-button': 'Take Back Photo',
-                  'DOCUMENT_TYPE_UNSUPPORTED-title': 'Document Not Accepted',
-                  'DOCUMENT_TYPE_UNSUPPORTED-description':
-                    'The document type you submitted is not accepted. Please choose a different document.',
-                  'DOCUMENT_TYPE_UNSUPPORTED-button': 'Choose Another Document',
-                  'GENERIC-title': 'Resubmission Required',
-                  'GENERIC-description':
-                    'There was an issue with your submission. Please try again.',
-                  'GENERIC-button': 'Try Again',
-                },
-                decline: {
-                  title: 'Verification Could Not Be Completed',
-                  description: 'Please contact support for assistance.',
-                },
-                // ── General / shared strings ──
-                general: {
-                  errorDocumentVerification: 'Verification check failed. Retrying...',
-                  errorDocuments: 'Failed to upload documents. Please try again.',
-                },
-              },
-            },
-          },
-        };
-
-        await MiKashBoksSDK.flows.init(sdkConfig);
-
-        MiKashBoksSDK.flows.mount({
-          flowName: 'mikashboks-kyc',
-          elementId: 'kyc-host',
-          jwt: TOKEN,
-          callbacks: {
-            onFlowComplete: function (payload) {
-              var idvResult = payload && payload.payload ? payload.payload.idvResult : '';
-              if (idvResult === 'declined') {
-                signalCompletion('error', idvResult);
-              } else if (idvResult === 'resubmission_requested') {
-                signalCompletion('resubmit', idvResult);
-              } else {
-                signalCompletion('success', idvResult || 'approved');
-              }
-            },
-            onFlowExit: function () {
-              signalCompletion('exit', '');
-            },
-            onFlowError: function (error) {
-              console.error('Flow error:', error);
-              signalCompletion('error', '');
-            },
-          },
-        });
       }
+      document.getElementById('kyc-host').innerHTML =
+        '<p class="init-message error">Could not start verification. Please close and try again.</p>';
+    });
 
-      // ── Start ──
-      initFlow().catch(async function (err) {
-        console.error('Init failed:', err);
-        // Hardening: If preselected doc mode fails to boot (SDK/config edge case),
-        // retry once in full-flow mode instead of failing immediately.
-        if (!initRetryAttempted && hasPreselectedDoc) {
-          initRetryAttempted = true;
-          hasPreselectedDoc = false;
-          preselectedDocType = null;
-          preselectedDocInfo = null;
-          steps = buildSteps(false);
-          console.warn(
-            'Retrying KYC init in full-flow mode after preselected-doc bootstrap failure',
-          );
-          try {
-            await initFlow();
-            return;
-          } catch (retryErr) {
-            console.error('Retry init failed:', retryErr);
-          }
-        }
-        document.getElementById('kyc-host').innerHTML =
-          '<p class="init-message error">Could not start verification. Please close and try again.</p>';
-      });
+    // ── Offline detection ──
+    var offlineBanner = document.getElementById('offline-banner');
+    window.addEventListener('offline', function () {
+      offlineBanner.classList.add('visible');
+    });
+    window.addEventListener('online', function () {
+      offlineBanner.classList.remove('visible');
+    });
+  </script>
+</body>
 
-      // ── Offline detection ──
-      var offlineBanner = document.getElementById('offline-banner');
-      window.addEventListener('offline', function () {
-        offlineBanner.classList.add('visible');
-      });
-      window.addEventListener('online', function () {
-        offlineBanner.classList.remove('visible');
-      });
-    </script>
-  </body>
 </html>

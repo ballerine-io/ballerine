@@ -207,6 +207,31 @@ export const kycOnboardingSierraLeoneDefinition = {
   },
   config: {
     createCollectionFlowToken: true,
+    // SDK step sequence for the KYC mobile page (index.html).
+    // The frontend reads this from workflowData.config.kycSdkSteps to drive
+    // the Ballerine Web UI SDK flow.  If absent, the page falls back to its
+    // own hardcoded buildSteps() list.
+    // NOTE: These are Ballerine Web UI SDK step names — NOT to be confused with
+    // the collection-flow form-page names (personal_information, kyc_documents, etc.)
+    // which live in collectionFlow.state.steps.
+    kycSdkSteps: [
+      'welcome',
+      'document-selection',
+      'document-photo',
+      'check-document',
+      'document-photo-back-start',
+      'document-photo-back',
+      'check-document-photo-back',
+      'selfie-start',
+      'selfie',
+      'check-selfie',
+      'loading',
+      'resubmission',
+      'decline',
+      'manual-review',
+      'error',
+      'final',
+    ],
   },
   contextSchema: {
     type: 'json-schema',

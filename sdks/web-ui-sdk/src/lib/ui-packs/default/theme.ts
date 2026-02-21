@@ -671,6 +671,53 @@ const stepsTheme: TStepsConfigurations = [
     ],
   },
   {
+    name: Steps.ManualReview,
+    id: Steps.ManualReview,
+    style: {},
+    elements: [
+      closeIconButton,
+      {
+        id: 'image',
+        orderIndex: 20,
+        type: Elements.Image,
+        props: {
+          style: {
+            'flex-grow': '0',
+            margin: '40% 0 0 0',
+          },
+          attributes: {
+            src: '/assets/ui-packs/default/images/final.svg',
+            alt: 'review',
+            width: '80px',
+            height: '80px',
+          },
+        },
+      },
+      {
+        id: 'title',
+        orderIndex: 30,
+        type: Elements.Title,
+        props: {},
+      },
+      {
+        id: 'description',
+        orderIndex: 40,
+        type: Elements.Paragraph,
+        props: {},
+      },
+      {
+        id: 'button',
+        orderIndex: 50,
+        type: Elements.Button,
+        props: {
+          style: {
+            margin: 'auto 0 0 0',
+          },
+        },
+      },
+    ],
+  },
+  {
     name: Steps.Final,
     id: Steps.Final,
     style: {},
