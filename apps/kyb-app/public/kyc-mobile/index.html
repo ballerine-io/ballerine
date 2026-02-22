@@ -248,26 +248,39 @@
       console.warn('VITE_API_URL not configured; derived API base from origin:', apiBase);
     }
 
-    // ── Valid document types ──
-    var VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
+    // ── Default document options (SL fallback) ──
+    // When the workflow config provides kycSdkDocumentOptions, those take
+    // precedence.  Otherwise we use these hardcoded SL defaults.
+    var DEFAULT_DOC_OPTIONS = [
+      { type: 'id_card', kind: 'proof_of_identity', variant: 'regular', backSide: true },
+      { type: 'passport', kind: 'proof_of_identity', variant: 'regular', backSide: false },
+      { type: 'voter_id', kind: 'proof_of_identity', variant: 'regular', backSide: true },
+      { type: 'drivers_license', kind: 'proof_of_identity', variant: 'regular', backSide: true },
+    ];
+    var VALID_DOC_TYPES = DEFAULT_DOC_OPTIONS.map(function (d) { return d.type; });
     var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
 
     // ── Document info for pre-selected type ──
-    // When doc type is pre-selected from Android, the document-selection step is skipped.
-    // We must set `type` and `documentInfo` on photo steps so the SDK knows which
-    // document overlay to show and whether a back-side photo is needed.
-    // Variant must match the SDK theme: passport = 'regular' (same as cards).
-    // 'a4' is only for full-page documents (business registrations, etc.).
-    var preselectedDocInfo = hasPreselectedDoc
-      ? {
-        type: preselectedDocType,
-        // Keep UI doc type specific, but normalize uploaded category for Unified API plugin mappings.
-        kind: 'proof_of_identity',
-        variant: 'regular',
-        backSide: preselectedDocType !== 'passport',
-        orderIndex: 0,
+    // Resolved after workflow fetch so config.kycSdkDocumentOptions can drive it.
+    // Initialised here from defaults; overwritten in initFlow() if config provides data.
+    var preselectedDocInfo = null;
+    function resolvePreselectedDocInfo(docOptions) {
+      if (!hasPreselectedDoc) return null;
+      var match = null;
+      for (var i = 0; i < docOptions.length; i++) {
+        if (docOptions[i].type === preselectedDocType) { match = docOptions[i]; break; }
       }
-      : null;
+      if (!match) return null;
+      return {
+        type: match.type,
+        kind: match.kind || 'proof_of_identity',
+        variant: match.variant || 'regular',
+        backSide: match.backSide !== false,
+        orderIndex: 0,
+      };
+    }
+    // Default until workflow fetch overrides
+    preselectedDocInfo = resolvePreselectedDocInfo(DEFAULT_DOC_OPTIONS);
 
     // ── Build flow steps ──
     // Skip welcome + document-selection when doc type is pre-selected from Android
@@ -344,7 +357,13 @@
     // collectionFlow.state.steps which contains form-page names
     // (personal_information, kyc_documents, etc.) — a different namespace.
     // Falls back to buildSteps() when the config provides no step data.
-    function buildStepsFromConfig(stepNames, usePreselectedDoc) {
+    // docOptions: config.kycSdkDocumentOptions (or DEFAULT_DOC_OPTIONS fallback).
+    //   Drives the document-selection step's selectable types.
+    function buildStepsFromConfig(stepNames, usePreselectedDoc, docOptions) {
+      var selectionOptions = (docOptions || DEFAULT_DOC_OPTIONS).map(function (d) {
+        return { type: d.type, kind: d.kind || 'proof_of_identity' };
+      });
+
       return stepNames.map(function (name) {
         var step = { name: name, id: name };
 
@@ -353,12 +372,7 @@
           step.elements = [{ id: 'list', type: 'list', orderIndex: 45, props: {} }];
         }
         if (name === 'document-selection') {
-          step.documentOptions = [
-            { type: 'id_card', kind: 'proof_of_identity' },
-            { type: 'passport', kind: 'proof_of_identity' },
-            { type: 'voter_id', kind: 'proof_of_identity' },
-            { type: 'drivers_license', kind: 'proof_of_identity' },
-          ];
+          step.documentOptions = selectionOptions;
         }
         if (['document-photo', 'check-document', 'document-photo-back'].includes(name)) {
           if (usePreselectedDoc) step.type = preselectedDocType;
@@ -696,7 +710,28 @@
           ? resubmitReason
           : detectedReasonCode;
 
-      // 3. Resolve SDK steps — prefer config-driven, fallback to client-hardcoded
+      // 3. Resolve config-driven document options
+      // These drive the document-selection step AND preselectedDocInfo enrichment.
+      var configDocOptions =
+        workflowData &&
+          workflowData.config &&
+          Array.isArray(workflowData.config.kycSdkDocumentOptions) &&
+          workflowData.config.kycSdkDocumentOptions.length > 0
+          ? workflowData.config.kycSdkDocumentOptions
+          : null;
+
+      var activeDocOptions = configDocOptions || DEFAULT_DOC_OPTIONS;
+      if (configDocOptions) {
+        console.log('[KYC] Using config-driven document options:', configDocOptions.map(function (d) { return d.type; }));
+        // Re-derive preselectedDocInfo from server config (may have different backSide/variant)
+        preselectedDocInfo = resolvePreselectedDocInfo(configDocOptions);
+      } else {
+        console.warn('[KYC] ⚠ No config.kycSdkDocumentOptions found in workflow config. ' +
+          'Using hardcoded SL defaults. To control document types from the server, add ' +
+          'kycSdkDocumentOptions: [{type, kind, variant, backSide}] to the Ballerine workflow config.');
+      }
+
+      // 4. Resolve SDK steps — prefer config-driven, fallback to client-hardcoded
       // NOTE: We read from config.kycSdkSteps (an array of SDK step name strings),
       // NOT from collectionFlow.state.steps (which contains form-page names like
       // 'personal_information' — a different namespace used by the collection flow app).
@@ -710,7 +745,7 @@
 
       var steps;
       if (configSteps) {
-        steps = buildStepsFromConfig(configSteps, hasPreselectedDoc);
+        steps = buildStepsFromConfig(configSteps, hasPreselectedDoc, activeDocOptions);
         console.log(
           '[KYC] Using config-driven steps:',
           steps.map(function (s) {
@@ -719,10 +754,19 @@
         );
       } else {
         steps = buildSteps(hasPreselectedDoc);
-        console.log('[KYC] Using client-fallback steps (no config.kycSdkSteps found)');
+        console.warn('[KYC] ⚠ No config.kycSdkSteps found in workflow config. ' +
+          'Using client-hardcoded steps. To drive SDK steps from the server, add ' +
+          'kycSdkSteps: ["welcome", "document-selection", ...] to the Ballerine workflow config.');
       }
 
-      // 4. Initialize MiKashBoks SDK
+      // Validate kycSdkTheme presence
+      if (!(workflowData && workflowData.config && workflowData.config.kycSdkTheme)) {
+        console.warn('[KYC] ⚠ No config.kycSdkTheme found in workflow config. ' +
+          'Using default Inter font and #7b15ff primary color. To customize, add ' +
+          'kycSdkTheme: {primaryColor, fontFamily, fontLink, fontWeights} to the Ballerine workflow config.');
+      }
+
+      // 5. Initialize MiKashBoks SDK
       var workflowContextPayload = buildWorkflowContextForSubmission(workflowData);
       var workflowStatePayload = safeJsonClone(workflowData && workflowData.state, {});
 
@@ -758,12 +802,12 @@
           general: {
             progress: true,
             colors: {
-              primary: '#7b15ff',
+              primary: (workflowData && workflowData.config && workflowData.config.kycSdkTheme && workflowData.config.kycSdkTheme.primaryColor) || '#7b15ff',
             },
             fonts: {
-              name: 'Inter',
-              link: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-              weight: [400, 500, 600, 700],
+              name: (workflowData && workflowData.config && workflowData.config.kycSdkTheme && workflowData.config.kycSdkTheme.fontFamily) || 'Inter',
+              link: (workflowData && workflowData.config && workflowData.config.kycSdkTheme && workflowData.config.kycSdkTheme.fontLink) || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+              weight: (workflowData && workflowData.config && workflowData.config.kycSdkTheme && workflowData.config.kycSdkTheme.fontWeights) || [400, 500, 600, 700],
             },
           },
           components: {

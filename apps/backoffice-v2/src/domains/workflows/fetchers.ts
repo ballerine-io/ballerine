@@ -168,9 +168,11 @@ export const BaseWorkflowByIdSchema = z.object({
       .optional(),
     collectionFlow: z
       .object({
-        config: z.object({
-          apiUrl: z.string().url(),
-        }),
+        config: z
+          .object({
+            apiUrl: z.string().url(),
+          })
+          .optional(),
         state: z.object({
           currentStep: z.string(),
           status: z.enum(Object.values(CollectionFlowStatusesEnum) as [string, ...string[]]),
@@ -185,7 +187,7 @@ export const BaseWorkflowByIdSchema = z.object({
               reason: z.string().optional(),
             }),
           ),
-        }),
+        }).optional(),
         additionalInformation: z.record(z.string(), z.unknown()).optional(),
       })
       .optional(),
