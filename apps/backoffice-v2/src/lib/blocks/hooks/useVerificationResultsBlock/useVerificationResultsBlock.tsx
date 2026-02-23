@@ -101,7 +101,7 @@ const STATUS_DISPLAY: Record<string, { label: string; variant: string }> = {
   PENDING: { label: 'Pending', variant: 'info' },
 };
 
-const toTitleCase = (str: string) => str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+const toTitleCase = (str: string) => str.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 const formatConfidence = (score: number | undefined): string => {
   if (score === undefined || score === null) {
@@ -164,6 +164,170 @@ return nested;
   return [];
 };
 
+const asRecord = (value: unknown): Record<string, unknown> | undefined => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+return undefined;
+}
+
+  return value as Record<string, unknown>;
+};
+
+const asStringArray = (value: unknown): string[] | undefined => {
+  if (!Array.isArray(value)) {
+return undefined;
+}
+
+  const onlyStrings = value.filter((item): item is string => typeof item === 'string');
+
+  return onlyStrings.length > 0 ? onlyStrings : undefined;
+};
+
+const getPluginStatus = (plugin: VerificationPluginOutput | undefined): string | undefined => {
+  if (!plugin) {
+return undefined;
+}
+
+  const pluginData = asRecord(plugin.data);
+  const rawStatus = plugin.verificationStatus ?? pluginData?.['status'];
+  if (typeof rawStatus !== 'string') {
+return undefined;
+}
+
+  const normalizedStatus = rawStatus.toLowerCase();
+  if (normalizedStatus === 'completed') {
+    return 'VERIFIED';
+  }
+  if (normalizedStatus === 'failed') {
+    return 'ERROR';
+  }
+
+  return rawStatus;
+};
+
+const getPluginConfidenceScore = (
+  plugin: VerificationPluginOutput | undefined,
+): number | undefined => {
+  if (!plugin) {
+return undefined;
+}
+
+  if (typeof plugin.confidenceScore === 'number') {
+    return plugin.confidenceScore;
+  }
+
+  const pluginData = asRecord(plugin.data);
+  const nestedData = asRecord(pluginData?.['data']);
+  const fallbackConfidence = pluginData?.['confidenceScore'] ?? nestedData?.['confidence'];
+
+  return typeof fallbackConfidence === 'number' ? fallbackConfidence : undefined;
+};
+
+const getPluginVerifiedAttributes = (
+  plugin: VerificationPluginOutput | undefined,
+): string[] | undefined => {
+  if (!plugin) {
+return undefined;
+}
+
+  if (plugin.verifiedAttributes && plugin.verifiedAttributes.length > 0) {
+    return plugin.verifiedAttributes;
+  }
+
+  const pluginData = asRecord(plugin.data);
+  const nestedData = asRecord(pluginData?.['data']);
+
+  return asStringArray(pluginData?.['verifiedAttributes']) ??
+    asStringArray(nestedData?.['verifiedAttributes']);
+};
+
+const getPluginFailedAttributes = (
+  plugin: VerificationPluginOutput | undefined,
+): string[] | undefined => {
+  if (!plugin) {
+return undefined;
+}
+
+  if (plugin.failedAttributes && plugin.failedAttributes.length > 0) {
+    return plugin.failedAttributes;
+  }
+
+  const pluginData = asRecord(plugin.data);
+  const nestedData = asRecord(pluginData?.['data']);
+
+  return asStringArray(pluginData?.['failedAttributes']) ??
+    asStringArray(nestedData?.['failedAttributes']);
+};
+
+const getPluginExtractedData = (
+  plugin: VerificationPluginOutput | undefined,
+): Record<string, unknown> | undefined => {
+  if (!plugin) {
+return undefined;
+}
+
+  if (plugin.metadata?.extractedData) {
+    return plugin.metadata.extractedData;
+  }
+
+  const pluginData = asRecord(plugin.data);
+  const nestedData = asRecord(pluginData?.['data']);
+  const extractedFromNestedData = asRecord(nestedData?.['extractedData']);
+  if (extractedFromNestedData) {
+    return extractedFromNestedData;
+  }
+
+  const extractedFromTopLevelData = asRecord(pluginData?.['extractedData']);
+  if (extractedFromTopLevelData) {
+    return extractedFromTopLevelData;
+  }
+
+  const metadata = asRecord(pluginData?.['metadata']);
+  const extractedFromMetadata = asRecord(metadata?.['extractedData']);
+  if (extractedFromMetadata) {
+    return extractedFromMetadata;
+  }
+
+  return pluginData;
+};
+
+const getPluginImages = (
+  plugin: VerificationPluginOutput | undefined,
+): Array<{ context?: string; content: string }> => {
+  if (!plugin) {
+return [];
+}
+
+  const pluginData = asRecord(plugin.data);
+  const nestedData = asRecord(pluginData?.['data']);
+  const rawImages = [pluginData?.['images'], nestedData?.['images']];
+  const collected: Array<{ context?: string; content: string }> = [];
+
+  for (const candidate of rawImages) {
+    if (!Array.isArray(candidate)) {
+      continue;
+    }
+
+    for (const item of candidate) {
+      if (typeof item === 'string') {
+        collected.push({ content: item });
+        continue;
+      }
+
+      const image = asRecord(item);
+      const content = image?.['content'];
+      const context = image?.['context'];
+      if (typeof content === 'string' && content.length > 0) {
+        collected.push({
+          content,
+          ...(typeof context === 'string' ? { context } : {}),
+        });
+      }
+    }
+  }
+
+  return collected;
+};
+
 interface DocumentDetail {
   imageUrl?: string;
   base64?: string;
@@ -183,18 +347,71 @@ const DOCUMENT_CATEGORY_LABELS: Record<string, string> = {
   proof_of_address: 'Proof of Address',
 };
 
+const getImageCategory = (context: string | undefined): string => {
+  const normalized = (context || '').toLowerCase();
+  if (normalized.includes('selfie') || normalized.includes('face')) {
+    return 'proof_of_identity_ownership';
+  }
+  if (normalized.includes('address') || normalized.includes('utility')) {
+    return 'proof_of_address';
+  }
+
+  return 'proof_of_identity';
+};
+
+const mapCallbackImagesToDocuments = (
+  images: Array<{ context?: string; content: string }>,
+): AdaptedDocument[] => {
+  if (images.length === 0) {
+return [];
+}
+
+  const grouped = new Map<string, DocumentDetail[]>();
+
+  for (const image of images) {
+    const category = getImageCategory(image.context);
+    const existing = grouped.get(category) ?? [];
+    const content = image.content.trim();
+
+    if (!content) {
+      continue;
+    }
+
+    const detail: DocumentDetail = {
+      title: image.context ? toTitleCase(image.context.replace(/[\s-]+/g, '_')) : undefined,
+    };
+
+    if (content.startsWith('http://') || content.startsWith('https://') || content.startsWith('data:')) {
+      detail.imageUrl = content;
+    } else {
+      detail.base64 = content;
+    }
+
+    existing.push(detail);
+    grouped.set(category, existing);
+  }
+
+  return Array.from(grouped.entries()).map(([category, details]) => ({
+    category,
+    details,
+  }));
+};
+
 const computeOverallConfidence = (
   docVerification: VerificationPluginOutput | undefined,
   facialVerification: VerificationPluginOutput | undefined,
 ): number | null => {
   const scores: number[] = [];
 
-  if (docVerification?.confidenceScore !== undefined && docVerification.confidenceScore !== null) {
-    scores.push(docVerification.confidenceScore > 1 ? docVerification.confidenceScore : docVerification.confidenceScore * 100);
+  const docConfidence = getPluginConfidenceScore(docVerification);
+  const facialConfidence = getPluginConfidenceScore(facialVerification);
+
+  if (docConfidence !== undefined && docConfidence !== null) {
+    scores.push(docConfidence > 1 ? docConfidence : docConfidence * 100);
   }
 
-  if (facialVerification?.confidenceScore !== undefined && facialVerification.confidenceScore !== null) {
-    scores.push(facialVerification.confidenceScore > 1 ? facialVerification.confidenceScore : facialVerification.confidenceScore * 100);
+  if (facialConfidence !== undefined && facialConfidence !== null) {
+    scores.push(facialConfidence > 1 ? facialConfidence : facialConfidence * 100);
   }
 
   if (scores.length === 0) return null;
@@ -215,6 +432,15 @@ const getStatusBadge = (
 
 const isNonVerified = (status: string | undefined): boolean =>
   !!status && status !== 'VERIFIED';
+
+const needsReview = (status: string | undefined): boolean =>
+  !!status && status !== 'VERIFIED' && status !== 'PENDING';
+
+const isRawVerificationResult = (data: Record<string, unknown> | undefined): boolean =>
+  !!data &&
+  'confidenceScore' in data &&
+  'failedAttributes' in data &&
+  'verifiedAttributes' in data;
 
 export const useVerificationResultsBlock = ({
   pluginsOutput,
@@ -263,35 +489,84 @@ export const useVerificationResultsBlock = ({
     }
 
     const blocks = createBlocksTyped().addBlock();
+    const docStatus = getPluginStatus(docVerification);
+    const facialStatus = getPluginStatus(facialVerification);
+    const businessDocStatus = getPluginStatus(businessDocumentVerification);
+    const addressStatus = getPluginStatus(addressVerification);
+    const marketCardStatus = getPluginStatus(marketCardVerification);
+    const docFailedAttributes = getPluginFailedAttributes(docVerification) ?? [];
+    const facialFailedAttributes = getPluginFailedAttributes(facialVerification) ?? [];
 
     // --- Alert banner ---
     const alertLevel = computeAlertLevel(
       [
-        docVerification?.verificationStatus,
-        facialVerification?.verificationStatus,
-        businessDocumentVerification?.verificationStatus,
-        addressVerification?.verificationStatus,
-        marketCardVerification?.verificationStatus,
+        docStatus,
+        facialStatus,
+        businessDocStatus,
+        addressStatus,
+        marketCardStatus,
       ],
       deviceDedup?.isDuplicate,
     );
 
+    // Build specific alert message listing which checks need review and why
+    const failedChecks: string[] = [];
+    if (docVerification && needsReview(docStatus)) {
+      const hasError = docFailedAttributes.some((a: string) => a.toLowerCase().includes('error'));
+      failedChecks.push(hasError ? 'Document Verification (processing error)' : 'Document Verification');
+    }
+    if (facialVerification && needsReview(facialStatus)) {
+      const hasError = facialStatus === 'ERROR' ||
+        facialFailedAttributes.some((a: string) => a.toLowerCase().includes('error'));
+      failedChecks.push(hasError ? 'Facial Verification (system error)' : 'Facial Verification');
+    }
+    if (businessDocumentVerification && needsReview(businessDocStatus)) {
+      failedChecks.push('Business Document Verification');
+    }
+    if (addressVerification && needsReview(addressStatus)) {
+      failedChecks.push('Address Verification');
+    }
+    if (marketCardVerification && needsReview(marketCardStatus)) {
+      failedChecks.push('Market Card Verification');
+    }
+    const alertMessage = failedChecks.length > 0
+      ? `Checks requiring review: ${failedChecks.join(', ')}`
+      : undefined;
+
     blocks.addCell({
       type: 'node',
-      value: React.createElement(AlertBanner, { level: alertLevel }),
+      value: React.createElement(AlertBanner, { level: alertLevel, message: alertMessage }),
     });
 
     // --- Overall heading + status badges + confidence scores (non-collapsible) ---
     const overallConfidence = computeOverallConfidence(docVerification, facialVerification);
+
+    const primaryVerificationPlugins = [docVerification, facialVerification].filter(
+      Boolean,
+    ) as VerificationPluginOutput[];
+    const allErrored = primaryVerificationPlugins.length > 0 && primaryVerificationPlugins.every(v => {
+        const confidence = getPluginConfidenceScore(v);
+        const status = getPluginStatus(v);
+        const failedAttributes = getPluginFailedAttributes(v) ?? [];
+
+        return confidence === 0 && (
+          status === 'ERROR' ||
+          failedAttributes.some((a: string) => a.toLowerCase().includes('error'))
+        );
+      });
+
+    const confidenceText = allErrored
+      ? 'Verification Results \u2014 Verification incomplete \u2014 processing errors occurred'
+      : overallConfidence !== null
+        ? `Verification Results \u2014 Overall Confidence: ${formatConfidence(overallConfidence)}`
+        : 'Verification Results';
 
     const overallBlock = createBlocksTyped()
       .addBlock()
       .addCell({
         id: 'verification-results-heading',
         type: 'heading',
-        value: overallConfidence !== null
-          ? `Verification Results — Overall Confidence: ${formatConfidence(overallConfidence)}`
-          : 'Verification Results',
+        value: confidenceText,
       })
       .addCell({
         id: 'verification-results-subheading',
@@ -301,9 +576,9 @@ export const useVerificationResultsBlock = ({
       });
 
     // Add status badges for visual differentiation
-    if (docVerification?.verificationStatus) {
-      const display = STATUS_DISPLAY[docVerification.verificationStatus] ?? {
-        label: docVerification.verificationStatus,
+    if (docStatus) {
+      const display = STATUS_DISPLAY[docStatus] ?? {
+        label: docStatus,
         variant: 'info',
       };
       overallBlock.addCell({
@@ -316,9 +591,9 @@ export const useVerificationResultsBlock = ({
       });
     }
 
-    if (facialVerification?.verificationStatus) {
-      const display = STATUS_DISPLAY[facialVerification.verificationStatus] ?? {
-        label: facialVerification.verificationStatus,
+    if (facialStatus) {
+      const display = STATUS_DISPLAY[facialStatus] ?? {
+        label: facialStatus,
         variant: 'info',
       };
       overallBlock.addCell({
@@ -331,9 +606,9 @@ export const useVerificationResultsBlock = ({
       });
     }
 
-    if (businessDocumentVerification?.verificationStatus) {
-      const display = STATUS_DISPLAY[businessDocumentVerification.verificationStatus] ?? {
-        label: businessDocumentVerification.verificationStatus,
+    if (businessDocStatus) {
+      const display = STATUS_DISPLAY[businessDocStatus] ?? {
+        label: businessDocStatus,
         variant: 'info',
       };
       overallBlock.addCell({
@@ -346,9 +621,9 @@ export const useVerificationResultsBlock = ({
       });
     }
 
-    if (addressVerification?.verificationStatus) {
-      const display = STATUS_DISPLAY[addressVerification.verificationStatus] ?? {
-        label: addressVerification.verificationStatus,
+    if (addressStatus) {
+      const display = STATUS_DISPLAY[addressStatus] ?? {
+        label: addressStatus,
         variant: 'info',
       };
       overallBlock.addCell({
@@ -361,9 +636,9 @@ export const useVerificationResultsBlock = ({
       });
     }
 
-    if (marketCardVerification?.verificationStatus) {
-      const display = STATUS_DISPLAY[marketCardVerification.verificationStatus] ?? {
-        label: marketCardVerification.verificationStatus,
+    if (marketCardStatus) {
+      const display = STATUS_DISPLAY[marketCardStatus] ?? {
+        label: marketCardStatus,
         variant: 'info',
       };
       overallBlock.addCell({
@@ -400,10 +675,13 @@ export const useVerificationResultsBlock = ({
     // --- Document Verification (collapsible) ---
     if (docVerification) {
       const docDetails = buildUnifiedVerificationDetails(docVerification);
-      const extractedData = (docVerification.metadata?.extractedData ?? docVerification.data) as
+      const extractedData = getPluginExtractedData(docVerification) as
         | Record<string, unknown>
         | undefined;
-      const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+
+      const extractedDetails = (extractedData && !isRawVerificationResult(extractedData))
+        ? buildExtractedDataDetails(extractedData)
+        : [];
 
       blocks.addCell({
         type: 'node',
@@ -411,13 +689,13 @@ export const useVerificationResultsBlock = ({
           CollapsibleSection,
           {
             title: 'Document Verification',
-            defaultOpen: isNonVerified(docVerification.verificationStatus),
-            statusBadge: getStatusBadge(docVerification.verificationStatus),
+            defaultOpen: isNonVerified(docStatus),
+            statusBadge: getStatusBadge(docStatus),
           },
           React.createElement(ReadOnlyDetailsInline, { details: docDetails }),
           React.createElement(AttributeBadges, {
-            verified: docVerification.verifiedAttributes,
-            failed: docVerification.failedAttributes,
+            verified: getPluginVerifiedAttributes(docVerification),
+            failed: docFailedAttributes,
           }),
           extractedDetails.length > 0 &&
             React.createElement(
@@ -432,8 +710,12 @@ export const useVerificationResultsBlock = ({
     // --- Facial Verification (collapsible) ---
     if (facialVerification) {
       const facialDetails = buildUnifiedVerificationDetails(facialVerification);
+      const facialData = asRecord(facialVerification.data);
+      const facialDataMetadata = asRecord(facialData?.['metadata']);
       const possibleDuplicates = normalizePossibleDuplicates(
-        facialVerification.metadata?.possibleDuplicates,
+        facialVerification.metadata?.possibleDuplicates ??
+          facialDataMetadata?.['possibleDuplicates'] ??
+          facialData?.['possibleDuplicates'],
       );
 
       blocks.addCell({
@@ -442,13 +724,13 @@ export const useVerificationResultsBlock = ({
           CollapsibleSection,
           {
             title: 'Facial Verification',
-            defaultOpen: isNonVerified(facialVerification.verificationStatus),
-            statusBadge: getStatusBadge(facialVerification.verificationStatus),
+            defaultOpen: isNonVerified(facialStatus),
+            statusBadge: getStatusBadge(facialStatus),
           },
           React.createElement(ReadOnlyDetailsInline, { details: facialDetails }),
           React.createElement(AttributeBadges, {
-            verified: facialVerification.verifiedAttributes,
-            failed: facialVerification.failedAttributes,
+            verified: getPluginVerifiedAttributes(facialVerification),
+            failed: facialFailedAttributes,
           }),
           possibleDuplicates.length > 0 &&
             React.createElement(
@@ -476,8 +758,10 @@ export const useVerificationResultsBlock = ({
     // --- Business Document Verification (collapsible) ---
     if (businessDocumentVerification) {
       const bizDocDetails = buildUnifiedVerificationDetails(businessDocumentVerification);
-      const extractedData = businessDocumentVerification.metadata?.extractedData;
-      const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+      const extractedData = getPluginExtractedData(businessDocumentVerification);
+      const extractedDetails = (extractedData && !isRawVerificationResult(extractedData))
+        ? buildExtractedDataDetails(extractedData)
+        : [];
 
       blocks.addCell({
         type: 'node',
@@ -485,13 +769,13 @@ export const useVerificationResultsBlock = ({
           CollapsibleSection,
           {
             title: 'Business Document Verification',
-            defaultOpen: isNonVerified(businessDocumentVerification.verificationStatus),
-            statusBadge: getStatusBadge(businessDocumentVerification.verificationStatus),
+            defaultOpen: isNonVerified(businessDocStatus),
+            statusBadge: getStatusBadge(businessDocStatus),
           },
           React.createElement(ReadOnlyDetailsInline, { details: bizDocDetails }),
           React.createElement(AttributeBadges, {
-            verified: businessDocumentVerification.verifiedAttributes,
-            failed: businessDocumentVerification.failedAttributes,
+            verified: getPluginVerifiedAttributes(businessDocumentVerification),
+            failed: getPluginFailedAttributes(businessDocumentVerification),
           }),
           extractedDetails.length > 0 &&
             React.createElement(
@@ -506,8 +790,10 @@ export const useVerificationResultsBlock = ({
     // --- Address Verification (collapsible) ---
     if (addressVerification) {
       const addrDetails = buildUnifiedVerificationDetails(addressVerification);
-      const extractedData = addressVerification.metadata?.extractedData;
-      const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+      const extractedData = getPluginExtractedData(addressVerification);
+      const extractedDetails = (extractedData && !isRawVerificationResult(extractedData))
+        ? buildExtractedDataDetails(extractedData)
+        : [];
 
       blocks.addCell({
         type: 'node',
@@ -515,13 +801,13 @@ export const useVerificationResultsBlock = ({
           CollapsibleSection,
           {
             title: 'Address Verification',
-            defaultOpen: isNonVerified(addressVerification.verificationStatus),
-            statusBadge: getStatusBadge(addressVerification.verificationStatus),
+            defaultOpen: isNonVerified(addressStatus),
+            statusBadge: getStatusBadge(addressStatus),
           },
           React.createElement(ReadOnlyDetailsInline, { details: addrDetails }),
           React.createElement(AttributeBadges, {
-            verified: addressVerification.verifiedAttributes,
-            failed: addressVerification.failedAttributes,
+            verified: getPluginVerifiedAttributes(addressVerification),
+            failed: getPluginFailedAttributes(addressVerification),
           }),
           extractedDetails.length > 0 &&
             React.createElement(
@@ -536,8 +822,10 @@ export const useVerificationResultsBlock = ({
     // --- Market Card Verification (collapsible) ---
     if (marketCardVerification) {
       const mcDetails = buildUnifiedVerificationDetails(marketCardVerification);
-      const extractedData = marketCardVerification.metadata?.extractedData;
-      const extractedDetails = extractedData ? buildExtractedDataDetails(extractedData) : [];
+      const extractedData = getPluginExtractedData(marketCardVerification);
+      const extractedDetails = (extractedData && !isRawVerificationResult(extractedData))
+        ? buildExtractedDataDetails(extractedData)
+        : [];
 
       blocks.addCell({
         type: 'node',
@@ -545,13 +833,13 @@ export const useVerificationResultsBlock = ({
           CollapsibleSection,
           {
             title: 'Market Card Verification',
-            defaultOpen: isNonVerified(marketCardVerification.verificationStatus),
-            statusBadge: getStatusBadge(marketCardVerification.verificationStatus),
+            defaultOpen: isNonVerified(marketCardStatus),
+            statusBadge: getStatusBadge(marketCardStatus),
           },
           React.createElement(ReadOnlyDetailsInline, { details: mcDetails }),
           React.createElement(AttributeBadges, {
-            verified: marketCardVerification.verifiedAttributes,
-            failed: marketCardVerification.failedAttributes,
+            verified: getPluginVerifiedAttributes(marketCardVerification),
+            failed: getPluginFailedAttributes(marketCardVerification),
           }),
           extractedDetails.length > 0 &&
             React.createElement(
@@ -620,10 +908,16 @@ export const useVerificationResultsBlock = ({
     }
 
     // --- Document images grouped by category (collapsible per category) ---
-    if (documents && documents.length > 0) {
+    const callbackImageDocuments = mapCallbackImagesToDocuments([
+      ...getPluginImages(docVerification),
+      ...getPluginImages(facialVerification),
+    ]);
+    const documentsToRender = documents && documents.length > 0 ? documents : callbackImageDocuments;
+
+    if (documentsToRender.length > 0) {
       const categorized = new Map<string, DocumentDetail[]>();
 
-      for (const doc of documents) {
+      for (const doc of documentsToRender) {
         const category = doc.category ?? 'other';
         const existing = categorized.get(category) ?? [];
         existing.push(...(doc.details ?? []));
@@ -693,39 +987,51 @@ function buildOverallStatus(
 ): Array<{ label: string; value: string }> {
   const details: Array<{ label: string; value: string }> = [];
 
-  if (docVerification?.confidenceScore !== undefined) {
+  const pushConfidenceDetail = (
+    label: string,
+    plugin: VerificationPluginOutput | undefined,
+  ) => {
+    const confidence = getPluginConfidenceScore(plugin);
+    if (confidence === undefined || confidence === null) {
+      return;
+    }
+
+    const status = getPluginStatus(plugin);
+    const failedAttributes = getPluginFailedAttributes(plugin) ?? [];
+    const isNoScore = confidence === 0 && (
+      status === 'ERROR' || failedAttributes.some((attr: string) => attr.toLowerCase().includes('error'))
+    );
+
     details.push({
-      label: 'Document Confidence',
-      value: formatConfidence(docVerification.confidenceScore),
+      label,
+      value: isNoScore ? 'N/A (Processing Error)' : formatConfidence(confidence),
     });
+  };
+
+  const documentConfidence = getPluginConfidenceScore(docVerification);
+  const facialConfidence = getPluginConfidenceScore(facialVerification);
+  const businessConfidence = getPluginConfidenceScore(businessDocVerification);
+  const addressConfidence = getPluginConfidenceScore(addressVerification);
+  const marketCardConfidence = getPluginConfidenceScore(marketCardVerification);
+
+  if (documentConfidence !== undefined) {
+    pushConfidenceDetail('Document Confidence', docVerification);
   }
 
-  if (facialVerification?.confidenceScore !== undefined) {
-    details.push({
-      label: 'Facial Confidence',
-      value: formatConfidence(facialVerification.confidenceScore),
-    });
+  if (facialConfidence !== undefined) {
+    pushConfidenceDetail('Facial Confidence', facialVerification);
   }
 
-  if (businessDocVerification?.confidenceScore !== undefined) {
-    details.push({
-      label: 'Business Document Confidence',
-      value: formatConfidence(businessDocVerification.confidenceScore),
-    });
+  if (businessConfidence !== undefined) {
+    pushConfidenceDetail('Business Document Confidence', businessDocVerification);
   }
 
-  if (addressVerification?.confidenceScore !== undefined) {
-    details.push({
-      label: 'Address Confidence',
-      value: formatConfidence(addressVerification.confidenceScore),
-    });
+  if (addressConfidence !== undefined) {
+    pushConfidenceDetail('Address Confidence', addressVerification);
   }
 
-  if (marketCardVerification?.confidenceScore !== undefined) {
-    details.push({
-      label: 'Market Card Confidence',
-      value: formatConfidence(marketCardVerification.confidenceScore),
-    });
+  if (marketCardConfidence !== undefined) {
+    pushConfidenceDetail('Market Card Confidence', marketCardVerification);
   }
 
   return details;
@@ -735,36 +1041,47 @@ function buildUnifiedVerificationDetails(
   plugin: VerificationPluginOutput,
 ): Array<{ label: string; value: string }> {
   const details: Array<{ label: string; value: string }> = [];
+  const verificationStatus = getPluginStatus(plugin);
+  const confidenceScore = getPluginConfidenceScore(plugin);
+  const failedAttributes = getPluginFailedAttributes(plugin) ?? [];
 
-  if (plugin.verificationStatus) {
-    const statusDisplay = STATUS_DISPLAY[plugin.verificationStatus];
+  if (verificationStatus) {
+    const statusDisplay = STATUS_DISPLAY[verificationStatus];
     details.push({
       label: 'Verification Status',
-      value: statusDisplay?.label ?? toTitleCase(plugin.verificationStatus),
+      value: statusDisplay?.label ?? toTitleCase(verificationStatus),
     });
   }
 
-  if (plugin.status) {
-    details.push({ label: 'Process Status', value: toTitleCase(plugin.status) });
-  }
-
-  if (plugin.confidenceScore !== undefined && plugin.confidenceScore !== null) {
-    const isSystemError = plugin.verificationStatus === 'ERROR' && plugin.confidenceScore === 0;
+  if (confidenceScore !== undefined && confidenceScore !== null) {
+    const hasProcessingError = failedAttributes.some((attr: string) =>
+      attr.toLowerCase().includes('error')
+    );
+    const isNoScore = confidenceScore === 0 && (
+      verificationStatus === 'ERROR' || hasProcessingError
+    );
     details.push({
       label: 'Confidence',
-      value: isSystemError ? 'N/A (System Error)' : formatConfidence(plugin.confidenceScore),
+      value: isNoScore ? 'N/A (Processing Error)' : formatConfidence(confidenceScore),
     });
   }
 
   // Verified/failed attributes are now rendered as AttributeBadges (not comma strings)
-
-  const methods = plugin.metadata?.methodsExecuted;
+  const pluginData = asRecord(plugin.data);
+  const pluginDataMetadata = asRecord(pluginData?.['metadata']);
+  const methods = plugin.metadata?.methodsExecuted ??
+    asStringArray(pluginDataMetadata?.['methodsExecuted']) ??
+    asStringArray(pluginData?.['methodsExecuted']);
 
   if (methods && methods.length > 0) {
     details.push({ label: 'Methods Executed', value: methods.map(m => toTitleCase(m)).join(', ') });
   }
 
-  const duplicates = normalizePossibleDuplicates(plugin.metadata?.possibleDuplicates);
+  const duplicates = normalizePossibleDuplicates(
+    plugin.metadata?.possibleDuplicates ??
+      pluginDataMetadata?.['possibleDuplicates'] ??
+      pluginData?.['possibleDuplicates'],
+  );
 
   if (duplicates?.length) {
     details.push({ label: 'Possible Duplicates', value: String(duplicates.length) });
@@ -824,18 +1141,18 @@ function buildDeviceDedupDetails(
 }
 
 const INTERNAL_METADATA_KEYS = new Set([
-  'methodBreakdown',
-  'methodsExecuted',
-  'possibleDuplicates',
-  'processingTime',
-  'requestId',
-  'verificationId',
-  'timestamp',
-  'version',
-  'pipeline',
-  'strategies',
-  'rawResponse',
-  'errorDetails',
+  // VerificationResult top-level fields
+  'status', 'confidenceScore', 'verifiedAttributes', 'failedAttributes',
+  'sourceCount', 'weightedConfidence', 'effectiveConfidenceScore',
+  'corroborationScore', 'contradictions', 'corroborationBonus',
+  'contradictionPenalty', 'agreementCount', 'minimumThreshold',
+  'skippedMethods', 'verified', 'confidence', 'data', 'images',
+  // Nested metadata object
+  'metadata',
+  // Internal metadata keys (if metadata is flattened)
+  'methodBreakdown', 'methodsExecuted', 'possibleDuplicates',
+  'processingTime', 'requestId', 'verificationId', 'timestamp',
+  'version', 'pipeline', 'strategies', 'rawResponse', 'errorDetails',
 ]);
 
 function buildExtractedDataDetails(

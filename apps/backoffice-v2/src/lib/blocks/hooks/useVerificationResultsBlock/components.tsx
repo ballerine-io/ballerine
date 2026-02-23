@@ -75,7 +75,7 @@ interface AttributeBadgesProps {
   failed?: string[];
 }
 
-const toTitleCase = (str: string) => str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+const toTitleCase = (str: string) => str.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 export const AttributeBadges: FunctionComponent<AttributeBadgesProps> = ({ verified, failed }) => {
   const hasVerified = verified && verified.length > 0;
@@ -117,6 +117,7 @@ type AlertLevel = 'success' | 'warning' | 'error';
 
 interface AlertBannerProps {
   level: AlertLevel;
+  message?: string;
 }
 
 const ALERT_CONFIG: Record<AlertLevel, { bg: string; border: string; text: string; message: string }> = {
@@ -140,7 +141,7 @@ const ALERT_CONFIG: Record<AlertLevel, { bg: string; border: string; text: strin
   },
 };
 
-export const AlertBanner: FunctionComponent<AlertBannerProps> = ({ level }) => {
+export const AlertBanner: FunctionComponent<AlertBannerProps> = ({ level, message }) => {
   const config = ALERT_CONFIG[level];
 
   return (
@@ -160,7 +161,7 @@ export const AlertBanner: FunctionComponent<AlertBannerProps> = ({ level }) => {
           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
         </svg>
       )}
-      <span className={`text-sm font-medium ${config.text}`}>{config.message}</span>
+      <span className={`text-sm font-medium ${config.text}`}>{message || config.message}</span>
     </div>
   );
 };

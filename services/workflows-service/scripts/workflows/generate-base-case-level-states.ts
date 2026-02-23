@@ -11,6 +11,7 @@ export const generateBaseCaseLevelStates = (
         [CommonWorkflowEvent.REJECT]: { target: CommonWorkflowStates.REJECTED },
         [CommonWorkflowEvent.APPROVE]: { target: CommonWorkflowStates.APPROVED },
         [CommonWorkflowEvent.REVISION]: { target: CommonWorkflowStates.REVISION },
+        edit: { target: defaultState },
       },
     },
     [CommonWorkflowStates.REJECTED]: {
@@ -77,6 +78,7 @@ export const generateBaseCaseLevelStatesWithPendingResubmission = (params: {
         [CommonWorkflowEvent.APPROVE]: { target: CommonWorkflowStates.APPROVED },
         [CommonWorkflowEvent.REJECT]: { target: CommonWorkflowStates.REJECTED },
         [CommonWorkflowEvent.REVISION]: { target: pendingResubmissionState },
+        edit: { target: manualReviewState },
       },
     },
     [pendingResubmissionState]: {

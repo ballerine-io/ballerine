@@ -21,7 +21,7 @@ const removeLastKeyFromPath = (path: string) => {
   return path?.split('.')?.slice(0, -1)?.join('.');
 };
 
-const UNIFIED_ERROR_STATUSES = new Set(['ERROR', 'EXPIRED']);
+const UNIFIED_ERROR_STATUSES = new Set(['ERROR', 'EXPIRED', 'FAILED']);
 
 const getProcessStatusFromUnifiedPayload = (payload: AnyRecord): keyof typeof ProcessStatus => {
   if (payload?.error) {
@@ -29,12 +29,13 @@ const getProcessStatusFromUnifiedPayload = (payload: AnyRecord): keyof typeof Pr
   }
 
   const status = typeof payload?.status === 'string' ? payload.status : undefined;
+  const normalizedStatus = status?.toUpperCase();
 
-  if (status === 'PENDING') {
+  if (normalizedStatus === 'PENDING') {
     return ProcessStatus.IN_PROGRESS;
   }
 
-  if (status && UNIFIED_ERROR_STATUSES.has(status)) {
+  if (normalizedStatus && UNIFIED_ERROR_STATUSES.has(normalizedStatus)) {
     return ProcessStatus.ERROR;
   }
 

@@ -104,6 +104,26 @@ export const ConfigSchema = z
           .optional(),
       })
       .optional(),
+    // KYC mobile SDK config — read by kyb-app/public/kyc-mobile/index.html
+    kycSdkSteps: z.array(z.string()).optional(),
+    kycSdkDocumentOptions: z
+      .array(
+        z.object({
+          type: z.string(),
+          kind: z.string(),
+          variant: z.string().optional(),
+          backSide: z.boolean().optional(),
+        }),
+      )
+      .optional(),
+    kycSdkTheme: z
+      .object({
+        primaryColor: z.string().optional(),
+        fontFamily: z.string().optional(),
+        fontLink: z.string().optional(),
+        fontWeights: z.array(z.number()).optional(),
+      })
+      .optional(),
   })
   .strict()
   .optional();
