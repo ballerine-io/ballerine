@@ -108,7 +108,7 @@ async function createCustomer(
         },
         ONGOING_MERCHANT_REPORT: {
           name: 'ONGOING_MERCHANT_REPORT',
-          enabled: true,
+          enabled: false,
           options: {
             reportType: 'ONGOING_MERCHANT_REPORT_T1',
             runByDefault: true,

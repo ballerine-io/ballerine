@@ -39,13 +39,21 @@ export const fetchBusinessReportMetrics = async ({ from, to }: { from?: string; 
   return handleZodError(error, businessReportMetrics);
 };
 
-export const useBusinessReportMetricsQuery = ({ from, to }: { from?: string; to?: string }) => {
+export const useBusinessReportMetricsQuery = ({
+  from,
+  to,
+  enabled: featureEnabled = true,
+}: {
+  from?: string;
+  to?: string;
+  enabled?: boolean;
+}) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
     queryKey: ['business-report-metrics', from, to],
     queryFn: () => fetchBusinessReportMetrics({ from, to }),
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && featureEnabled,
     keepPreviousData: true,
   });
 };

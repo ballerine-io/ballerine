@@ -39,7 +39,7 @@ export type TCustomerFeaturesConfig = {
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_MERCHANT_REPORT]: {
     name: FEATURE_LIST.ONGOING_MERCHANT_REPORT,
-    enabled: true,
+    enabled: false,
     options: {
       scheduleType: 'specific',
       dayInMonth: 1,

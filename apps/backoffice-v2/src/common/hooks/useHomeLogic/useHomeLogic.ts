@@ -90,6 +90,7 @@ export const useHomeLogic = () => {
   const { data: metrics, isLoading: isLoadingMetrics } = useBusinessReportMetricsQuery({
     from: mmFrom,
     to: mmTo ? dayjs(mmTo).add(1, 'day').format('YYYY-MM-DD') : undefined,
+    enabled: isMerchantMonitoringEnabled,
   });
 
   const onMMDatesChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {

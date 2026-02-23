@@ -47,6 +47,8 @@ async function upsertSLCustomer(
       authenticationConfiguration: {
         webhookSharedSecret,
       },
+      logoImageUri: '/images/mikashboks-logo-horizontal.svg',
+      faviconImageUri: '/favicon.ico',
       country: 'SL',
       language: 'en',
       config,
@@ -58,8 +60,8 @@ async function upsertSLCustomer(
       authenticationConfiguration: {
         webhookSharedSecret,
       },
-      logoImageUri: '',
-      faviconImageUri: '',
+      logoImageUri: '/images/mikashboks-logo-horizontal.svg',
+      faviconImageUri: '/favicon.ico',
       country: 'SL',
       language: 'en',
       config,
