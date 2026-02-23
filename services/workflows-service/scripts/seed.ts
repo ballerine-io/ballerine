@@ -197,7 +197,7 @@ async function seed() {
       id: '43a0a298-0d02-4a2e-a8cc-73c06b465310',
       firstName: 'Nadia',
       lastName: 'Comaneci',
-      email: 'nadia@ballerine.com',
+      email: 'nadia@test.mikashboks.com',
       correlationId: '1',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
       projectId: project1.id,
@@ -209,7 +209,7 @@ async function seed() {
       id: '43a0a298-0d02-4a2e-a8cc-73c06b465311',
       firstName: 'Nadin',
       lastName: 'Mami',
-      email: 'ndain@ballerine.com',
+      email: 'nadin@test.mikashboks.com',
       correlationId: '2',
       dateOfBirth: '2000-11-04T12:45:51.695Z',
       projectId: project1.id,
@@ -1093,7 +1093,7 @@ async function createUsers({ project1, project2 }: any, client: PrismaClient) {
   const users = [
     adminUser,
     {
-      email: 'agent1@ballerine.com',
+      email: 'agent1@test.mikashboks.com',
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       password: await hash('agent1', BCRYPT_SALT),
@@ -1104,7 +1104,7 @@ async function createUsers({ project1, project2 }: any, client: PrismaClient) {
       },
     },
     {
-      email: 'agent2@ballerine.com',
+      email: 'agent2@test.mikashboks.com',
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       password: await hash('agent2', BCRYPT_SALT),
@@ -1115,7 +1115,7 @@ async function createUsers({ project1, project2 }: any, client: PrismaClient) {
       },
     },
     {
-      email: 'agent3@ballerine.com',
+      email: 'agent3@test.mikashboks.com',
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       password: await hash('agent3', BCRYPT_SALT),

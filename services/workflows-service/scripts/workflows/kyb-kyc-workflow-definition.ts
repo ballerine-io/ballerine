@@ -130,7 +130,7 @@ export const kybKycWorkflowDefinition = {
               mapping: `{
               templateId: 'd-8949519316074e03909042cfc5eb4f02',
               adapter: '${env.MAIL_ADAPTER}'
-              from: 'no-reply@ballerine.com',
+              from: 'no-reply@mikashboks.com',
               receivers: [mainRepresentative.email],
               name: mainRepresentative.fullName,
               provider: customerName,
