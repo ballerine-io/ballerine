@@ -13,14 +13,16 @@ const preloadByExtension = async (src: string): Promise<string> => {
       const response = await fetch(src);
 
       if (response.ok) {
-        svg = await response.text();
-      } else {
-        console.warn(`Failed to preload SVG: ${src} (${response.status})`);
-        svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+        const text = await response.text();
+        svg = text || undefined;
+      }
+      if (!svg) {
+        console.warn(`Failed to preload SVG: ${src} (${response.ok ? 'empty response' : response.status})`);
+        svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" width="100%" height="100%"></svg>';
       }
     } catch (err) {
       console.warn(`Failed to fetch SVG: ${src}`, err);
-      svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+      svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" width="100%" height="100%"></svg>';
     }
   }
 

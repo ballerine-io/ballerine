@@ -363,7 +363,7 @@
       <path d="M48 28h12" stroke-width="2.5" />
     </svg>
     <div>Rotate your phone for<br/>the best document photo</div>
-    <button class="dismiss-btn" type="button" onclick="document.getElementById('orientation-hint').classList.remove('visible')">Continue in portrait</button>
+    <button class="dismiss-btn" type="button">Continue in portrait</button>
   </div>
   <div id="kyc-host">
     <div class="init-loading">
@@ -540,6 +540,10 @@
     // ── Signal completion to Android WebView ──
     // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
     function signalCompletion(status, idvResult, reasonCode) {
+      // Clean up observers and animations before navigating away
+      if (typeof cleanupObserversAndAnimations === 'function') {
+        cleanupObserversAndAnimations();
+      }
       var url = new URL('/kyc-mobile/done', window.location.origin);
       url.searchParams.set('close', 'true');
       url.searchParams.set('status', status);
@@ -1221,10 +1225,18 @@
 
     var lottieInstance = null;
 
+    function destroyLottie() {
+      if (lottieInstance) {
+        try { lottieInstance.destroy(); } catch (e) { /* ignore */ }
+        lottieInstance = null;
+      }
+    }
+
     function initLottieForInitLoading() {
       if (typeof window.lottie === 'undefined') return;
       var initLoadingEl = document.querySelector('.init-loading');
       if (!initLoadingEl) return;
+      destroyLottie();
       var container = document.createElement('div');
       container.className = 'lottie-player';
       container.style.width = '120px';
@@ -1249,6 +1261,7 @@
       if (blrnApp.querySelector('.lottie-player')) return;
       var spinnerEl = blrnApp.querySelector('[class*="loader" i], [class*="spinner" i], [class*="loading" i]');
       if (!spinnerEl || !spinnerEl.parentElement) return;
+      destroyLottie();
       var container = document.createElement('div');
       container.className = 'lottie-player';
       container.style.width = '120px';
@@ -1283,6 +1296,7 @@
     var orientationHint = document.getElementById('orientation-hint');
     var isDocCaptureActive = false;
     var orientationDismissed = false;
+    var resizeDebounce = null;
 
     function showOrientationHint() {
       if (!isDocCaptureActive || orientationDismissed) return;
@@ -1297,7 +1311,7 @@
       orientationHint.classList.remove('visible');
     }
 
-    // Override dismiss button to set the dismissed flag
+    // Dismiss button handler (sole handler — inline onclick removed)
     var dismissBtn = orientationHint.querySelector('.dismiss-btn');
     if (dismissBtn) {
       dismissBtn.addEventListener('click', function () {
@@ -1330,11 +1344,15 @@
     }
 
     window.addEventListener('resize', function () {
-      if (isDocCaptureActive) showOrientationHint();
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(function () {
+        if (isDocCaptureActive) showOrientationHint();
+      }, 200);
     });
 
     // ── Step detection via MutationObserver ──
     var stepObserverDebounce = null;
+    var stepObserverAttached = false;
     var stepObserver = new MutationObserver(function () {
       clearTimeout(stepObserverDebounce);
       stepObserverDebounce = setTimeout(function () {
@@ -1364,15 +1382,33 @@
         if (isLoadingStep) {
           tryInjectLottieIntoSDKLoader(blrnApp);
         }
-      }, 150);
+      }, 250);
     });
 
-    setTimeout(function () {
+    function attachStepObserver() {
+      if (stepObserverAttached) return;
       var host = document.getElementById('kyc-host');
       if (host) {
         stepObserver.observe(host, { childList: true, subtree: true });
+        stepObserverAttached = true;
       }
-    }, 500);
+    }
+
+    // Cleanup on flow completion or page unload
+    function cleanupObserversAndAnimations() {
+      if (stepObserverAttached) {
+        stepObserver.disconnect();
+        stepObserverAttached = false;
+      }
+      clearTimeout(stepObserverDebounce);
+      clearTimeout(resizeDebounce);
+      destroyLottie();
+      releaseLandscape();
+    }
+
+    window.addEventListener('pagehide', cleanupObserversAndAnimations);
+
+    setTimeout(attachStepObserver, 500);
 
     // ── Offline detection ──
     var offlineBanner = document.getElementById('offline-banner');

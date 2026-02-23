@@ -425,7 +425,7 @@ const stepsTheme: TStepsConfigurations = [
           attributes: {
             src: '/assets/ui-packs/default/images/selfie-start.svg',
             alt: 'selfie-start',
-            width: '300x',
+            width: '300px',
             height: '300px',
           },
         },
