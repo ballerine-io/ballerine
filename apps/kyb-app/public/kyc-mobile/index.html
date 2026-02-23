@@ -378,6 +378,7 @@
     var TOKEN = params.get('token') || '';
     var preselectedDocType = params.get('docType');
     var initRetryAttempted = false;
+    var initFailed = false;
 
     // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
     // Security: NEVER allow apiUrl override from query params (prevents credential theft)
@@ -539,7 +540,10 @@
 
     // ── Signal completion to Android WebView ──
     // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
+    var signalSent = false;
     function signalCompletion(status, idvResult, reasonCode) {
+      if (signalSent) return;
+      signalSent = true;
       // Clean up observers and animations before navigating away
       if (typeof cleanupObserversAndAnimations === 'function') {
         cleanupObserversAndAnimations();
@@ -682,6 +686,32 @@
       return context;
     }
 
+    // ── Init status helper ──
+    function setInitStatus(msg) {
+      var span = document.querySelector('.init-loading span');
+      if (span) span.textContent = msg;
+    }
+
+    // ── Camera permission pre-check ──
+    async function checkCameraPermission() {
+      try {
+        if (navigator.permissions && navigator.permissions.query) {
+          var result = await navigator.permissions.query({ name: 'camera' });
+          if (result.state === 'denied') {
+            renderStatusCard({
+              icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f59e0b" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#f59e0b"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+              title: 'Camera Access Required',
+              body: 'Please enable camera access in your phone settings, then return to this page.',
+              primaryLabel: 'Retry',
+              onPrimary: function () { window.location.reload(); }
+            });
+            return false;
+          }
+        }
+      } catch (e) { /* not all browsers support permissions.query for camera */ }
+      return true;
+    }
+
     // ── Main initialization ──
     async function initFlow() {
       // Check SDK availability — script may fail to load on slow networks
@@ -699,6 +729,9 @@
         return;
       }
 
+      var cameraOk = await checkCameraPermission();
+      if (!cameraOk) return;
+
       // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
       // Retry once (2 attempts total) with 20s timeout per attempt.
       // Mobile networks in Sierra Leone can be unreliable — a single attempt is insufficient.
@@ -707,24 +740,30 @@
       var workflowData = null;
       var lastFetchError = null;
 
+      setInitStatus('Connecting to verification service...');
+
       for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
         try {
-          var controller = new AbortController();
-          var timeoutId = setTimeout(function () {
-            controller.abort();
-          }, FETCH_TIMEOUT_MS);
-          var resp = await fetch(apiBase + '/collection-flow/active-flow', {
-            headers: { Authorization: 'Bearer ' + TOKEN },
-            signal: controller.signal,
+          var fetchOptions = { headers: { Authorization: 'Bearer ' + TOKEN } };
+          var timeoutPromise = new Promise(function (_, reject) {
+            setTimeout(function () { reject(new Error('Timeout')); }, FETCH_TIMEOUT_MS);
           });
-          clearTimeout(timeoutId);
+          if (typeof AbortController !== 'undefined') {
+            var controller = new AbortController();
+            fetchOptions.signal = controller.signal;
+            setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS);
+          }
+          var resp = await Promise.race([
+            fetch(apiBase + '/collection-flow/active-flow', fetchOptions),
+            timeoutPromise
+          ]);
           if (!resp.ok) throw new Error('HTTP ' + resp.status);
           var json = await resp.json();
           workflowData = json.result || json;
           break; // success — exit retry loop
         } catch (e) {
           lastFetchError = e;
-          console.warn('Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:', e);
+          console.warn('[KYC] Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:', e && e.message || 'Unknown error');
           if (attempt < MAX_ATTEMPTS) {
             // Brief pause before retry (1s)
             await new Promise(function (r) {
@@ -735,16 +774,36 @@
       }
 
       if (!workflowData) {
-        console.error(
-          'Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:',
-          lastFetchError,
-        );
-        document.getElementById('kyc-host').innerHTML =
-          '<p class="init-message error">Could not connect to the verification service. Please check your internet connection and try again.</p>';
+        console.error('[KYC] Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:', lastFetchError && lastFetchError.message || 'Unknown error');
+        initFailed = true;
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          title: 'Connection Failed',
+          body: 'Could not connect to the verification service. Please check your internet connection and try again.',
+          primaryLabel: 'Retry',
+          secondaryLabel: 'Close',
+          onPrimary: function () { window.location.reload(); },
+          onSecondary: function () { signalCompletion('error', '', 'NETWORK_ERROR'); }
+        });
         return;
       }
 
+      setInitStatus('Loading verification interface...');
+
       var endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || 'unknown';
+
+      if (!endUserId || endUserId === 'unknown') {
+        initFailed = true;
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          title: 'Session Error',
+          body: 'Could not identify your account. Please close and reopen the verification link.',
+          primaryLabel: 'Close',
+          onPrimary: function () { signalCompletion('error', '', 'INVALID_SESSION'); }
+        });
+        return;
+      }
+
       var issuingCountry =
         workflowData?.context?.entity?.data?.country ||
         workflowData?.context?.customData?.country ||
@@ -1157,6 +1216,7 @@
         },
       };
 
+      setInitStatus('Preparing camera and permissions...');
       await MiKashBoksSDK.flows.init(sdkConfig);
 
       MiKashBoksSDK.flows.mount({
@@ -1181,7 +1241,7 @@
             signalCompletion('exit', '');
           },
           onFlowError: function (error) {
-            console.error('Flow error:', error);
+            console.error('[KYC] Flow error:', error && error.message || 'Unknown error');
             signalCompletion('error', '');
           },
         },
@@ -1190,7 +1250,7 @@
 
     // ── Start ──
     initFlow().catch(async function (err) {
-      console.error('Init failed:', err);
+      console.error('[KYC] Init failed:', err && err.message || 'Unknown error');
       // Hardening: If preselected doc mode fails to boot (SDK/config edge case),
       // retry once in full-flow mode instead of failing immediately.
       if (!initRetryAttempted && hasPreselectedDoc) {
@@ -1206,11 +1266,19 @@
           await initFlow();
           return;
         } catch (retryErr) {
-          console.error('Retry init failed:', retryErr);
+          console.error('[KYC] Retry init failed:', retryErr && retryErr.message || 'Unknown error');
         }
       }
-      document.getElementById('kyc-host').innerHTML =
-        '<p class="init-message error">Could not start verification. Please close and try again.</p>';
+      initFailed = true;
+      renderStatusCard({
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        title: 'Could Not Start Verification',
+        body: 'Something went wrong while loading. Please check your internet connection and try again.',
+        primaryLabel: 'Retry',
+        secondaryLabel: 'Close',
+        onPrimary: function () { window.location.reload(); },
+        onSecondary: function () { signalCompletion('error', '', 'INIT_FAILED'); }
+      });
     });
 
     // ── Lottie loading animation (for initial page load) ──
@@ -1372,6 +1440,7 @@
           requestLandscape();
         } else if (!isDocCapture && isDocCaptureActive) {
           isDocCaptureActive = false;
+          orientationDismissed = false;  // Reset for next document step
           releaseLandscape();
         }
 
@@ -1407,8 +1476,9 @@
     }
 
     window.addEventListener('pagehide', cleanupObserversAndAnimations);
+    window.addEventListener('beforeunload', cleanupObserversAndAnimations);
 
-    setTimeout(attachStepObserver, 500);
+    attachStepObserver();
 
     // ── Offline detection ──
     var offlineBanner = document.getElementById('offline-banner');
@@ -1417,6 +1487,9 @@
     });
     window.addEventListener('online', function () {
       offlineBanner.classList.remove('visible');
+      if (initFailed) {
+        window.location.reload();
+      }
     });
   </script>
 </body>

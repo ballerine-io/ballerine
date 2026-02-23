@@ -5,15 +5,20 @@ if [ -n "$VITE_DOMAIN" ]; then
     VITE_API_URL="$VITE_DOMAIN/api/v1/"
 fi
 
+# Escape backslashes and double-quotes for safe JS string embedding.
+escape_for_js() {
+  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
 # Write runtime config for the SPA and kyc-mobile pages.
-# Values are JSON-escaped to prevent injection.
+# Values are escaped via escape_for_js() to prevent injection.
 cat << EOF > /usr/share/nginx/html/config.js
 globalThis.env = {
-  VITE_API_URL: "$VITE_API_URL",
-  VITE_API_KEY: "$VITE_API_KEY",
-  VITE_ENVIRONMENT_NAME: "$VITE_ENVIRONMENT_NAME",
-  VITE_SENTRY_AUTH_TOKEN: "$VITE_SENTRY_AUTH_TOKEN",
-  VITE_SENTRY_DSN: "$VITE_SENTRY_DSN",
+  VITE_API_URL: "$(escape_for_js "$VITE_API_URL")",
+  VITE_API_KEY: "$(escape_for_js "$VITE_API_KEY")",
+  VITE_ENVIRONMENT_NAME: "$(escape_for_js "$VITE_ENVIRONMENT_NAME")",
+  VITE_SENTRY_AUTH_TOKEN: "$(escape_for_js "$VITE_SENTRY_AUTH_TOKEN")",
+  VITE_SENTRY_DSN: "$(escape_for_js "$VITE_SENTRY_DSN")",
 }
 EOF
 
