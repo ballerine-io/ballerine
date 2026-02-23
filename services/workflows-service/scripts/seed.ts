@@ -155,8 +155,8 @@ async function seed() {
     customerService,
     '1',
     env.API_KEY,
-    'https://cdn.ballerine.io/images/ballerine_logo.svg',
-    '',
+    '/images/mikashboks-logo-horizontal.png',
+    '/favicon.ico',
     `webhook-shared-secret-${env.API_KEY}`,
   )) as Customer;
 
@@ -164,8 +164,8 @@ async function seed() {
     customerService,
     '2',
     `${env.API_KEY}2`,
-    'https://cdn.ballerine.io/images/ballerine_logo.svg',
-    '',
+    '/images/mikashboks-logo-horizontal.png',
+    '/favicon.ico',
     `webhook-shared-secret-${env.API_KEY}2`,
   )) as Customer;
   const project1 = (await createProject(client, customer, '1')) as Project;

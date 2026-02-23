@@ -8,7 +8,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @constructor
  */
 export const MiKashBoksLogo: FunctionComponent<ComponentPropsWithoutRef<'img'>> = props => {
-  const src = env.VITE_IMAGE_LOGO_URL || '/images/mikashboks-logo-horizontal.svg';
+  const src = env.VITE_IMAGE_LOGO_URL || '/images/mikashboks-logo-horizontal.png';
 
   return <img src={src} alt="MiKashBoks" {...props} />;
 };

@@ -6,5 +6,5 @@ import { ComponentPropsWithoutRef, FunctionComponent } from 'react';
  * @constructor
  */
 export const MiKashBoksLogo: FunctionComponent<ComponentPropsWithoutRef<'img'>> = props => {
-  return <img src="/images/mikashboks-logo-horizontal.svg" alt="MiKashBoks" {...props} />;
+  return <img src="/images/mikashboks-logo-horizontal.png" alt="MiKashBoks" {...props} />;
 };

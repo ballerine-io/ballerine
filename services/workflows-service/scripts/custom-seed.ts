@@ -120,7 +120,7 @@ export async function customSeed() {
         update: {
           displayName: spec.displayName,
           authenticationConfiguration: { webhookSharedSecret: spec.webhookSharedSecret },
-          logoImageUri: '/images/mikashboks-logo-horizontal.svg',
+          logoImageUri: '/images/mikashboks-logo-horizontal.png',
           faviconImageUri: '/favicon.ico',
           config: spec.config,
         },
@@ -130,7 +130,7 @@ export async function customSeed() {
           displayName: spec.displayName,
           apiKeys: { create: { hashedKey: await hashKey(spec.apiKeyPlain) } },
           authenticationConfiguration: { webhookSharedSecret: spec.webhookSharedSecret },
-          logoImageUri: '/images/mikashboks-logo-horizontal.svg',
+          logoImageUri: '/images/mikashboks-logo-horizontal.png',
           faviconImageUri: '/favicon.ico',
           country: 'SL',
           language: 'en',
