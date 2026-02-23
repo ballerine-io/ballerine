@@ -28,7 +28,23 @@ export const useEntityInfoBlock = ({
   );
 
   return useMemo(() => {
-    const entityData = omitPropsFromObject(entity?.data ?? {}, 'additionalInfo', 'address');
+    const entityData = omitPropsFromObject(
+      entity?.data ?? {},
+      'additionalInfo',
+      'address',
+      'tenantId',
+      'projectId',
+      'fingerprintJsDeviceId',
+      'fingerprintJsDeviceHash',
+      'deviceFingerprint',
+      'deviceFirebaseInstallationId',
+      'deviceLocalInstallationId',
+      'deviceImei',
+      'deviceModel',
+      'deviceBrand',
+      'deviceUserAgent',
+      'deviceIp',
+    );
 
     if (Object.keys(entityData ?? {}).length === 0) {
       return [];

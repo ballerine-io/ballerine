@@ -11,7 +11,36 @@ import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserA
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import dayjs from 'dayjs';
-import { StateTag, valueOrNA } from '@ballerine/common';
+import { StateTag, TStateTag, valueOrNA } from '@ballerine/common';
+import { Badge } from '@ballerine/ui';
+import { tagToBadgeData } from '../../../Entity/components/Case/consts';
+import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
+
+// Priority order: most critical states first
+const TAG_PRIORITY: TStateTag[] = [
+  StateTag.REJECTED,
+  StateTag.FLAGGED,
+  StateTag.FAILURE,
+  StateTag.REVISION,
+  StateTag.MANUAL_REVIEW,
+  StateTag.PENDING_PROCESS,
+  StateTag.COLLECTION_FLOW,
+  StateTag.DATA_ENRICHMENT,
+  StateTag.APPROVED,
+  StateTag.DISMISSED,
+  StateTag.RESOLVED,
+  StateTag.EDIT,
+];
+
+const getActiveTag = (tags: readonly TStateTag[] | undefined): TStateTag | undefined => {
+  if (!tags?.length) return undefined;
+
+  for (const priority of TAG_PRIORITY) {
+    if (tags.includes(priority)) return priority;
+  }
+
+  return tags[0];
+};
 
 /**
  * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
@@ -44,6 +73,8 @@ export const Item: FunctionComponent<IItemProps> = ({
   const rgb = useMemo(() => stringToRGB(fullName), [fullName]);
   const isApproved = tags?.includes(StateTag.APPROVED);
   const isRejected = tags?.includes(StateTag.REJECTED);
+  const activeTag = useMemo(() => getActiveTag(tags), [tags]);
+  const isTerminal = isApproved || isRejected;
 
   return (
     <li className="h-[64px] w-full px-4">
@@ -92,6 +123,17 @@ export const Item: FunctionComponent<IItemProps> = ({
           <div className={`text-xs opacity-60`}>
             {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}
           </div>
+          <div className={`text-[10px] opacity-50`}>
+            {getTimePastFromNow(new Date(createdAt)).trim()} ago
+          </div>
+          {activeTag && !isTerminal && tagToBadgeData[activeTag] && (
+            <Badge
+              variant={tagToBadgeData[activeTag].variant as 'info' | 'success' | 'warning' | 'destructive' | 'violet'}
+              className="mt-1 text-[10px] px-1.5 py-0.5 font-medium"
+            >
+              {tagToBadgeData[activeTag].text}
+            </Badge>
+          )}
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
           {assignee && <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />}

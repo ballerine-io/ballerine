@@ -48,6 +48,7 @@ import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistry
 import { useIndividualsUserProvidedBlock } from '@/lib/blocks/hooks/useIndividualsUserProvidedBlock/useIndividualsUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useVerificationResultsBlock } from '@/lib/blocks/hooks/useVerificationResultsBlock/useVerificationResultsBlock';
+import { useKycDocumentsAdapter } from '@/domains/documents/hooks/adapters/useKycDocumentsAdapter/useKycDocumentsAdapter';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
 import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
@@ -62,7 +63,7 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { TAllBlocks } from './constants';
 import { titleCase } from 'string-ts';
-import { StateTag, valueOrNA } from '@ballerine/common';
+import { StateTag, TDocument, valueOrNA } from '@ballerine/common';
 import { useEntityAdditionalInfoBlock } from '@/lib/blocks/hooks/useEntityAdditionalInfoBlock/useEntityAdditionalInfoBlock';
 import { useEditCollectionFlow } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow/useEditCollectionFlow';
 import { useEndUserByIdQuery } from '@/domains/individuals/queries/useEndUserByIdQuery/useEndUserByIdQuery';
@@ -685,8 +686,14 @@ export const useDefaultBlocksLogic = () => {
     isEnabled: !workflow?.workflowDefinition?.config?.disableAiSummary,
   });
 
+  const { documents: kycDocuments, isLoading: isLoadingKycDocuments } = useKycDocumentsAdapter({
+    documents: (workflow?.context?.documents ?? []) as TDocument[],
+  });
+
   const verificationResultsBlock = useVerificationResultsBlock({
     pluginsOutput: workflow?.context?.pluginsOutput as Record<string, unknown> | undefined,
+    documents: kycDocuments,
+    isLoadingDocuments: isLoadingKycDocuments,
   });
 
   const allBlocks = useMemo(() => {

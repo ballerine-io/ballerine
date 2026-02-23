@@ -1367,8 +1367,17 @@ async function seedFilters(client: PrismaClient, projectId: string) {
           createdAt: true,
           state: true,
           context: true,
+          tags: true,
           workflowDefinitionId: true,
           assigneeId: true,
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
           endUser: {
             select: {
               id: true,
@@ -1382,6 +1391,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
         where: {
           workflowDefinitionId: 'kyc_onboarding_sierra_leone',
         },
+        orderBy: [{ createdAt: 'desc' }],
       } as any,
     },
     create: {
@@ -1396,8 +1406,17 @@ async function seedFilters(client: PrismaClient, projectId: string) {
           createdAt: true,
           state: true,
           context: true,
+          tags: true,
           workflowDefinitionId: true,
           assigneeId: true,
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
           endUser: {
             select: {
               id: true,
@@ -1411,6 +1430,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
         where: {
           workflowDefinitionId: 'kyc_onboarding_sierra_leone',
         },
+        orderBy: [{ createdAt: 'desc' }],
       } as any,
     },
   });
@@ -1432,8 +1452,17 @@ async function seedFilters(client: PrismaClient, projectId: string) {
           createdAt: true,
           state: true,
           context: true,
+          tags: true,
           workflowDefinitionId: true,
           assigneeId: true,
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
           business: {
             select: {
               id: true,
@@ -1447,6 +1476,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
             in: ['kyb_onboarding_sierra_leone_formal', 'kyb_onboarding_sierra_leone_informal'],
           },
         },
+        orderBy: [{ createdAt: 'desc' }],
       } as any,
     },
     create: {
@@ -1461,8 +1491,17 @@ async function seedFilters(client: PrismaClient, projectId: string) {
           createdAt: true,
           state: true,
           context: true,
+          tags: true,
           workflowDefinitionId: true,
           assigneeId: true,
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
           business: {
             select: {
               id: true,
@@ -1476,6 +1515,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
             in: ['kyb_onboarding_sierra_leone_formal', 'kyb_onboarding_sierra_leone_informal'],
           },
         },
+        orderBy: [{ createdAt: 'desc' }],
       } as any,
     },
   });
@@ -1497,8 +1537,17 @@ async function seedFilters(client: PrismaClient, projectId: string) {
           createdAt: true,
           state: true,
           context: true,
+          tags: true,
           workflowDefinitionId: true,
           assigneeId: true,
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
           endUser: {
             select: {
               id: true,
@@ -1511,6 +1560,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
         where: {
           workflowDefinitionId: 'loan_kyc_kyb_sierra_leone',
         },
+        orderBy: [{ createdAt: 'desc' }],
       } as any,
     },
     create: {
@@ -1525,8 +1575,17 @@ async function seedFilters(client: PrismaClient, projectId: string) {
           createdAt: true,
           state: true,
           context: true,
+          tags: true,
           workflowDefinitionId: true,
           assigneeId: true,
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
           endUser: {
             select: {
               id: true,
@@ -1539,6 +1598,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
         where: {
           workflowDefinitionId: 'loan_kyc_kyb_sierra_leone',
         },
+        orderBy: [{ createdAt: 'desc' }],
       } as any,
     },
   });

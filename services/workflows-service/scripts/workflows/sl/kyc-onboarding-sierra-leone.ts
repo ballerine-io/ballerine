@@ -62,9 +62,21 @@ export const kycOnboardingSierraLeoneDefinition = {
         // Stub: auto-transition until NCRA API is available
         always: [
           {
-            target: 'risk_evaluation',
+            target: 'device_check',
           },
         ],
+      },
+      device_check: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          DEVICE_CHECK_COMPLETED: [{ target: 'risk_evaluation' }],
+          // Graceful skip: if no device data or service error, proceed to risk evaluation.
+          DEVICE_CHECK_FAILED: [{ target: 'risk_evaluation' }],
+        },
+        after: {
+          // 30 seconds — device check is synchronous, so timeout quickly.
+          30000: [{ target: 'risk_evaluation' }],
+        },
       },
       risk_evaluation: {
         tags: [StateTag.PENDING_PROCESS],
@@ -201,12 +213,70 @@ export const kycOnboardingSierraLeoneDefinition = {
           ],
         },
       },
+      {
+        name: 'device_dedup_check',
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
+        method: 'POST',
+        stateNames: ['device_check'],
+        successAction: 'DEVICE_CHECK_COMPLETED',
+        errorAction: 'DEVICE_CHECK_FAILED',
+        timeout: 15000, // 15 seconds — synchronous call
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'x-api-key': '{secret.UNIFIED_API_TOKEN}',
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                device: {
+                  fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
+                  fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
+                  deviceFingerprint: entity.data.deviceFingerprint,
+                  deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
+                  deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
+                  deviceImei: entity.data.deviceImei,
+                  deviceModel: entity.data.deviceModel,
+                  deviceBrand: entity.data.deviceBrand,
+                  deviceUserAgent: entity.data.deviceUserAgent,
+                  deviceIp: entity.data.deviceIp
+                },
+                countryCode: 'SL'
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping:
+                "merge(@, { name: 'device_dedup_check', status: 'SUCCESS' })",
+            },
+          ],
+        },
+      },
     ],
     childWorkflowPlugins: [],
     commonPlugins: [],
   },
   config: {
     createCollectionFlowToken: true,
+    workflowLevelResolution: true,
+    isCaseOverviewEnabled: true,
+    isDocumentTrackerEnabled: true,
+    isInitiateKycEnabled: false,
+    isKycEndUserEditEnabled: true,
+    isAgentEditingEnabled: true,
+    editableContext: {
+      entityInfo: true,
+    },
+    theme: { type: 'kyc' },
     // SDK step sequence for the KYC mobile page (index.html).
     // The frontend reads this from workflowData.config.kycSdkSteps to drive
     // the Ballerine Web UI SDK flow.  If absent, the page falls back to its
@@ -262,6 +332,17 @@ export const kycOnboardingSierraLeoneDefinition = {
             ),
             tenantId: Type.Optional(Type.String()),
             projectId: Type.Optional(Type.String()),
+            // Device fingerprint fields (forwarded from mobile app / loan workflow)
+            fingerprintJsDeviceId: Type.Optional(Type.String()),
+            fingerprintJsDeviceHash: Type.Optional(Type.String()),
+            deviceFingerprint: Type.Optional(Type.String()),
+            deviceFirebaseInstallationId: Type.Optional(Type.String()),
+            deviceLocalInstallationId: Type.Optional(Type.String()),
+            deviceImei: Type.Optional(Type.String()),
+            deviceModel: Type.Optional(Type.String()),
+            deviceBrand: Type.Optional(Type.String()),
+            deviceUserAgent: Type.Optional(Type.String()),
+            deviceIp: Type.Optional(Type.String()),
           }),
         }),
       }),

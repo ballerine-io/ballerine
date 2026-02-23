@@ -132,6 +132,7 @@ export const useTabsToBlocksMap = ({
     entityAdditionalInfoBlock,
     headquartersAddressWithContainerBlock,
     entityAddressWithContainerBlock,
+    verificationResultsBlock,
   } = blocks;
 
   const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
@@ -574,7 +575,7 @@ export const useTabsToBlocksMap = ({
 
   // Sierra Leone: expose device dedup/link risk signals (shared-device graphs) in the backoffice UI.
   // This is populated by Ballerine workflow apiPlugins:
-  // - device_deduplication_check
+  // - device_dedup_check (check-duplicate endpoint on Unified API)
   // - device_indexing
   // - device_linking
   const deviceSignalsBlock = useObjectEntriesBlock({
@@ -582,7 +583,7 @@ export const useTabsToBlocksMap = ({
       const entityDevice = blocksCreationParams?.workflow?.context?.entity?.data?.device;
       const pluginsOutput = blocksCreationParams?.workflow?.context?.pluginsOutput ?? {};
 
-      const deviceDedup = (pluginsOutput as any)?.device_deduplication_check;
+      const deviceDedup = (pluginsOutput as any)?.device_dedup_check;
       const deviceIndexing = (pluginsOutput as any)?.device_indexing;
       const deviceLinking = (pluginsOutput as any)?.device_linking;
 
@@ -674,9 +675,9 @@ out.deviceLinking = deviceLinking;
     return {
       [Tab.KYC]: [
         ...businessInformationBlocks,
-        ...deviceSignalsBlock,
+        ...entityAddressWithContainerBlock,
+        ...verificationResultsBlock,
         ...amlWithContainerBlock,
-        ...kycBlocks,
       ],
     } as const;
   }

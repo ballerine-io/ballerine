@@ -14,6 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Lottie animation library (lightweight ~50KB) — falls back to CSS spinner if CDN fails -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" crossorigin="anonymous" defer></script>
   <style>
     *,
     *::before,
@@ -215,12 +217,153 @@
       width: min(80vw, 360px) !important;
       max-height: 82% !important;
     }
+
+    /* ── Landscape orientation hint ── */
+    .orientation-hint {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.92);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .orientation-hint.visible {
+      display: flex;
+    }
+
+    .orientation-hint .rotate-icon {
+      width: 64px;
+      height: 64px;
+      animation: rotateHint 2s ease-in-out infinite;
+    }
+
+    @keyframes rotateHint {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(90deg); }
+    }
+
+    .orientation-hint .dismiss-btn {
+      margin-top: 12px;
+      padding: 10px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ── Enhanced touch targets for SL mobile users ── */
+    #kyc-host #blrn-app button,
+    #kyc-host #blrn-app [role="button"] {
+      min-height: 48px !important;
+      min-width: 48px !important;
+    }
+
+    #kyc-host #blrn-app button:not([class*="icon"]):not([class*="close"]):not([class*="back"]) {
+      padding: 14px 24px !important;
+      font-size: 17px !important;
+    }
+
+    /* ── Progress bar enhancement ── */
+    #kyc-host #blrn-app [class*="progress-bar"],
+    #kyc-host #blrn-app [class*="ProgressBar"] {
+      height: 6px !important;
+      border-radius: 3px !important;
+      background: #e2e8f0 !important;
+      overflow: hidden !important;
+      transition: all 0.4s ease !important;
+    }
+
+    #kyc-host #blrn-app [class*="progress-bar"] > div,
+    #kyc-host #blrn-app [class*="ProgressBar"] > div {
+      background: linear-gradient(90deg, #7b15ff, #a855f7) !important;
+      border-radius: 3px !important;
+      transition: width 0.4s ease !important;
+    }
+
+    /* ── Status card icon ── */
+    .status-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .status-icon svg {
+      width: 56px;
+      height: 56px;
+    }
+
+    /* ── Smooth step transitions ── */
+    #kyc-host #blrn-app > div {
+      animation: stepFadeIn 0.3s ease-out;
+    }
+
+    @keyframes stepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Lottie loading container ── */
+    .lottie-loading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lottie-loading-wrap .lottie-player {
+      width: 120px;
+      height: 120px;
+    }
+
+    /* Hide init spinner when Lottie takes over */
+    .init-loading.has-lottie .spinner {
+      display: none;
+    }
+
+    /* ── Landscape document overlay enhancement ── */
+    @media (orientation: landscape) {
+      #kyc-host #blrn-app .overlay.card {
+        width: min(80vh, 520px) !important;
+        height: min(50vh, 340px) !important;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div id="offline-banner" class="offline-banner" role="alert" aria-live="assertive">
     You are offline. Please check your internet connection.
+  </div>
+  <div id="orientation-hint" class="orientation-hint" role="dialog" aria-label="Rotate your phone">
+    <svg class="rotate-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="16" y="8" width="32" height="48" rx="4" />
+      <line x1="28" y1="50" x2="36" y2="50" />
+      <path d="M52 20l8 8l-8 8" stroke-width="2.5" />
+      <path d="M48 28h12" stroke-width="2.5" />
+    </svg>
+    <div>Rotate your phone for<br/>the best document photo</div>
+    <button class="dismiss-btn" type="button" onclick="document.getElementById('orientation-hint').classList.remove('visible')">Continue in portrait</button>
   </div>
   <div id="kyc-host">
     <div class="init-loading">
@@ -431,6 +574,7 @@
       var meta = options && options.meta ? String(options.meta) : '';
       var nextSteps = options && options.nextSteps ? String(options.nextSteps) : '';
       var showSpinner = Boolean(options && options.showSpinner);
+      var icon = options && options.icon ? String(options.icon) : '';
 
       var primaryLabel = options && options.primaryLabel ? String(options.primaryLabel) : 'Close';
       var secondaryLabel =
@@ -439,6 +583,7 @@
       setHostHtml(
         '<div class="status-wrap">' +
         '<div class="status-card">' +
+        (icon ? '<div class="status-icon">' + icon + '</div>' : '') +
         '<div class="status-title">' +
         escapeHtml(title) +
         '</div>' +
@@ -622,7 +767,8 @@
 
       if (approvedStates.includes(workflowState)) {
         renderStatusCard({
-          title: 'Identity Verified \u2705',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#22c55e" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#22c55e"/><path d="M20 28l5.5 5.5L36 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+          title: 'Identity Verified',
           body: 'Your identity has been verified. You now have access to loans, higher savings limits, and faster transactions.',
           meta: 'Tap Done to return to MiKashBoks and explore your new features.',
           primaryLabel: 'Done',
@@ -635,6 +781,7 @@
 
       if (rejectedStates.includes(workflowState)) {
         renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M22 22l12 12M34 22l-12 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
           title: 'Verification Unsuccessful',
           body: 'We could not verify your identity from the photos you submitted. You can try again with clearer photos, or contact MiKashBoks support for help.',
           meta: 'Common reasons: blurry photo, face not matching ID, or expired document.',
@@ -648,6 +795,7 @@
 
       if (inReviewStates.includes(workflowState)) {
         renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><ellipse cx="28" cy="28" rx="10" ry="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="28" cy="28" r="3.5" fill="#fff"/></svg>',
           title: 'Under Review',
           body: 'Your photos were submitted successfully. Our team is reviewing your verification \u2014 you do not need to upload anything again.',
           meta: 'You will receive an SMS notification when the review is complete, usually within 24 hours. You can safely close this screen.',
@@ -665,6 +813,7 @@
 
       if (processingStates.includes(workflowState)) {
         renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#7b15ff" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#7b15ff"/><circle cx="28" cy="28" r="10" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="15 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 28 28" to="360 28 28" dur="2s" repeatCount="indefinite"/></circle></svg>',
           title: 'Checking Your Photos...',
           body: 'We received your photos and are running verification checks. This usually takes 1\u20132 minutes.',
           meta: 'You can close this screen and continue using MiKashBoks. We will notify you by SMS when the result is ready.',
@@ -1059,6 +1208,171 @@
       document.getElementById('kyc-host').innerHTML =
         '<p class="init-message error">Could not start verification. Please close and try again.</p>';
     });
+
+    // ── Lottie loading animation (for initial page load) ──
+    var lottieAnimData = {
+      v: '5.7.1', fr: 30, ip: 0, op: 60, w: 200, h: 200, nm: 'verify',
+      layers: [
+        { ddd: 0, ind: 0, ty: 4, nm: 'arc', sr: 1, ks: { o: { a: 0, k: 100 }, r: { a: 1, k: [{ i: { x: [0.833], y: [0.833] }, o: { x: [0.167], y: [0.167] }, t: 0, s: [0] }, { t: 60, s: [360] }] }, p: { a: 0, k: [100, 100, 0] }, a: { a: 0, k: [0, 0, 0] }, s: { a: 0, k: [100, 100, 100] } }, ao: 0, shapes: [{ ty: 'el', d: 1, s: { a: 0, k: [140, 140] }, p: { a: 0, k: [0, 0] } }, { ty: 'st', c: { a: 0, k: [0.482, 0.082, 1, 1] }, o: { a: 0, k: 100 }, w: { a: 0, k: 5 }, lc: 2, lj: 1, d: [{ n: 'd', nm: 'd', v: { a: 0, k: 90 } }, { n: 'g', nm: 'g', v: { a: 0, k: 200 } }] }], ip: 0, op: 60, st: 0, bm: 0 },
+        { ddd: 0, ind: 1, ty: 4, nm: 'arc2', sr: 1, ks: { o: { a: 0, k: 50 }, r: { a: 1, k: [{ i: { x: [0.833], y: [0.833] }, o: { x: [0.167], y: [0.167] }, t: 0, s: [180] }, { t: 60, s: [540] }] }, p: { a: 0, k: [100, 100, 0] }, a: { a: 0, k: [0, 0, 0] }, s: { a: 0, k: [100, 100, 100] } }, ao: 0, shapes: [{ ty: 'el', d: 1, s: { a: 0, k: [110, 110] }, p: { a: 0, k: [0, 0] } }, { ty: 'st', c: { a: 0, k: [0.482, 0.082, 1, 1] }, o: { a: 0, k: 100 }, w: { a: 0, k: 3 }, lc: 2, lj: 1, d: [{ n: 'd', nm: 'd', v: { a: 0, k: 50 } }, { n: 'g', nm: 'g', v: { a: 0, k: 200 } }] }], ip: 0, op: 60, st: 0, bm: 0 },
+        { ddd: 0, ind: 2, ty: 4, nm: 'pulse', sr: 1, ks: { o: { a: 1, k: [{ i: { x: [0.667] }, o: { x: [0.333] }, t: 0, s: [20] }, { i: { x: [0.667] }, o: { x: [0.333] }, t: 30, s: [8] }, { t: 60, s: [20] }] }, r: { a: 0, k: 0 }, p: { a: 0, k: [100, 100, 0] }, a: { a: 0, k: [0, 0, 0] }, s: { a: 1, k: [{ i: { x: [0.667, 0.667, 0.667] }, o: { x: [0.333, 0.333, 0.333] }, t: 0, s: [100, 100, 100] }, { i: { x: [0.667, 0.667, 0.667] }, o: { x: [0.333, 0.333, 0.333] }, t: 30, s: [115, 115, 100] }, { t: 60, s: [100, 100, 100] }] } }, ao: 0, shapes: [{ ty: 'el', d: 1, s: { a: 0, k: [70, 70] }, p: { a: 0, k: [0, 0] } }, { ty: 'fl', c: { a: 0, k: [0.482, 0.082, 1, 1] }, o: { a: 0, k: 100 } }], ip: 0, op: 60, st: 0, bm: 0 }
+      ]
+    };
+
+    var lottieInstance = null;
+
+    function initLottieForInitLoading() {
+      if (typeof window.lottie === 'undefined') return;
+      var initLoadingEl = document.querySelector('.init-loading');
+      if (!initLoadingEl) return;
+      var container = document.createElement('div');
+      container.className = 'lottie-player';
+      container.style.width = '120px';
+      container.style.height = '120px';
+      initLoadingEl.insertBefore(container, initLoadingEl.firstChild);
+      try {
+        lottieInstance = window.lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: lottieAnimData,
+        });
+        initLoadingEl.classList.add('has-lottie');
+      } catch (e) {
+        console.warn('Lottie init failed, keeping CSS spinner:', e);
+      }
+    }
+
+    function tryInjectLottieIntoSDKLoader(blrnApp) {
+      if (typeof window.lottie === 'undefined') return;
+      if (blrnApp.querySelector('.lottie-player')) return;
+      var spinnerEl = blrnApp.querySelector('[class*="loader" i], [class*="spinner" i], [class*="loading" i]');
+      if (!spinnerEl || !spinnerEl.parentElement) return;
+      var container = document.createElement('div');
+      container.className = 'lottie-player';
+      container.style.width = '120px';
+      container.style.height = '120px';
+      container.style.margin = '0 auto 16px';
+      spinnerEl.parentElement.insertBefore(container, spinnerEl);
+      try {
+        lottieInstance = window.lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: lottieAnimData,
+        });
+        spinnerEl.style.display = 'none';
+      } catch (e) {
+        container.remove();
+      }
+    }
+
+    // Initialize Lottie for the init loading spinner once script loads
+    if (typeof window.lottie !== 'undefined') {
+      initLottieForInitLoading();
+    } else {
+      // Wait for deferred lottie script to load
+      window.addEventListener('load', function () {
+        setTimeout(initLottieForInitLoading, 100);
+      });
+    }
+
+    // ── Landscape orientation hint for document capture ──
+    var orientationHint = document.getElementById('orientation-hint');
+    var isDocCaptureActive = false;
+    var orientationDismissed = false;
+
+    function showOrientationHint() {
+      if (!isDocCaptureActive || orientationDismissed) return;
+      if (window.innerHeight > window.innerWidth) {
+        orientationHint.classList.add('visible');
+      } else {
+        orientationHint.classList.remove('visible');
+      }
+    }
+
+    function hideOrientationHint() {
+      orientationHint.classList.remove('visible');
+    }
+
+    // Override dismiss button to set the dismissed flag
+    var dismissBtn = orientationHint.querySelector('.dismiss-btn');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', function () {
+        orientationDismissed = true;
+        hideOrientationHint();
+      });
+    }
+
+    function requestLandscape() {
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(function () {
+            showOrientationHint();
+          });
+        } else {
+          showOrientationHint();
+        }
+      } catch (e) {
+        showOrientationHint();
+      }
+    }
+
+    function releaseLandscape() {
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (e) { /* ignore */ }
+      hideOrientationHint();
+    }
+
+    window.addEventListener('resize', function () {
+      if (isDocCaptureActive) showOrientationHint();
+    });
+
+    // ── Step detection via MutationObserver ──
+    var stepObserverDebounce = null;
+    var stepObserver = new MutationObserver(function () {
+      clearTimeout(stepObserverDebounce);
+      stepObserverDebounce = setTimeout(function () {
+        var host = document.getElementById('kyc-host');
+        if (!host) return;
+        var blrnApp = host.querySelector('#blrn-app');
+        if (!blrnApp) return;
+
+        // Detect document capture step (has camera + document overlay)
+        var hasCamera = !!blrnApp.querySelector('video, [class*="camera"]');
+        var hasDocOverlay = !!blrnApp.querySelector('.overlay.card, .overlay.passport, [class*="document-overlay"]');
+        var isDocCapture = hasCamera && hasDocOverlay;
+
+        if (isDocCapture && !isDocCaptureActive) {
+          isDocCaptureActive = true;
+          orientationDismissed = false;
+          requestLandscape();
+        } else if (!isDocCapture && isDocCaptureActive) {
+          isDocCaptureActive = false;
+          releaseLandscape();
+        }
+
+        // Detect loading step and try to inject Lottie
+        var textContent = blrnApp.textContent || '';
+        var isLoadingStep = /uploading|running.*checks|finalizing/i.test(textContent) &&
+          !blrnApp.querySelector('.status-card');
+        if (isLoadingStep) {
+          tryInjectLottieIntoSDKLoader(blrnApp);
+        }
+      }, 150);
+    });
+
+    setTimeout(function () {
+      var host = document.getElementById('kyc-host');
+      if (host) {
+        stepObserver.observe(host, { childList: true, subtree: true });
+      }
+    }, 500);
 
     // ── Offline detection ──
     var offlineBanner = document.getElementById('offline-banner');

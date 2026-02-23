@@ -9,9 +9,19 @@ const preloadByExtension = async (src: string): Promise<string> => {
   let svg: string | undefined;
 
   if (extension === 'svg') {
-    const response = await fetch(src);
+    try {
+      const response = await fetch(src);
 
-    svg = await response.text();
+      if (response.ok) {
+        svg = await response.text();
+      } else {
+        console.warn(`Failed to preload SVG: ${src} (${response.status})`);
+        svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+      }
+    } catch (err) {
+      console.warn(`Failed to fetch SVG: ${src}`, err);
+      svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+    }
   }
 
   return new Promise((resolve, reject) => {
