@@ -737,15 +737,23 @@ function buildUnifiedVerificationDetails(
   const details: Array<{ label: string; value: string }> = [];
 
   if (plugin.verificationStatus) {
-    details.push({ label: 'Verification Status', value: plugin.verificationStatus });
+    const statusDisplay = STATUS_DISPLAY[plugin.verificationStatus];
+    details.push({
+      label: 'Verification Status',
+      value: statusDisplay?.label ?? toTitleCase(plugin.verificationStatus),
+    });
   }
 
   if (plugin.status) {
-    details.push({ label: 'Process Status', value: plugin.status });
+    details.push({ label: 'Process Status', value: toTitleCase(plugin.status) });
   }
 
   if (plugin.confidenceScore !== undefined && plugin.confidenceScore !== null) {
-    details.push({ label: 'Confidence', value: formatConfidence(plugin.confidenceScore) });
+    const isSystemError = plugin.verificationStatus === 'ERROR' && plugin.confidenceScore === 0;
+    details.push({
+      label: 'Confidence',
+      value: isSystemError ? 'N/A (System Error)' : formatConfidence(plugin.confidenceScore),
+    });
   }
 
   // Verified/failed attributes are now rendered as AttributeBadges (not comma strings)
@@ -753,7 +761,7 @@ function buildUnifiedVerificationDetails(
   const methods = plugin.metadata?.methodsExecuted;
 
   if (methods && methods.length > 0) {
-    details.push({ label: 'Methods Executed', value: methods.join(', ') });
+    details.push({ label: 'Methods Executed', value: methods.map(m => toTitleCase(m)).join(', ') });
   }
 
   const duplicates = normalizePossibleDuplicates(plugin.metadata?.possibleDuplicates);
@@ -815,12 +823,28 @@ function buildDeviceDedupDetails(
   return details;
 }
 
+const INTERNAL_METADATA_KEYS = new Set([
+  'methodBreakdown',
+  'methodsExecuted',
+  'possibleDuplicates',
+  'processingTime',
+  'requestId',
+  'verificationId',
+  'timestamp',
+  'version',
+  'pipeline',
+  'strategies',
+  'rawResponse',
+  'errorDetails',
+]);
+
 function buildExtractedDataDetails(
   extractedData: Record<string, unknown>,
 ): Array<{ label: string; value: string }> {
   const details: Array<{ label: string; value: string }> = [];
 
   for (const [sectionKey, sectionValue] of Object.entries(extractedData)) {
+    if (INTERNAL_METADATA_KEYS.has(sectionKey)) continue;
     if (!sectionValue || typeof sectionValue !== 'object' || Array.isArray(sectionValue)) {
       if (sectionValue !== null && sectionValue !== undefined && sectionValue !== '') {
         details.push({ label: toTitleCase(sectionKey), value: String(sectionValue) });

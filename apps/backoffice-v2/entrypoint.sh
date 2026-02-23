@@ -35,6 +35,11 @@ then
     VITE_FETCH_SIGNED_URL="$VITE_FETCH_SIGNED_URL"
 fi
 
+if [[ -n "$VITE_IMAGE_LOGO_URL" ]]
+then
+    VITE_IMAGE_LOGO_URL="$VITE_IMAGE_LOGO_URL"
+fi
+
 cat << EOF > /usr/share/nginx/html/config.js
 globalThis.env = {
   VITE_API_URL: "$VITE_API_URL",
@@ -44,6 +49,7 @@ globalThis.env = {
   VITE_POLLING_INTERVAL: "$VITE_POLLING_INTERVAL",
   VITE_ASSIGNMENT_POLLING_INTERVAL: "$VITE_ASSIGNMENT_POLLING_INTERVAL",
   VITE_FETCH_SIGNED_URL: "$VITE_FETCH_SIGNED_URL",
+  VITE_IMAGE_LOGO_URL: "${VITE_IMAGE_LOGO_URL:-/images/mikashboks-logo-horizontal.svg}",
   VITE_ENVIRONMENT_NAME: "local",
   MODE: "production"
 }
