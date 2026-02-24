@@ -176,11 +176,9 @@ const main = async () => {
   const healthService = app.get(HealthService);
   const handleLegacyHealthReady = async (_req: Request, res: Response): Promise<void> => {
     try {
-      const [dbReady, redisReady] = await Promise.all([
-        healthService.isDbReady(),
-        healthService.isRedisReady(),
-      ]);
-      const readyStatus = dbReady && redisReady ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND;
+      // Keep readiness tied to DB availability for backwards-compatible legacy probes.
+      const dbReady = await healthService.isDbReady();
+      const readyStatus = dbReady ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND;
       res.status(readyStatus).send();
     } catch (error) {
       logger.error('Legacy health check failed', { error });
