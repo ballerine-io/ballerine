@@ -5,7 +5,7 @@ export const workflows = (): Workflow[] => {
   return [
     {
       business: {
-        id: faker.datatype.uuid(),
+        id: faker.string.uuid(),
         name: 'ElektroTech GmbH',
         registrationNumber: 'HRB 987654',
         legalForm: 'Gesellschaft mit beschränkter Haftung (GmbH)',
@@ -34,7 +34,7 @@ export const workflows = (): Workflow[] => {
           country: 'Germany',
           currency: 'EUR',
           bankName: 'Deutsche Bank',
-          account: Number(faker.random.numeric(10)),
+          account: Number(faker.string.numeric(10)),
         },
         companyActivity: {
           model: 'we manufacture electronic products.',
@@ -58,14 +58,14 @@ export const workflows = (): Workflow[] => {
       },
       ubos: [
         {
-          id: faker.datatype.uuid(),
-          nationalId: faker.random.numeric(10),
+          id: faker.string.uuid(),
+          nationalId: faker.string.numeric(10),
           decision: 'approved',
           decisionReason: null,
           withAml: false,
           nationality: 'DE',
           gender: 'M',
-          title: faker.name.jobTitle(),
+          title: faker.person.jobTitle(),
           firstName: 'Max',
           lastName: 'Müller',
           email: 'max.mueller@email.de',

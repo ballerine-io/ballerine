@@ -35,7 +35,7 @@ export const generateKycChildWorkflowMockData = async ({
       email: faker.internet.email('Carlton', 'Cushnie'),
       firstName: 'Carlton',
       lastName: 'Ellington Cushnie',
-      role: faker.name.jobTitle(),
+      role: faker.person.jobTitle(),
       companyName: faker.company.name(),
       dateOfBirth: faker.date.past().toISOString(),
     },
@@ -44,7 +44,7 @@ export const generateKycChildWorkflowMockData = async ({
       email: faker.internet.email('Johnathan', 'Reed'),
       firstName: 'Johnathan',
       lastName: 'Reed',
-      role: faker.name.jobTitle(),
+      role: faker.person.jobTitle(),
       companyName: faker.company.name(),
       dateOfBirth: faker.date.past().toISOString(),
     },
@@ -53,7 +53,7 @@ export const generateKycChildWorkflowMockData = async ({
       email: faker.internet.email('Robert', 'Carter'),
       firstName: 'Robert',
       lastName: 'Carter',
-      role: faker.name.jobTitle(),
+      role: faker.person.jobTitle(),
       companyName: faker.company.name(),
       dateOfBirth: faker.date.past().toISOString(),
     },
@@ -88,12 +88,12 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.jpg',
+              uri: 'https://placehold.co/600x800?text=Selfie+Image',
               metadata: { side: 'face' },
             }),
 
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/canada-license-front.jpg',
+              uri: 'https://placehold.co/600x800?text=License+Front',
               metadata: { side: 'front' },
             }),
           ],
@@ -265,11 +265,11 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card-selfie.jpg',
+              uri: 'https://placehold.co/600x800?text=Selfie+Image',
               metadata: { side: 'face-pre' },
             }),
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/us_green_card.jpg',
+              uri: 'https://placehold.co/600x800?text=Green+Card+Front',
               metadata: { side: 'front' },
             }),
           ],
@@ -442,12 +442,12 @@ export const generateKycChildWorkflowMockData = async ({
           type: 'identification_document',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-Selfie.jpg',
+              uri: 'https://placehold.co/600x800?text=Selfie+Image',
               metadata: { side: 'face' },
             }),
 
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/USA_Passport-12313.jpg',
+              uri: 'https://placehold.co/600x800?text=Passport+Front',
               metadata: { side: 'front' },
             }),
           ],

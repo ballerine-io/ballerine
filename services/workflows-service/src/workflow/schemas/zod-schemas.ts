@@ -125,7 +125,8 @@ export const ConfigSchema = z
       })
       .optional(),
   })
-  .strict()
+  // Accept unknown keys so mixed-revision rollouts do not fail on newly introduced config fields.
+  .passthrough()
   .optional();
 
 export type WorkflowConfig = z.infer<typeof ConfigSchema>;

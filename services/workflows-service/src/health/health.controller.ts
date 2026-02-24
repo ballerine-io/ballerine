@@ -16,11 +16,12 @@ export class HealthController {
   }
   @Get(ROUTES.READY)
   async healthReady(@Res() response: Response): Promise<Response<void>> {
-    // Readiness gates only on primary datastore availability.
-    // Redis-dependent subsystems are non-critical for serving core API routes.
-    const dbReady = await this.healthService.isDbReady();
+    const [dbReady, redisReady] = await Promise.all([
+      this.healthService.isDbReady(),
+      this.healthService.isRedisReady(),
+    ]);
 
-    if (!dbReady) {
+    if (!dbReady || !redisReady) {
       return response.status(HttpStatus.NOT_FOUND).send();
     }
 

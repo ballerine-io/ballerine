@@ -50,7 +50,7 @@ export class EndUserControllerExternal {
         correlationId: data.correlationId || randomUUID(),
         email: data.email || faker.internet.email(data.firstName, data.lastName),
         phone: data.phone || faker.phone.number('+##########'),
-        dateOfBirth: data.dateOfBirth || faker.date.past(60),
+        dateOfBirth: data.dateOfBirth || faker.date.past({ years: 60 }),
         avatarUrl: data.avatarUrl || faker.image.avatar(),
         project: { connect: { id: currentProjectId } },
       },

@@ -125,7 +125,7 @@ describe('WorkflowService', () => {
 
     customer = await createCustomer(
       prismaService,
-      faker.datatype.uuid(),
+      faker.string.uuid(),
       'secret',
       '',
       '',
@@ -135,7 +135,7 @@ describe('WorkflowService', () => {
 
     workflowDefinition = await workflowDefinitionRepository.create({
       data: {
-        id: faker.datatype.uuid(),
+        id: faker.string.uuid(),
         name: 'test',
         version: 1,
         definitionType: 'statechart-json',

@@ -46,11 +46,11 @@ const getBusinessCounterpartyData = (business?: Business) => {
   }
 
   return {
-    correlationId: faker.datatype.uuid(),
+    correlationId: faker.string.uuid(),
     businessData: {
       companyName: faker.company.name(),
-      registrationNumber: faker.datatype.uuid(),
-      mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+      registrationNumber: faker.string.uuid(),
+      mccCode: faker.number.int({ min: 1000, max: 9999 }),
       businessType: faker.lorem.word(),
     },
   };
@@ -67,10 +67,10 @@ const getEndUserCounterpartyData = (endUser?: EndUser) => {
   }
 
   return {
-    correlationId: faker.datatype.uuid(),
+    correlationId: faker.string.uuid(),
     endUserData: {
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       email: faker.internet.email(),
       phone: faker.phone.number(),
     },
@@ -80,29 +80,29 @@ const getBaseTransactionData = () => {
   const amount = parseFloat(faker.finance.amount());
 
   return {
-    date: faker.date.recent(30),
+    date: faker.date.recent({ days: 30 }),
     amount,
     currency: 'USD',
     baseAmount: amount,
     baseCurrency: 'USD',
-    correlationId: faker.datatype.uuid(),
+    correlationId: faker.string.uuid(),
     description: faker.lorem.sentence(),
     category: faker.commerce.product(),
     type: faker.helpers.arrayElement(Object.values(TransactionRecordType)),
     direction: faker.helpers.arrayElement(Object.values(TransactionDirection)),
     reference: faker.lorem.sentence(),
     cardDetails: {
-      fingerprint: faker.random.alphaNumeric(16),
-      issuedCountry: faker.address.country(),
+      fingerprint: faker.string.alphanumeric(16),
+      issuedCountry: faker.location.country(),
       completed3ds: faker.datatype.boolean(),
       type: faker.helpers.arrayElement(['credit', 'debit']),
       issuer: faker.company.name(),
       brand: faker.finance.creditCardIssuer(),
       expiryMonth: faker.date.future().getMonth().toString(),
       expiryYear: faker.date.future().getFullYear().toString(),
-      holderName: faker.name.fullName(),
+      holderName: faker.person.fullName(),
       cardBin: Number.parseInt(faker.finance.creditCardNumber().slice(0, 6), 10),
-      tokenized: faker.random.alphaNumeric(16),
+      tokenized: faker.string.alphanumeric(16),
     },
     payment: {
       brandName: faker.helpers.arrayElement(Object.values(PaymentBrandName)),
@@ -120,9 +120,9 @@ const getBaseTransactionData = () => {
       price: parseFloat(faker.commerce.price()),
       currency: faker.finance.currencyCode(),
       sku: faker.commerce.product(),
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
     },
-    tags: JSON.stringify(faker.random.words(5).split(' ')),
+    tags: JSON.stringify(faker.lorem.words(5).split(' ')),
     regulatoryAuthority: faker.company.name(),
     additionalInfo: JSON.stringify({ note: faker.lorem.sentence() }),
     originator: getBusinessCounterpartyData(),
@@ -130,7 +130,7 @@ const getBaseTransactionData = () => {
   } as const satisfies TransactionCreateDto;
 };
 
-const API_KEY = faker.datatype.uuid();
+const API_KEY = faker.string.uuid();
 
 describe('#TransactionControllerExternal', () => {
   let app: INestApplication;
@@ -150,14 +150,14 @@ describe('#TransactionControllerExternal', () => {
   beforeEach(async () => {
     customer = await createCustomer(
       app.get(PrismaService),
-      faker.datatype.uuid(),
+      faker.string.uuid(),
       API_KEY,
       '',
       '',
       'webhook-shared-secret',
     );
 
-    project = await createProject(app.get(PrismaService), customer, faker.datatype.uuid());
+    project = await createProject(app.get(PrismaService), customer, faker.string.uuid());
   });
 
   describe('POST /', () => {
@@ -529,7 +529,7 @@ describe('#TransactionControllerExternal', () => {
         {
           ...validTransaction,
           beneficiary: {
-            correlationId: faker.datatype.uuid(),
+            correlationId: faker.string.uuid(),
             // Missing endUserData or businessData
           },
         },
@@ -586,13 +586,13 @@ describe('#TransactionControllerExternal', () => {
     beforeEach(async () => {
       customer = await createCustomer(
         app.get(PrismaService),
-        faker.datatype.uuid(),
+        faker.string.uuid(),
         API_KEY,
         '',
         '',
         'webhook-shared-secret',
       );
-      project = await createProject(app.get(PrismaService), customer, faker.datatype.uuid());
+      project = await createProject(app.get(PrismaService), customer, faker.string.uuid());
     });
 
     const getAlertDefinitionWithTimeOptions = (timeUnit: string, timeAmount: number) => {
@@ -653,7 +653,7 @@ describe('#TransactionControllerExternal', () => {
       expect(response.body).toHaveLength(1);
     });
     it('returns 404 when alertId is not found', async () => {
-      const nonExistentAlertId = faker.datatype.uuid();
+      const nonExistentAlertId = faker.string.uuid();
       const response = await request(app.getHttpServer())
         .get(`/external/transactions/by-alert?alertId=${nonExistentAlertId}`)
         .set('authorization', `Bearer ${API_KEY}`);
@@ -688,7 +688,7 @@ describe('#TransactionControllerExternal', () => {
     it.skip('returns 401 when using an API key from a different project', async () => {
       const otherCustomer = await createCustomer(
         app.get(PrismaService),
-        faker.datatype.uuid(),
+        faker.string.uuid(),
         API_KEY,
         '',
         '',
@@ -697,7 +697,7 @@ describe('#TransactionControllerExternal', () => {
       const otherProject = await createProject(
         app.get(PrismaService),
         otherCustomer,
-        faker.datatype.uuid(),
+        faker.string.uuid(),
       );
 
       alertDefinition = await createAlertDefinition(

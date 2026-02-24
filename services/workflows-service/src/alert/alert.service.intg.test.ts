@@ -123,14 +123,14 @@ describe('AlertService', () => {
 
     customer = await createCustomer(
       prismaService,
-      faker.datatype.uuid(),
-      faker.datatype.uuid(),
+      faker.string.uuid(),
+      faker.string.uuid(),
       '',
       '',
       'webhook-shared-secret',
     );
 
-    project = await createProject(prismaService, customer, faker.datatype.uuid());
+    project = await createProject(prismaService, customer, faker.string.uuid());
 
     transactionFactory = new TransactionFactory({
       prisma: prismaService,
@@ -146,7 +146,7 @@ describe('AlertService', () => {
     beforeEach(() => {
       baseTransactionFactory = transactionFactory
         .paymentMethod(PaymentMethod.credit_card)
-        .transactionDate(faker.date.recent(1));
+        .transactionDate(faker.date.recent({ days: 1 }));
     });
 
     describe('Rule: DORMANT', () => {
@@ -181,11 +181,11 @@ describe('AlertService', () => {
             pastSixMonth.setDate(pastSixMonth.getDate() - 1);
 
             await castedTransactionFactory
-              .transactionDate(faker.date.recent(30, pastSixMonth))
+              .transactionDate(faker.date.recent({ days: 30, refDate: pastSixMonth }))
               .count(2)
               .create();
 
-            await castedTransactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+            await castedTransactionFactory.transactionDate(faker.date.recent({ days: 30 })).count(1).create();
           },
         );
 
@@ -209,8 +209,8 @@ describe('AlertService', () => {
           newProject,
           prismaService,
           async transactionFactory => {
-            await transactionFactory.transactionDate(faker.date.past(10)).count(9).create();
-            await transactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+            await transactionFactory.transactionDate(faker.date.past({ years: 10 })).count(9).create();
+            await transactionFactory.transactionDate(faker.date.recent({ days: 30 })).count(1).create();
           },
         );
 
@@ -873,7 +873,7 @@ describe('AlertService', () => {
             crossEnvKey: 'TEST',
           }),
         });
-        const correlationId = faker.datatype.uuid();
+        const correlationId = faker.string.uuid();
         counteryparty = await prismaService.counterparty.create({
           data: {
             project: { connect: { id: project.id } },
@@ -882,8 +882,8 @@ describe('AlertService', () => {
               create: {
                 correlationId: correlationId,
                 companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                registrationNumber: faker.string.uuid(),
+                mccCode: faker.number.int({ min: 1000, max: 9999 }),
                 businessType: faker.lorem.word(),
                 project: { connect: { id: project.id } },
               },
@@ -1006,20 +1006,20 @@ describe('AlertService', () => {
         await txFactory
           .paymentMethod(PaymentMethod.apm)
           .amount(1500)
-          .transactionDate(faker.date.recent(3))
+          .transactionDate(faker.date.recent({ days: 3 }))
           .count(1)
           .create();
 
         // Arrange
-        await txFactory.amount(400).transactionDate(faker.date.past(3)).count(1).create();
+        await txFactory.amount(400).transactionDate(faker.date.past({ years: 3 })).count(1).create();
 
-        await txFactory.amount(300).transactionDate(faker.date.recent(30)).count(1).create();
+        await txFactory.amount(300).transactionDate(faker.date.recent({ days: 30 })).count(1).create();
 
         await baseTransactionFactory
           .paymentMethod(PaymentMethod.credit_card)
           .direction(TransactionDirection.inbound)
           .amount(minimumTransactionAmount + 1)
-          .transactionDate(faker.date.past(2))
+          .transactionDate(faker.date.past({ years: 2 }))
           .count(3)
           .create();
 
@@ -1078,7 +1078,7 @@ describe('AlertService', () => {
           ),
         });
 
-        const correlationId = faker.datatype.uuid();
+        const correlationId = faker.string.uuid();
         counteryparty = await prismaService.counterparty.create({
           data: {
             project: { connect: { id: project.id } },
@@ -1087,8 +1087,8 @@ describe('AlertService', () => {
               create: {
                 correlationId: correlationId,
                 companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                registrationNumber: faker.string.uuid(),
+                mccCode: faker.number.int({ min: 1000, max: 9999 }),
                 businessType: faker.lorem.word(),
                 project: { connect: { id: project.id } },
               },
@@ -1294,7 +1294,7 @@ describe('AlertService', () => {
           ),
         });
 
-        const correlationId = faker.datatype.uuid();
+        const correlationId = faker.string.uuid();
         counteryparty = await prismaService.counterparty.create({
           data: {
             project: { connect: { id: project.id } },
@@ -1303,8 +1303,8 @@ describe('AlertService', () => {
               create: {
                 correlationId: correlationId,
                 companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                registrationNumber: faker.string.uuid(),
+                mccCode: faker.number.int({ min: 1000, max: 9999 }),
                 project: { connect: { id: project.id } },
                 businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
               },
@@ -1320,7 +1320,7 @@ describe('AlertService', () => {
         await transactionFactory
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .transactionDate(faker.date.past(2))
+          .transactionDate(faker.date.past({ years: 2 }))
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(minimumTransactionAmount * transactionFactor * transactionFactor)
           .count(10)
@@ -1398,7 +1398,7 @@ describe('AlertService', () => {
           ),
         });
 
-        const correlationId = faker.datatype.uuid();
+        const correlationId = faker.string.uuid();
         counteryparty = await prismaService.counterparty.create({
           data: {
             project: { connect: { id: project.id } },
@@ -1407,8 +1407,8 @@ describe('AlertService', () => {
               create: {
                 correlationId: correlationId,
                 companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                registrationNumber: faker.string.uuid(),
+                mccCode: faker.number.int({ min: 1000, max: 9999 }),
                 project: { connect: { id: project.id } },
                 businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
               },
@@ -1424,7 +1424,7 @@ describe('AlertService', () => {
         await transactionFactory
           .direction(TransactionDirection.outbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .transactionDate(faker.date.past(2))
+          .transactionDate(faker.date.past({ years: 2 }))
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(minimumTransactionAmount * transactionFactor * transactionFactor)
           .count(10)
@@ -1433,7 +1433,7 @@ describe('AlertService', () => {
         await transactionFactory
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.apm)
-          .transactionDate(faker.date.past(1))
+          .transactionDate(faker.date.past({ years: 1 }))
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(minimumTransactionAmount + 1)
           .count(10)
@@ -1537,12 +1537,12 @@ describe('AlertService', () => {
         );
         oldDaysAgo.setHours(0, 0, 0, 0);
 
-        const txDate = faker.date.recent(3, oldDaysAgo);
+        const txDate = faker.date.recent({ days: 3, refDate: oldDaysAgo });
         await oldTransactionFactory.transactionDate(txDate).amount(3).count(1).create();
 
         // transactions from last days
         await oldTransactionFactory
-          .date(() => faker.date.recent(1))
+          .date(() => faker.date.recent({ days: 1 }))
           .amount(300)
           .count(60)
           .create();
@@ -1596,7 +1596,7 @@ describe('AlertService', () => {
         const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
 
         await txFactory
-          .transactionDate(faker.date.recent(2))
+          .transactionDate(faker.date.recent({ days: 2 }))
           .amount(300)
           .count(thresholdTransaction)
           .create();
@@ -1650,14 +1650,14 @@ describe('AlertService', () => {
       //   oldDaysAgo.setHours(0, 0, 0, 0);
 
       //   await oldTransactionFactory
-      //     .transactionDate(faker.date.recent(3, oldDaysAgo))
+      //     .transactionDate(faker.date.recent({ days: 3, refDate: oldDaysAgo }))
       //     .amount(3)
       //     .count(1)
       //     .create();
 
       //   // transactions from last days
       //   await oldTransactionFactory
-      //     .date(() => faker.date.recent(1))
+      //     .date(() => faker.date.recent({ days: 1 }))
       //     .amount(300)
       //     .count(60)
       //     .create();
@@ -1712,7 +1712,7 @@ describe('AlertService', () => {
           ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.minimumCount + 1;
 
         await txFactory
-          .transactionDate(faker.date.recent(2))
+          .transactionDate(faker.date.recent({ days: 2 }))
           .amount(300)
           .count(thresholdTransaction)
           .create();
@@ -1756,7 +1756,7 @@ describe('AlertService', () => {
           .withCounterpartyOriginator(counteryparty.id)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .transactionDate(faker.date.recent(6))
+          .transactionDate(faker.date.recent({ days: 6 }))
           .count(1);
 
         await Promise.all(
@@ -1814,7 +1814,7 @@ describe('AlertService', () => {
                   },
                 },
               },
-              correlationId: faker.datatype.uuid() + 123123,
+              correlationId: faker.string.uuid() + 123123,
             },
           },
         });
@@ -1882,7 +1882,7 @@ describe('AlertService', () => {
                 .withEndUserOriginator()
                 .direction(TransactionDirection.inbound)
                 .paymentMethod(PaymentMethod.credit_card)
-                .transactionDate(faker.date.past(2))
+                .transactionDate(faker.date.past({ years: 2 }))
                 .count(1 + i)
                 .create(),
             ),
@@ -1900,7 +1900,7 @@ describe('AlertService', () => {
                 .withEndUserOriginator()
                 .direction(TransactionDirection.inbound)
                 .paymentMethod(PaymentMethod.credit_card)
-                .transactionDate(faker.date.recent(2))
+                .transactionDate(faker.date.recent({ days: 2 }))
                 .count(i % 2 === 0 ? 3 : 2)
                 .create(),
             ),
@@ -1916,7 +1916,7 @@ describe('AlertService', () => {
           .withEndUserOriginator()
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .transactionDate(faker.date.recent(5))
+          .transactionDate(faker.date.recent({ days: 5 }))
           .count(10)
           .create();
 
@@ -1929,7 +1929,7 @@ describe('AlertService', () => {
           .withEndUserOriginator()
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .transactionDate(faker.date.past(5))
+          .transactionDate(faker.date.past({ years: 5 }))
           .count(10)
           .create();
       });
@@ -1997,7 +1997,7 @@ describe('AlertService', () => {
                   .withEndUserOriginator()
                   .direction(TransactionDirection.inbound)
                   .paymentMethod(PaymentMethod.apple_pay)
-                  .transactionDate(faker.date.past(2))
+                  .transactionDate(faker.date.past({ years: 2 }))
                   .count(1 + i)
                   .create(),
             ),
@@ -2016,7 +2016,7 @@ describe('AlertService', () => {
                   .withEndUserOriginator()
                   .direction(TransactionDirection.inbound)
                   .paymentMethod(PaymentMethod.apple_pay)
-                  .transactionDate(faker.date.recent(2))
+                  .transactionDate(faker.date.recent({ days: 2 }))
                   .count(i % 2 === 0 ? 3 : 2)
                   .create(),
             ),
@@ -2032,7 +2032,7 @@ describe('AlertService', () => {
           .withEndUserOriginator()
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.bank_transfer)
-          .transactionDate(faker.date.recent(5))
+          .transactionDate(faker.date.recent({ days: 5 }))
           .count(10)
           .create();
 
@@ -2045,7 +2045,7 @@ describe('AlertService', () => {
           .withEndUserOriginator()
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.debit_card)
-          .transactionDate(faker.date.past(5))
+          .transactionDate(faker.date.past({ years: 5 }))
           .count(10)
           .create();
       });
@@ -2565,7 +2565,7 @@ describe('AlertService', () => {
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.apm)
           .count(ALERT_DEFINITIONS.DMT_APM.inlineRule.options.amountThreshold + 1)
-          .transactionDate(faker.date.recent(10, new Date().getDate() - 2))
+          .transactionDate(faker.date.recent({ days: 10, refDate: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000) }))
           .create();
 
         // Act
@@ -2594,19 +2594,19 @@ const createCounterparty = async (
     correlationIdFn?: () => string;
   } = {},
 ) => {
-  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.string.uuid();
 
   if (!proj) {
     const customer = await createCustomer(
       prismaService,
-      faker.datatype.uuid(),
-      faker.datatype.uuid(),
+      faker.string.uuid(),
+      faker.string.uuid(),
       '',
       '',
       'webhook-shared-secret',
     );
 
-    proj = await createProject(prismaService, customer, faker.datatype.uuid());
+    proj = await createProject(prismaService, customer, faker.string.uuid());
   }
 
   return await prismaService.counterparty.create({
@@ -2617,8 +2617,8 @@ const createCounterparty = async (
         create: {
           correlationId,
           companyName: faker.company.name(),
-          registrationNumber: faker.datatype.uuid(),
-          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          registrationNumber: faker.string.uuid(),
+          mccCode: faker.number.int({ min: 1000, max: 9999 }),
           businessType: faker.lorem.word(),
           project: { connect: { id: proj.id } },
         },

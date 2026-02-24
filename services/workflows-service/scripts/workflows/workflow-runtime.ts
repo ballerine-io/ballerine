@@ -161,7 +161,7 @@ export const createMockParentWithChildWorkflow = async ({
       await prismaClient.file.create({
         data: {
           id: childPage.ballerineFileId,
-          userId: faker.datatype.uuid(),
+          userId: faker.string.uuid(),
           uri: childPage.uri,
           fileNameOnDisk: childPage.uri,
           projectId: projectId,
@@ -194,8 +194,8 @@ export const generateChildRuntimeInformation = ({
     }),
     state: 'kyc_manual_review',
     status: WorkflowRuntimeDataStatus.active,
-    createdAt: faker.date.recent(2),
-    updatedAt: faker.date.recent(2),
+    createdAt: faker.date.recent({ days: 2 }),
+    updatedAt: faker.date.recent({ days: 2 }),
     createdBy: 'SYSTEM',
     resolvedAt: null,
     config: {
@@ -240,8 +240,8 @@ export const generateParentRuntimeInformation = async ({
     }),
     state: 'manual_review',
     status: WorkflowRuntimeDataStatus.active,
-    createdAt: faker.date.recent(2),
-    updatedAt: faker.date.recent(2),
+    createdAt: faker.date.recent({ days: 2 }),
+    updatedAt: faker.date.recent({ days: 2 }),
     createdBy: 'SYSTEM',
     resolvedAt: null,
     config: {
@@ -290,7 +290,7 @@ export const createKycRuntime = ({
   },
   documents: [
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       type: 'identification_document',
       pages: [
         {
@@ -300,7 +300,7 @@ export const createKycRuntime = ({
             side: 'face',
           },
           provider: 'file-system',
-          ballerineFileId: faker.random.alphaNumeric(20),
+          ballerineFileId: faker.string.alphanumeric(20),
         },
         {
           uri: ubo.passport.front,
@@ -309,7 +309,7 @@ export const createKycRuntime = ({
             side: 'front',
           },
           provider: 'file-system',
-          ballerineFileId: faker.random.alphaNumeric(20),
+          ballerineFileId: faker.string.alphanumeric(20),
         },
         ...(ubo.passport.back
           ? [
@@ -320,7 +320,7 @@ export const createKycRuntime = ({
                   side: 'back',
                 },
                 provider: 'base64',
-                ballerineFileId: faker.random.alphaNumeric(20),
+                ballerineFileId: faker.string.alphanumeric(20),
               },
             ]
           : []),
@@ -374,7 +374,7 @@ export const createKycRuntime = ({
             decisionReason: ubo.decisionReason,
           },
           metadata: {
-            id: faker.datatype.uuid(),
+            id: faker.string.uuid(),
             url: faker.internet.url(),
           },
         },
@@ -382,7 +382,7 @@ export const createKycRuntime = ({
       },
     },
   },
-  workflowRuntimeId: faker.datatype.uuid(),
+  workflowRuntimeId: faker.string.uuid(),
 });
 
 const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
@@ -395,7 +395,7 @@ const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
   }
 
   return {
-    attemptId: faker.datatype.uuid(),
+    attemptId: faker.string.uuid(),
     vendorData: '123123-my-vendor-data',
     checkType: 'initial_result',
     matchStatus: 'possible_match',
@@ -407,7 +407,7 @@ const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
     hits: [
       {
         aka: [`${ubo.lastName} ${ubo.firstName}`],
-        countries: [faker.address.country()],
+        countries: [faker.location.country()],
         matchTypes: [faker.helpers.arrayElement(['year_of_birth', 'full_name', 'last_name'])],
         dateOfBirth: ubo.dateOfBirth.toISOString().split('T')[0],
         dateOfDeath: null,
@@ -445,7 +445,7 @@ const generateParentRuntimeContext = async ({
 }) => {
   const documents = [
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       type: 'bank_statement',
       pages: [
         {
@@ -453,7 +453,7 @@ const generateParentRuntimeContext = async ({
           type: 'png',
           metadata: { side: 'front', pageNumber: '1' },
           provider: 'http',
-          ballerineFileId: faker.random.alphaNumeric(20),
+          ballerineFileId: faker.string.alphanumeric(20),
         },
       ],
       issuer: {
@@ -476,7 +476,7 @@ const generateParentRuntimeContext = async ({
       issuingVersion: 1,
     },
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       type: 'shareholders',
       pages: [
         {
@@ -484,7 +484,7 @@ const generateParentRuntimeContext = async ({
           type: 'png',
           metadata: { side: 'front', pageNumber: '1' },
           provider: 'http',
-          ballerineFileId: faker.random.alphaNumeric(20),
+          ballerineFileId: faker.string.alphanumeric(20),
         },
       ],
       issuer: {
@@ -501,7 +501,7 @@ const generateParentRuntimeContext = async ({
       issuingVersion: 1,
     },
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       type: 'certificate_of_incorporation',
       pages: [
         {
@@ -509,7 +509,7 @@ const generateParentRuntimeContext = async ({
           type: 'png',
           metadata: { side: 'front', pageNumber: '1' },
           provider: 'http',
-          ballerineFileId: faker.random.alphaNumeric(20),
+          ballerineFileId: faker.string.alphanumeric(20),
         },
       ],
       issuer: {
@@ -533,7 +533,7 @@ const generateParentRuntimeContext = async ({
       issuingVersion: 1,
     },
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       type: 'water_bill',
       pages: [
         {
@@ -541,7 +541,7 @@ const generateParentRuntimeContext = async ({
           type: 'png',
           metadata: { side: 'front', pageNumber: '1' },
           provider: 'http',
-          ballerineFileId: faker.random.alphaNumeric(20),
+          ballerineFileId: faker.string.alphanumeric(20),
         },
       ],
       issuer: {
@@ -580,7 +580,7 @@ const generateParentRuntimeContext = async ({
       const file = await prismaClient.file.create({
         data: {
           id: page.ballerineFileId,
-          userId: faker.datatype.uuid(),
+          userId: faker.string.uuid(),
           uri: page.uri,
           fileNameOnDisk: page.uri,
           projectId: projectId,
@@ -712,7 +712,7 @@ const generateParentRuntimeContext = async ({
     childWorkflows: {
       kyc_email_session_example: Object.fromEntries(
         ubos.map(ubo => [
-          faker.datatype.uuid(),
+          faker.string.uuid(),
           {
             result: {
               childEntity: {
@@ -750,7 +750,7 @@ const generateParentRuntimeContext = async ({
                   decisionReason: ubo.decisionReason,
                 },
                 metadata: {
-                  id: faker.datatype.uuid(),
+                  id: faker.string.uuid(),
                   url: faker.internet.url(),
                 },
               },
@@ -761,6 +761,6 @@ const generateParentRuntimeContext = async ({
         ]),
       ),
     },
-    workflowRuntimeId: faker.datatype.uuid(),
+    workflowRuntimeId: faker.string.uuid(),
   };
 };

@@ -18,7 +18,7 @@ const getNestedCounterpartyBusinessData = ({
 }: {
   projectId: string;
 }): Prisma.CounterpartyCreateNestedOneWithoutOriginatingTransactionsInput => {
-  const correlationId = faker.datatype.uuid();
+  const correlationId = faker.string.uuid();
 
   return {
     create: {
@@ -28,8 +28,8 @@ const getNestedCounterpartyBusinessData = ({
         create: {
           correlationId,
           companyName: faker.company.name(),
-          registrationNumber: faker.datatype.uuid(),
-          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          registrationNumber: faker.string.uuid(),
+          mccCode: faker.number.int({ min: 1000, max: 9999 }),
           businessType: faker.lorem.word(),
           project: { connect: { id: projectId } },
         },
@@ -43,7 +43,7 @@ const getNestedCounterpartyEndUserData = ({
 }: {
   projectId: string;
 }): Prisma.CounterpartyCreateNestedOneWithoutOriginatingTransactionsInput => {
-  const correlationId = faker.datatype.uuid();
+  const correlationId = faker.string.uuid();
 
   return {
     create: {
@@ -52,8 +52,8 @@ const getNestedCounterpartyEndUserData = ({
       endUser: {
         create: {
           correlationId,
-          firstName: faker.name.firstName(),
-          lastName: faker.name.lastName(),
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
           email: faker.internet.email(),
           phone: faker.phone.number(),
           project: { connect: { id: projectId } },
@@ -70,25 +70,25 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
     transactionAmount: amount,
     transactionCurrency: 'USD',
     transactionBaseCurrency: 'USD',
-    transactionDate: faker.helpers.arrayElement([faker.date.past(1), faker.date.recent(30)]),
-    transactionCorrelationId: faker.datatype.uuid(),
+    transactionDate: faker.helpers.arrayElement([faker.date.past({ years: 1 }), faker.date.recent({ days: 30 })]),
+    transactionCorrelationId: faker.string.uuid(),
     transactionDescription: faker.lorem.sentence(),
     transactionCategory: faker.commerce.product(),
     transactionType: faker.helpers.arrayElement(Object.values(TransactionRecordType)),
     transactionDirection: faker.helpers.arrayElement(Object.values(TransactionDirection)),
     transactionReference: faker.lorem.sentence(),
 
-    cardFingerprint: faker.random.alphaNumeric(16),
-    cardIssuedCountry: faker.address.country(),
+    cardFingerprint: faker.string.alphanumeric(16),
+    cardIssuedCountry: faker.location.country(),
     completed3ds: faker.datatype.boolean(),
     cardType: faker.helpers.arrayElement(['credit', 'debit']),
     cardIssuer: faker.company.name(),
     cardBrand: faker.finance.creditCardIssuer(),
     cardExpiryMonth: faker.date.future().getMonth().toString(),
     cardExpiryYear: faker.date.future().getFullYear().toString(),
-    cardHolderName: faker.name.fullName(),
+    cardHolderName: faker.person.fullName(),
     cardBin: Number.parseInt(faker.finance.creditCardNumber().slice(0, 6), 10),
-    cardTokenized: faker.random.alphaNumeric(16),
+    cardTokenized: faker.string.alphanumeric(16),
 
     paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
     paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
@@ -102,12 +102,12 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
     productDescription: faker.commerce.productDescription(),
     productPrice: parseFloat(faker.commerce.price()),
     productPriceCurrency: faker.finance.currencyCode(),
-    productId: faker.datatype.uuid(),
+    productId: faker.string.uuid(),
     productSku: faker.commerce.product(),
 
     regulatoryAuthority: faker.company.name(),
     additionalInfo: JSON.stringify({ note: faker.lorem.sentence() }),
-    tags: JSON.stringify(faker.random.words(5).split(' ')),
+    tags: JSON.stringify(faker.lorem.words(5).split(' ')),
 
     counterpartyOriginator: faker.helpers.arrayElement([
       getNestedCounterpartyEndUserData({ projectId }),
@@ -133,7 +133,7 @@ export const createBusinessCounterparty = async ({
   correlationIdFn?: (...args: any[]) => string;
   businessTypeFn?: (...args: any[]) => string;
 }) => {
-  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.string.uuid();
 
   return await prismaService.counterparty.create({
     data: {
@@ -143,8 +143,8 @@ export const createBusinessCounterparty = async ({
         create: {
           correlationId,
           companyName: faker.company.name(),
-          registrationNumber: faker.datatype.uuid(),
-          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          registrationNumber: faker.string.uuid(),
+          mccCode: faker.number.int({ min: 1000, max: 9999 }),
           businessType: businessTypeFn ? businessTypeFn() : faker.lorem.word(),
           project: { connect: { id: projectId } },
         },
@@ -162,7 +162,7 @@ export const createEndUserCounterparty = async ({
   projectId: string;
   correlationIdFn?: (...args: any[]) => string;
 }) => {
-  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.string.uuid();
 
   return await prismaService.counterparty.create({
     data: {
@@ -171,8 +171,8 @@ export const createEndUserCounterparty = async ({
       endUser: {
         create: {
           correlationId,
-          firstName: faker.name.firstName(),
-          lastName: faker.name.lastName(),
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
           email: faker.internet.email(),
           phone: faker.phone.number(),
           project: { connect: { id: projectId } },

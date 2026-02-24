@@ -14,11 +14,11 @@ export const createAlertDefinition = async (
     'evaluateMultipleMerchantsOneCounterparty',
   ]);
   const definition = {
-    crossEnvKey: faker.datatype.uuid(),
+    crossEnvKey: faker.string.uuid(),
     name: faker.lorem.slug(),
     description: faker.lorem.sentence(),
-    rulesetId: faker.datatype.uuid(),
-    ruleId: faker.datatype.uuid(),
+    rulesetId: faker.string.uuid(),
+    ruleId: faker.string.uuid(),
 
     enabled: faker.datatype.boolean(),
     dedupeStrategy: {
@@ -35,7 +35,7 @@ export const createAlertDefinition = async (
     modifiedBy: null,
 
     inlineRule: {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       fnName,
       fnInvestigationName: fnName.replace('evaluate', 'investigate'),
       options: {
@@ -48,9 +48,9 @@ export const createAlertDefinition = async (
         ],
         timeUnit: faker.helpers.arrayElement(['days', 'hours', 'weeks', 'months']),
         direction: faker.helpers.arrayElement(['inbound', 'outbound']),
-        timeAmount: faker.datatype.number({ min: 1, max: 30 }),
+        timeAmount: faker.number.int({ min: 1, max: 30 }),
         paymentMethods: [faker.finance.transactionType()],
-        amountThreshold: faker.datatype.number({ min: 100, max: 1000 }),
+        amountThreshold: faker.number.int({ min: 100, max: 1000 }),
         havingAggregate: faker.helpers.arrayElement(['SUM', 'COUNT', 'AVG']),
         excludedCounterparty: {
           counterpartyOriginatorIds: [],

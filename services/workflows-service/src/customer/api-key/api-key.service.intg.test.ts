@@ -33,14 +33,14 @@ describe('#ApiKeyService', () => {
   beforeEach(async () => {
     customer = await createCustomer(
       prismaClient,
-      faker.datatype.uuid(),
+      faker.string.uuid(),
       undefined, // do not create an api key
       '',
       '',
       'webhook-shared-secret',
     );
 
-    await createProject(prismaClient, customer, faker.datatype.uuid());
+    await createProject(prismaClient, customer, faker.string.uuid());
   });
 
   it('Creating an API key for a customer using the same salt should throw a unique constraint error', async () => {

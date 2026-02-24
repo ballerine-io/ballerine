@@ -61,14 +61,14 @@ const persistImageFile = async (client: PrismaClient, uri: string, projectId: st
 
 function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, pdf = false) {
   if (pdf) {
-    return `https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/mock-pdf.pdf`;
+    return `https://placehold.co/600x800?text=Mock+PDF`;
   }
 
   if (countOfBusiness < 4) {
-    return faker.image.business(1000, 2000, true);
+    return faker.image.url({ width: 1000, height: 2000 });
   }
 
-  return faker.image.people(1000, 2000, true);
+  return faker.image.url({ width: 1000, height: 2000 });
 }
 
 async function createCustomer(
@@ -217,7 +217,7 @@ async function seed() {
   });
 
   const createMockBusinessContextData = async (businessId: string, countOfBusiness: number) => {
-    const correlationId = faker.datatype.uuid();
+    const correlationId = faker.string.uuid();
     const imageUri1 = generateAvatarImageUri(
       `set_${countOfBusiness}_doc_front.png`,
       countOfBusiness,
@@ -237,20 +237,20 @@ async function seed() {
         type: 'business',
         data: {
           companyName: faker.company.name(),
-          registrationNumber: faker.finance.account(9),
-          legalForm: faker.company.bs(),
-          countryOfIncorporation: faker.address.country(),
+          registrationNumber: faker.finance.accountNumber(9),
+          legalForm: faker.company.buzzPhrase(),
+          countryOfIncorporation: faker.location.country(),
           // @ts-expect-error - business type expects a date and not a string.
-          dateOfIncorporation: faker.date.past(20).toISOString(),
-          address: faker.address.streetAddress(),
+          dateOfIncorporation: faker.date.past({ years: 20 }).toISOString(),
+          address: faker.location.streetAddress(),
           phoneNumber: faker.phone.number(),
           email: faker.internet.email(),
           website: faker.internet.url(),
           industry: faker.company.catchPhrase(),
-          taxIdentificationNumber: faker.finance.account(12),
-          vatNumber: faker.finance.account(9),
-          numberOfEmployees: faker.datatype.number(1000),
-          businessPurpose: faker.company.catchPhraseDescriptor(),
+          taxIdentificationNumber: faker.finance.accountNumber(12),
+          vatNumber: faker.finance.accountNumber(9),
+          numberOfEmployees: faker.number.int({ max: 1000 }),
+          businessPurpose: faker.company.buzzAdjective(),
           approvalState: 'NEW',
           additionalInfo: { customParam: 'customValue' },
         } satisfies Partial<Business>,
@@ -259,14 +259,14 @@ async function seed() {
       },
       documents: [
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           category: 'proof_of_employment',
           type: 'payslip',
           issuer: {
             type: 'government',
             name: 'Government',
             country: 'GH',
-            city: faker.address.city(),
+            city: faker.location.city(),
             additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
@@ -298,22 +298,22 @@ async function seed() {
           ],
           properties: {
             nationalIdNumber: generateUserNationalId(),
-            docNumber: faker.random.alphaNumeric(9),
-            employeeName: faker.name.fullName(),
-            position: faker.name.jobTitle(),
+            docNumber: faker.string.alphanumeric(9),
+            employeeName: faker.person.fullName(),
+            position: faker.person.jobTitle(),
             salaryAmount: faker.finance.amount(1000, 10000),
-            issuingDate: faker.date.past(10).toISOString().split('T')[0],
+            issuingDate: faker.date.past({ years: 10 }).toISOString().split('T')[0],
           },
         },
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           category: 'proof_of_address',
           type: 'mortgage_statement',
           issuer: {
             type: 'government',
             name: 'Government',
             country: 'GH',
-            city: faker.address.city(),
+            city: faker.location.city(),
             additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
@@ -331,11 +331,11 @@ async function seed() {
           ],
           properties: {
             nationalIdNumber: generateUserNationalId(),
-            docNumber: faker.random.alphaNumeric(9),
-            employeeName: faker.name.fullName(),
-            position: faker.name.jobTitle(),
+            docNumber: faker.string.alphanumeric(9),
+            employeeName: faker.person.fullName(),
+            position: faker.person.jobTitle(),
             salaryAmount: faker.finance.amount(1000, 10000),
-            issuingDate: faker.date.past(10).toISOString().split('T')[0],
+            issuingDate: faker.date.past({ years: 10 }).toISOString().split('T')[0],
           },
         },
       ],
@@ -343,7 +343,7 @@ async function seed() {
   };
 
   async function createMockEndUserContextData(endUserId: string, countOfIndividual: number) {
-    const correlationId = faker.datatype.uuid();
+    const correlationId = faker.string.uuid();
     const imageUri1 = generateAvatarImageUri(
       `set_${countOfIndividual}_doc_front.png`,
       countOfIndividual,
@@ -362,14 +362,14 @@ async function seed() {
       entity: {
         type: 'individual',
         data: {
-          firstName: faker.name.firstName(),
-          lastName: faker.name.lastName(),
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
           email: faker.internet.email(),
           approvalState: 'NEW',
           phone: faker.phone.number(),
           stateReason: 'Poor quality of documents',
           // @ts-expect-error - end user type expects a date and not a string.
-          dateOfBirth: faker.date.past(20).toISOString(),
+          dateOfBirth: faker.date.past({ years: 20 }).toISOString(),
           additionalInfo: { customParam: 'customValue' },
         } satisfies Partial<EndUser>,
         ballerineEntityId: endUserId,
@@ -377,14 +377,14 @@ async function seed() {
       },
       documents: [
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           category: 'id',
           type: 'photo',
           issuer: {
             type: 'government',
             name: 'Government',
             country: 'CA',
-            city: faker.address.city(),
+            city: faker.location.city(),
             additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
@@ -415,27 +415,27 @@ async function seed() {
             },
           ],
           properties: {
-            firstName: faker.name.firstName(),
-            middleName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
+            firstName: faker.person.firstName(),
+            middleName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
             authority: faker.company.name(),
-            placeOfIssue: faker.address.city(),
-            issueDate: faker.date.past(10).toISOString().split('T')[0],
-            expires: faker.date.future(10).toISOString().split('T')[0],
-            dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
-            placeOfBirth: faker.address.city(),
+            placeOfIssue: faker.location.city(),
+            issueDate: faker.date.past({ years: 10 }).toISOString().split('T')[0],
+            expires: faker.date.future({ years: 10 }).toISOString().split('T')[0],
+            dateOfBirth: faker.date.past({ years: 20 }).toISOString().split('T')[0],
+            placeOfBirth: faker.location.city(),
             sex: faker.helpers.arrayElement(['male', 'female', 'other']),
           },
         },
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           category: 'selfie',
           type: 'photo',
           issuer: {
             type: 'government',
             name: 'Government',
             country: 'CA',
-            city: faker.address.city(),
+            city: faker.location.city(),
             additionalInfo: { customParam: 'customValue' },
           },
           issuingVersion: 1,
@@ -452,15 +452,15 @@ async function seed() {
             },
           ],
           properties: {
-            firstName: faker.name.firstName(),
-            middleName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
+            firstName: faker.person.firstName(),
+            middleName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
             authority: faker.company.name(),
-            placeOfIssue: faker.address.city(),
-            issueDate: faker.date.past(10).toISOString().split('T')[0],
-            expires: faker.date.future(10).toISOString().split('T')[0],
-            dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
-            placeOfBirth: faker.address.city(),
+            placeOfIssue: faker.location.city(),
+            issueDate: faker.date.past({ years: 10 }).toISOString().split('T')[0],
+            expires: faker.date.future({ years: 10 }).toISOString().split('T')[0],
+            dateOfBirth: faker.date.past({ years: 20 }).toISOString().split('T')[0],
+            placeOfBirth: faker.location.city(),
             sex: faker.helpers.arrayElement(['male', 'female', 'other']),
           },
         },
@@ -974,7 +974,7 @@ async function seed() {
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
-        createdAt: faker.date.recent(2),
+        createdAt: faker.date.recent({ days: 2 }),
         state: DEFAULT_INITIAL_STATE,
         projectId: project1.id,
       });
@@ -995,7 +995,7 @@ async function seed() {
         // Would not display data in the backoffice UI
         context: {},
         state: DEFAULT_INITIAL_STATE,
-        createdAt: faker.date.recent(2),
+        createdAt: faker.date.recent({ days: 2 }),
       };
 
       return client.business.create({
@@ -1080,11 +1080,11 @@ async function seed() {
 async function createUsers({ project1, project2 }: any, client: PrismaClient) {
   const adminUser = {
     email: 'admin@admin.com',
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
     password: await hash('admin', BCRYPT_SALT),
     roles: ['user'],
-    avatarUrl: faker.image.people(200, 200, true),
+    avatarUrl: faker.image.url({ width: 200, height: 200 }),
     userToProjects: {
       create: { projectId: project1.id },
     },
@@ -1094,30 +1094,30 @@ async function createUsers({ project1, project2 }: any, client: PrismaClient) {
     adminUser,
     {
       email: 'agent1@test.mikashboks.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       password: await hash('agent1', BCRYPT_SALT),
       roles: ['user'],
-      avatarUrl: faker.image.people(200, 200, true),
+      avatarUrl: faker.image.url({ width: 200, height: 200 }),
       userToProjects: {
         create: { projectId: project2.id },
       },
     },
     {
       email: 'agent2@test.mikashboks.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       password: await hash('agent2', BCRYPT_SALT),
       roles: ['user'],
-      avatarUrl: faker.image.people(200, 200, true),
+      avatarUrl: faker.image.url({ width: 200, height: 200 }),
       userToProjects: {
         create: { projectId: project2.id },
       },
     },
     {
       email: 'agent3@test.mikashboks.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       password: await hash('agent3', BCRYPT_SALT),
       roles: ['user'],
       avatarUrl: null,

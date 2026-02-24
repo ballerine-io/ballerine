@@ -313,7 +313,7 @@ export const loanKycKybSierraLeoneDefinition = {
                   deviceIp: entity.data.deviceIp
                 }
               },
-              documents: documents[?category=='proof_of_identity' || category=='proof_of_identity_ownership']
+              documents: documents[?category=='proof_of_identity' || category=='proof_of_identity_ownership' || category=='proof_of_address' || category=='proof_of_location']
             }`,
           },
         ],

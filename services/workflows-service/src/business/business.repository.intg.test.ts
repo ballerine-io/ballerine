@@ -27,7 +27,7 @@ describe('BusinessRepository #integration #repository', () => {
 
     const customer = await createCustomer(
       prismaService,
-      faker.datatype.uuid(),
+      faker.string.uuid(),
       'secret',
       '',
       '',

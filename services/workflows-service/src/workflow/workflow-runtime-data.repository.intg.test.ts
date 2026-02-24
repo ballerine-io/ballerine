@@ -116,7 +116,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
 
     customer = await createCustomer(
       prismaService,
-      faker.datatype.uuid(),
+      faker.string.uuid(),
       'secret',
       '',
       '',

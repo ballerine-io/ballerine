@@ -26,12 +26,12 @@ import {
 
 const tags = [
   ...new Set([
-    faker.random.word(),
-    faker.random.word(),
-    faker.random.word(),
-    faker.random.word(),
-    faker.random.word(),
-    faker.random.word(),
+    faker.lorem.word(),
+    faker.lorem.word(),
+    faker.lorem.word(),
+    faker.lorem.word(),
+    faker.lorem.word(),
+    faker.lorem.word(),
   ]),
 ];
 
@@ -943,7 +943,7 @@ const generateFakeAlert = (
 
   // In chance of 1 to 5, assign an agent to the alert
   const assigneeId =
-    faker.datatype.number({ min: 1, max: 5 }) === 1
+    faker.number.int({ min: 1, max: 5 }) === 1
       ? faker.helpers.arrayElement(agentUserIds)
       : undefined;
 
@@ -951,10 +951,10 @@ const generateFakeAlert = (
     dataTimestamp: faker.date.past(),
     state: faker.helpers.arrayElement(Object.values(AlertState)),
     status: faker.helpers.arrayElement(Object.values(AlertStatus)),
-    tags: [faker.random.word(), faker.random.word(), faker.random.word()],
+    tags: [faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
     executionDetails: {
       checkpoint: {
-        hash: faker.datatype.uuid(),
+        hash: faker.string.uuid(),
       },
       executionRow: JSON.parse(faker.datatype.json()),
     } as InputJsonValue,
@@ -996,7 +996,7 @@ export const seedTransactionsAlerts = async (
       prisma.alert.createMany({
         data: Array.from(
           {
-            length: faker.datatype.number({ min: 3, max: 5 }),
+            length: faker.number.int({ min: 3, max: 5 }),
           },
           () => ({
             alertDefinitionId: alertDefinition.id,
@@ -1015,7 +1015,7 @@ export const seedTransactionsAlerts = async (
       prisma.alert.createMany({
         data: Array.from(
           {
-            length: faker.datatype.number({ min: 3, max: 5 }),
+            length: faker.number.int({ min: 3, max: 5 }),
           },
           () => ({
             alertDefinitionId: alertDefinition.id,

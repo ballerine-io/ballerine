@@ -47,7 +47,7 @@ import { AssessmentsService } from '@/assessments/assessments.service';
 import { UnifiedApiClient } from '@/common/utils/unified-api-client/unified-api-client';
 import { KycService } from '@/kyc/kyc.service';
 
-const API_KEY = faker.datatype.uuid();
+const API_KEY = faker.string.uuid();
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -117,7 +117,7 @@ describe('#EndUserControllerExternal', () => {
 
     customer = await createCustomer(
       await app.get(PrismaService),
-      faker.datatype.uuid(),
+      faker.string.uuid(),
       API_KEY,
       '',
       '',
@@ -132,8 +132,8 @@ describe('#EndUserControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/end-users')
         .send({
-          correlationId: faker.datatype.uuid(),
-          endUserType: faker.random.word(),
+          correlationId: faker.string.uuid(),
+          endUserType: faker.lorem.word(),
           approvalState: 'APPROVED',
           firstName: 'test',
           lastName: 'lastName',

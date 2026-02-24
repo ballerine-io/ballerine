@@ -139,7 +139,7 @@ export const getMockWorkflowContext = async (
                       type: 'passport',
                       pages: [
                         await generateDocumentPage({
-                          uri: 'https://cdn.ballerine.io/merch-ss/canada-license-front.jpg',
+                          uri: 'https://placehold.co/600x800?text=License+Front',
                           metadata: { side: 'front' },
                         }),
                       ],
@@ -176,7 +176,7 @@ export const getMockWorkflowContext = async (
                       type: 'selfie',
                       pages: [
                         await generateDocumentPage({
-                          uri: 'https://cdn.ballerine.io/merch-ss/Armenia_selfie.jpg',
+                          uri: 'https://placehold.co/600x800?text=Selfie+Image',
                           metadata: { side: 'face' },
                         }),
                       ],
@@ -310,7 +310,7 @@ export const getMockWorkflowContext = async (
           type: 'water_bill',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/utility%20bill2.jpeg',
+              uri: 'https://placehold.co/600x800?text=Utility+Bill',
             }),
           ],
           issuer: {
@@ -331,7 +331,7 @@ export const getMockWorkflowContext = async (
           type: 'bank_statement',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/Bank%20Statement3.jpeg',
+              uri: 'https://placehold.co/600x800?text=Bank+Statement',
             }),
           ],
           issuer: {
@@ -370,7 +370,7 @@ export const getMockWorkflowContext = async (
           type: 'certificate_of_incorporation',
           pages: [
             await generateDocumentPage({
-              uri: 'https://cdn.ballerine.io/merch-ss/COI1.jpeg',
+              uri: 'https://placehold.co/600x800?text=Certificate+of+Incorporation',
             }),
           ],
           issuer: {

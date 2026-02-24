@@ -107,14 +107,14 @@ describe.skip('#CustomerControllerExternal', () => {
 
       customer = await createCustomer(
         prismaClient,
-        faker.datatype.uuid(),
+        faker.string.uuid(),
         API_KEY,
         '',
         '',
         'webhook-shared-secret',
       );
 
-      project = await createProject(prismaClient, customer, faker.datatype.uuid());
+      project = await createProject(prismaClient, customer, faker.string.uuid());
 
       const dbCustomer = await customerService.getById(customer.id);
 

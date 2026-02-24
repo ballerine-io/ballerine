@@ -1621,7 +1621,6 @@ export class WorkflowService {
       );
 
       config = merge(workflowDefinition.config, config);
-      let validatedConfig: WorkflowConfig;
       const result = ConfigSchema.safeParse(config);
 
       if (!result.success) {
@@ -1632,6 +1631,7 @@ export class WorkflowService {
 
         throw ValidationError.fromZodError(result.error);
       }
+      const validatedConfig: WorkflowConfig = result.data;
 
       const customer = await this.customerService.getByProjectId(projectIds![0]!);
       // @ts-ignore

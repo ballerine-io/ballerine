@@ -177,6 +177,13 @@ export const serverEnvSchema = {
   REDIS_TLS_ENABLED: optionalBooleanSchema.default('false'),
   IS_QUEUE_WORKER: optionalBooleanSchema.default('false'),
   QUEUE_SYSTEM_ENABLED: optionalBooleanSchema.default('false'),
+  WEBHOOK_DELIVERY_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(5000)
+    .max(120000)
+    .default(30000)
+    .describe('Default timeout (ms) for outbound webhook deliveries.'),
 
   OTEL_ENABLED: z
     .union([z.literal('true'), z.literal('false')])

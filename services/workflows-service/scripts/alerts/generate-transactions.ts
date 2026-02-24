@@ -38,7 +38,7 @@ export const generateTransactions = async (
   const endUserCounterparties: string[] = [];
 
   for (let i = 0; i < 100; i++) {
-    const correlationId = faker.datatype.uuid();
+    const correlationId = faker.string.uuid();
     const counterparty = await prismaClient.counterparty.create({
       data: {
         correlationId: correlationId,
@@ -55,7 +55,7 @@ export const generateTransactions = async (
     businessCounterparties.push(counterparty.id);
   }
   for (let i = 0; i < 50; i++) {
-    const correlationId = faker.datatype.uuid();
+    const correlationId = faker.string.uuid();
     const counterparty = await prismaClient.counterparty.create({
       data: {
         correlationId: correlationId,
@@ -90,8 +90,8 @@ export const generateTransactions = async (
 
     await prismaClient.transactionRecord.create({
       data: {
-        transactionCorrelationId: faker.datatype.uuid(),
-        transactionDate: faker.date.recent(30),
+        transactionCorrelationId: faker.string.uuid(),
+        transactionDate: faker.date.recent({ days: 30 }),
         transactionAmount: parseFloat(faker.finance.amount()),
         transactionCurrency: faker.finance.currencyCode(),
         transactionBaseAmount: parseFloat(faker.finance.amount()),
@@ -111,23 +111,23 @@ export const generateTransactions = async (
         paymentGateway: faker.helpers.arrayElement(Object.values(PaymentGateway)),
         paymentAcquirer: faker.helpers.arrayElement(Object.values(PaymentAcquirer)),
         paymentProcessor: faker.helpers.arrayElement(Object.values(PaymentProcessor)),
-        cardFingerprint: faker.random.alphaNumeric(16),
-        cardIssuedCountry: faker.address.countryCode(),
+        cardFingerprint: faker.string.alphanumeric(16),
+        cardIssuedCountry: faker.location.countryCode(),
         completed3ds: faker.datatype.boolean(),
         cardType: faker.helpers.arrayElement(['credit', 'debit']),
         cardIssuer: faker.company.name(),
         cardBrand: faker.finance.creditCardIssuer(),
         cardExpiryMonth: faker.date.future().getMonth().toString(),
         cardExpiryYear: faker.date.future().getFullYear().toString(),
-        cardHolderName: faker.name.fullName(),
+        cardHolderName: faker.person.fullName(),
         cardBin: Number.parseInt(faker.finance.creditCardNumber().slice(0, 6), 10),
-        cardTokenized: faker.random.alphaNumeric(16),
-        tags: JSON.stringify(faker.random.words(5).split(' ')),
+        cardTokenized: faker.string.alphanumeric(16),
+        tags: JSON.stringify(faker.lorem.words(5).split(' ')),
         reviewStatus: faker.helpers.arrayElement(Object.values(ReviewStatus)),
         reviewerComments: faker.lorem.sentence(),
         auditTrail: JSON.stringify({ action: faker.lorem.word(), date: faker.date.recent() }),
         unusualActivityFlags: JSON.stringify({ flag: faker.lorem.word() }),
-        riskScore: faker.datatype.number({ min: 0, max: 100 }),
+        riskScore: faker.number.int({ min: 0, max: 100 }),
         regulatoryAuthority: faker.company.name(),
         additionalInfo: JSON.stringify({ note: faker.lorem.sentence() }),
         productName: faker.commerce.productName(),
@@ -135,10 +135,10 @@ export const generateTransactions = async (
         productPrice: parseFloat(faker.commerce.price()),
         productPriceCurrency: faker.finance.currencyCode(),
         productSku: faker.commerce.product(),
-        productId: faker.datatype.uuid(),
+        productId: faker.string.uuid(),
         originatorSortCode: faker.finance.routingNumber(),
-        originatorBankCountry: faker.address.countryCode(),
-        originatorGeoLocation: faker.address.countryCode(),
+        originatorBankCountry: faker.location.countryCode(),
+        originatorGeoLocation: faker.location.countryCode(),
         originatorIpAddress: faker.internet.ip(),
         originatorUserAgent: faker.internet.userAgent(),
         ...businessIdCounterpartyIdOrBoth,

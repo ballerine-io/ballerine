@@ -60,7 +60,7 @@
     "@ballerine/workflow-node-sdk": "0.6.142",
     "@bull-board/api": "^6.7.1",
     "@bull-board/express": "^6.7.1",
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.0",
     "@google-cloud/storage": "^7.19.0",
     "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^10.0.0",

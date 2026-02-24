@@ -47,7 +47,7 @@ export const generateHashedKey = async (options?: {
 }) => {
   const { key, expiresInDays, salt } = { ...DEFAULT_HASHIING_OPTIONS, ...options };
 
-  const _key = key ?? faker.internet.password(API_KEY_LEN, false, PASSWORD_REGEX);
+  const _key = key ?? faker.internet.password({ length: API_KEY_LEN, memorable: false, pattern: PASSWORD_REGEX });
 
   const hashedKey = await hashKey(_key, salt);
 

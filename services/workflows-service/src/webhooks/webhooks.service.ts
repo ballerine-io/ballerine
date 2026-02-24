@@ -231,7 +231,7 @@ export class WebhooksService implements OnModuleInit {
       method,
       headers,
       data,
-      timeout: timeout ?? 15_000,
+      timeout: timeout ?? env.WEBHOOK_DELIVERY_TIMEOUT_MS,
     };
 
     if (env.QUEUE_SYSTEM_ENABLED && this.queueInitialized && !forceDirect) {

@@ -49,25 +49,25 @@ export const businessIds = [
 ];
 
 export const generateBusiness = ({
-  id: id = faker.datatype.uuid(),
-  correlationId = faker.datatype.uuid(),
+  id: id = faker.string.uuid(),
+  correlationId = faker.string.uuid(),
   companyName = faker.company.name(),
-  registrationNumber = faker.datatype.uuid(),
+  registrationNumber = faker.string.uuid(),
   legalForm = faker.company.companySuffix(),
-  countryOfIncorporation = faker.address.country(),
-  dateOfIncorporation = faker.date.past(10),
-  address = faker.address.streetAddress(),
+  countryOfIncorporation = faker.location.country(),
+  dateOfIncorporation = faker.date.past({ years: 10 }),
+  address = faker.location.streetAddress(),
   phoneNumber = faker.phone.number('+##########'),
   email = faker.internet.email(),
   website = faker.internet.url(),
-  industry = faker.company.bs(),
-  taxIdentificationNumber = faker.finance.account(10),
-  vatNumber = `VAT${faker.finance.account(8)}`,
-  numberOfEmployees = faker.datatype.number({ min: 1, max: 1000 }),
+  industry = faker.company.buzzPhrase(),
+  taxIdentificationNumber = faker.finance.accountNumber(10),
+  vatNumber = `VAT${faker.finance.accountNumber(8)}`,
+  numberOfEmployees = faker.number.int({ min: 1, max: 1000 }),
   businessPurpose = faker.company.catchPhrase(),
   shareholderStructure = [
     {
-      name: faker.name.fullName(),
+      name: faker.person.fullName(),
       ownershipPercentage: Number(faker.finance.amount(0, 100, 2)),
     },
   ],
@@ -133,7 +133,7 @@ export const generateBusiness = ({
         workflowDefinitionVersion,
         context,
         workflowDefinitionId,
-        createdAt: faker.date.recent(2),
+        createdAt: faker.date.recent({ days: 2 }),
         projectId: projectId,
         state: state,
         tags: [StateTag.MANUAL_REVIEW],
@@ -145,13 +145,13 @@ export const generateBusiness = ({
 };
 
 export const generateEndUser = ({
-  id = faker.datatype.uuid(),
-  correlationId = faker.datatype.uuid(),
-  firstName = faker.name.firstName(),
-  lastName = faker.name.lastName(),
+  id = faker.string.uuid(),
+  correlationId = faker.string.uuid(),
+  firstName = faker.person.firstName(),
+  lastName = faker.person.lastName(),
   email = faker.internet.email(firstName, lastName),
   phone = faker.phone.number('+##########'),
-  dateOfBirth = faker.date.past(60),
+  dateOfBirth = faker.date.past({ years: 60 }),
   avatarUrl = faker.image.avatar(),
   workflow,
   projectId,
@@ -185,57 +185,57 @@ export const generateEndUser = ({
     phone,
     dateOfBirth,
     avatarUrl,
-    activeMonitorings: Array.from({ length: faker.datatype.number({ min: 0, max: 3 }) }, () => ({
+    activeMonitorings: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }, () => ({
       type: 'aml',
       vendor: 'veriff',
       monitoredUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 3)).toISOString(),
-      sessionId: faker.datatype.uuid(),
+      sessionId: faker.string.uuid(),
     })),
     amlHits: Array.from(
-      { length: faker.datatype.number({ min: 0, max: 3 }) },
+      { length: faker.number.int({ min: 0, max: 3 }) },
       () =>
         ({
           vendor: 'veriff',
-          matchedName: faker.name.fullName(),
-          countries: [faker.address.country()],
+          matchedName: faker.person.fullName(),
+          countries: [faker.location.country()],
           warnings: [
             {
-              date: faker.date.recent(2).toISOString(),
+              date: faker.date.recent({ days: 2 }).toISOString(),
               sourceName: faker.company.name(),
               sourceUrl: faker.internet.url(),
             },
           ],
           sanctions: [
             {
-              date: faker.date.recent(2).toISOString(),
+              date: faker.date.recent({ days: 2 }).toISOString(),
               sourceUrl: faker.internet.url(),
               sourceName: faker.company.name(),
             },
           ],
           fitnessProbity: [
             {
-              date: faker.date.recent(2).toISOString(),
+              date: faker.date.recent({ days: 2 }).toISOString(),
               sourceName: faker.company.name(),
               sourceUrl: faker.internet.url(),
             },
           ],
           pep: [
             {
-              date: faker.date.recent(2).toISOString(),
+              date: faker.date.recent({ days: 2 }).toISOString(),
               sourceUrl: faker.internet.url(),
               sourceName: faker.company.name(),
             },
           ],
           adverseMedia: [
             {
-              date: faker.date.recent(2).toISOString(),
+              date: faker.date.recent({ days: 2 }).toISOString(),
               sourceName: faker.company.name(),
               sourceUrl: faker.internet.url(),
             },
           ],
           other: [
             {
-              date: faker.date.recent(2).toISOString(),
+              date: faker.date.recent({ days: 2 }).toISOString(),
               sourceName: faker.company.name(),
               sourceUrl: faker.internet.url(),
             },
@@ -272,7 +272,7 @@ export const generateEndUser = ({
         projectId,
         workflowDefinitionId,
         workflowDefinitionVersion,
-        createdAt: faker.date.recent(2),
+        createdAt: faker.date.recent({ days: 2 }),
         parentRuntimeDataId: workflow.parentRuntimeId,
         tags: [StateTag.MANUAL_REVIEW],
       },
