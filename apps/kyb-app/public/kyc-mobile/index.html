@@ -403,6 +403,9 @@
       var params = new URLSearchParams(window.location.search);
       var TOKEN = params.get('token') || '';
       var preselectedDocType = params.get('docType');
+      if (preselectedDocType) {
+        preselectedDocType = String(preselectedDocType).trim().toLowerCase();
+      }
       var initRetryAttempted = false;
       var initFailed = false;
       var legacyFallbackAttempted = params.get('legacy') === '1';
@@ -1037,6 +1040,18 @@
           );
         }
 
+        // Guard: if Android preselected a docType that is not allowed by current server config,
+        // fall back to full-flow document selection instead of crashing SDK bootstrap.
+        if (hasPreselectedDoc && !preselectedDocInfo) {
+          console.warn(
+            '[KYC] Preselected docType is not available in active workflow config. ' +
+              'Falling back to document-selection step.',
+            preselectedDocType,
+          );
+          hasPreselectedDoc = false;
+          preselectedDocType = null;
+        }
+
         // 4. Resolve SDK steps — prefer config-driven, fallback to client-hardcoded
         // NOTE: We read from config.kycSdkSteps (an array of SDK step name strings),
         // NOT from collectionFlow.state.steps (which contains form-page names like
@@ -1048,6 +1063,18 @@
           workflowData.config.kycSdkSteps.length > 0
             ? workflowData.config.kycSdkSteps
             : null;
+
+        if (
+          configSteps &&
+          !hasPreselectedDoc &&
+          !configSteps.includes('document-selection')
+        ) {
+          console.warn(
+            '[KYC] config.kycSdkSteps is missing document-selection while preselected mode is off. ' +
+              'Falling back to client-safe step set.',
+          );
+          configSteps = null;
+        }
 
         var steps;
         if (configSteps) {
