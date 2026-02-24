@@ -12,6 +12,7 @@ export interface AlertCheckJobData extends Record<string, unknown> {
 export class AlertQueueService implements OnModuleInit {
   private readonly QUEUE_NAME = 'transaction-monitoring-alerts';
   private readonly SCHEDULER_ID = 'transaction-monitoring-alert-check';
+  private readonly QUEUE_INIT_TIMEOUT_MS = 5_000;
 
   constructor(
     private readonly logger: AppLoggerService,
@@ -24,7 +25,28 @@ export class AlertQueueService implements OnModuleInit {
       return;
     }
 
-    await this.setupAlertQueue();
+    // Do not block HTTP startup on Redis queue availability. If Redis is
+    // temporarily unreachable during rollout, the service must still boot and
+    // pass Cloud Run startup probes.
+    void this.setupAlertQueueWithTimeout();
+  }
+
+  private async setupAlertQueueWithTimeout() {
+    try {
+      await Promise.race([
+        this.setupAlertQueue(),
+        new Promise((_, reject) => {
+          setTimeout(
+            () => reject(new Error('Alert queue setup timed out')),
+            this.QUEUE_INIT_TIMEOUT_MS,
+          );
+        }),
+      ]);
+    } catch (error) {
+      this.logger.warn('Alert queue initialization deferred; continuing service startup', {
+        error,
+      });
+    }
   }
 
   private async setupAlertQueue() {
