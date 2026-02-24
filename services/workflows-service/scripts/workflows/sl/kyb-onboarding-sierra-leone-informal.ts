@@ -92,7 +92,51 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
       pending_owner_kyc: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          OWNER_KYC_RESPONDED: [{ target: 'business_photo_classification' }],
+          OWNER_KYC_RESPONDED: [
+            {
+              target: 'business_photo_classification',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  // Continue only when owner KYC child is explicitly approved.
+                  rule: "childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) > `0`",
+                },
+              },
+            },
+            {
+              target: 'pending_owner_resubmission',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  // Recoverable input gap: no owner media and/or weak device signal.
+                  // Route to revision instead of manual review.
+                  rule: "length(childWorkflows.kyc_onboarding_sierra_leone.*[?contains(result.vendorResult.document_verification.failedAttributes || result.vendorResult.document_verification.data.failedAttributes || [], 'no_methods_executed') || contains(result.vendorResult.facial_verification.failedAttributes || result.vendorResult.facial_verification.data.failedAttributes || [], 'no_methods_executed') || contains(to_string(result.vendorResult.device_dedup_check.errorCode || result.vendorResult.device_dedup_check.data.errorCode || result.vendorResult.device_dedup_check.error || result.vendorResult.device_dedup_check.data.error || result.vendorResult.device_dedup_check.reason || result.vendorResult.device_dedup_check.data.reason || ''), 'INSUFFICIENT_DEVICE_DATA')]) > `0`",
+                },
+              },
+            },
+            {
+              target: 'manual_review',
+            },
+          ],
+        },
+      },
+      pending_owner_resubmission: {
+        tags: [StateTag.REVISION],
+        on: {
+          EMAIL_SENT: 'owner_revision',
+          EMAIL_FAILURE: 'manual_review',
+          RESUBMITTED: 'owner_id_check',
+          COLLECTION_FLOW_FINISHED: 'owner_id_check',
+          RETURN_TO_REVIEW: 'manual_review',
+        },
+      },
+      owner_revision: {
+        tags: [StateTag.REVISION],
+        on: {
+          REVISION: 'pending_owner_resubmission',
+          RESUBMITTED: 'owner_id_check',
+          COLLECTION_FLOW_FINISHED: 'owner_id_check',
+          RETURN_TO_REVIEW: 'manual_review',
         },
       },
       /**
@@ -342,7 +386,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
         template: 'resubmission',
         successAction: 'EMAIL_SENT',
         errorAction: 'EMAIL_FAILURE',
-        stateNames: ['pending_resubmission'],
+        stateNames: ['pending_resubmission', 'pending_owner_resubmission'],
       },
     ],
     childWorkflowPlugins: [
@@ -354,9 +398,7 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
           {
             transformer: 'jmespath',
             // join() requires Array<string>; `entity.id || ''` avoids runtime type errors during transform.
-            // NOTE: In @ballerine/workflow-core@0.6.142, complex JMESPath expressions here (filters/||)
-            // can fail output-schema inference for child plugins at runtime. Passing the full documents
-            // array is safe because the child KYC workflow filters by document category internally.
+            // Keep the expression simple to avoid runtime output-schema inference edge-cases.
             mapping: `{
               entity: {
                 type: 'individual',
@@ -366,14 +408,25 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
                   lastName: entity.data.ownerLastName || entity.data.additionalInfo.owner.lastName,
                   nationalId: entity.data.ownerNationalId || entity.data.additionalInfo.owner.nationalId,
                   dateOfBirth: entity.data.additionalInfo.owner.dateOfBirth,
-                  phoneNumber: entity.data.phoneNumber,
-                  email: entity.data.email,
+                  phoneNumber: entity.data.ownerPhoneNumber || entity.data.additionalInfo.owner.phoneNumber || entity.data.phoneNumber,
+                  email: entity.data.ownerEmail || entity.data.additionalInfo.owner.email || entity.data.email,
+                  address: entity.data.address,
                   country: 'SL',
                   tenantId: entity.data.tenantId,
-                  projectId: entity.data.projectId
+                  projectId: entity.data.projectId,
+                  fingerprintJsDeviceId: entity.data.device.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceId,
+                  fingerprintJsDeviceHash: entity.data.device.fingerprintJsDeviceHash || entity.data.fingerprintJsDeviceHash,
+                  deviceFingerprint: entity.data.device.deviceFingerprint || entity.data.deviceFingerprint,
+                  deviceFirebaseInstallationId: entity.data.device.deviceFirebaseInstallationId || entity.data.deviceFirebaseInstallationId,
+                  deviceLocalInstallationId: entity.data.device.deviceLocalInstallationId || entity.data.deviceLocalInstallationId,
+                  deviceImei: entity.data.device.deviceImei || entity.data.deviceImei,
+                  deviceModel: entity.data.device.deviceModel || entity.data.deviceModel,
+                  deviceBrand: entity.data.device.deviceBrand || entity.data.deviceBrand,
+                  deviceUserAgent: entity.data.device.deviceUserAgent || entity.data.deviceUserAgent,
+                  deviceIp: entity.data.device.deviceIp || entity.data.device.networkIpAddresses[0] || entity.data.deviceIp
                 }
               },
-              documents: documents
+              documents: documents[?category=='proof_of_identity' || category=='proof_of_identity_ownership'] || entity.data.additionalInfo.owner.documents || []
             }`,
           },
         ],
@@ -457,6 +510,23 @@ export const kybOnboardingSierraLeoneInformalDefinition = {
             ownerFirstName: Type.Optional(Type.String()),
             ownerLastName: Type.Optional(Type.String()),
             ownerNationalId: Type.Optional(Type.String()),
+            ownerPhoneNumber: Type.Optional(Type.String()),
+            ownerEmail: Type.Optional(Type.String()),
+            device: Type.Optional(
+              Type.Object({
+                fingerprintJsDeviceId: Type.Optional(Type.String()),
+                fingerprintJsDeviceHash: Type.Optional(Type.String()),
+                deviceFingerprint: Type.Optional(Type.String()),
+                deviceFirebaseInstallationId: Type.Optional(Type.String()),
+                deviceLocalInstallationId: Type.Optional(Type.String()),
+                deviceImei: Type.Optional(Type.String()),
+                deviceModel: Type.Optional(Type.String()),
+                deviceBrand: Type.Optional(Type.String()),
+                deviceUserAgent: Type.Optional(Type.String()),
+                deviceIp: Type.Optional(Type.String()),
+                networkIpAddresses: Type.Optional(Type.Array(Type.String())),
+              }),
+            ),
             additionalInfo: Type.Optional(
               Type.Object({
                 owner: Type.Optional(

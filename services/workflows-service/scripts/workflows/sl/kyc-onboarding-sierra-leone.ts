@@ -48,8 +48,20 @@ export const kycOnboardingSierraLeoneDefinition = {
       facial_verification: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          FACIAL_VERIFIED: [{ target: 'ncra_check' }],
+          FACIAL_VERIFIED: [{ target: 'address_verification' }],
           FACIAL_VERIFICATION_FAILED: [{ target: 'manual_review' }],
+          TIMEOUT: [{ target: 'manual_review' }],
+        },
+        after: {
+          // 24 hours — if we haven't received a callback by then, escalate to manual review.
+          86400000: [{ target: 'manual_review' }],
+        },
+      },
+      address_verification: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          ADDRESS_VERIFIED: [{ target: 'ncra_check' }],
+          ADDRESS_VERIFICATION_FAILED: [{ target: 'manual_review' }],
           TIMEOUT: [{ target: 'manual_review' }],
         },
         after: {
@@ -86,7 +98,7 @@ export const kycOnboardingSierraLeoneDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: `pluginsOutput.document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.facial_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\` && (pluginsOutput.facial_verification.confidenceScore || \`0\`) >= \`70\``,
+                rule: `pluginsOutput.document_verification.verificationStatus == 'VERIFIED' && pluginsOutput.facial_verification.verificationStatus == 'VERIFIED' && pluginsOutput.address_verification.verificationStatus == 'VERIFIED' && (pluginsOutput.document_verification.confidenceScore || \`0\`) >= \`80\` && (pluginsOutput.facial_verification.confidenceScore || \`0\`) >= \`70\` && (pluginsOutput.address_verification.confidenceScore || \`0\`) >= \`60\``,
               },
             },
           },
@@ -214,6 +226,55 @@ export const kycOnboardingSierraLeoneDefinition = {
         },
       },
       {
+        name: 'address_verification',
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/api/v1/verification/kyc`,
+        method: 'POST',
+        stateNames: ['address_verification'],
+        successAction: 'ADDRESS_VERIFIED',
+        errorAction: 'ADDRESS_VERIFICATION_FAILED',
+        timeout: 120000, // 2 minutes
+        headers: {
+          Authorization: `Bearer {secret.UNIFIED_API_TOKEN}`,
+          'x-api-key': '{secret.UNIFIED_API_TOKEN}',
+          'Content-Type': 'application/json',
+          'x-tenant-id': '{entity.data.tenantId}',
+          'x-project-id': '{entity.data.projectId}',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+                person: {
+                  id: entity.id,
+                  firstName: entity.data.firstName,
+                  lastName: entity.data.lastName,
+                  address: entity.data.address,
+                  documents: documents[?category=='proof_of_address' || category=='proof_of_location'].{
+                    type: type,
+                    frontImageUrl: pages[0].uri,
+                    issuingCountry: 'SL'
+                  }
+                },
+                methods: ['ADDRESS_VERIFICATION'],
+                countryCode: 'SL',
+                callbackUrl: join('', ['{secret.APP_API_URL}/api/v1/external/workflows/', workflowRuntimeId, '/hook/{secret.UNIFIED_API_VERIFICATION_HOOK_ID}', '?resultDestination=pluginsOutput.address_verification.data&processName=address-verification-unified-api'])
+              }`,
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping:
+                "merge(@, { name: 'address_verification', verificationStatus: status, status: status == 'PENDING' && 'IN_PROGRESS' || status == 'ERROR' && 'ERROR' || status == 'EXPIRED' && 'ERROR' || 'SUCCESS' })",
+            },
+          ],
+        },
+      },
+      {
         name: 'device_dedup_check',
         pluginKind: 'api',
         url: `{secret.UNIFIED_API_URL}/api/v1/entity-resolution/devices/check-duplicate`,
@@ -255,8 +316,7 @@ export const kycOnboardingSierraLeoneDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping:
-                "merge(@, { name: 'device_dedup_check', status: 'SUCCESS' })",
+              mapping: "merge(@, { name: 'device_dedup_check', status: 'SUCCESS' })",
             },
           ],
         },
@@ -277,6 +337,9 @@ export const kycOnboardingSierraLeoneDefinition = {
       entityInfo: true,
     },
     theme: { type: 'kyc' },
+    // Address verification: wired end-to-end via address_verification state +
+    // ADDRESS_VERIFICATION method in the Unified API.
+    addressVerificationEnabled: true,
     // SDK step sequence for the KYC mobile page (index.html).
     // The frontend reads this from workflowData.config.kycSdkSteps to drive
     // the Ballerine Web UI SDK flow.  If absent, the page falls back to its

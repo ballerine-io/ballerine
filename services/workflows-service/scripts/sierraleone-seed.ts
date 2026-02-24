@@ -412,12 +412,8 @@ async function seedUiDefinitions(client: PrismaClient, projectId: string) {
         plugins: [],
       },
       // Page 3: Proof of Address
-      // IMPORTANT: This page is always present in the UiDefinition. When
-      // config.addressVerificationEnabled is false, the workflow state machine
-      // auto-transitions past address_verification, so this page effectively
-      // becomes a no-op. The collection-flow frontend should conditionally
-      // hide this step by inspecting the workflow config flag.
-      // TODO: Wire collection-flow conditional step visibility based on config flags.
+      // This evidence is consumed by the address_verification state in
+      // kyc-onboarding-sierra-leone.ts.
       {
         type: 'page',
         number: 3,
@@ -1170,6 +1166,11 @@ async function seedUiDefinitions(client: PrismaClient, projectId: string) {
           { key: 'entity.data.gender', label: 'Gender' },
           { key: 'entity.data.phoneNumber', label: 'Phone' },
           { key: 'entity.data.email', label: 'Email' },
+          { key: 'entity.data.fingerprintJsDeviceId', label: 'FingerprintJS Device ID' },
+          { key: 'entity.data.deviceFingerprint', label: 'Device Fingerprint' },
+          { key: 'entity.data.deviceFirebaseInstallationId', label: 'Firebase Installation ID' },
+          { key: 'entity.data.deviceLocalInstallationId', label: 'Local Installation ID' },
+          { key: 'entity.data.deviceIp', label: 'Device IP' },
           { key: 'entity.data.address.district', label: 'District' },
           { key: 'entity.data.address.city', label: 'City' },
         ],
@@ -1178,7 +1179,7 @@ async function seedUiDefinitions(client: PrismaClient, projectId: string) {
         id: 'sl-kyc-cm-documents',
         type: 'document-review',
         title: 'Identity Documents',
-        categories: ['proof_of_identity', 'proof_of_identity_ownership'],
+        categories: ['proof_of_identity', 'proof_of_identity_ownership', 'proof_of_address'],
       },
       {
         id: 'sl-kyc-cm-verification-summary',
@@ -1187,6 +1188,7 @@ async function seedUiDefinitions(client: PrismaClient, projectId: string) {
         sections: [
           { key: 'pluginsOutput.document_verification', label: 'Document Verification' },
           { key: 'pluginsOutput.facial_verification', label: 'Facial Verification' },
+          { key: 'pluginsOutput.address_verification', label: 'Address Verification' },
           { key: 'pluginsOutput.device_dedup_check', label: 'Device Deduplication Check' },
         ],
       },
@@ -1264,6 +1266,26 @@ async function seedUiDefinitions(client: PrismaClient, projectId: string) {
           { key: 'entity.data.additionalInfo.owner.firstName', label: 'Owner First Name' },
           { key: 'entity.data.additionalInfo.owner.lastName', label: 'Owner Last Name' },
           { key: 'entity.data.additionalInfo.owner.nationalId', label: 'Owner National ID' },
+          { key: 'entity.data.additionalInfo.owner.dateOfBirth', label: 'Owner Date of Birth' },
+          { key: 'entity.data.ownerPhoneNumber', label: 'Owner Phone' },
+          { key: 'entity.data.ownerEmail', label: 'Owner Email' },
+          { key: 'entity.data.additionalInfo.owner.phoneNumber', label: 'Owner Phone (Legacy)' },
+          { key: 'entity.data.additionalInfo.owner.email', label: 'Owner Email (Legacy)' },
+          {
+            key: 'entity.data.device.fingerprintJsDeviceId',
+            label: 'Owner Device FingerprintJS ID',
+          },
+          { key: 'entity.data.device.deviceFingerprint', label: 'Owner Device Fingerprint' },
+          {
+            key: 'entity.data.device.deviceFirebaseInstallationId',
+            label: 'Owner Device Firebase Installation ID',
+          },
+          { key: 'entity.data.device.deviceIp', label: 'Owner Device IP' },
+          {
+            key: 'entity.data.fingerprintJsDeviceId',
+            label: 'Owner Device FingerprintJS ID (Legacy)',
+          },
+          { key: 'entity.data.deviceIp', label: 'Owner Device IP (Legacy)' },
         ],
       },
       {
@@ -1313,10 +1335,22 @@ async function seedUiDefinitions(client: PrismaClient, projectId: string) {
           { key: 'entity.data.lastName', label: 'Last Name' },
           { key: 'entity.data.nationalId', label: 'National ID' },
           { key: 'entity.data.phoneNumber', label: 'Phone' },
+          { key: 'entity.data.businessName', label: 'Business Name' },
+          { key: 'entity.data.businessType', label: 'Business Type' },
+          { key: 'entity.data.registrationNumber', label: 'Registration Number' },
           { key: 'entity.data.loanApplicationId', label: 'Loan Application ID' },
           { key: 'entity.data.loanAmount', label: 'Loan Amount' },
+          { key: 'entity.data.loanCurrency', label: 'Loan Currency' },
           { key: 'entity.data.loanPurpose', label: 'Loan Purpose' },
           { key: 'entity.data.loanTerm', label: 'Loan Term' },
+          { key: 'entity.data.fingerprintJsDeviceId', label: 'Applicant Device FingerprintJS ID' },
+          { key: 'entity.data.deviceFingerprint', label: 'Applicant Device Fingerprint' },
+          {
+            key: 'entity.data.deviceFirebaseInstallationId',
+            label: 'Applicant Device Firebase ID',
+          },
+          { key: 'entity.data.deviceLocalInstallationId', label: 'Applicant Device Local ID' },
+          { key: 'entity.data.deviceIp', label: 'Applicant Device IP' },
         ],
       },
       {

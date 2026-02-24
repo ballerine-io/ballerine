@@ -372,6 +372,30 @@ export const loanKycKybSierraLeoneDefinition = {
                   country: 'SL',
                   tenantId: entity.data.tenantId,
                   projectId: entity.data.projectId,
+                  ownerPhoneNumber: entity.data.phoneNumber,
+                  ownerEmail: entity.data.email,
+                  fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
+                  fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
+                  deviceFingerprint: entity.data.deviceFingerprint,
+                  deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
+                  deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
+                  deviceImei: entity.data.deviceImei,
+                  deviceModel: entity.data.deviceModel,
+                  deviceBrand: entity.data.deviceBrand,
+                  deviceUserAgent: entity.data.deviceUserAgent,
+                  deviceIp: entity.data.deviceIp,
+                  device: {
+                    fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
+                    fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
+                    deviceFingerprint: entity.data.deviceFingerprint,
+                    deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
+                    deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
+                    deviceImei: entity.data.deviceImei,
+                    deviceModel: entity.data.deviceModel,
+                    deviceBrand: entity.data.deviceBrand,
+                    deviceUserAgent: entity.data.deviceUserAgent,
+                    deviceIp: entity.data.deviceIp
+                  },
                   additionalInfo: {
                     owner: {
                       firstName: entity.data.firstName,
@@ -379,12 +403,13 @@ export const loanKycKybSierraLeoneDefinition = {
                       nationalId: entity.data.nationalId,
                       dateOfBirth: entity.data.dateOfBirth,
                       phoneNumber: entity.data.phoneNumber,
+                      email: entity.data.email,
                       documents: documents[?category=='proof_of_identity' || category=='proof_of_identity_ownership']
                     }
                   }
                 }
               },
-              documents: documents[?category=='proof_of_address' || category=='proof_of_location' || type=='market_association_card']
+              documents: documents[?category=='proof_of_identity' || category=='proof_of_identity_ownership' || category=='proof_of_address' || category=='proof_of_location' || type=='market_association_card']
             }`,
           },
         ],
@@ -401,7 +426,8 @@ export const loanKycKybSierraLeoneDefinition = {
         iterateOn: [
           {
             transformer: 'jmespath',
-            mapping: '[entity.data]', // Single element array
+            // Preserve full parent workflow context so child transformers can access entity + documents.
+            mapping: '[@]',
           },
         ],
         successAction: 'KYC_CHILD_SPAWNED',
@@ -416,7 +442,7 @@ export const loanKycKybSierraLeoneDefinition = {
         iterateOn: [
           {
             transformer: 'jmespath',
-            mapping: '[entity.data]',
+            mapping: '[@]',
           },
         ],
         successAction: 'KYB_FORMAL_SPAWNED',
@@ -431,7 +457,7 @@ export const loanKycKybSierraLeoneDefinition = {
         iterateOn: [
           {
             transformer: 'jmespath',
-            mapping: '[entity.data]',
+            mapping: '[@]',
           },
         ],
         successAction: 'KYB_INFORMAL_SPAWNED',
