@@ -203,7 +203,7 @@ const main = async () => {
   app.enableShutdownHooks();
 
   const port = configService.getOrThrow<string>('PORT');
-  void app.listen(+port);
+  await app.listen(+port, '0.0.0.0');
 
   logger.log(`Listening on port ${port}`);
 
