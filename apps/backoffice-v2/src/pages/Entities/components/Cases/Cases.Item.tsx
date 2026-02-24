@@ -77,19 +77,19 @@ export const Item: FunctionComponent<IItemProps> = ({
   const isTerminal = isApproved || isRejected;
 
   return (
-    <li className="h-[64px] w-full px-4">
+    <li className="w-full px-2">
       <NavLink
         to={`/en/case-management/entities/${id}${search}`}
         className={({ isActive }) =>
           ctw(
-            `flex h-[64px] items-center gap-x-4 rounded-lg px-5 py-4 outline-none active:bg-muted-foreground/30 active:text-foreground`,
+            `flex min-h-[56px] items-center gap-x-3 rounded-lg px-3 py-2.5 outline-none active:bg-muted-foreground/30 active:text-foreground`,
             {
               'bg-muted': isActive,
             },
           )
         }
       >
-        <div className={`indicator`}>
+        <div className={`indicator shrink-0`}>
           <motion.div
             key={tags?.join('-')}
             initial={{ opacity: 0 }}
@@ -116,27 +116,29 @@ export const Item: FunctionComponent<IItemProps> = ({
             }}
           />
         </div>
-        <div className={`max-w-[115px]`}>
-          <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
+        <div className="min-w-0 flex-1">
+          <div ref={ref} className="truncate text-sm font-bold" style={styles}>
             {valueOrNA(fullName)}
           </div>
           <div className={`text-xs opacity-60`}>
-            {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}
+            {dayjs(new Date(createdAt)).format('D MMM YYYY')}
+            <span className="ml-1 opacity-75">({getTimePastFromNow(new Date(createdAt)).trim()})</span>
           </div>
-          <div className={`text-[10px] opacity-50`}>
-            {getTimePastFromNow(new Date(createdAt)).trim()} ago
-          </div>
+        </div>
+        <div className={`ml-auto flex shrink-0 items-center gap-2`}>
           {activeTag && !isTerminal && tagToBadgeData[activeTag] && (
             <Badge
               variant={tagToBadgeData[activeTag].variant as 'info' | 'success' | 'warning' | 'destructive' | 'violet'}
-              className="mt-1 text-[10px] px-1.5 py-0.5 font-medium"
+              className="text-[10px] px-1.5 py-0.5 font-medium"
             >
               {tagToBadgeData[activeTag].text}
             </Badge>
           )}
-        </div>
-        <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {assignee && <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />}
+          {assignee && (
+            <div className="flex -space-x-2 overflow-hidden">
+              <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />
+            </div>
+          )}
         </div>
       </NavLink>
     </li>

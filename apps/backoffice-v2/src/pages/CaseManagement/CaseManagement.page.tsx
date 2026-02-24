@@ -5,7 +5,7 @@ export const CaseManagement = () => {
   useSelectEntityFilterOnMount();
 
   return (
-    <div className={`grid h-full grid-cols-[300px_1fr]`}>
+    <div className={`grid h-full grid-cols-[340px_1fr]`}>
       <Outlet />
     </div>
   );

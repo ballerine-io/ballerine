@@ -51,7 +51,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   return (
     <div
       id={`cases-list`}
-      className="flex min-h-0 min-w-[300px] flex-col justify-between pb-4"
+      className="flex min-h-0 min-w-[340px] flex-col justify-between pb-4"
       {...props}
     >
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
