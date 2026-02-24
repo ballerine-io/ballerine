@@ -14,6 +14,7 @@ import { useLocation } from 'react-router-dom';
 
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { getCaseManagementEntitiesHrefByFilterId } from '@/common/utils/get-case-management-entities-href-by-filter-id/get-case-management-entities-href-by-filter-id';
 import { TRoute, TRouteWithChildren } from '@/domains/auth/components/AuthenticatedLayout/types';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
@@ -50,7 +51,10 @@ export const useSidebarItems = () => {
         filterId: id,
         text: name,
         key: `nav-item-${id}`,
-        href: `/${locale}/case-management/entities?filterId=${id}`,
+        href: getCaseManagementEntitiesHrefByFilterId({
+          locale,
+          filterId: id,
+        }),
       })) ?? [],
     key: 'nav-item-businesses',
   };
@@ -158,7 +162,10 @@ export const useSidebarItems = () => {
             ...(individualsFilters?.map(({ id, name }) => ({
               filterId: id,
               text: name,
-              href: `/${locale}/case-management/entities?filterId=${id}`,
+              href: getCaseManagementEntitiesHrefByFilterId({
+                locale,
+                filterId: id,
+              }),
               key: `nav-item-${id}`,
             })) ?? []),
           ],

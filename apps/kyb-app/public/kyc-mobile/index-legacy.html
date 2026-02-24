@@ -51,6 +51,8 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        font-size: 16px;
+        line-height: 1.55;
       }
 
       .header {
@@ -64,13 +66,13 @@
       }
 
       .header h1 {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
         letter-spacing: -0.01em;
       }
 
       .header .subtitle {
-        font-size: 13px;
+        font-size: 14px;
         color: rgba(255, 255, 255, 0.7);
         margin-top: 2px;
       }
@@ -95,6 +97,22 @@
         display: flex;
         flex-direction: column;
         padding: 20px;
+      }
+
+      body.native-header .header {
+        display: none;
+      }
+
+      body.native-header .progress-bar {
+        margin-top: 0;
+      }
+
+      body.native-header .content {
+        padding-top: 12px;
+      }
+
+      body.skip-welcome #step-welcome {
+        display: none;
       }
 
       .step {
@@ -159,7 +177,7 @@
       }
 
       .step-title {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         text-align: center;
         margin-bottom: 8px;
@@ -167,10 +185,10 @@
       }
 
       .step-desc {
-        font-size: 14px;
+        font-size: 16px;
         color: var(--text-muted);
         text-align: center;
-        line-height: 1.5;
+        line-height: 1.65;
         margin-bottom: 24px;
       }
 
@@ -210,12 +228,12 @@
       }
 
       .doc-card .doc-label {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 500;
       }
 
       .doc-card .doc-hint {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--text-muted);
         margin-top: 2px;
       }
@@ -346,7 +364,7 @@
         color: #fff;
         padding: 4px 12px;
         border-radius: 12px;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 500;
         white-space: nowrap;
         letter-spacing: 0.02em;
@@ -361,7 +379,7 @@
         color: #fff;
         padding: 8px 16px;
         border-radius: 20px;
-        font-size: 13px;
+        font-size: 14px;
         white-space: nowrap;
       }
 
@@ -371,15 +389,22 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 300px;
+        min-height: 360px;
       }
 
       .preview-container img {
         max-width: 100%;
-        max-height: 350px;
+        max-height: 420px;
         border-radius: var(--radius);
         box-shadow: var(--shadow-lg);
         object-fit: contain;
+      }
+
+      #selfiePreview {
+        border-radius: 50%;
+        width: min(240px, 70vw);
+        height: min(240px, 70vw);
+        object-fit: cover;
       }
 
       .preview-actions {
@@ -398,11 +423,12 @@
         border: none;
         border-radius: var(--radius);
         font-family: inherit;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
         flex: 1;
+        min-height: 52px;
       }
 
       .btn-primary {
@@ -501,8 +527,8 @@
         align-items: start;
         gap: 10px;
         padding: 8px 0;
-        font-size: 14px;
-        line-height: 1.4;
+        font-size: 16px;
+        line-height: 1.6;
       }
 
       .info-list li::before {
@@ -830,11 +856,7 @@
         <div class="step-title">Review Your Selfie</div>
         <div class="step-desc">Make sure your face is clearly visible</div>
         <div class="preview-container">
-          <img
-            id="selfiePreview"
-            alt="Selfie preview"
-            style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover"
-          />
+          <img id="selfiePreview" alt="Selfie preview" />
         </div>
         <div class="preview-actions">
           <button class="btn btn-secondary" id="selfieRetakeBtn">↻ Retake</button>
@@ -846,8 +868,8 @@
       <div class="step" id="step-loading">
         <div class="spacer"></div>
         <div class="spinner"></div>
-        <div class="step-title">Submitting Documents</div>
-        <div class="step-desc" id="loadingDesc">Uploading your documents securely...</div>
+        <div class="step-title">Submitting Verification</div>
+        <div class="step-desc" id="loadingDesc">Uploading your photos...</div>
         <div class="spacer"></div>
       </div>
 
@@ -867,10 +889,9 @@
             <polyline points="22 4 12 14.01 9 11.01" />
           </svg>
         </div>
-        <div class="step-title">Verification Submitted!</div>
+        <div class="step-title">Verification Submitted</div>
         <div class="step-desc">
-          Your documents have been submitted successfully. Verification is being processed — you'll
-          be notified of the result.
+          We received your photos and are checking them now. You will get an SMS with the result.
         </div>
         <div class="spacer"></div>
       </div>
@@ -892,9 +913,7 @@
           </svg>
         </div>
         <div class="step-title" id="resubmitTitle">Resubmission Required</div>
-        <div class="step-desc" id="resubmitDesc">
-          Please review and resubmit the requested items.
-        </div>
+        <div class="step-desc" id="resubmitDesc">Please review what needs to be retaken.</div>
         <button class="btn btn-primary" id="resubmitActionBtn" style="margin-top: 16px">
           Retake Photos
         </button>
@@ -937,6 +956,19 @@
       // ── Configuration ──
       const params = new URLSearchParams(window.location.search);
       const TOKEN = params.get('token') || '';
+      function truthyParam(value) {
+        if (!value) return false;
+        var normalized = String(value).trim().toLowerCase();
+        return normalized === '1' || normalized === 'true';
+      }
+      const skipWelcome = truthyParam(params.get('skipWelcome'));
+      const hasNativeHeader = truthyParam(params.get('nativeHeader'));
+      if (hasNativeHeader) {
+        document.body.classList.add('native-header');
+      }
+      if (skipWelcome) {
+        document.body.classList.add('skip-welcome');
+      }
       // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
       // Security: NEVER allow apiUrl override from query params (prevents credential theft)
       const rawBase =
@@ -950,7 +982,7 @@
       }
 
       // ── State ──
-      const STEPS = [
+      const BASE_STEPS = [
         'step-welcome',
         'step-doc-select',
         'step-doc-photo',
@@ -963,6 +995,11 @@
         'step-loading',
         'step-complete',
       ];
+      const STEPS = skipWelcome
+        ? BASE_STEPS.filter(function (stepId) {
+            return stepId !== 'step-welcome';
+          })
+        : BASE_STEPS;
       let currentStep = 0;
       // Pre-selected document type from Android (skips welcome + doc-select steps)
       const VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
@@ -1148,21 +1185,32 @@
         }
       }
 
-      function captureFrame(videoEl) {
+      function captureFrame(videoEl, options) {
+        options = options || {};
+        var forceLandscape = options.forceLandscape === true;
         // Ensure video is actually playing
         if (videoEl.readyState < videoEl.HAVE_CURRENT_DATA) {
           return Promise.resolve(null);
         }
+        var sourceWidth = videoEl.videoWidth || 1280;
+        var sourceHeight = videoEl.videoHeight || 720;
+        var shouldRotateLandscape = forceLandscape && sourceHeight > sourceWidth;
         const canvas = document.createElement('canvas');
-        canvas.width = videoEl.videoWidth || 1280;
-        canvas.height = videoEl.videoHeight || 720;
+        canvas.width = shouldRotateLandscape ? sourceHeight : sourceWidth;
+        canvas.height = shouldRotateLandscape ? sourceWidth : sourceHeight;
         const ctx = canvas.getContext('2d');
         // Mirror selfie capture to match preview
         if (isMirrored) {
           ctx.translate(canvas.width, 0);
           ctx.scale(-1, 1);
         }
-        ctx.drawImage(videoEl, 0, 0);
+        if (shouldRotateLandscape) {
+          ctx.translate(canvas.width, 0);
+          ctx.rotate(Math.PI / 2);
+          ctx.drawImage(videoEl, 0, 0, sourceWidth, sourceHeight);
+        } else {
+          ctx.drawImage(videoEl, 0, 0, sourceWidth, sourceHeight);
+        }
         return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.75));
       }
 
@@ -1485,7 +1533,9 @@
       });
 
       document.getElementById('docCaptureBtn').addEventListener('click', async () => {
-        const blob = await captureFrame(document.getElementById('docVideo'));
+        const blob = await captureFrame(document.getElementById('docVideo'), {
+          forceLandscape: true,
+        });
         if (!blob) {
           showError('Could not capture image. Please try again.');
           return;
@@ -1512,7 +1562,9 @@
 
       // ── Back-side capture handlers ──
       document.getElementById('docBackCaptureBtn').addEventListener('click', async () => {
-        const blob = await captureFrame(document.getElementById('docBackVideo'));
+        const blob = await captureFrame(document.getElementById('docBackVideo'), {
+          forceLandscape: true,
+        });
         if (!blob) {
           showError('Could not capture image. Please try again.');
           return;
@@ -1732,7 +1784,11 @@
             });
         }
       }
-      updateFooter();
+      if (skipWelcome) {
+        goToStep(0);
+      } else {
+        updateFooter();
+      }
 
       // ── Offline detection ──
       window.addEventListener('offline', () =>

@@ -107,6 +107,23 @@ export class WorkflowRuntimeDataRepository {
   async findByIdWithRelations(id: string, projectIds: TProjectIds) {
     assertIsValidProjectIds(projectIds);
 
+    const requestedWorkflow = await this.prismaService.workflowRuntimeData.findFirst({
+      where: {
+        id,
+        projectId: projectIds[0],
+      },
+      select: {
+        id: true,
+        parentRuntimeDataId: true,
+      },
+    });
+
+    if (!requestedWorkflow) {
+      throw new NotFoundException(`A workflow with an id of "${id}" was not found`);
+    }
+
+    const rootWorkflowId = requestedWorkflow.parentRuntimeDataId ?? requestedWorkflow.id;
+
     const workflows = (await this.prismaService.$queryRaw`
         WITH workflows AS (
           SELECT
@@ -247,8 +264,8 @@ export class WorkflowRuntimeDataRepository {
             AND wrd."assigneeId" IS NOT NULL
           WHERE
             (
-              wrd.id = ${id}
-              OR wrd.parent_runtime_data_id = ${id}
+              wrd.id = ${rootWorkflowId}
+              OR wrd.parent_runtime_data_id = ${rootWorkflowId}
             )
             AND wrd."projectId" = ${projectIds[0]}
         ),
@@ -335,7 +352,7 @@ export class WorkflowRuntimeDataRepository {
     const childWorkflows = workflows.filter(workflow => workflow.workflowType === 'child');
 
     if (!parentWorkflow) {
-      throw new NotFoundException(`A workflow with an id of "${id}" was not found`);
+      throw new NotFoundException(`A workflow with an id of "${rootWorkflowId}" was not found`);
     }
 
     return {

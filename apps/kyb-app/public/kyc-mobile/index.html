@@ -113,6 +113,10 @@
         display: block;
       }
 
+      body.native-header .offline-banner {
+        top: env(safe-area-inset-top);
+      }
+
       .status-wrap {
         height: 100%;
         display: flex;
@@ -194,6 +198,33 @@
         color: #0f172a;
       }
 
+      body.native-header {
+        padding-top: env(safe-area-inset-top);
+      }
+
+      body.native-header #kyc-host {
+        border-radius: 0;
+      }
+
+      #kyc-host #blrn-app {
+        font-size: 17px !important;
+        line-height: 1.6 !important;
+      }
+
+      #kyc-host #blrn-app [class*='title'],
+      #kyc-host #blrn-app .title,
+      #kyc-host #blrn-app [class*='Title'] {
+        font-size: 24px !important;
+      }
+
+      #kyc-host #blrn-app [class*='description'],
+      #kyc-host #blrn-app .description,
+      #kyc-host #blrn-app [class*='body'],
+      #kyc-host #blrn-app .body,
+      #kyc-host #blrn-app [class*='text'] {
+        font-size: 18px !important;
+      }
+
       .status-spinner {
         width: 22px;
         height: 22px;
@@ -208,23 +239,24 @@
 
       /* Use more of the viewport on preview/check steps while keeping proportions. */
       #kyc-host #blrn-app img[alt='result'] {
-        width: min(94vw, 520px) !important;
-        max-height: 58vh !important;
+        width: min(96vw, 560px) !important;
+        max-height: 72vh !important;
         object-fit: contain !important;
       }
 
       #kyc-host #blrn-app .overlay.card {
-        width: min(94vw, 520px) !important;
+        width: min(96vw, 560px) !important;
+        max-height: 92vh !important;
       }
 
       #kyc-host #blrn-app .overlay.passport {
-        width: min(86vw, 420px) !important;
-        max-height: 86% !important;
+        width: min(90vw, 460px) !important;
+        max-height: 92vh !important;
       }
 
       #kyc-host #blrn-app .overlay.selfie {
-        width: min(80vw, 360px) !important;
-        max-height: 82% !important;
+        width: min(88vw, 420px) !important;
+        max-height: 92vh !important;
       }
 
       /* ── Landscape orientation hint ── */
@@ -409,6 +441,16 @@
       var initRetryAttempted = false;
       var initFailed = false;
       var legacyFallbackAttempted = params.get('legacy') === '1';
+      function parseBoolFlag(value) {
+        if (!value) return false;
+        var normalized = String(value).trim().toLowerCase();
+        return normalized === '1' || normalized === 'true';
+      }
+      var skipWelcome = parseBoolFlag(params.get('skipWelcome'));
+      var hasNativeHeader = parseBoolFlag(params.get('nativeHeader'));
+      if (hasNativeHeader && document.body) {
+        document.body.classList.add('native-header');
+      }
 
       function buildLegacyFallbackUrl(reason) {
         var legacyParams = new URLSearchParams(window.location.search);
@@ -431,7 +473,8 @@
         renderStatusCard({
           icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><path d="M28 16v24M16 28h24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
           title: 'Retrying Verification',
-          body: 'Switching to compatibility mode for your phone. This may take a few seconds.',
+          body: 'Opening a simpler compatibility experience that works better on older phones. Keep this screen visible while it loads—if nothing happens, close the verification link in MiKashBoks and open it again.',
+          meta: 'Compatibility mode usually loads within 10 seconds.',
           showSpinner: true,
           primaryLabel: 'Please wait...',
         });
@@ -497,23 +540,23 @@
       function buildSteps(usePreselectedDoc) {
         var builtSteps = [];
         if (!usePreselectedDoc) {
-          builtSteps.push(
-            {
+          if (!skipWelcome) {
+            builtSteps.push({
               name: 'welcome',
               id: 'welcome',
               elements: [{ id: 'list', type: 'list', orderIndex: 45, props: {} }],
-            },
-            {
-              name: 'document-selection',
-              id: 'document-selection',
-              documentOptions: [
-                { type: 'id_card', kind: 'proof_of_identity' },
-                { type: 'passport', kind: 'proof_of_identity' },
-                { type: 'voter_id', kind: 'proof_of_identity' },
-                { type: 'drivers_license', kind: 'proof_of_identity' },
-              ],
-            },
-          );
+            });
+          }
+          builtSteps.push({
+            name: 'document-selection',
+            id: 'document-selection',
+            documentOptions: [
+              { type: 'id_card', kind: 'proof_of_identity' },
+              { type: 'passport', kind: 'proof_of_identity' },
+              { type: 'voter_id', kind: 'proof_of_identity' },
+              { type: 'drivers_license', kind: 'proof_of_identity' },
+            ],
+          });
         }
 
         // Pass `type` and `documentInfo` on steps that need them when pre-selected.
@@ -922,8 +965,8 @@
           renderStatusCard({
             icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#22c55e" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#22c55e"/><path d="M20 28l5.5 5.5L36 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
             title: 'Identity Verified',
-            body: 'Your identity has been verified. You now have access to loans, higher savings limits, and faster transactions.',
-            meta: 'Tap Done to return to MiKashBoks and explore your new features.',
+            body: 'Your identity has been verified.',
+            meta: 'Tap Done to return to MiKashBoks.',
             primaryLabel: 'Done',
             onPrimary: function () {
               signalCompletion('success', 'approved');
@@ -936,7 +979,7 @@
           renderStatusCard({
             icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M22 22l12 12M34 22l-12 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
             title: 'Verification Unsuccessful',
-            body: 'We could not verify your identity from the photos you submitted. You can try again with clearer photos, or contact MiKashBoks support for help.',
+            body: 'We could not verify your identity from the photos you submitted. Please try again with clearer photos.',
             meta: 'Common reasons: blurry photo, face not matching ID, or expired document.',
             primaryLabel: 'Close',
             onPrimary: function () {
@@ -950,8 +993,8 @@
           renderStatusCard({
             icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><ellipse cx="28" cy="28" rx="10" ry="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="28" cy="28" r="3.5" fill="#fff"/></svg>',
             title: 'Under Review',
-            body: 'Your photos were submitted successfully. Our team is reviewing your verification \u2014 you do not need to upload anything again.',
-            meta: 'You will receive an SMS notification when the review is complete, usually within 24 hours. You can safely close this screen.',
+            body: 'Your photos were submitted successfully. Our team is reviewing them now.',
+            meta: 'You will receive an SMS when the review is complete, usually within 24 hours.',
             primaryLabel: 'Done',
             secondaryLabel: 'Refresh Status',
             onPrimary: function () {
@@ -968,8 +1011,8 @@
           renderStatusCard({
             icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#7b15ff" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#7b15ff"/><circle cx="28" cy="28" r="10" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="15 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 28 28" to="360 28 28" dur="2s" repeatCount="indefinite"/></circle></svg>',
             title: 'Checking Your Photos...',
-            body: 'We received your photos and are running verification checks. This usually takes 1\u20132 minutes.',
-            meta: 'You can close this screen and continue using MiKashBoks. We will notify you by SMS when the result is ready.',
+            body: 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.',
+            meta: 'You can close this screen. We will notify you by SMS when the result is ready.',
             showSpinner: true,
             primaryLabel: 'Done',
             secondaryLabel: 'Refresh Status',
@@ -1061,14 +1104,25 @@
           workflowData.config &&
           Array.isArray(workflowData.config.kycSdkSteps) &&
           workflowData.config.kycSdkSteps.length > 0
-            ? workflowData.config.kycSdkSteps
+            ? workflowData.config.kycSdkSteps.slice()
             : null;
 
-        if (
-          configSteps &&
-          !hasPreselectedDoc &&
-          !configSteps.includes('document-selection')
-        ) {
+        if (configSteps && skipWelcome) {
+          if (configSteps.includes('welcome')) {
+            console.log('[KYC] skipWelcome param detected; removing welcome step.');
+          }
+          configSteps = configSteps.filter(function (name) {
+            return name !== 'welcome';
+          });
+          if (configSteps.length === 0) {
+            console.warn(
+              '[KYC] skipWelcome removed all configured steps. Falling back to the built-in flow.',
+            );
+            configSteps = null;
+          }
+        }
+
+        if (configSteps && !hasPreselectedDoc && !configSteps.includes('document-selection')) {
           console.warn(
             '[KYC] config.kycSdkSteps is missing document-selection while preselected mode is off. ' +
               'Falling back to client-safe step set.',
@@ -1274,7 +1328,7 @@
                 'selfie-start': {
                   title: 'Take a Selfie',
                   description:
-                    'We need a clear photo of your face to match it with your ID. Tips: face a window or light source, remove hats and sunglasses, hold the phone at eye level, and look straight at the camera.',
+                    'Take a clear photo of your face so we can match it to your ID. Use good lighting, remove hats or sunglasses, and look straight at the camera.',
                   button: 'Take Selfie',
                 },
                 selfie: {
@@ -1285,7 +1339,7 @@
                 'check-selfie': {
                   title: 'Check Your Selfie',
                   description:
-                    'Is your face clearly visible and well-lit? Can you see both eyes? If the photo is dark, blurry, or partially covered, tap the back arrow to retake.',
+                    'Make sure your face is clear, bright, and fully visible. If the photo is dark or blurry, tap back to retake.',
                 },
                 // ── End-state translations ──
                 loader: {
@@ -1294,9 +1348,9 @@
                   'text-three': 'Step 3 of 3: Finalizing your verification result...',
                 },
                 final: {
-                  title: 'Submitted Successfully',
+                  title: 'Verification Submitted',
                   description:
-                    'Your ID and selfie have been submitted. We are now running automated checks. You will receive an SMS with the result \u2014 no further action is needed unless we ask for better photos.',
+                    'We received your ID and selfie. We are now checking them and will send you an SMS with the result.',
                   button: 'Done',
                 },
                 // ── Resubmission per-reason translations ──
@@ -1350,7 +1404,7 @@
                 'manual-review': {
                   title: 'Under Review',
                   description:
-                    'Your photos were submitted successfully. Our team is reviewing your verification \u2014 you do not need to upload again. You will receive an SMS within 24 hours with the result.',
+                    'Your photos were submitted successfully. Our team is reviewing them now. You do not need to upload anything again.',
                   button: 'Done',
                 },
                 error: {

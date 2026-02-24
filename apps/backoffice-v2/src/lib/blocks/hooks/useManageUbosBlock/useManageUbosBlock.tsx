@@ -189,16 +189,24 @@ export const useManageUbosBlock = ({
   );
   const ubos = useMemo(() => {
     return (
-      workflow?.childWorkflows?.map(childWorkflow => ({
-        id: childWorkflow.context.entity.ballerineEntityId,
-        firstName: childWorkflow.context.entity.data.firstName,
-        lastName: childWorkflow.context.entity.data.lastName,
-        ownershipPercentage:
-          childWorkflow.context.entity.data.percentageOfOwnership ??
-          childWorkflow.context.entity.data.ownershipPercentage ??
-          childWorkflow.context.entity.data.additionalInfo.percentageOfOwnership ??
-          childWorkflow.context.entity.data.additionalInfo.ownershipPercentage,
-      })) ?? []
+      workflow?.childWorkflows?.map(childWorkflow => {
+        const entityData = childWorkflow.context.entity.data ?? {};
+        const additionalInfo =
+          entityData && typeof entityData === 'object' && 'additionalInfo' in entityData
+            ? (entityData.additionalInfo as Record<string, unknown> | undefined)
+            : undefined;
+
+        return {
+          id: childWorkflow.context.entity.ballerineEntityId,
+          firstName: entityData.firstName,
+          lastName: entityData.lastName,
+          ownershipPercentage:
+            entityData.percentageOfOwnership ??
+            entityData.ownershipPercentage ??
+            additionalInfo?.percentageOfOwnership ??
+            additionalInfo?.ownershipPercentage,
+        };
+      }) ?? []
     );
   }, [workflow?.childWorkflows]);
 
