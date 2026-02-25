@@ -37,8 +37,8 @@ export class ApiActionHandler implements ActionHandler {
     const isCanInvoke = this.canInvoke(context, action);
 
     if (!isCanInvoke) {
-return Promise.resolve(context);
-}
+      return Promise.resolve(context);
+    }
 
     const { params } = action;
 
@@ -65,12 +65,12 @@ return Promise.resolve(context);
     actionParams: ApiActionParams,
   ): AnyObject | undefined {
     if (actionParams.type !== 'json') {
-return undefined;
-}
+      return undefined;
+    }
 
     if (!actionParams.map) {
-return undefined;
-}
+      return undefined;
+    }
 
     const { toBody = '' } = actionParams.map;
 
@@ -85,8 +85,8 @@ return undefined;
     requestResult: AnyObject = {},
   ): TContext {
     if (!params.map?.toContext) {
-return context;
-}
+      return context;
+    }
 
     const requestPayload = jmespath.search(
       requestResult,
@@ -110,8 +110,8 @@ return context;
       const engine = this.engineManager.getEngine(rule.type);
 
       if (!engine) {
-throw new Error(`Provided rule with engine ${rule.type} not supported`);
-}
+        throw new Error(`Provided rule with engine ${rule.type} not supported`);
+      }
 
       //@ts-ignore
       return engine.validate(context, rule as IRule);

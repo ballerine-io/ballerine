@@ -40,8 +40,8 @@ export const UIDefinition = () => {
   }
 
   if (!data) {
-return null;
-}
+    return null;
+  }
 
   return (
     <DashboardLayout pageName={`UI Definition - ${data?.id}`}>

@@ -33,8 +33,8 @@ export const FileUploaderField = ({
       const file = event.target.files?.[0];
 
       if (!file) {
-return;
-}
+        return;
+      }
 
       const uploadResult = await uploadFile(file);
 
@@ -54,8 +54,8 @@ return;
       event.stopPropagation();
 
       if (!registeredFile || !fileId || !inputRef.current) {
-return;
-}
+        return;
+      }
 
       inputRef.current.value = '';
 

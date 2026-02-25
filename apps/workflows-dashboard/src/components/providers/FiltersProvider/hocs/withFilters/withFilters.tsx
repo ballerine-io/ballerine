@@ -7,7 +7,10 @@ import { useFilters } from '@/components/providers/FiltersProvider/hooks/useFilt
 
 type InputComponentProps<TProps> = Omit<TProps, keyof FiltersProps>;
 
-export type WithFiltersHocParams<TFilterValues> = Pick<IFilterProviderProps<TFilterValues>, 'deserializer' | 'querySchema'>
+export type WithFiltersHocParams<TFilterValues> = Pick<
+  IFilterProviderProps<TFilterValues>,
+  'deserializer' | 'querySchema'
+>;
 
 export function withFilters<TComponentProps extends FiltersProps, TFilterValues = object>(
   Component: React.FunctionComponent<TComponentProps>,

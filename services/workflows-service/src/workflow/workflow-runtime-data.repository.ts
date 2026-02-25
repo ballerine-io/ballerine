@@ -110,11 +110,14 @@ export class WorkflowRuntimeDataRepository {
     const requestedWorkflow = await this.prismaService.workflowRuntimeData.findFirst({
       where: {
         id,
-        projectId: projectIds[0],
+        projectId: {
+          in: projectIds,
+        },
       },
       select: {
         id: true,
         parentRuntimeDataId: true,
+        projectId: true,
       },
     });
 
@@ -122,7 +125,33 @@ export class WorkflowRuntimeDataRepository {
       throw new NotFoundException(`A workflow with an id of "${id}" was not found`);
     }
 
-    const rootWorkflowId = requestedWorkflow.parentRuntimeDataId ?? requestedWorkflow.id;
+    const resolvedProjectId = requestedWorkflow.projectId;
+    let rootWorkflowId = requestedWorkflow.id;
+    let currentParentId = requestedWorkflow.parentRuntimeDataId;
+    const visitedWorkflowIds = new Set<string>([requestedWorkflow.id]);
+
+    // Climb parent links until we reach the top-most runtime row.
+    while (currentParentId && !visitedWorkflowIds.has(currentParentId)) {
+      visitedWorkflowIds.add(currentParentId);
+
+      const parentWorkflow = await this.prismaService.workflowRuntimeData.findFirst({
+        where: {
+          id: currentParentId,
+          projectId: resolvedProjectId,
+        },
+        select: {
+          id: true,
+          parentRuntimeDataId: true,
+        },
+      });
+
+      if (!parentWorkflow) {
+        break;
+      }
+
+      rootWorkflowId = parentWorkflow.id;
+      currentParentId = parentWorkflow.parentRuntimeDataId;
+    }
 
     const workflows = (await this.prismaService.$queryRaw`
         WITH workflows AS (
@@ -267,7 +296,7 @@ export class WorkflowRuntimeDataRepository {
               wrd.id = ${rootWorkflowId}
               OR wrd.parent_runtime_data_id = ${rootWorkflowId}
             )
-            AND wrd."projectId" = ${projectIds[0]}
+            AND wrd."projectId" = ${resolvedProjectId}
         ),
         ubos AS (
           SELECT
@@ -330,7 +359,7 @@ export class WorkflowRuntimeDataRepository {
             "EndUser" eu
             JOIN individualBallerineIds AS ibids ON ibids.id = eu.id
           WHERE
-            eu."projectId" = ${projectIds[0]}
+            eu."projectId" = ${resolvedProjectId}
         )
         SELECT
           workflows.*,

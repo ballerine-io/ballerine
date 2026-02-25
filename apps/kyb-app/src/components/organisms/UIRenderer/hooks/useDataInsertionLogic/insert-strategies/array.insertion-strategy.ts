@@ -16,8 +16,8 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
     const isAlreadyInserted = value.find(item => get(item, bindingAnchorDestination));
 
     if (isAlreadyInserted) {
-return context;
-}
+      return context;
+    }
 
     const insertionValue: AnyObject = {};
 
@@ -54,8 +54,8 @@ return context;
       !value.length ||
       !value.find((item: AnyObject) => get(item, params.bindingAnchorDestination))
     ) {
-return context;
-}
+      return context;
+    }
 
     set(
       context,
@@ -77,8 +77,8 @@ return context;
       bindingAnchorDestination &&
       get(value, bindingAnchorDestination)
     ) {
-return true;
-}
+      return true;
+    }
 
     return false;
   }

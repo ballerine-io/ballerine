@@ -83,7 +83,7 @@
         width: 36px;
         height: 36px;
         border: 3px solid #cbd5e1;
-        border-top-color: #7b15ff;
+        border-top-color: #0071D3;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
@@ -189,7 +189,7 @@
       }
 
       .status-btn.primary {
-        background: #6d0eea;
+        background: #0071D3;
         color: #ffffff;
       }
 
@@ -207,14 +207,14 @@
       }
 
       #kyc-host #blrn-app {
-        font-size: 17px !important;
-        line-height: 1.6 !important;
+        font-size: 18px !important;
+        line-height: 1.65 !important;
       }
 
       #kyc-host #blrn-app [class*='title'],
       #kyc-host #blrn-app .title,
       #kyc-host #blrn-app [class*='Title'] {
-        font-size: 24px !important;
+        font-size: 28px !important;
       }
 
       #kyc-host #blrn-app [class*='description'],
@@ -222,14 +222,14 @@
       #kyc-host #blrn-app [class*='body'],
       #kyc-host #blrn-app .body,
       #kyc-host #blrn-app [class*='text'] {
-        font-size: 18px !important;
+        font-size: 20px !important;
       }
 
       .status-spinner {
         width: 22px;
         height: 22px;
         border: 3px solid #cbd5e1;
-        border-top-color: #7b15ff;
+        border-top-color: #0071D3;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
         display: inline-block;
@@ -239,8 +239,8 @@
 
       /* Use more of the viewport on preview/check steps while keeping proportions. */
       #kyc-host #blrn-app img[alt='result'] {
-        width: min(96vw, 560px) !important;
-        max-height: 72vh !important;
+        width: min(98vw, 600px) !important;
+        max-height: 80vh !important;
         object-fit: contain !important;
       }
 
@@ -255,8 +255,8 @@
       }
 
       #kyc-host #blrn-app .overlay.selfie {
-        width: min(88vw, 420px) !important;
-        max-height: 92vh !important;
+        width: min(92vw, 460px) !important;
+        max-height: 94vh !important;
       }
 
       /* ── Landscape orientation hint ── */
@@ -319,8 +319,8 @@
       }
 
       #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']) {
-        padding: 14px 24px !important;
-        font-size: 17px !important;
+        padding: 16px 24px !important;
+        font-size: 18px !important;
       }
 
       /* ── Progress bar enhancement ── */
@@ -335,7 +335,7 @@
 
       #kyc-host #blrn-app [class*='progress-bar'] > div,
       #kyc-host #blrn-app [class*='ProgressBar'] > div {
-        background: linear-gradient(90deg, #7b15ff, #a855f7) !important;
+        background: linear-gradient(90deg, #094275, #0071D3) !important;
         border-radius: 3px !important;
         transition: width 0.4s ease !important;
       }
@@ -434,10 +434,37 @@
       // ── Configuration ──
       var params = new URLSearchParams(window.location.search);
       var TOKEN = params.get('token') || '';
-      var preselectedDocType = params.get('docType');
-      if (preselectedDocType) {
-        preselectedDocType = String(preselectedDocType).trim().toLowerCase();
+      function normalizeDocType(docType) {
+        if (!docType) return null;
+        var normalized = String(docType).trim().toLowerCase().replace(/[\s-]+/g, '_');
+        if (
+          normalized === 'driver_license' ||
+          normalized === 'driver_licence' ||
+          normalized === 'drivers_licence'
+        ) {
+          return 'drivers_license';
+        }
+        return normalized;
       }
+
+      function normalizeDocOptions(docOptions) {
+        if (!Array.isArray(docOptions)) return [];
+        var normalizedOptions = [];
+        for (var i = 0; i < docOptions.length; i++) {
+          var option = docOptions[i];
+          if (!option || typeof option !== 'object') continue;
+          var normalizedType = normalizeDocType(option.type);
+          if (!normalizedType) continue;
+          normalizedOptions.push(
+            Object.assign({}, option, {
+              type: normalizedType,
+            }),
+          );
+        }
+        return normalizedOptions;
+      }
+
+      var preselectedDocType = normalizeDocType(params.get('docType'));
       var initRetryAttempted = false;
       var initFailed = false;
       var legacyFallbackAttempted = params.get('legacy') === '1';
@@ -467,21 +494,8 @@
       }
 
       function tryLegacyFallback(err) {
-        if (legacyFallbackAttempted) return false;
-        legacyFallbackAttempted = true;
-        var reason = normalizeLegacyReason(err);
-        renderStatusCard({
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><path d="M28 16v24M16 28h24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-          title: 'Retrying Verification',
-          body: 'Opening a simpler compatibility experience that works better on older phones. Keep this screen visible while it loads—if nothing happens, close the verification link in MiKashBoks and open it again.',
-          meta: 'Compatibility mode usually loads within 10 seconds.',
-          showSpinner: true,
-          primaryLabel: 'Please wait...',
-        });
-        setTimeout(function () {
-          window.location.replace(buildLegacyFallbackUrl(reason));
-        }, 250);
-        return true;
+        // Disabled for production rollout: legacy uses outdated document category mapping.
+        return false;
       }
 
       // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
@@ -499,12 +513,12 @@
       // ── Default document options (SL fallback) ──
       // When the workflow config provides kycSdkDocumentOptions, those take
       // precedence.  Otherwise we use these hardcoded SL defaults.
-      var DEFAULT_DOC_OPTIONS = [
+      var DEFAULT_DOC_OPTIONS = normalizeDocOptions([
         { type: 'id_card', kind: 'proof_of_identity', variant: 'regular', backSide: true },
         { type: 'passport', kind: 'proof_of_identity', variant: 'regular', backSide: false },
         { type: 'voter_id', kind: 'proof_of_identity', variant: 'regular', backSide: true },
         { type: 'drivers_license', kind: 'proof_of_identity', variant: 'regular', backSide: true },
-      ];
+      ]);
       var VALID_DOC_TYPES = DEFAULT_DOC_OPTIONS.map(function (d) {
         return d.type;
       });
@@ -594,6 +608,20 @@
           { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
           { name: 'selfie', id: 'selfie' },
           { name: 'check-selfie', id: 'check-selfie' },
+          {
+            name: 'document-photo',
+            id: 'document-photo',
+            namespace: 'address-proof-photo',
+            type: 'utility_bill',
+            documentInfo: { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 },
+          },
+          {
+            name: 'check-document',
+            id: 'check-document',
+            namespace: 'address-proof-check',
+            type: 'utility_bill',
+            documentInfo: { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 },
+          },
           { name: 'loading', id: 'loading' },
           { name: 'resubmission', id: 'resubmission' },
           { name: 'decline', id: 'decline' },
@@ -639,6 +667,22 @@
             ].includes(name)
           ) {
             step.documentInfo = preselectedDocInfo;
+          }
+          // Address proof steps: use document-photo / check-document SDK components
+          // with utility_bill type and proof_of_address category
+          if (name === 'address-proof-photo') {
+            step.name = 'document-photo';
+            step.id = 'document-photo';
+            step.namespace = 'address-proof-photo';
+            step.type = 'utility_bill';
+            step.documentInfo = { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 };
+          }
+          if (name === 'address-proof-check') {
+            step.name = 'check-document';
+            step.id = 'check-document';
+            step.namespace = 'address-proof-check';
+            step.type = 'utility_bill';
+            step.documentInfo = { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 };
           }
           return step;
         });
@@ -1057,13 +1101,17 @@
 
         // 3. Resolve config-driven document options
         // These drive the document-selection step AND preselectedDocInfo enrichment.
-        var configDocOptions =
+        var rawConfigDocOptions =
           workflowData &&
           workflowData.config &&
           Array.isArray(workflowData.config.kycSdkDocumentOptions) &&
           workflowData.config.kycSdkDocumentOptions.length > 0
             ? workflowData.config.kycSdkDocumentOptions
             : null;
+
+        var configDocOptions = rawConfigDocOptions
+          ? normalizeDocOptions(rawConfigDocOptions)
+          : null;
 
         var activeDocOptions = configDocOptions || DEFAULT_DOC_OPTIONS;
         if (configDocOptions) {
@@ -1170,7 +1218,6 @@
               // use computed active-flow state to avoid invalid empty step arrays.
               workflowContext: JSON.stringify(workflowContextPayload),
               workflowState: JSON.stringify(workflowStatePayload),
-              documentCategory: 'proof_of_identity',
               selfieCategory: 'proof_of_identity_ownership',
               preselectedDocType: preselectedDocType || '',
             },
@@ -1198,7 +1245,7 @@
                     workflowData.config &&
                     workflowData.config.kycSdkTheme &&
                     workflowData.config.kycSdkTheme.primaryColor) ||
-                  '#7b15ff',
+                  '#0071D3',
               },
               fonts: {
                 name:
@@ -1220,8 +1267,8 @@
               },
             },
             components: {
-              paragraph: { 'font-size': '18px', 'line-height': '1.65' },
-              title: { 'font-size': '26px' },
+              paragraph: { 'font-size': '20px', 'line-height': '1.7' },
+              title: { 'font-size': '28px', 'font-weight': '700' },
             },
             flows: {
               'mikashboks-kyc': {
@@ -1236,9 +1283,9 @@
             overrides: {
               en: {
                 welcome: {
-                  title: 'Verify Your Identity',
+                  title: "Let's Verify Your Identity",
                   description:
-                    'This quick check takes about 2 minutes. Once verified, you unlock loans, higher savings limits, and faster transactions.',
+                    'This takes about 2 minutes. Once done, you can access loans, save more, and transact faster.',
                   button: 'Get Started',
                 },
                 // ── Welcome page benefit list ──
@@ -1246,14 +1293,14 @@
                 // `title` is the list heading; `item-N` are the bullet items.
                 // Number of items is auto-detected from key count minus 1 (for title).
                 'list-mikashboks-kyc': {
-                  title: 'What you will need:',
+                  title: 'What you need:',
                   'item-1': 'A valid ID document (National ID, passport, voter ID, or licence)',
                   'item-2': 'A clear selfie of your face',
                   'item-3': 'Good lighting \u2014 avoid dark rooms and direct sunlight',
-                  'item-4': 'Your data is encrypted and secure',
+                  'item-4': 'Your data stays private and secure',
                 },
                 'document-selection': {
-                  title: 'Choose Your Document',
+                  title: 'Choose Your ID',
                   description: 'Select the type of identity document you would like to use.',
                 },
                 // ── SL-specific document option descriptions ──
@@ -1271,9 +1318,9 @@
                 // The SDK resolves document-photo / document-photo-back with nested
                 // doc-type keys: e.g. t('document-photo.id_card', 'title').
                 'document-photo': {
-                  title: 'Take Document Photo',
+                  title: 'Photograph Your ID',
                   description:
-                    'Place your document flat on a surface with good lighting. Make sure all four corners are visible, all text is readable, and there is no glare or shadow.',
+                    'Place your ID flat on a table. Make sure all 4 corners show, all text is clear, and there is no glare.',
                   id_card: {
                     title: 'National ID \u2014 Front',
                     description:
@@ -1296,9 +1343,9 @@
                   },
                 },
                 'check-document': {
-                  title: 'Check Your Photo',
+                  title: 'Review Your Photo',
                   description:
-                    'Look carefully: Is all the text clear and readable? Are all 4 corners visible? No blur or glare? If not, tap the back arrow to retake.',
+                    'Is all the text clear? Are all 4 corners showing? No blur or glare? If not, tap back to retake.',
                 },
                 'document-photo-back-start': {
                   title: 'Back of Document',
@@ -1326,9 +1373,9 @@
                   description: 'Make sure the back side is clear and readable.',
                 },
                 'selfie-start': {
-                  title: 'Take a Selfie',
+                  title: 'Time for a Selfie',
                   description:
-                    'Take a clear photo of your face so we can match it to your ID. Use good lighting, remove hats or sunglasses, and look straight at the camera.',
+                    'We will match your face to your ID photo. Use good lighting, remove hats or glasses, and look straight at the camera.',
                   button: 'Take Selfie',
                 },
                 selfie: {
@@ -1337,20 +1384,31 @@
                     'Position your face inside the oval. Look straight at the camera and keep your expression natural. Make sure there are no shadows on your face.',
                 },
                 'check-selfie': {
-                  title: 'Check Your Selfie',
+                  title: 'Review Your Selfie',
                   description:
-                    'Make sure your face is clear, bright, and fully visible. If the photo is dark or blurry, tap back to retake.',
+                    'Make sure your face is clearly visible. If it looks dark or blurry, tap back to retake.',
+                },
+                // ── Address proof translations ──
+                'address-proof-photo': {
+                  title: 'Proof of Address',
+                  description:
+                    'Take a photo of a utility bill, bank statement, or government letter showing your current address (issued within the last 3 months).',
+                },
+                'address-proof-check': {
+                  title: 'Review Address Proof',
+                  description:
+                    'Make sure the document is clear and your name and address are readable.',
                 },
                 // ── End-state translations ──
                 loader: {
-                  'text-one': 'Step 1 of 3: Uploading your document photos...',
-                  'text-two': 'Step 2 of 3: Running document and face checks...',
-                  'text-three': 'Step 3 of 3: Finalizing your verification result...',
+                  'text-one': 'Uploading your photos...',
+                  'text-two': 'Checking your ID and selfie...',
+                  'text-three': 'Almost done...',
                 },
                 final: {
-                  title: 'Verification Submitted',
+                  title: 'All Done!',
                   description:
-                    'We received your ID and selfie. We are now checking them and will send you an SMS with the result.',
+                    'Your ID and selfie have been received. We will check them and text you the result.',
                   button: 'Done',
                 },
                 // ── Resubmission per-reason translations ──
@@ -1399,18 +1457,18 @@
                 decline: {
                   title: 'Verification Unsuccessful',
                   description:
-                    'We could not verify your identity from the submitted photos. Please try again with clearer images, or contact MiKashBoks support for help.',
+                    'We could not verify your identity. Please try again with clearer photos, or call MiKashBoks support for help.',
                 },
                 'manual-review': {
                   title: 'Under Review',
                   description:
-                    'Your photos were submitted successfully. Our team is reviewing them now. You do not need to upload anything again.',
+                    'Your photos are in. Our team is reviewing them now — no need to upload anything else.',
                   button: 'Done',
                 },
                 error: {
                   title: 'Something Went Wrong',
                   description:
-                    'The verification is taking longer than expected. Please close this screen and try again. If the problem continues, contact MiKashBoks support.',
+                    'Something went wrong. Please close this screen and try again. If it keeps happening, call MiKashBoks support.',
                   button: 'Close',
                 },
                 // ── General / shared strings ──

@@ -590,20 +590,20 @@ export const useTabsToBlocksMap = ({
       const out: Record<string, any> = {};
 
       if (entityDevice) {
-out.providedDeviceSignals = entityDevice;
-}
+        out.providedDeviceSignals = entityDevice;
+      }
 
       if (deviceDedup) {
-out.deviceDeduplication = deviceDedup;
-}
+        out.deviceDeduplication = deviceDedup;
+      }
 
       if (deviceIndexing) {
-out.deviceIndexing = deviceIndexing;
-}
+        out.deviceIndexing = deviceIndexing;
+      }
 
       if (deviceLinking) {
-out.deviceLinking = deviceLinking;
-}
+        out.deviceLinking = deviceLinking;
+      }
 
       return out;
     })(),

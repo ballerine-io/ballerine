@@ -46,16 +46,16 @@ function parseObjectAddress(address: Record<string, any>, countryCode?: string):
   const parsedAddress = createDefaultAddress();
 
   if (address.city) {
-parsedAddress.city = address.city;
-}
+    parsedAddress.city = address.city;
+  }
 
   if (address.postcode) {
-parsedAddress.postalCode = address.postcode;
-}
+    parsedAddress.postalCode = address.postcode;
+  }
 
   if (address.municipality) {
-parsedAddress.state = address.municipality;
-}
+    parsedAddress.state = address.municipality;
+  }
 
   if (address.streetName) {
     const streetMatch = address.streetName.match(/^(.+)\s(\d+)$/);
@@ -122,8 +122,8 @@ function setCountryFromCode(address: NormalizedAddress, countryCode: string): vo
     const [country] = countryCode.split('-');
 
     if (!country) {
-return;
-}
+      return;
+    }
 
     const countryName = countries.getName(country, 'en');
 
@@ -147,8 +147,8 @@ function extractPostalCode(addressString: string, target: NormalizedAddress): vo
 
     if (match) {
       target.postalCode = match[0];
-      
-return;
+
+      return;
     }
   }
 }
@@ -168,8 +168,8 @@ function extractCity(addressString: string, target: NormalizedAddress): void {
 
   if (cityMatch && cityMatch[1]) {
     target.city = cityMatch[1].trim();
-    
-return;
+
+    return;
   }
 
   // Try European style with all caps city

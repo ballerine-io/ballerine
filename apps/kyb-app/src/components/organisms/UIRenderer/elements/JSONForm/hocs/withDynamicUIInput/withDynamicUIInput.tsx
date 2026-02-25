@@ -35,8 +35,8 @@ export const injectIndexToDestinationIfNeeded = (
   index: number | null,
 ): string => {
   if (index === null) {
-return destination;
-}
+    return destination;
+  }
 
   const result = destination.replace(ARRAY_VALUE_INDEX_PLACEHOLDER, `${index}`);
 
@@ -70,8 +70,8 @@ export const withDynamicUIInput = (
       );
 
       if (!definition) {
-throw new Error('definition not found');
-}
+        throw new Error('definition not found');
+      }
 
       return definition;
     }, [name, currentPage]);

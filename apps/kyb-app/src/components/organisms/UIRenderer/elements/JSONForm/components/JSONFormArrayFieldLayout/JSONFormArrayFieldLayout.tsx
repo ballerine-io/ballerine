@@ -44,8 +44,8 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
       const dataArray = get(ctx, definition.valueDestination as string);
 
       if (!dataArray) {
-return;
-}
+        return;
+      }
 
       pullAt(dataArray, index);
 

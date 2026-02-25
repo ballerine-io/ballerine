@@ -190,7 +190,11 @@ export const useManageUbosBlock = ({
   const ubos = useMemo(() => {
     return (
       workflow?.childWorkflows?.map(childWorkflow => {
-        const entityData = childWorkflow.context.entity.data ?? {};
+        const entityDataCandidate = childWorkflow?.context?.entity?.data;
+        const entityData =
+          entityDataCandidate && typeof entityDataCandidate === 'object'
+            ? (entityDataCandidate as Record<string, any>)
+            : {};
         const additionalInfo =
           entityData && typeof entityData === 'object' && 'additionalInfo' in entityData
             ? (entityData.additionalInfo as Record<string, unknown> | undefined)

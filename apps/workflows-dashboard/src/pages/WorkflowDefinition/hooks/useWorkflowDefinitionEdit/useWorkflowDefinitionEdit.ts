@@ -16,8 +16,8 @@ export const useWorkflowDefinitionEdit = (workflowDefinition: IWorkflowDefinitio
   const handleWorkflowDefinitionSave = useCallback(
     (definition: object) => {
       if (!workflowDefinition) {
-return;
-}
+        return;
+      }
 
       setWorkflowDefinitionValue(definition);
 

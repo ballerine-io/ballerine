@@ -38,8 +38,8 @@ export const queryClient = new QueryClient({
       }
 
       if (!isErrorWithCode(error)) {
-throw error;
-}
+        throw error;
+      }
 
       const status = error.code;
 
@@ -49,8 +49,8 @@ throw error;
 
       // Dont toast for no important errors
       if ([401, 403, 404].includes(status)) {
-return;
-}
+        return;
+      }
 
       if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null') {
         return;

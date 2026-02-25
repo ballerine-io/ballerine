@@ -11,8 +11,8 @@ export const getDocumentsSchemas = (
   workflow: TWorkflowById,
 ) => {
   if (!issuerCountryCode) {
-return;
-}
+    return;
+  }
 
   const documentSchemaByCountry = getDocumentSchemaByCountry(
     issuerCountryCode,
@@ -26,8 +26,7 @@ return;
         unique.push(item);
       }
 
-      
-return unique;
+      return unique;
     }, [] as TDocument[])
     .filter((documentSchema: TDocument) => {
       if (

@@ -34,8 +34,8 @@ export class JmespathRuleEngine implements RuleEngine {
 
   private isJmesPath(rule: Rule): rule is JMESPathRule {
     if (rule.type === 'jmespath' && typeof rule.value === 'string') {
-return true;
-}
+      return true;
+    }
 
     return false;
   }

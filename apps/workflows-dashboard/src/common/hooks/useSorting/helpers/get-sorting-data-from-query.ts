@@ -15,8 +15,8 @@ export function getSortingDataFromQuery(string_: string, regex: RegExp) {
       const parseResult = regex.exec(sortingString);
 
       if (!parseResult) {
-return null;
-}
+        return null;
+      }
 
       const parseValues = [parseResult[1], parseResult[2], parseResult[3]];
 

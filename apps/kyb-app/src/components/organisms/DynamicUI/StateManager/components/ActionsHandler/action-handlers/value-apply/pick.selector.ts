@@ -10,8 +10,8 @@ import get from 'lodash/get';
 export class ValueApplyPickSelector implements ValueApplySelector {
   select<TResult>(value: ValueApplyValue, context: AnyObject): TResult {
     if (!this.isPickSelector(value.selector)) {
-throw new Error('Incorrect selector params.');
-}
+      throw new Error('Incorrect selector params.');
+    }
 
     return get(context, value.selector.pickDestination, value.selector.defaultValue) as TResult;
   }

@@ -18,8 +18,8 @@ export const ThemeProvider = ({ children }: Props) => {
 
   const theme = useMemo(() => {
     if (isLoading) {
-return null;
-}
+      return null;
+    }
 
     if (error) {
       console.warn('Failed to load theme', error);
@@ -28,8 +28,8 @@ return null;
     }
 
     if (!uiSchema?.uiSchema?.theme) {
-return defaultTheme.theme;
-}
+      return defaultTheme.theme;
+    }
 
     return uiSchema.uiSchema.theme;
   }, [uiSchema, isLoading, error]);

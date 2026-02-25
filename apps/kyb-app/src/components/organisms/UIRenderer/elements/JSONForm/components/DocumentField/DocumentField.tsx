@@ -69,8 +69,8 @@ export const DocumentField = (
 
   const fileId = useMemo(() => {
     if (!Array.isArray(payload.documents)) {
-return null;
-}
+      return null;
+    }
 
     const parser = new DocumentValueDestinationParser(definition.valueDestination!);
     const documentsPath = parser.extractRootPath();
@@ -97,14 +97,14 @@ return null;
 
   useLayoutEffect(() => {
     if (!fileId) {
-return;
-}
+      return;
+    }
 
     const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
     if (persistedFile) {
-return;
-}
+      return;
+    }
 
     void fetchFile(fileId).then(file => {
       const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk || '', {

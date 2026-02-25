@@ -43,8 +43,8 @@ export const useUIElementProps = (
 
   const disabled = useMemo(() => {
     if (isLoading || isDisabled || state.isRevision) {
-return true;
-}
+      return true;
+    }
 
     return availabilityTestResults.length
       ? availabilityTestResults.some(result => !result.isValid)
@@ -53,8 +53,8 @@ return true;
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) {
-return false;
-}
+      return false;
+    }
 
     const isVisible = visibilityTestResults.every(result => result.isValid);
 

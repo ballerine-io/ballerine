@@ -382,6 +382,46 @@ export const verifyDocumentsCollectionFlow = async (
     );
   }
 
+  // Upload additional documents (e.g., address proof) with per-doc categories
+  for (let i = 1; i < data.docs.length; i++) {
+    const extraDoc = data.docs[i];
+    if (!extraDoc) continue;
+    const extraDocType = extraDoc.type || 'document';
+    const extraDocCategory = extraDoc.kind || docCategory;
+    const extraFront = extraDoc.pages.find(p => p.side === 'front');
+    if (extraFront?.base64) {
+      uploadPromises.push(
+        uploadCollectionFlowDocument(
+          base64ToBlob(extraFront.base64),
+          `${extraDocType}_front.jpeg`,
+          extraDocType,
+          extraDocCategory,
+          'document',
+          'front',
+          pageCounter++,
+          endUserId,
+          issuingCountry,
+        ),
+      );
+    }
+    const extraBack = extraDoc.pages.find(p => p.side === 'back');
+    if (extraBack?.base64) {
+      uploadPromises.push(
+        uploadCollectionFlowDocument(
+          base64ToBlob(extraBack.base64),
+          `${extraDocType}_back.jpeg`,
+          extraDocType,
+          extraDocCategory,
+          'document',
+          'back',
+          pageCounter++,
+          endUserId,
+          issuingCountry,
+        ),
+      );
+    }
+  }
+
   // Upload all documents — use allSettled to detect partial failures
   const uploadResults = await Promise.allSettled(uploadPromises);
   const failures = uploadResults.filter(r => r.status === 'rejected');

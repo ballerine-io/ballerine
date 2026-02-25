@@ -51,8 +51,8 @@ export const useDataInsertionLogic = <TElementParams extends DefinitionInsertion
 
   useEffect(() => {
     if (skip || !isShouldInsert) {
-return;
-}
+      return;
+    }
 
     const runResult = strategiesRunner.runInsertion(
       apiRef.current.getContext(),
@@ -72,8 +72,8 @@ return;
 
   useEffect(() => {
     if (skip || !isShouldRemove) {
-return;
-}
+      return;
+    }
 
     const runResult = strategiesRunner.runRemoval(
       apiRef.current.getContext(),

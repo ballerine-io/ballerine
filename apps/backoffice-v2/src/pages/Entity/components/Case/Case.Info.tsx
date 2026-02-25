@@ -32,14 +32,14 @@ export const useInfo = ({
 
         // Don't render sections with no title
         if (Object.keys(section).length === 0) {
-return acc;
-}
+          return acc;
+        }
 
         const data = Object.entries(section).reduce((acc, [key, value]) => {
           // Don't render empty fields
           if (isNullish(value) || value === '') {
-return acc;
-}
+            return acc;
+          }
 
           acc[key] = value;
 
@@ -48,8 +48,8 @@ return acc;
 
         // Don't render sections with a title but no fields
         if (Object.values(data).length === 0) {
-return acc;
-}
+          return acc;
+        }
 
         acc.push({
           title: toStartCase(camelCaseToSpace(key)),

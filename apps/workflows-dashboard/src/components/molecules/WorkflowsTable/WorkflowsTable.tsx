@@ -32,8 +32,8 @@ export const WorkflowsTable = memo(({ items, isFetching, sorting, columns, onSor
   // merging column parameters if provided
   const tableColumns = useMemo((): Array<WorkflowTableColumnDef<IWorkflow>> => {
     if (!Array.isArray(columns) || !columns.length) {
-return defaultColumns;
-}
+      return defaultColumns;
+    }
 
     const columnsMap = keyBy(columns, 'id');
 
@@ -41,8 +41,8 @@ return defaultColumns;
       const columnParams = columnsMap[defaultColumn.accessorKey];
 
       if (!columnParams) {
-return defaultColumn;
-}
+        return defaultColumn;
+      }
 
       return mergeColumns(defaultColumn, columnParams);
     });

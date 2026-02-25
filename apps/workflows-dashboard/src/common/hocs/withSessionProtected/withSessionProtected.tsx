@@ -26,8 +26,8 @@ export function withSessionProtected<TComponentProps extends object>(
     }
 
     if (!isAuthenticated) {
-return <Navigate to={signinPath} />;
-}
+      return <Navigate to={signinPath} />;
+    }
 
     return <Component {...props} />;
   }

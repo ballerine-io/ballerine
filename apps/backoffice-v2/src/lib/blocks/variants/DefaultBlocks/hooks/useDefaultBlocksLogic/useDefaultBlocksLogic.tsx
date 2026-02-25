@@ -331,10 +331,14 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
-  const entityDataToIndividualAdapter = ({
-    additionalInfo,
-    ...entityData
-  }: TWorkflowById['context']['entity']['data']) => {
+  const entityDataToIndividualAdapter = (
+    rawEntityData?: TWorkflowById['context']['entity']['data'] | null,
+  ) => {
+    const safeEntityData =
+      rawEntityData && typeof rawEntityData === 'object'
+        ? (rawEntityData as Record<string, any>)
+        : {};
+    const { additionalInfo, ...entityData } = safeEntityData as Record<string, any>;
     const {
       firstName,
       lastName,

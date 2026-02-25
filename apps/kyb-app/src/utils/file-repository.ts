@@ -7,8 +7,8 @@ export class FileRepository {
 
   subscribe(listener: FileRepositoryListener) {
     if (this.listeners.find(existingListener => existingListener === listener)) {
-return;
-}
+      return;
+    }
 
     this.listeners.push(listener);
   }

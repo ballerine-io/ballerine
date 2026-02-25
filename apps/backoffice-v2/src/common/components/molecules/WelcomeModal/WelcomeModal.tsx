@@ -15,7 +15,6 @@ import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { BusinessReportsLeftCard } from '@/domains/business-reports/components/BusinessReportsLeftCard/BusinessReportsLeftCard';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 
-
 const benefits = [
   'Spot potential risks and violations',
   'Assess legitimacy and card scheme compliance',

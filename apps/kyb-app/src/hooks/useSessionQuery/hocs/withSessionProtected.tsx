@@ -10,14 +10,14 @@ export const withSessionProtected = <TComponentProps extends object>(
     const { user, isLoading } = useSessionQuery();
 
     if (isLoading) {
-return <LoadingScreen />;
-}
+      return <LoadingScreen />;
+    }
 
     const isAuthenticated = Boolean(user);
 
     if (!isAuthenticated) {
-return <AppNavigate to={signinPath} />;
-}
+      return <AppNavigate to={signinPath} />;
+    }
 
     return <Component {...props} />;
   };

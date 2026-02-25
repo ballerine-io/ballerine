@@ -19,8 +19,8 @@ export const PoweredByLogo: FunctionComponent<IPoweredByLogoProps> = ({
 
   useEffect(() => {
     if (!sidebarElement) {
-return;
-}
+      return;
+    }
 
     const rgb = getRGBColorFromElement(sidebarElement);
 
@@ -38,8 +38,8 @@ return;
   }, [sidebarElement]);
 
   if (!logoSrc) {
-return null;
-}
+    return null;
+  }
 
   return <img src={logoSrc} className={className} alt="Powered by MiKashBoks" />;
 };

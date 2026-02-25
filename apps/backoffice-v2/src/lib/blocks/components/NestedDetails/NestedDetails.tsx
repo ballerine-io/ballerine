@@ -4,8 +4,8 @@ import { INestedDetailsProps } from './interfaces';
 
 export const NestedDetails: FunctionComponent<INestedDetailsProps> = ({ id, value }) => {
   if (!value?.data?.length) {
-return;
-}
+    return;
+  }
 
   return (
     <div className={`ml-3 space-y-4`}>

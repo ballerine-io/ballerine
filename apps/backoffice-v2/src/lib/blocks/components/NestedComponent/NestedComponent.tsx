@@ -14,8 +14,8 @@ export const NestedComponent: FunctionComponent<INestedComponentProps> = ({
   isNested = false,
 }) => {
   if (!value?.data?.length) {
-return;
-}
+    return;
+  }
 
   return (
     <NestedContainer isNested={isNested}>

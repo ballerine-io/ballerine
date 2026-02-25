@@ -2,8 +2,8 @@ import { TFilter } from '@/domains/filters/fetchers';
 
 export const selectWorkflowDefinitionId = (filter: TFilter) => {
   if (!filter) {
-return;
-}
+    return;
+  }
 
   if (typeof filter?.query?.where?.workflowDefinitionId === 'string') {
     return filter?.query?.where?.workflowDefinitionId;

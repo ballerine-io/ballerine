@@ -19,8 +19,8 @@ export const createFormSchemaFromUIElements = (formElement: any) => {
 
     (formElement.elements as any[])?.forEach(uiElement => {
       if (!uiElement.options?.jsonFormDefinition) {
-return;
-}
+        return;
+      }
 
       const elementDefinition = {
         ...uiElement.options.jsonFormDefinition,
@@ -61,8 +61,8 @@ return;
 
     (formElement.elements as any[])?.forEach(uiElement => {
       if (!uiElement.options?.jsonFormDefinition) {
-return;
-}
+        return;
+      }
 
       const elementDefinition = {
         ...uiElement.options.jsonFormDefinition,

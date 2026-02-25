@@ -358,6 +358,8 @@ export const kycOnboardingSierraLeoneDefinition = {
       'selfie-start',
       'selfie',
       'check-selfie',
+      'address-proof-photo',
+      'address-proof-check',
       'loading',
       'resubmission',
       'decline',

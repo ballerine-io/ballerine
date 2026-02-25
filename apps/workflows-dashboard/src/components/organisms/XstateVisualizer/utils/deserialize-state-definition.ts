@@ -11,8 +11,8 @@ function removeKeyAndValue<T extends object>(
 
   if (Array.isArray(object)) {
     forEach(object, item => removeKeyAndValue(item, keyToSearch, valueToSearch));
-    
-return;
+
+    return;
   }
 
   forEach(object, (value, key) => {

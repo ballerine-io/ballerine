@@ -27,12 +27,12 @@ type SortDirection = 'asc' | 'desc';
 // Highlight search matches
 const highlightText = (text: string, searchQuery: string) => {
   if (!searchQuery) {
-return text;
-}
+    return text;
+  }
 
   const parts = text.split(new RegExp(`(${searchQuery})`, 'gi'));
-  
-return parts.map((part, i) =>
+
+  return parts.map((part, i) =>
     part.toLowerCase() === searchQuery.toLowerCase() ? (
       <mark key={i} className="rounded bg-yellow-200 px-0.5">
         {part}
@@ -56,8 +56,8 @@ export const WorkflowLogsModal = ({ workflowId, isOpen, onClose }: WorkflowLogsM
 
   const fetchLogs = useCallback(async () => {
     if (!workflowId) {
-return;
-}
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -111,12 +111,12 @@ return;
   const filteredAndSortedLogs = logs
     .filter(log => {
       if (!searchQuery) {
-return true;
-}
+        return true;
+      }
 
       const searchLower = searchQuery.toLowerCase();
-      
-return (
+
+      return (
         log.type.toLowerCase().includes(searchLower) ||
         log.message.toLowerCase().includes(searchLower) ||
         (log.eventName && log.eventName.toLowerCase().includes(searchLower)) ||
@@ -162,11 +162,10 @@ return (
 
   const renderSortIndicator = (field: SortField) => {
     if (sortField !== field) {
-return null;
-}
+      return null;
+    }
 
-    
-return sortDirection === 'asc' ? (
+    return sortDirection === 'asc' ? (
       <ArrowUp className="ml-1 inline h-3 w-3" />
     ) : (
       <ArrowDown className="ml-1 inline h-3 w-3" />

@@ -64,7 +64,9 @@ export const useSelectEntityFilterOnMount = () => {
   ]);
 
   useEffect(() => {
-    if (!filterId || filter?.caseStatus?.length) {
+    const caseStatuses = Array.isArray(filter?.caseStatus) ? filter.caseStatus : [];
+
+    if (!filterId || caseStatuses.length > 0) {
       return;
     }
 

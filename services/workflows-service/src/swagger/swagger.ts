@@ -31,7 +31,7 @@ class SwaggerSingleton {
     const swaggerDocBuilder = new DocumentBuilder()
       .setTitle('MiKashBoks Identity Workflows API')
       .setDescription(
-        "MiKashBoks Identity Workflows API provides KYC/KYB verification workflow orchestration, case management, and decision automation for West African financial services. Built on top of the Ballerine open-source workflow engine.",
+        'MiKashBoks Identity Workflows API provides KYC/KYB verification workflow orchestration, case management, and decision automation for West African financial services. Built on top of the Ballerine open-source workflow engine.',
       )
       .setVersion('1.3.10')
       .setContact('MiKashBoks', 'https://mikashboks.com', 'support@mikashboks.com')
@@ -41,11 +41,17 @@ class SwaggerSingleton {
 
     if (env.ENVIRONMENT_NAME === 'local') {
       swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
-      swaggerDocBuilder.addServer(`https://api.verify-dev.mikashboksapis.com`, 'Development Server');
+      swaggerDocBuilder.addServer(
+        `https://api.verify-dev.mikashboksapis.com`,
+        'Development Server',
+      );
     }
 
     if (env.ENVIRONMENT_NAME === 'development') {
-      swaggerDocBuilder.addServer(`https://api.verify-dev.mikashboksapis.com`, 'Development Server');
+      swaggerDocBuilder.addServer(
+        `https://api.verify-dev.mikashboksapis.com`,
+        'Development Server',
+      );
     }
 
     if (env.ENVIRONMENT_NAME === 'production') {

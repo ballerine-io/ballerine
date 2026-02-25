@@ -12,8 +12,8 @@ export const Footer: FunctionComponent<IFooterProps> = props => {
   const { rawHtml, styles } = { ...themeParams?.footer, ...props };
 
   if (!rawHtml) {
-return null;
-}
+    return null;
+  }
 
   return (
     <div

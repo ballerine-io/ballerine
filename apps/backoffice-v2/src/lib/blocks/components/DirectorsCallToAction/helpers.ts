@@ -5,14 +5,14 @@ export const getRevisionReasonsForDocument = (
   revisionReasons: string[],
 ) => {
   if (category === 'proof_of_identity' && type === 'passport') {
-return [
+    return [
       'Blurry image',
       'Bad quality photo',
       'Wrong document',
       'Copy of a copy',
       'Cut document',
     ];
-}
+  }
 
   if (category === 'proof_of_identity_ownership' && type === 'selfie') {
     return [

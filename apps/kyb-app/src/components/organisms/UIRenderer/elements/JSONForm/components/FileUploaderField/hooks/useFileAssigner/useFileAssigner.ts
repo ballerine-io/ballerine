@@ -9,8 +9,8 @@ export const useFileAssigner = (
       const files = new DataTransfer();
 
       if (!(file instanceof File)) {
-return;
-}
+        return;
+      }
 
       files.items.add(file);
       ref.current.files = files.files;

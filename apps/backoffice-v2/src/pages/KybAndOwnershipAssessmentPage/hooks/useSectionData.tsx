@@ -25,8 +25,8 @@ export const useSectionData = ({
     const registryData = assessment?.companyRegistryInformation?.output?.data;
     const getRegisteredAddress = () => {
       if (!registryData?.addresses?.length) {
-return null;
-}
+        return null;
+      }
 
       const registeredAddressObj = registryData.addresses.find((addr: any) => {
         if (addr.type) {

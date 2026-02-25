@@ -21,7 +21,7 @@
   import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { createToggle } from '../hooks/createToggle/createToggle';
-  import { getDocumentType } from '../utils/documents-utils';
+  import { getDocumentKind, getDocumentType } from '../utils/documents-utils';
   import { IDocumentOptions } from '../organisms/DocumentOptions';
   import { TDocumentType } from '../contexts/app-state/types';
 
@@ -40,8 +40,7 @@
     ?.documentOptions as IDocumentOptions;
 
   const documentType = getDocumentType(step, $selectedDocumentInfo);
-
-  const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
+  const documentKind = getDocumentKind(step, $selectedDocumentInfo);
 
   let stream: MediaStream;
   const stepNamespace = `${step.namespace}.${documentKind || documentType}`;
@@ -104,7 +103,7 @@
         type: documentType,
         pages: [],
         metadata: {},
-        kind: $selectedDocumentInfo?.kind,
+        kind: documentKind,
       };
       $documents = addDocument(document.type, base64, document);
       return goToNextStep(currentStepId, $configuration, $currentStepId);

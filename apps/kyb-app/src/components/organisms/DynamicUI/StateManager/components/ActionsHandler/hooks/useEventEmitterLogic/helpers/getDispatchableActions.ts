@@ -23,8 +23,8 @@ export const getDispatchableActions = (
     ]);
 
     if (!action.dispatchOn.rules) {
-return true;
-}
+      return true;
+    }
 
     return (
       action.dispatchOn?.rules?.length &&

@@ -60,8 +60,8 @@ export const UIDefinitionEditor: FunctionComponent<UIDefinitionEditorProps> = ({
                           // Helper function to render form elements
                           const renderFormElement = (element: any) => {
                             if (!element.type?.startsWith('json-form:')) {
-return null;
-}
+                              return null;
+                            }
 
                             const valueDestination = element.valueDestination?.split('.')?.pop();
 

@@ -14,8 +14,8 @@ export const Pagination = ({ totalPages, page, onChange }: Props) => {
       const isPageInRangeOfPages = nextPage <= totalPages || nextPage <= 1;
 
       if (!isPageInRangeOfPages) {
-return;
-}
+        return;
+      }
 
       onChange(nextPage);
     },

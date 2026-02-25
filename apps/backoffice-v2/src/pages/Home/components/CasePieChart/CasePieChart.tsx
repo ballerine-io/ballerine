@@ -75,8 +75,8 @@ export const CasePieChart: FunctionComponent<CasePieChartProps> = ({
       <ul className={'flex w-full max-w-sm flex-col space-y-2'}>
         {data.map((entry, index) => {
           const key = entry[nameKey] as string;
-          
-return (
+
+          return (
             <li key={index} className={'flex items-center space-x-4 border-b py-1 text-xs'}>
               <span
                 className={`flex size-2 rounded-full`}

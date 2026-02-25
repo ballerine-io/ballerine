@@ -31,8 +31,8 @@ export const RiskAndAlertsOverviewSection = () => {
               High: { color: '#FF9800', text: 'High' },
               Critical: { color: '#F44336', text: 'Critical' },
             };
-            
-return riskLevelMap[riskLevel] || { color: '#65AFFF', text: riskLevel };
+
+            return riskLevelMap[riskLevel] || { color: '#65AFFF', text: riskLevel };
           }}
           nameKey="riskLevel"
           config={activeCasesByRiskLevelData.reduce((acc, curr) => {
@@ -64,8 +64,8 @@ return riskLevelMap[riskLevel] || { color: '#65AFFF', text: riskLevel };
               High: { color: '#FF9800', text: 'High' },
               Critical: { color: '#F44336', text: 'Critical' },
             };
-            
-return riskLevelMap[riskLevel] || { color: '#65AFFF', text: riskLevel };
+
+            return riskLevelMap[riskLevel] || { color: '#65AFFF', text: riskLevel };
           }}
           nameKey="riskLevel"
           config={approvedCasesByRiskLevelData.reduce((acc, curr) => {

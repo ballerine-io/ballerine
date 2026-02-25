@@ -1,4 +1,3 @@
-
 export const WelcomeSvg = () => (
   <svg
     width="96"

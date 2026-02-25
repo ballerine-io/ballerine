@@ -26,6 +26,5 @@ export function traverseObjectAndPickValue<T>(
     }
   }
 
-  
-return defaultValue;
+  return defaultValue;
 }

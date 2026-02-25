@@ -35,11 +35,7 @@ applyFormats();
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
 global.__rootdir__ = __dirname || process.cwd();
 
-const devOrigins = [
-  /\.mikashboks\.com$/,
-  /\.mikashboksapis\.com$/,
-  /^http:\/\/localhost:\d+$/,
-];
+const devOrigins = [/\.mikashboks\.com$/, /\.mikashboksapis\.com$/, /^http:\/\/localhost:\d+$/];
 
 const corsOrigins = [
   ...env.BACKOFFICE_CORS_ORIGIN,
@@ -92,10 +88,7 @@ const main = async () => {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          connectSrc: [
-            "'self'",
-            'https://*.mikashboksapis.com',
-          ],
+          connectSrc: ["'self'", 'https://*.mikashboksapis.com'],
         },
       },
     }),

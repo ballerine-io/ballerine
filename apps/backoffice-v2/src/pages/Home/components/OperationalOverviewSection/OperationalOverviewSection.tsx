@@ -191,8 +191,8 @@ export const OperationalOverviewSection = ({
                   Revisions: { color: '#FFB74D', text: 'Revisions' },
                   Rejected: { color: '#F44336', text: 'Rejected' },
                 };
-                
-return statusMap[status] || { color: '#65AFFF', text: status };
+
+                return statusMap[status] || { color: '#65AFFF', text: status };
               }}
               nameKey="status"
               valueKey="count"

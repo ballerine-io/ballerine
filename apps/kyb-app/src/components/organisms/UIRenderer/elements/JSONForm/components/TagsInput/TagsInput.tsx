@@ -15,8 +15,8 @@ export const TagsInput: FunctionComponent<ITagsInputProps> = ({
 
   const tags = useMemo(() => {
     if (!Array.isArray(formData)) {
-return [];
-}
+      return [];
+    }
 
     return formData.map((tag, index) => {
       return {

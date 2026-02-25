@@ -56,8 +56,8 @@ export const Page = ({ page, children }: PageProps) => {
     const ctx: PageContext = {
       errors: fieldErrors.reduce((map, item) => {
         if (!item.fieldId) {
-return map;
-}
+          return map;
+        }
 
         const isExists = map[item.fieldId];
 

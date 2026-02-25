@@ -20,7 +20,7 @@
   import { createToggle } from '../hooks/createToggle/createToggle';
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
-  import { getDocumentType } from '../utils/documents-utils';
+  import { getDocumentKind, getDocumentType } from '../utils/documents-utils';
 
   export let stepId;
 
@@ -33,8 +33,7 @@
   const [isDisabled, , toggleOnIsDisabled, toggleOffIsDisabled] = createToggle(true);
 
   const documentType = getDocumentType(step, $selectedDocumentInfo);
-
-  const documentKind = $selectedDocumentInfo ? $selectedDocumentInfo.kind : undefined;
+  const documentKind = getDocumentKind(step, $selectedDocumentInfo);
 
   let stream: MediaStream;
   const stepNamespace = `${step.namespace}.${documentKind || documentType}`;

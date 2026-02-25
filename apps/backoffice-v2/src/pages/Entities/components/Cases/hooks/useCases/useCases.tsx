@@ -132,8 +132,8 @@ export const useCases = () => {
     const dropdown = e.target.closest('.dropdown');
 
     if (dropdown.classList.contains('dropdown-hover')) {
-return;
-}
+      return;
+    }
 
     dropdown.classList.add('dropdown-hover');
     dropdown.classList.remove('dropdown-open');
@@ -141,36 +141,36 @@ return;
 
   useDocumentListener('keydown', event => {
     if (!event.ctrlKey || !event.shiftKey) {
-return;
-}
+      return;
+    }
 
     const listeners = ['k', 's', 'f'] as const;
 
     if (!listeners.includes(event.key?.toLowerCase() as (typeof listeners)[number])) {
-return;
-}
+      return;
+    }
 
     event.preventDefault();
 
     switch (event.key?.toLowerCase()) {
       case 'k':
         if (!searchRef.current) {
-break;
-}
+          break;
+        }
 
         searchRef.current.focus();
         break;
       case 's':
         if (!sortRef.current) {
-break;
-}
+          break;
+        }
 
         sortRef.current.focus();
         break;
       case 'f': {
         if (!filterRef.current) {
-break;
-}
+          break;
+        }
 
         const dropdown = filterRef.current.closest('.dropdown');
 

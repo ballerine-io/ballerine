@@ -22,8 +22,8 @@ export const getAddressDeep = (
   } = {},
 ): Address | undefined => {
   if (!value || typeof value !== 'object') {
-return;
-}
+    return;
+  }
 
   // Early return for Array type
   if (Array.isArray(value)) {
@@ -31,8 +31,8 @@ return;
       const result = getAddressDeep(value[i], { propertyName });
 
       if (result) {
-return result;
-}
+        return result;
+      }
     }
 
     return;
@@ -40,14 +40,14 @@ return result;
 
   for (const key of Object.keys(value)) {
     if (key === propertyName) {
-return value[key];
-}
+      return value[key];
+    }
 
     const result = getAddressDeep(value[key], { propertyName });
 
     if (result) {
-return result;
-}
+      return result;
+    }
   }
 
   return;

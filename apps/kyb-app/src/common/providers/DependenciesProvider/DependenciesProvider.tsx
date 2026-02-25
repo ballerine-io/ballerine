@@ -35,15 +35,15 @@ export const DependenciesProvider: FunctionComponent<IDependenciesProviderProps>
 
   useEffect(() => {
     if (!Array.isArray(errors) || !errors?.length) {
-return;
-}
+      return;
+    }
 
     const handleErrors = async (errors: HTTPError[]) => {
       const isShouldIgnore = await isShouldIgnoreErrors(errors);
 
       if (isShouldIgnore) {
-return;
-}
+        return;
+      }
 
       const errorResponses = await getJsonErrors(errors);
 

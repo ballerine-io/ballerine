@@ -83,8 +83,8 @@ export const StreetViewComponent: React.FC<StreetViewComponentProps> = ({
           scrollPositionRef.current = window.scrollY;
           setPosition(panoramaResult);
           setStreetViewStatus('OK');
-          
-return;
+
+          return;
         }
 
         const widerPanoramaResult = await checkStreetViewAvailability(
@@ -97,8 +97,8 @@ return;
           scrollPositionRef.current = window.scrollY;
           setPosition(widerPanoramaResult);
           setStreetViewStatus('OK');
-          
-return;
+
+          return;
         }
 
         setStreetViewStatus('NOT_AVAILABLE');
@@ -130,8 +130,8 @@ return;
 
   useEffect(() => {
     if (!isLoaded || !address) {
-return;
-}
+      return;
+    }
 
     setStreetViewStatus('LOADING');
     const initialAddressDetails = normalizeAddress(address, countryCode);
@@ -156,8 +156,8 @@ return;
 
         if (!geocodeResultRaw) {
           setStreetViewStatus('GEOCODE_FAILED');
-          
-return;
+
+          return;
         }
 
         const geocodeResult = geocodeResultRaw.at(0);
@@ -165,8 +165,8 @@ return;
 
         if (!location) {
           setStreetViewStatus('ERROR');
-          
-return;
+
+          return;
         }
 
         const initialPosition = { lat: location.lat(), lng: location.lng() };
@@ -187,8 +187,8 @@ return;
 
     geocodeAddress();
   }, [isLoaded, address, countryCode, findNearestStreetViewPanorama]);
-  
-return (
+
+  return (
     <Card>
       <CardContent className="p-6">
         <div className="flex flex-row">

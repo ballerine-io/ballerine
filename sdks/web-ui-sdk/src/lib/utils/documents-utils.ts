@@ -7,6 +7,10 @@ export const getDocumentType = (step: IStepConfiguration, selectedDocumentInfo?:
   return (step.type as TDocumentType) || selectedDocumentInfo?.type;
 };
 
+export const getDocumentKind = (step: IStepConfiguration, selectedDocumentInfo?: IDocumentInfo) => {
+  return step.documentInfo?.kind || selectedDocumentInfo?.kind;
+};
+
 export const isDocumentSelectionStepExists = (configuration: IAppConfiguration) => {
   const flowName: string = getFlowName();
 

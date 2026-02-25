@@ -16,14 +16,14 @@ export const handleNestedValue = ({
   }
 
   if (value === undefined && showUndefined) {
-return 'undefined';
-}
+    return 'undefined';
+  }
 
   if (value === null && showNull) {
-return 'null';
-}
+    return 'null';
+  }
 
   if (!isNullish(value)) {
-return value?.toString();
-}
+    return value?.toString();
+  }
 };

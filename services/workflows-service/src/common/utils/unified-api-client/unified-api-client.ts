@@ -131,7 +131,9 @@ export class UnifiedApiClient {
         (err.response?.status !== undefined && err.response.status >= 500),
       onRetry: (retryCount, error) => {
         this.logger.warn(
-          `[UnifiedApiClient] Retry #${retryCount}: ${error.config?.method?.toUpperCase()} ${error.config?.url} — ${error.message}`,
+          `[UnifiedApiClient] Retry #${retryCount}: ${error.config?.method?.toUpperCase()} ${
+            error.config?.url
+          } — ${error.message}`,
         );
       },
     });
@@ -187,7 +189,9 @@ export class UnifiedApiClient {
   private buildIdempotencyKey(input: Record<string, unknown>): string {
     const payload = stableStringify(input);
     if (!payload) {
-      this.logger.warn('[UnifiedApiClient] Failed to serialize input for idempotency key — skipping idempotency');
+      this.logger.warn(
+        '[UnifiedApiClient] Failed to serialize input for idempotency key — skipping idempotency',
+      );
       return `kyc-noidempotency-${randomUUID()}`;
     }
     const digest = createHash('sha256').update(payload).digest('hex');

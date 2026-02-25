@@ -57,8 +57,8 @@ export const Filters = withFilters<FiltersProps<FiltersPageFilterValues>, Filter
 
     const handleSubmit = () => {
       if (!filterName || !selectedWorkflow) {
-return;
-}
+        return;
+      }
 
       createFilterMutation.mutate({
         name: filterName,

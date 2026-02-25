@@ -31,8 +31,8 @@ export const XstateVisualizer = memo(
 
       useLayoutEffect(() => {
         if (!iframeRef.current) {
-return;
-}
+          return;
+        }
 
         inspect({ iframe: iframeRef.current });
       }, [iframeRef, state, stateMachine.value]);

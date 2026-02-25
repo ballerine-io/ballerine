@@ -173,21 +173,23 @@ export const BaseWorkflowByIdSchema = z.object({
             apiUrl: z.string().url(),
           })
           .optional(),
-        state: z.object({
-          currentStep: z.string(),
-          status: z.enum(Object.values(CollectionFlowStatusesEnum) as [string, ...string[]]),
-          steps: z.array(
-            z.object({
-              stepName: z.string(),
-              // TODO: Deprecate `isCompleted` and use `state` instead.
-              isCompleted: z.boolean().optional(),
-              state: z
-                .enum(Object.values(CollectionFlowStepStatesEnum) as [string, ...string[]])
-                .optional(),
-              reason: z.string().optional(),
-            }),
-          ),
-        }).optional(),
+        state: z
+          .object({
+            currentStep: z.string(),
+            status: z.enum(Object.values(CollectionFlowStatusesEnum) as [string, ...string[]]),
+            steps: z.array(
+              z.object({
+                stepName: z.string(),
+                // TODO: Deprecate `isCompleted` and use `state` instead.
+                isCompleted: z.boolean().optional(),
+                state: z
+                  .enum(Object.values(CollectionFlowStepStatesEnum) as [string, ...string[]])
+                  .optional(),
+                reason: z.string().optional(),
+              }),
+            ),
+          })
+          .optional(),
         additionalInformation: z.record(z.string(), z.unknown()).optional(),
       })
       .optional(),

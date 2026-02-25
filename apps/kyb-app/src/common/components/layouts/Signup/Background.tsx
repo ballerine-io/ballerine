@@ -11,8 +11,8 @@ export const Background: FunctionComponent<IBackgroundProps> = props => {
   const { imageSrc, styles } = { ...props, ...themeParams?.background };
 
   if (!imageSrc) {
-return null;
-}
+    return null;
+  }
 
   return (
     <div

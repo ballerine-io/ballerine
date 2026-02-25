@@ -75,8 +75,8 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   // Custom labels from context.metadata
   const customLabels = useMemo(() => {
     const labels = (workflow?.context?.metadata as Record<string, unknown>)?.customLabels;
-    
-return Array.isArray(labels) ? (labels as string[]) : [];
+
+    return Array.isArray(labels) ? (labels as string[]) : [];
   }, [workflow?.context?.metadata]);
 
   const { mutate: mutateCustomLabels } = useMutation({

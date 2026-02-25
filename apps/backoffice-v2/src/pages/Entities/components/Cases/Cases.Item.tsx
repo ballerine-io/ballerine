@@ -122,14 +122,23 @@ export const Item: FunctionComponent<IItemProps> = ({
           </div>
           <div className={`text-xs opacity-60`}>
             {dayjs(new Date(createdAt)).format('D MMM YYYY')}
-            <span className="ml-1 opacity-75">({getTimePastFromNow(new Date(createdAt)).trim()})</span>
+            <span className="ml-1 opacity-75">
+              ({getTimePastFromNow(new Date(createdAt)).trim()})
+            </span>
           </div>
         </div>
         <div className={`ml-auto flex shrink-0 items-center gap-2`}>
           {activeTag && !isTerminal && tagToBadgeData[activeTag] && (
             <Badge
-              variant={tagToBadgeData[activeTag].variant as 'info' | 'success' | 'warning' | 'destructive' | 'violet'}
-              className="text-[10px] px-1.5 py-0.5 font-medium"
+              variant={
+                tagToBadgeData[activeTag].variant as
+                  | 'info'
+                  | 'success'
+                  | 'warning'
+                  | 'destructive'
+                  | 'violet'
+              }
+              className="px-1.5 py-0.5 text-[10px] font-medium"
             >
               {tagToBadgeData[activeTag].text}
             </Badge>

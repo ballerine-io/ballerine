@@ -13,8 +13,8 @@ const PRESET_LABELS = [
 
 function getLabelColor(label: string): string {
   const preset = PRESET_LABELS.find(p => p.value === label);
-  
-return preset?.color ?? 'bg-gray-100 text-gray-600';
+
+  return preset?.color ?? 'bg-gray-100 text-gray-600';
 }
 
 interface CustomLabelsProps {
@@ -42,8 +42,8 @@ export const CustomLabels: FunctionComponent<CustomLabelsProps> = ({
     };
 
     document.addEventListener('mousedown', handler);
-    
-return () => document.removeEventListener('mousedown', handler);
+
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   const availablePresets = PRESET_LABELS.filter(p => !labels.includes(p.value));

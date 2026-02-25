@@ -62,8 +62,8 @@ const findTriggeringEvent = (
   const eventLogs = logs.filter(log => log.type === 'EVENT_RECEIVED' && log.id < stateTransitionId);
 
   if (eventLogs.length === 0) {
-return null;
-}
+    return null;
+  }
 
   // Return the most recent event (highest ID lower than stateTransitionId)
   return eventLogs.reduce((latest, current) => (current.id > latest.id ? current : latest));
@@ -76,8 +76,8 @@ export const WorkflowLogGraph = ({ logs }: WorkflowLogGraphProps) => {
   // Process logs to create nodes and edges for visualization
   useEffect(() => {
     if (!logs.length) {
-return;
-}
+      return;
+    }
 
     // Sort logs by ID (which should be sequential)
     const sortedLogs = [...logs].sort((a, b) => a.id - b.id);

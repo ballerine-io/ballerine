@@ -185,7 +185,10 @@ describe('AlertService', () => {
               .count(2)
               .create();
 
-            await castedTransactionFactory.transactionDate(faker.date.recent({ days: 30 })).count(1).create();
+            await castedTransactionFactory
+              .transactionDate(faker.date.recent({ days: 30 }))
+              .count(1)
+              .create();
           },
         );
 
@@ -209,8 +212,14 @@ describe('AlertService', () => {
           newProject,
           prismaService,
           async transactionFactory => {
-            await transactionFactory.transactionDate(faker.date.past({ years: 10 })).count(9).create();
-            await transactionFactory.transactionDate(faker.date.recent({ days: 30 })).count(1).create();
+            await transactionFactory
+              .transactionDate(faker.date.past({ years: 10 }))
+              .count(9)
+              .create();
+            await transactionFactory
+              .transactionDate(faker.date.recent({ days: 30 }))
+              .count(1)
+              .create();
           },
         );
 
@@ -1011,9 +1020,17 @@ describe('AlertService', () => {
           .create();
 
         // Arrange
-        await txFactory.amount(400).transactionDate(faker.date.past({ years: 3 })).count(1).create();
+        await txFactory
+          .amount(400)
+          .transactionDate(faker.date.past({ years: 3 }))
+          .count(1)
+          .create();
 
-        await txFactory.amount(300).transactionDate(faker.date.recent({ days: 30 })).count(1).create();
+        await txFactory
+          .amount(300)
+          .transactionDate(faker.date.recent({ days: 30 }))
+          .count(1)
+          .create();
 
         await baseTransactionFactory
           .paymentMethod(PaymentMethod.credit_card)
@@ -2565,7 +2582,12 @@ describe('AlertService', () => {
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.apm)
           .count(ALERT_DEFINITIONS.DMT_APM.inlineRule.options.amountThreshold + 1)
-          .transactionDate(faker.date.recent({ days: 10, refDate: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000) }))
+          .transactionDate(
+            faker.date.recent({
+              days: 10,
+              refDate: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000),
+            }),
+          )
           .create();
 
         // Act

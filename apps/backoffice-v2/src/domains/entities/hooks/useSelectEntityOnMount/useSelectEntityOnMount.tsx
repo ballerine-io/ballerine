@@ -4,6 +4,8 @@ import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useWorkflowsQuery } from '../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { HttpError } from '@/common/errors/http-error';
 
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.
@@ -16,6 +18,8 @@ export const useSelectEntityOnMount = () => {
   const onSelectEntity = useSelectEntity();
   const entity = useEntityType();
   const firstCaseId = workflows?.[0]?.id;
+  const workflowIds = useMemo(() => new Set(workflows?.map(workflow => workflow.id) ?? []), [workflows]);
+  const { error: workflowByIdError } = useWorkflowByIdQuery({ workflowId: caseId ?? '' });
   const { state } = useLocation();
   const prevCaseId = useMemo(() => {
     const match = matchPath(
@@ -27,10 +31,28 @@ export const useSelectEntityOnMount = () => {
   }, [state?.from?.pathname]);
 
   useEffect(() => {
-    if (caseId || (!firstCaseId && !prevCaseId)) {
+    if (caseId || !firstCaseId) {
       return;
     }
 
-    onSelectEntity(prevCaseId || firstCaseId)();
-  }, [entity, firstCaseId, caseId, onSelectEntity, prevCaseId]);
+    const nextEntityId =
+      prevCaseId && workflowIds.has(prevCaseId) ? prevCaseId : firstCaseId;
+
+    if (!nextEntityId) {
+      return;
+    }
+
+    onSelectEntity(nextEntityId)();
+  }, [entity, firstCaseId, caseId, onSelectEntity, prevCaseId, workflowIds]);
+
+  useEffect(() => {
+    const isWorkflowNotFound =
+      workflowByIdError instanceof HttpError && workflowByIdError.code === 404;
+
+    if (!caseId || !isWorkflowNotFound || !firstCaseId || caseId === firstCaseId) {
+      return;
+    }
+
+    onSelectEntity(firstCaseId)();
+  }, [entity, caseId, firstCaseId, onSelectEntity, workflowByIdError]);
 };

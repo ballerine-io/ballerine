@@ -238,20 +238,20 @@ export const useWebsiteMonitoringBlock = ({
                       const isSuccess = ['cleared'].includes(value);
 
                       if (isDestructive) {
-return 'destructive';
-}
+                        return 'destructive';
+                      }
 
                       if (isWarning) {
-return 'warning';
-}
+                        return 'warning';
+                      }
 
                       if (isSlate) {
-return 'secondary';
-}
+                        return 'secondary';
+                      }
 
                       if (isSuccess) {
-return 'success';
-}
+                        return 'success';
+                      }
 
                       return 'secondary';
                     };

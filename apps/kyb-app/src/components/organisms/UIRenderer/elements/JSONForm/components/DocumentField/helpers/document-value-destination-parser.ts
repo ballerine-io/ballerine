@@ -6,8 +6,8 @@ export class DocumentValueDestinationParser {
     const match = rootPathRegexp.exec(this.valueDestination);
 
     if (!match) {
-return null;
-}
+      return null;
+    }
 
     return match[1] || null;
   }
@@ -17,8 +17,8 @@ return null;
     const match = pagePathRegexp.exec(this.valueDestination);
 
     if (!match) {
-return null;
-}
+      return null;
+    }
 
     return match[1] || null;
   }
@@ -28,8 +28,8 @@ return null;
     const match = fileIdRegex.exec(this.valueDestination);
 
     if (!match || !match[1]) {
-return null;
-}
+      return null;
+    }
 
     return match[1];
   }

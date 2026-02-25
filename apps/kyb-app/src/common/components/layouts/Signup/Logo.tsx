@@ -11,8 +11,8 @@ export const Logo: FunctionComponent<ILogoProps> = props => {
   const { imageSrc, styles } = { ...props, ...themeParams?.companyLogo };
 
   if (!imageSrc) {
-return null;
-}
+    return null;
+  }
 
   return <img src={imageSrc} style={styles} />;
 };
