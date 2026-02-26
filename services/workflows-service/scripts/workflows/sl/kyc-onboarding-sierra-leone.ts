@@ -358,8 +358,10 @@ export const kycOnboardingSierraLeoneDefinition = {
       'selfie-start',
       'selfie',
       'check-selfie',
+      // Address proof — captured as proof_of_address / utility_bill category
+      'address-proof-start',
       'address-proof-photo',
-      'address-proof-check',
+      'check-address-proof',
       'loading',
       'resubmission',
       'decline',
@@ -367,6 +369,16 @@ export const kycOnboardingSierraLeoneDefinition = {
       'error',
       'final',
     ],
+    // Optional mobile-web UX behavior toggles used by kyc-mobile pages.
+    kycSdkUi: {
+      enableLargeTypography: true,
+      simplifyCopy: true,
+      hideWebHeaderInNative: true,
+      skipWelcomeWhenNativeIntro: true,
+      showCompatTriggerReason: true,
+      requireAddressProof: true,
+      forceLegacyWhenAddressProof: false, // SDK now handles address proof natively
+    },
   },
   contextSchema: {
     type: 'json-schema',

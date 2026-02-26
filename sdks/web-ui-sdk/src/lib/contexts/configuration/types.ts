@@ -34,6 +34,9 @@ export const Steps = {
   Decline: 'decline',
   ManualReview: 'manual-review',
   Error: 'error',
+  AddressProofStart: 'address-proof-start',
+  AddressProofPhoto: 'address-proof-photo',
+  CheckAddressProof: 'check-address-proof',
 } as const;
 
 export type TSteps = ObjectValues<typeof Steps>;
@@ -144,6 +147,11 @@ export interface IConfigurationComponents {
   loader?: ICSSProperties;
   errorText?: ICSSProperties;
   overlay?: ICSSProperties;
+  list?: {
+    listProps?: IElementProps;
+    titleProps?: IElementProps;
+    listElementProps?: IElementProps;
+  };
 }
 
 export interface IAppConfigurationUI {

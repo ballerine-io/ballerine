@@ -1,1285 +1,1445 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
-    />
-    <meta name="theme-color" content="#1a1a2e" />
-    <meta name="referrer" content="no-referrer" />
-    <title>MiKashBoks – Identity Verification</title>
-    <!-- Runtime config injected by entrypoint.sh (VITE_API_URL, etc.) -->
-    <script type="text/javascript" src="/kyc-mobile/config.js"></script>
-    <!-- MiKashBoks Web UI SDK runtime -->
-    <script crossorigin src="/kyc-mobile/ballerine-sdk.umd.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Lottie animation library (lightweight ~50KB) — falls back to CSS spinner if CDN fails -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"
-      crossorigin="anonymous"
-      defer
-    ></script>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="referrer" content="no-referrer" />
+  <title>MiKashBoks – Identity Verification</title>
+  <!-- Runtime config injected by entrypoint.sh (VITE_API_URL, etc.) -->
+  <script type="text/javascript" src="/kyc-mobile/config.js"></script>
+  <!-- MiKashBoks Web UI SDK runtime -->
+  <script crossorigin src="/kyc-mobile/ballerine-sdk.umd.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Lottie animation library (lightweight ~50KB) — falls back to CSS spinner if CDN fails -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" crossorigin="anonymous"
+    defer></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      max-width: 100%;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #kyc-host {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .init-message {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .init-message.error {
+      color: #ef4444;
+    }
+
+    .init-message.muted {
+      color: #64748b;
+    }
+
+    .init-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+    }
+
+    .init-loading .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #cbd5e1;
+      border-top-color: #0071d3;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .offline-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ef4444;
+      color: white;
+      padding: 12px;
+      text-align: center;
+      z-index: 9999;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .offline-banner.visible {
+      display: block;
+    }
+
+    body.native-header .offline-banner {
+      top: env(safe-area-inset-top);
+    }
+
+    .status-wrap {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .status-card {
+      width: min(92vw, 520px);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .status-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+
+    .status-body {
+      font-size: 18px;
+      line-height: 1.65;
+      color: #475569;
+      margin-bottom: 16px;
+    }
+
+    .status-meta {
+      font-size: 15px;
+      color: #64748b;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .status-next-steps {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-top: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #334155;
+    }
+
+    .status-next-steps strong {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #0f172a;
+    }
+
+    .status-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .status-btn {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .status-btn.primary {
+      background: #0071d3;
+      color: #ffffff;
+    }
+
+    .status-btn.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    body.native-header {
+      padding-top: env(safe-area-inset-top);
+    }
+
+    body.native-header #kyc-host {
+      border-radius: 0;
+    }
+
+    body.hide-sdk-header #kyc-host #blrn-app [class*='flow-header'],
+    body.hide-sdk-header #kyc-host #blrn-app [class*='FlowHeader'],
+    body.hide-sdk-header #kyc-host #blrn-app [class*='navigation-header'],
+    body.hide-sdk-header #kyc-host #blrn-app [class*='NavigationHeader'] {
+      display: none !important;
+    }
+
+    body.large-type #kyc-host #blrn-app {
+      font-size: 18px !important;
+      line-height: 1.65 !important;
+    }
+
+    body.large-type #kyc-host #blrn-app [class*='title'],
+    body.large-type #kyc-host #blrn-app .title,
+    body.large-type #kyc-host #blrn-app [class*='Title'] {
+      font-size: 28px !important;
+    }
+
+    body.large-type #kyc-host #blrn-app [class*='description'],
+    body.large-type #kyc-host #blrn-app .description,
+    body.large-type #kyc-host #blrn-app [class*='body'],
+    body.large-type #kyc-host #blrn-app .body,
+    body.large-type #kyc-host #blrn-app [class*='text'] {
+      font-size: 20px !important;
+    }
+
+    .status-spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid #cbd5e1;
+      border-top-color: #0071d3;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: -5px;
+      margin-right: 10px;
+    }
+
+    /* Use more of the viewport on preview/check steps while keeping proportions. */
+    body.large-type #kyc-host #blrn-app img[alt='result'] {
+      width: min(98vw, 600px) !important;
+      max-height: 80vh !important;
+      object-fit: contain !important;
+    }
+
+    body.large-type #kyc-host #blrn-app .overlay.card {
+      width: min(96vw, 560px) !important;
+      max-height: 92vh !important;
+    }
+
+    body.large-type #kyc-host #blrn-app .overlay.passport {
+      width: min(90vw, 460px) !important;
+      max-height: 92vh !important;
+    }
+
+    body.large-type #kyc-host #blrn-app .overlay.selfie {
+      width: min(92vw, 460px) !important;
+      max-height: 94vh !important;
+    }
+
+    /* ── Landscape orientation hint ── */
+    .orientation-hint {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.92);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .orientation-hint.visible {
+      display: flex;
+    }
+
+    .orientation-hint .rotate-icon {
+      width: 64px;
+      height: 64px;
+      animation: rotateHint 2s ease-in-out infinite;
+    }
+
+    @keyframes rotateHint {
+
+      0%,
+      100% {
+        transform: rotate(0deg);
       }
 
-      html,
-      body {
-        height: 100%;
-        font-family: 'Inter', -apple-system, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
+      50% {
+        transform: rotate(90deg);
+      }
+    }
+
+    .orientation-hint .dismiss-btn {
+      margin-top: 12px;
+      padding: 10px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ── Enhanced touch targets for SL mobile users ── */
+    body.large-type #kyc-host #blrn-app button,
+    body.large-type #kyc-host #blrn-app [role='button'] {
+      min-height: 48px !important;
+      min-width: 48px !important;
+    }
+
+    body.large-type #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']) {
+      padding: 16px 24px !important;
+      font-size: 18px !important;
+    }
+
+    /* ── Progress bar enhancement ── */
+    #kyc-host #blrn-app [class*='progress-bar'],
+    #kyc-host #blrn-app [class*='ProgressBar'] {
+      height: 6px !important;
+      border-radius: 3px !important;
+      background: #e2e8f0 !important;
+      overflow: hidden !important;
+      transition: all 0.4s ease !important;
+    }
+
+    #kyc-host #blrn-app [class*='progress-bar']>div,
+    #kyc-host #blrn-app [class*='ProgressBar']>div {
+      background: linear-gradient(90deg, #094275, #0071d3) !important;
+      border-radius: 3px !important;
+      transition: width 0.4s ease !important;
+    }
+
+    /* ── Status card icon ── */
+    .status-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .status-icon svg {
+      width: 56px;
+      height: 56px;
+    }
+
+    /* ── Smooth step transitions ── */
+    #kyc-host #blrn-app>div {
+      animation: stepFadeIn 0.3s ease-out;
+    }
+
+    @keyframes stepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
       }
 
-      body {
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
+    }
 
-      #kyc-host {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
+    /* ── Lottie loading container ── */
+    .lottie-loading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
 
-      .init-message {
-        text-align: center;
-        padding: 40px 20px;
-        font-size: 16px;
-        line-height: 1.6;
-      }
+    .lottie-loading-wrap .lottie-player {
+      width: 120px;
+      height: 120px;
+    }
 
-      .init-message.error {
-        color: #ef4444;
-      }
+    /* Hide init spinner when Lottie takes over */
+    .init-loading.has-lottie .spinner {
+      display: none;
+    }
 
-      .init-message.muted {
-        color: #64748b;
-      }
-
-      .init-loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        gap: 16px;
-      }
-
-      .init-loading .spinner {
-        width: 36px;
-        height: 36px;
-        border: 3px solid #cbd5e1;
-        border-top-color: #0071D3;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .offline-banner {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: #ef4444;
-        color: white;
-        padding: 12px;
-        text-align: center;
-        z-index: 9999;
-        font-size: 14px;
-        font-weight: 500;
-        display: none;
-      }
-
-      .offline-banner.visible {
-        display: block;
-      }
-
-      body.native-header .offline-banner {
-        top: env(safe-area-inset-top);
-      }
-
-      .status-wrap {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-      }
-
-      .status-card {
-        width: min(92vw, 520px);
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 22px;
-        box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
-      }
-
-      .status-title {
-        font-size: 26px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 12px;
-      }
-
-      .status-body {
-        font-size: 18px;
-        line-height: 1.65;
-        color: #475569;
-        margin-bottom: 16px;
-      }
-
-      .status-meta {
-        font-size: 15px;
-        color: #64748b;
-        margin-top: 14px;
-        line-height: 1.5;
-      }
-
-      .status-next-steps {
-        background: #f1f5f9;
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-top: 14px;
-        font-size: 15px;
-        line-height: 1.5;
-        color: #334155;
-      }
-
-      .status-next-steps strong {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 4px;
-        color: #0f172a;
-      }
-
-      .status-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 16px;
-      }
-
-      .status-btn {
-        flex: 1;
-        border: none;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 17px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .status-btn.primary {
-        background: #0071D3;
-        color: #ffffff;
-      }
-
-      .status-btn.secondary {
-        background: #e2e8f0;
-        color: #0f172a;
-      }
-
-      body.native-header {
-        padding-top: env(safe-area-inset-top);
-      }
-
-      body.native-header #kyc-host {
-        border-radius: 0;
-      }
-
-      #kyc-host #blrn-app {
-        font-size: 18px !important;
-        line-height: 1.65 !important;
-      }
-
-      #kyc-host #blrn-app [class*='title'],
-      #kyc-host #blrn-app .title,
-      #kyc-host #blrn-app [class*='Title'] {
-        font-size: 28px !important;
-      }
-
-      #kyc-host #blrn-app [class*='description'],
-      #kyc-host #blrn-app .description,
-      #kyc-host #blrn-app [class*='body'],
-      #kyc-host #blrn-app .body,
-      #kyc-host #blrn-app [class*='text'] {
-        font-size: 20px !important;
-      }
-
-      .status-spinner {
-        width: 22px;
-        height: 22px;
-        border: 3px solid #cbd5e1;
-        border-top-color: #0071D3;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        display: inline-block;
-        vertical-align: -5px;
-        margin-right: 10px;
-      }
-
-      /* Use more of the viewport on preview/check steps while keeping proportions. */
-      #kyc-host #blrn-app img[alt='result'] {
-        width: min(98vw, 600px) !important;
-        max-height: 80vh !important;
-        object-fit: contain !important;
-      }
-
+    /* ── Landscape document overlay enhancement ── */
+    @media (orientation: landscape) {
       #kyc-host #blrn-app .overlay.card {
-        width: min(96vw, 560px) !important;
-        max-height: 92vh !important;
+        width: min(80vh, 520px) !important;
+        height: min(50vh, 340px) !important;
       }
+    }
+  </style>
+</head>
 
-      #kyc-host #blrn-app .overlay.passport {
-        width: min(90vw, 460px) !important;
-        max-height: 92vh !important;
-      }
-
-      #kyc-host #blrn-app .overlay.selfie {
-        width: min(92vw, 460px) !important;
-        max-height: 94vh !important;
-      }
-
-      /* ── Landscape orientation hint ── */
-      .orientation-hint {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(15, 23, 42, 0.92);
-        z-index: 9998;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 16px;
-        color: #fff;
-        font-size: 18px;
-        font-weight: 500;
-        text-align: center;
-        padding: 24px;
-      }
-
-      .orientation-hint.visible {
-        display: flex;
-      }
-
-      .orientation-hint .rotate-icon {
-        width: 64px;
-        height: 64px;
-        animation: rotateHint 2s ease-in-out infinite;
-      }
-
-      @keyframes rotateHint {
-        0%,
-        100% {
-          transform: rotate(0deg);
-        }
-        50% {
-          transform: rotate(90deg);
-        }
-      }
-
-      .orientation-hint .dismiss-btn {
-        margin-top: 12px;
-        padding: 10px 24px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 8px;
-        background: transparent;
-        color: #fff;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      /* ── Enhanced touch targets for SL mobile users ── */
-      #kyc-host #blrn-app button,
-      #kyc-host #blrn-app [role='button'] {
-        min-height: 48px !important;
-        min-width: 48px !important;
-      }
-
-      #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']) {
-        padding: 16px 24px !important;
-        font-size: 18px !important;
-      }
-
-      /* ── Progress bar enhancement ── */
-      #kyc-host #blrn-app [class*='progress-bar'],
-      #kyc-host #blrn-app [class*='ProgressBar'] {
-        height: 6px !important;
-        border-radius: 3px !important;
-        background: #e2e8f0 !important;
-        overflow: hidden !important;
-        transition: all 0.4s ease !important;
-      }
-
-      #kyc-host #blrn-app [class*='progress-bar'] > div,
-      #kyc-host #blrn-app [class*='ProgressBar'] > div {
-        background: linear-gradient(90deg, #094275, #0071D3) !important;
-        border-radius: 3px !important;
-        transition: width 0.4s ease !important;
-      }
-
-      /* ── Status card icon ── */
-      .status-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 16px;
-      }
-
-      .status-icon svg {
-        width: 56px;
-        height: 56px;
-      }
-
-      /* ── Smooth step transitions ── */
-      #kyc-host #blrn-app > div {
-        animation: stepFadeIn 0.3s ease-out;
-      }
-
-      @keyframes stepFadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* ── Lottie loading container ── */
-      .lottie-loading-wrap {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .lottie-loading-wrap .lottie-player {
-        width: 120px;
-        height: 120px;
-      }
-
-      /* Hide init spinner when Lottie takes over */
-      .init-loading.has-lottie .spinner {
-        display: none;
-      }
-
-      /* ── Landscape document overlay enhancement ── */
-      @media (orientation: landscape) {
-        #kyc-host #blrn-app .overlay.card {
-          width: min(80vh, 520px) !important;
-          height: min(50vh, 340px) !important;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="offline-banner" class="offline-banner" role="alert" aria-live="assertive">
-      You are offline. Please check your internet connection.
+<body>
+  <div id="offline-banner" class="offline-banner" role="alert" aria-live="assertive">
+    You are offline. Please check your internet connection.
+  </div>
+  <div id="orientation-hint" class="orientation-hint" role="dialog" aria-label="Rotate your phone">
+    <svg class="rotate-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor"
+      stroke-width="2">
+      <rect x="16" y="8" width="32" height="48" rx="4" />
+      <line x1="28" y1="50" x2="36" y2="50" />
+      <path d="M52 20l8 8l-8 8" stroke-width="2.5" />
+      <path d="M48 28h12" stroke-width="2.5" />
+    </svg>
+    <div>Rotate your phone for<br />the best document photo</div>
+    <button class="dismiss-btn" type="button">Continue in portrait</button>
+  </div>
+  <div id="kyc-host">
+    <div class="init-loading">
+      <div class="spinner"></div>
+      <span style="color: #64748b; font-size: 14px">Starting verification...</span>
     </div>
-    <div
-      id="orientation-hint"
-      class="orientation-hint"
-      role="dialog"
-      aria-label="Rotate your phone"
-    >
-      <svg
-        class="rotate-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 64 64"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <rect x="16" y="8" width="32" height="48" rx="4" />
-        <line x1="28" y1="50" x2="36" y2="50" />
-        <path d="M52 20l8 8l-8 8" stroke-width="2.5" />
-        <path d="M48 28h12" stroke-width="2.5" />
-      </svg>
-      <div>Rotate your phone for<br />the best document photo</div>
-      <button class="dismiss-btn" type="button">Continue in portrait</button>
-    </div>
-    <div id="kyc-host">
-      <div class="init-loading">
-        <div class="spinner"></div>
-        <span style="color: #64748b; font-size: 14px">Starting verification...</span>
-      </div>
-    </div>
+  </div>
 
-    <script>
-      // ── Configuration ──
-      var params = new URLSearchParams(window.location.search);
-      var TOKEN = params.get('token') || '';
-      function normalizeDocType(docType) {
-        if (!docType) return null;
-        var normalized = String(docType).trim().toLowerCase().replace(/[\s-]+/g, '_');
-        if (
-          normalized === 'driver_license' ||
-          normalized === 'driver_licence' ||
-          normalized === 'drivers_licence'
-        ) {
-          return 'drivers_license';
-        }
-        return normalized;
+  <script>
+    // ── Configuration ──
+    var params = new URLSearchParams(window.location.search);
+    var TOKEN = params.get('token') || '';
+    function normalizeDocType(docType) {
+      if (!docType) return null;
+      var normalized = String(docType)
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_');
+      if (
+        normalized === 'driver_license' ||
+        normalized === 'driver_licence' ||
+        normalized === 'drivers_licence'
+      ) {
+        return 'drivers_license';
       }
+      return normalized;
+    }
 
-      function normalizeDocOptions(docOptions) {
-        if (!Array.isArray(docOptions)) return [];
-        var normalizedOptions = [];
-        for (var i = 0; i < docOptions.length; i++) {
-          var option = docOptions[i];
-          if (!option || typeof option !== 'object') continue;
-          var normalizedType = normalizeDocType(option.type);
-          if (!normalizedType) continue;
-          normalizedOptions.push(
-            Object.assign({}, option, {
-              type: normalizedType,
-            }),
-          );
-        }
-        return normalizedOptions;
+    function normalizeDocOptions(docOptions) {
+      if (!Array.isArray(docOptions)) return [];
+      var normalizedOptions = [];
+      for (var i = 0; i < docOptions.length; i++) {
+        var option = docOptions[i];
+        if (!option || typeof option !== 'object') continue;
+        var normalizedType = normalizeDocType(option.type);
+        if (!normalizedType) continue;
+        normalizedOptions.push(
+          Object.assign({}, option, {
+            type: normalizedType,
+          }),
+        );
       }
+      return normalizedOptions;
+    }
 
-      var preselectedDocType = normalizeDocType(params.get('docType'));
-      var initRetryAttempted = false;
-      var initFailed = false;
-      var legacyFallbackAttempted = params.get('legacy') === '1';
-      function parseBoolFlag(value) {
-        if (!value) return false;
-        var normalized = String(value).trim().toLowerCase();
-        return normalized === '1' || normalized === 'true';
-      }
-      var skipWelcome = parseBoolFlag(params.get('skipWelcome'));
-      var hasNativeHeader = parseBoolFlag(params.get('nativeHeader'));
-      if (hasNativeHeader && document.body) {
-        document.body.classList.add('native-header');
-      }
+    var preselectedDocType = normalizeDocType(params.get('docType'));
+    var initRetryAttempted = false;
+    var initFailed = false;
+    var legacyFallbackAttempted = params.get('legacy') === '1';
+    function parseBoolFlag(value) {
+      if (!value) return false;
+      var normalized = String(value).trim().toLowerCase();
+      return normalized === '1' || normalized === 'true';
+    }
+    var skipWelcomeFromQuery = parseBoolFlag(params.get('skipWelcome'));
+    var hasNativeHeader = parseBoolFlag(params.get('nativeHeader'));
+    var addressProofFromQuery = parseBoolFlag(params.get('addressProof'));
+    if (hasNativeHeader && document.body) {
+      document.body.classList.add('native-header');
+    }
 
-      function buildLegacyFallbackUrl(reason) {
-        var legacyParams = new URLSearchParams(window.location.search);
-        legacyParams.set('legacy', '1');
-        legacyParams.set('cb', String(Date.now()));
-        if (reason) legacyParams.set('legacyReason', reason);
-        return '/kyc-mobile-legacy/?' + legacyParams.toString();
-      }
+    var defaultUiFlags = {
+      enableLargeTypography: true,
+      simplifyCopy: true,
+      hideWebHeaderInNative: true,
+      skipWelcomeWhenNativeIntro: true,
+      showCompatTriggerReason: true,
+      requireAddressProof: false,
+      forceLegacyWhenAddressProof: false,
+    };
+    var runtimeUiFlags = Object.assign({}, defaultUiFlags);
 
-      function normalizeLegacyReason(err) {
-        return String((err && err.message) || err || 'init_error')
-          .replace(/[^a-zA-Z0-9_.:-]/g, '_')
-          .slice(0, 64);
+    function parseOptionalBool(value, fallbackValue) {
+      if (typeof value === 'boolean') return value;
+      if (typeof value === 'number') return value !== 0;
+      if (typeof value === 'string') {
+        if (parseBoolFlag(value)) return true;
+        if (value.trim().toLowerCase() === 'false' || value.trim() === '0') return false;
       }
+      return fallbackValue;
+    }
 
-      function tryLegacyFallback(err) {
-        // Disabled for production rollout: legacy uses outdated document category mapping.
-        return false;
+    function resolveUiFlags(rawUiFlags) {
+      var raw = rawUiFlags && typeof rawUiFlags === 'object' ? rawUiFlags : {};
+      return {
+        enableLargeTypography: parseOptionalBool(
+          raw.enableLargeTypography,
+          defaultUiFlags.enableLargeTypography,
+        ),
+        simplifyCopy: parseOptionalBool(raw.simplifyCopy, defaultUiFlags.simplifyCopy),
+        hideWebHeaderInNative: parseOptionalBool(
+          raw.hideWebHeaderInNative,
+          defaultUiFlags.hideWebHeaderInNative,
+        ),
+        skipWelcomeWhenNativeIntro: parseOptionalBool(
+          raw.skipWelcomeWhenNativeIntro,
+          defaultUiFlags.skipWelcomeWhenNativeIntro,
+        ),
+        showCompatTriggerReason: parseOptionalBool(
+          raw.showCompatTriggerReason,
+          defaultUiFlags.showCompatTriggerReason,
+        ),
+        requireAddressProof: parseOptionalBool(
+          raw.requireAddressProof,
+          addressProofFromQuery || defaultUiFlags.requireAddressProof,
+        ),
+        forceLegacyWhenAddressProof: parseOptionalBool(
+          raw.forceLegacyWhenAddressProof,
+          addressProofFromQuery || defaultUiFlags.forceLegacyWhenAddressProof,
+        ),
+      };
+    }
+
+    function applyUiFlagClasses(uiFlags) {
+      if (!document.body) return;
+      document.body.classList.toggle('large-type', Boolean(uiFlags.enableLargeTypography));
+      document.body.classList.toggle(
+        'hide-sdk-header',
+        Boolean(hasNativeHeader && uiFlags.hideWebHeaderInNative),
+      );
+    }
+
+    applyUiFlagClasses(runtimeUiFlags);
+
+    function buildLegacyFallbackUrl(reason, options) {
+      var opts = options || {};
+      var legacyParams = new URLSearchParams(window.location.search);
+      legacyParams.set('legacy', '1');
+      legacyParams.set('cb', String(Date.now()));
+      if (reason) legacyParams.set('legacyReason', reason);
+      if (opts.addressProof) legacyParams.set('addressProof', '1');
+      legacyParams.set('showCompatReason', runtimeUiFlags.showCompatTriggerReason ? '1' : '0');
+      return '/kyc-mobile-legacy/?' + legacyParams.toString();
+    }
+
+    function normalizeLegacyReason(err) {
+      return String((err && err.message) || err || 'init_error')
+        .replace(/[^a-zA-Z0-9_.:-]/g, '_')
+        .slice(0, 64);
+    }
+
+    function describeLegacyReason(reasonCode) {
+      var reason = String(reasonCode || '').toLowerCase();
+      if (reason.indexOf('timeout') !== -1 || reason.indexOf('network') !== -1) {
+        return 'Your connection was unstable while loading the verification interface.';
       }
-
-      // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
-      // Security: NEVER allow apiUrl override from query params (prevents credential theft)
-      var rawBase =
-        (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) || '';
-      var apiBase = rawBase.replace(/\/+$/, '');
-      // If config.js didn't provide an absolute API URL, derive it from the current host.
-      // The kyb-app runs on onboard.verify.X — the API runs on api.verify.X.
-      if (!apiBase.startsWith('http')) {
-        apiBase = window.location.origin.replace(/^(https?:\/\/)onboard\./, '$1api.') + '/api/v1';
-        console.warn('VITE_API_URL not configured; derived API base from origin:', apiBase);
+      if (
+        reason.indexOf('invalid_step') !== -1 ||
+        reason.indexOf('unknown_step') !== -1 ||
+        reason.indexOf('step') !== -1
+      ) {
+        return 'Your phone had trouble loading one verification screen in the standard flow.';
       }
+      if (reason.indexOf('address_proof_required') !== -1) {
+        return 'This verification requires one extra address document.';
+      }
+      if (reason.indexOf('sdk') !== -1 || reason.indexOf('init') !== -1) {
+        return 'Your phone could not start the full verification interface.';
+      }
+      return 'Your phone is switching to a simpler verification mode for better compatibility.';
+    }
 
-      // ── Default document options (SL fallback) ──
-      // When the workflow config provides kycSdkDocumentOptions, those take
-      // precedence.  Otherwise we use these hardcoded SL defaults.
-      var DEFAULT_DOC_OPTIONS = normalizeDocOptions([
-        { type: 'id_card', kind: 'proof_of_identity', variant: 'regular', backSide: true },
-        { type: 'passport', kind: 'proof_of_identity', variant: 'regular', backSide: false },
-        { type: 'voter_id', kind: 'proof_of_identity', variant: 'regular', backSide: true },
-        { type: 'drivers_license', kind: 'proof_of_identity', variant: 'regular', backSide: true },
-      ]);
-      var VALID_DOC_TYPES = DEFAULT_DOC_OPTIONS.map(function (d) {
-        return d.type;
+    function tryLegacyFallback(err, options) {
+      if (legacyFallbackAttempted) return false;
+      legacyFallbackAttempted = true;
+      var reason = normalizeLegacyReason(err);
+      var reasonDescription = describeLegacyReason(reason);
+      var opts = options || {};
+      console.warn(
+        '[KYC] ⚠ LEGACY FALLBACK TRIGGERED — reason:', reason,
+        '| addressProof:', !!opts.addressProof,
+        '| token:', TOKEN ? TOKEN.slice(0, 8) + '...' : 'none',
+        '| url:', window.location.href,
+      );
+      renderStatusCard({
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><path d="M28 16v24M16 28h24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        title: opts.addressProof ? 'Preparing Address Verification' : 'Retrying Verification',
+        body: runtimeUiFlags.showCompatTriggerReason
+          ? reasonDescription
+          : 'Opening a compatibility mode that works better on some phones.',
+        meta: 'Compatibility mode usually opens within 10 seconds.',
+        showSpinner: true,
+        primaryLabel: 'Please wait...',
       });
-      var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
+      setTimeout(function () {
+        window.location.replace(buildLegacyFallbackUrl(reason, opts));
+      }, 250);
+      return true;
+    }
 
-      // ── Document info for pre-selected type ──
-      // Resolved after workflow fetch so config.kycSdkDocumentOptions can drive it.
-      // Initialised here from defaults; overwritten in initFlow() if config provides data.
-      var preselectedDocInfo = null;
-      function resolvePreselectedDocInfo(docOptions) {
-        if (!hasPreselectedDoc) return null;
-        var match = null;
-        for (var i = 0; i < docOptions.length; i++) {
-          if (docOptions[i].type === preselectedDocType) {
-            match = docOptions[i];
+    // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
+    // Security: NEVER allow apiUrl override from query params (prevents credential theft)
+    var rawBase =
+      (typeof globalThis !== 'undefined' && globalThis.env && globalThis.env.VITE_API_URL) || '';
+    var apiBase = rawBase.replace(/\/+$/, '');
+    // If config.js didn't provide an absolute API URL, derive it from the current host.
+    // The kyb-app runs on onboard.verify.X — the API runs on api.verify.X.
+    if (!apiBase.startsWith('http')) {
+      apiBase = window.location.origin.replace(/^(https?:\/\/)onboard\./, '$1api.') + '/api/v1';
+      console.warn('VITE_API_URL not configured; derived API base from origin:', apiBase);
+    }
+
+    // ── Default document options (SL fallback) ──
+    // When the workflow config provides kycSdkDocumentOptions, those take
+    // precedence.  Otherwise we use these hardcoded SL defaults.
+    var DEFAULT_DOC_OPTIONS = normalizeDocOptions([
+      { type: 'id_card', kind: 'proof_of_identity', variant: 'regular', backSide: true },
+      { type: 'passport', kind: 'proof_of_identity', variant: 'regular', backSide: false },
+      { type: 'voter_id', kind: 'proof_of_identity', variant: 'regular', backSide: true },
+      { type: 'drivers_license', kind: 'proof_of_identity', variant: 'regular', backSide: true },
+    ]);
+    var VALID_DOC_TYPES = DEFAULT_DOC_OPTIONS.map(function (d) {
+      return d.type;
+    });
+    var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
+
+    // ── Document info for pre-selected type ──
+    // Resolved after workflow fetch so config.kycSdkDocumentOptions can drive it.
+    // Initialised here from defaults; overwritten in initFlow() if config provides data.
+    var preselectedDocInfo = null;
+    function resolvePreselectedDocInfo(docOptions) {
+      if (!hasPreselectedDoc) return null;
+      var match = null;
+      for (var i = 0; i < docOptions.length; i++) {
+        if (docOptions[i].type === preselectedDocType) {
+          match = docOptions[i];
+          break;
+        }
+      }
+      if (!match) return null;
+      return {
+        type: match.type,
+        kind: match.kind || 'proof_of_identity',
+        variant: match.variant || 'regular',
+        backSide: match.backSide !== false,
+        orderIndex: 0,
+      };
+    }
+    // Default until workflow fetch overrides
+    preselectedDocInfo = resolvePreselectedDocInfo(DEFAULT_DOC_OPTIONS);
+
+    function shouldSkipWelcomeStep() {
+      return skipWelcomeFromQuery && runtimeUiFlags.skipWelcomeWhenNativeIntro;
+    }
+
+    function shouldHideSdkStepHeader() {
+      return hasNativeHeader && runtimeUiFlags.hideWebHeaderInNative;
+    }
+
+    function applyStepUiOverrides(step) {
+      if (!step || !shouldHideSdkStepHeader()) return step;
+      if (['document-photo', 'document-photo-back', 'selfie'].includes(step.name)) {
+        step.elements = [
+          { id: 'title', disabled: true },
+          { id: 'description', disabled: true },
+        ];
+      }
+      return step;
+    }
+
+    // ── Build flow steps ──
+    // Skip welcome + document-selection when doc type is pre-selected from Android
+    function buildSteps(usePreselectedDoc) {
+      var builtSteps = [];
+      if (!usePreselectedDoc) {
+        if (!shouldSkipWelcomeStep()) {
+          builtSteps.push({
+            name: 'welcome',
+            id: 'welcome',
+            elements: [{ id: 'list', type: 'list', orderIndex: 45, props: {} }],
+          });
+        }
+        builtSteps.push({
+          name: 'document-selection',
+          id: 'document-selection',
+          documentOptions: [
+            { type: 'id_card', kind: 'proof_of_identity' },
+            { type: 'passport', kind: 'proof_of_identity' },
+            { type: 'voter_id', kind: 'proof_of_identity' },
+            { type: 'drivers_license', kind: 'proof_of_identity' },
+          ],
+        });
+      }
+
+      // Pass `type` and `documentInfo` on steps that need them when pre-selected.
+      // `type` → used by getDocumentType() to resolve the document overlay.
+      // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
+      //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
+      // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
+      builtSteps.push(
+        {
+          name: 'document-photo',
+          id: 'document-photo',
+          type: usePreselectedDoc ? preselectedDocType : undefined,
+        },
+        {
+          name: 'check-document',
+          id: 'check-document',
+          type: usePreselectedDoc ? preselectedDocType : undefined,
+          documentInfo: preselectedDocInfo,
+        },
+        {
+          name: 'document-photo-back-start',
+          id: 'document-photo-back-start',
+          documentInfo: preselectedDocInfo,
+        },
+        {
+          name: 'document-photo-back',
+          id: 'document-photo-back',
+          type: usePreselectedDoc ? preselectedDocType : undefined,
+        },
+        {
+          name: 'check-document-photo-back',
+          id: 'check-document-photo-back',
+          documentInfo: preselectedDocInfo,
+        },
+        { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
+        { name: 'selfie', id: 'selfie' },
+        { name: 'check-selfie', id: 'check-selfie' },
+      );
+
+      // Address proof steps — added conditionally when the workflow requires it.
+      // These reuse the SDK's DocumentPhotoBackStart, DocumentPhoto, and CheckDocument
+      // components with a 'proof_of_address' document kind.
+      if (runtimeUiFlags.requireAddressProof) {
+        builtSteps.push(
+          {
+            name: 'address-proof-start',
+            id: 'address-proof-start',
+          },
+          {
+            name: 'address-proof-photo',
+            id: 'address-proof-photo',
+            type: 'utility_bill',
+            documentInfo: {
+              type: 'utility_bill',
+              kind: 'proof_of_address',
+              variant: 'regular',
+              backSide: false,
+              orderIndex: 10,
+            },
+          },
+          {
+            name: 'check-address-proof',
+            id: 'check-address-proof',
+            type: 'utility_bill',
+            documentInfo: {
+              type: 'utility_bill',
+              kind: 'proof_of_address',
+              variant: 'regular',
+              backSide: false,
+              orderIndex: 10,
+            },
+          },
+        );
+      }
+
+      builtSteps.push(
+        { name: 'loading', id: 'loading' },
+        { name: 'resubmission', id: 'resubmission' },
+        { name: 'decline', id: 'decline' },
+        { name: 'manual-review', id: 'manual-review' },
+        { name: 'error', id: 'error' },
+        { name: 'final', id: 'final' },
+      );
+      return builtSteps.map(applyStepUiOverrides);
+    }
+
+    // ── Server-driven step builder ──
+    // Maps config.kycSdkSteps (an array of SDK step name strings) from the
+    // workflow config to SDK step objects.  This is distinct from
+    // collectionFlow.state.steps which contains form-page names
+    // (personal_information, kyc_documents, etc.) — a different namespace.
+    // Falls back to buildSteps() when the config provides no step data.
+    // docOptions: config.kycSdkDocumentOptions (or DEFAULT_DOC_OPTIONS fallback).
+    //   Drives the document-selection step's selectable types.
+    function buildStepsFromConfig(stepNames, usePreselectedDoc, docOptions) {
+      var selectionOptions = (docOptions || DEFAULT_DOC_OPTIONS).map(function (d) {
+        return { type: d.type, kind: d.kind || 'proof_of_identity' };
+      });
+
+      return stepNames.map(function (name) {
+        var step = { name: name, id: name };
+
+        // Enrich steps that need extra SDK props — mirrors buildSteps() enrichment
+        if (name === 'welcome') {
+          step.elements = [{ id: 'list', type: 'list', orderIndex: 45, props: {} }];
+        }
+        if (name === 'document-selection') {
+          step.documentOptions = selectionOptions;
+        }
+        if (['document-photo', 'check-document', 'document-photo-back'].includes(name)) {
+          if (usePreselectedDoc) step.type = preselectedDocType;
+        }
+        if (
+          [
+            'check-document',
+            'document-photo-back-start',
+            'check-document-photo-back',
+            'selfie-start',
+          ].includes(name)
+        ) {
+          step.documentInfo = preselectedDocInfo;
+        }
+        // Address proof steps — set type and documentInfo for proof_of_address category
+        if (['address-proof-photo', 'check-address-proof'].includes(name)) {
+          step.type = 'utility_bill';
+          step.documentInfo = {
+            type: 'utility_bill',
+            kind: 'proof_of_address',
+            variant: 'regular',
+            backSide: false,
+            orderIndex: 10,
+          };
+        }
+        return applyStepUiOverrides(step);
+      });
+    }
+
+    // NOTE: `steps` is resolved after the workflow fetch (see below) so we can
+    // prefer config-driven steps from workflowData.config.kycSdkSteps.
+
+    // ── Signal completion to Android WebView ──
+    // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
+    var signalSent = false;
+    function signalCompletion(status, idvResult, reasonCode) {
+      if (signalSent) return;
+      signalSent = true;
+      // Clean up observers and animations before navigating away
+      if (typeof cleanupObserversAndAnimations === 'function') {
+        cleanupObserversAndAnimations();
+      }
+      var url = new URL('/kyc-mobile/done', window.location.origin);
+      url.searchParams.set('close', 'true');
+      url.searchParams.set('status', status);
+      if (idvResult) url.searchParams.set('idvResult', idvResult);
+      if (reasonCode) url.searchParams.set('reasonCode', reasonCode);
+      url.searchParams.set('sync', 'true');
+      window.location.href = url.toString();
+    }
+
+    function escapeHtml(input) {
+      return String(input || '').replace(/[&<>"']/g, function (ch) {
+        return (
+          {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+          }[ch] || ch
+        );
+      });
+    }
+
+    function setHostHtml(html) {
+      var host = document.getElementById('kyc-host');
+      if (host) host.innerHTML = html;
+    }
+
+    function renderStatusCard(options) {
+      var title = options && options.title ? String(options.title) : '';
+      var body = options && options.body ? String(options.body) : '';
+      var meta = options && options.meta ? String(options.meta) : '';
+      var nextSteps = options && options.nextSteps ? String(options.nextSteps) : '';
+      var showSpinner = Boolean(options && options.showSpinner);
+      var icon = options && options.icon ? String(options.icon) : '';
+
+      var primaryLabel = options && options.primaryLabel ? String(options.primaryLabel) : 'Close';
+      var secondaryLabel =
+        options && options.secondaryLabel ? String(options.secondaryLabel) : '';
+
+      setHostHtml(
+        '<div class="status-wrap">' +
+        '<div class="status-card">' +
+        (icon ? '<div class="status-icon">' + icon + '</div>' : '') +
+        '<div class="status-title">' +
+        escapeHtml(title) +
+        '</div>' +
+        '<div class="status-body">' +
+        (showSpinner ? '<span class="status-spinner"></span>' : '') +
+        escapeHtml(body) +
+        '</div>' +
+        (meta ? '<div class="status-meta">' + escapeHtml(meta) + '</div>' : '') +
+        (nextSteps
+          ? '<div class="status-next-steps"><strong>What happens next?</strong>' +
+          escapeHtml(nextSteps) +
+          '</div>'
+          : '') +
+        '<div class="status-actions">' +
+        (secondaryLabel
+          ? '<button id="status-secondary" class="status-btn secondary" type="button">' +
+          escapeHtml(secondaryLabel) +
+          '</button>'
+          : '') +
+        '<button id="status-primary" class="status-btn primary" type="button">' +
+        escapeHtml(primaryLabel) +
+        '</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>',
+      );
+
+      var primaryBtn = document.getElementById('status-primary');
+      if (primaryBtn && options && typeof options.onPrimary === 'function') {
+        primaryBtn.addEventListener('click', options.onPrimary);
+      }
+
+      var secondaryBtn = document.getElementById('status-secondary');
+      if (secondaryBtn && options && typeof options.onSecondary === 'function') {
+        secondaryBtn.addEventListener('click', options.onSecondary);
+      }
+    }
+
+    // ── Resubmission reason taxonomy ──
+    // Maps server reason codes to user-facing messages (preserved from legacy implementation)
+    var RESUBMISSION_REASONS = {
+      DOCUMENT_BLURRY:
+        'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
+      DOCUMENT_OBSCURED:
+        'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
+      DOCUMENT_EXPIRED:
+        'The document you submitted has expired. Please use a valid, unexpired document.',
+      FACE_NOT_VISIBLE:
+        'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+      FACE_MISMATCH:
+        'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+      DOCUMENT_BACK_MISSING: 'We need a photo of the back of your document. Please capture it.',
+      DOCUMENT_TYPE_UNSUPPORTED:
+        'The document type you submitted is not accepted. Please choose a different document.',
+      GENERIC: 'There was an issue with your submission. Please try again.',
+    };
+
+    // Map free-text revision reasons from MiKashBoks backoffice to structured codes
+    function mapRevisionReasonToCode(revisionReason) {
+      if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
+      var lower = revisionReason.toLowerCase();
+      if (/blur|unclear|quality|unreadable|sharp|focus/.test(lower)) return 'DOCUMENT_BLURRY';
+      if (/obscur|cut off|partial|crop/.test(lower)) return 'DOCUMENT_OBSCURED';
+      if (/expir/.test(lower)) return 'DOCUMENT_EXPIRED';
+      if (/face not|selfie|face visible/.test(lower)) return 'FACE_NOT_VISIBLE';
+      if (/face mismatch|does not match|face match/.test(lower)) return 'FACE_MISMATCH';
+      if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
+      if (/unsupported|not accepted|wrong document/.test(lower))
+        return 'DOCUMENT_TYPE_UNSUPPORTED';
+      return 'GENERIC';
+    }
+
+    function safeJsonClone(value, fallback) {
+      try {
+        if (value == null) return fallback;
+        return JSON.parse(JSON.stringify(value));
+      } catch (e) {
+        console.warn('Failed to clone JSON payload:', e);
+        return fallback;
+      }
+    }
+
+    function buildWorkflowContextForSubmission(activeFlow) {
+      var context = safeJsonClone(activeFlow && activeFlow.context, {}) || {};
+      var activeState = safeJsonClone(activeFlow && activeFlow.state, null);
+
+      if (!context.collectionFlow || typeof context.collectionFlow !== 'object') {
+        context.collectionFlow = {};
+      }
+
+      // Prefer the computed state from /active-flow (contains canonical step tuple).
+      if (activeState && Array.isArray(activeState.steps) && activeState.steps.length > 0) {
+        context.collectionFlow.state = activeState;
+      }
+
+      return context;
+    }
+
+    // ── Init status helper ──
+    function setInitStatus(msg) {
+      var span = document.querySelector('.init-loading span');
+      if (span) span.textContent = msg;
+    }
+
+    // ── Camera permission pre-check ──
+    async function checkCameraPermission() {
+      try {
+        if (navigator.permissions && navigator.permissions.query) {
+          var result = await navigator.permissions.query({ name: 'camera' });
+          if (result.state === 'denied') {
+            renderStatusCard({
+              icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f59e0b" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#f59e0b"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+              title: 'Camera Access Required',
+              body: 'Please enable camera access in your phone settings, then return to this page.',
+              primaryLabel: 'Retry',
+              onPrimary: function () {
+                window.location.reload();
+              },
+            });
+            return false;
+          }
+        }
+      } catch (e) {
+        /* not all browsers support permissions.query for camera */
+      }
+      return true;
+    }
+
+    // ── Main initialization ──
+    async function initFlow() {
+      // Check SDK availability — script may fail to load on slow networks
+      var MiKashBoksSDK = window.BallerineSDK;
+
+      if (typeof MiKashBoksSDK === 'undefined') {
+        document.getElementById('kyc-host').innerHTML =
+          '<p class="init-message error">Verification SDK failed to load. Please check your internet connection and try again.</p>';
+        return;
+      }
+
+      if (!TOKEN) {
+        document.getElementById('kyc-host').innerHTML =
+          '<p class="init-message muted">No verification token provided. Please open this page from the MiKashBoks app.</p>';
+        return;
+      }
+
+      var cameraOk = await checkCameraPermission();
+      if (!cameraOk) return;
+
+      // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
+      // Retry once (2 attempts total) with 20s timeout per attempt.
+      // Mobile networks in Sierra Leone can be unreliable — a single attempt is insufficient.
+      var FETCH_TIMEOUT_MS = 20000;
+      var MAX_ATTEMPTS = 2;
+      var workflowData = null;
+      var lastFetchError = null;
+
+      setInitStatus('Connecting to verification service...');
+
+      for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          var fetchOptions = { headers: { Authorization: 'Bearer ' + TOKEN } };
+          var timeoutPromise = new Promise(function (_, reject) {
+            setTimeout(function () {
+              reject(new Error('Timeout'));
+            }, FETCH_TIMEOUT_MS);
+          });
+          if (typeof AbortController !== 'undefined') {
+            var controller = new AbortController();
+            fetchOptions.signal = controller.signal;
+            setTimeout(function () {
+              controller.abort();
+            }, FETCH_TIMEOUT_MS);
+          }
+          var resp = await Promise.race([
+            fetch(apiBase + '/collection-flow/active-flow', fetchOptions),
+            timeoutPromise,
+          ]);
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          var json = await resp.json();
+          workflowData = json.result || json;
+          break; // success — exit retry loop
+        } catch (e) {
+          lastFetchError = e;
+          console.warn(
+            '[KYC] Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:',
+            (e && e.message) || 'Unknown error',
+          );
+          if (attempt < MAX_ATTEMPTS) {
+            // Brief pause before retry (1s)
+            await new Promise(function (r) {
+              setTimeout(r, 1000);
+            });
+          }
+        }
+      }
+
+      if (!workflowData) {
+        console.error(
+          '[KYC] Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:',
+          (lastFetchError && lastFetchError.message) || 'Unknown error',
+        );
+        initFailed = true;
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          title: 'Connection Failed',
+          body: 'Could not connect to the verification service. Please check your internet connection and try again.',
+          primaryLabel: 'Retry',
+          secondaryLabel: 'Close',
+          onPrimary: function () {
+            window.location.reload();
+          },
+          onSecondary: function () {
+            signalCompletion('error', '', 'NETWORK_ERROR');
+          },
+        });
+        return;
+      }
+
+      setInitStatus('Loading verification interface...');
+
+      var endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || 'unknown';
+
+      if (!endUserId || endUserId === 'unknown') {
+        initFailed = true;
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          title: 'Session Error',
+          body: 'Could not identify your account. Please close and reopen the verification link.',
+          primaryLabel: 'Close',
+          onPrimary: function () {
+            signalCompletion('error', '', 'INVALID_SESSION');
+          },
+        });
+        return;
+      }
+
+      var issuingCountry =
+        workflowData?.context?.entity?.data?.country ||
+        workflowData?.context?.customData?.country ||
+        'SL';
+
+      runtimeUiFlags = resolveUiFlags(workflowData?.config?.kycSdkUi);
+      applyUiFlagClasses(runtimeUiFlags);
+
+      // 2. Handle non-collection states (user may reopen an existing link)
+      var workflowStateRaw = workflowData?.state || workflowData?.status || '';
+      var workflowState = String(workflowStateRaw || '')
+        .trim()
+        .toLowerCase();
+
+      var approvedStates = ['approved', 'auto_approved'];
+      var rejectedStates = ['rejected', 'auto_rejected', 'declined'];
+      var inReviewStates = ['manual_review', 'review'];
+      var processingStates = [
+        'document_verification',
+        'facial_verification',
+        'dedup_evaluation',
+        'device_dedup_check',
+        'ncra_check',
+        'risk_evaluation',
+        'awaiting_3rd_party_data',
+      ];
+
+      if (approvedStates.includes(workflowState)) {
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#22c55e" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#22c55e"/><path d="M20 28l5.5 5.5L36 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+          title: 'Identity Verified',
+          body: 'Your identity has been verified.',
+          meta: 'Tap Done to return to MiKashBoks.',
+          primaryLabel: 'Done',
+          onPrimary: function () {
+            signalCompletion('success', 'approved');
+          },
+        });
+        return;
+      }
+
+      if (rejectedStates.includes(workflowState)) {
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M22 22l12 12M34 22l-12 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          title: 'Verification Unsuccessful',
+          body: 'We could not verify your identity from the photos you submitted. Please try again with clearer photos.',
+          meta: 'Common reasons: blurry photo, face not matching ID, or expired document.',
+          primaryLabel: 'Close',
+          onPrimary: function () {
+            signalCompletion('error', 'rejected');
+          },
+        });
+        return;
+      }
+
+      if (inReviewStates.includes(workflowState)) {
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><ellipse cx="28" cy="28" rx="10" ry="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="28" cy="28" r="3.5" fill="#fff"/></svg>',
+          title: 'Under Review',
+          body: 'Your photos were submitted successfully. Our team is reviewing them now.',
+          meta: 'You will receive an SMS when the review is complete, usually within 24 hours.',
+          primaryLabel: 'Done',
+          secondaryLabel: 'Refresh Status',
+          onPrimary: function () {
+            signalCompletion('exit', 'manual_review');
+          },
+          onSecondary: function () {
+            window.location.reload();
+          },
+        });
+        return;
+      }
+
+      if (processingStates.includes(workflowState)) {
+        renderStatusCard({
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#0071D3" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#0071D3"/><circle cx="28" cy="28" r="10" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="15 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 28 28" to="360 28 28" dur="2s" repeatCount="indefinite"/></circle></svg>',
+          title: 'Checking Your Photos...',
+          body: 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.',
+          meta: 'You can close this screen. We will notify you by SMS when the result is ready.',
+          showSpinner: true,
+          primaryLabel: 'Done',
+          secondaryLabel: 'Refresh Status',
+          onPrimary: function () {
+            signalCompletion('exit', 'processing');
+          },
+          onSecondary: function () {
+            window.location.reload();
+          },
+        });
+        return;
+      }
+
+      // 3. Check for resubmission state
+      var resubmitReason = params.get('reason') || params.get('reasonCode');
+      var isRevision = ['pending_resubmission', 'revision', 'revised'].includes(workflowState);
+
+      // Detect revision reason from workflow context
+      var detectedReasonCode = null;
+      if (isRevision) {
+        var docs = workflowData?.context?.documents || [];
+        for (var i = 0; i < docs.length; i++) {
+          var decision = docs[i].decision || {};
+          if (decision.status === 'revision' && decision.revisionReason) {
+            detectedReasonCode = mapRevisionReasonToCode(decision.revisionReason);
             break;
           }
         }
-        if (!match) return null;
-        return {
-          type: match.type,
-          kind: match.kind || 'proof_of_identity',
-          variant: match.variant || 'regular',
-          backSide: match.backSide !== false,
-          orderIndex: 0,
-        };
-      }
-      // Default until workflow fetch overrides
-      preselectedDocInfo = resolvePreselectedDocInfo(DEFAULT_DOC_OPTIONS);
-
-      // ── Build flow steps ──
-      // Skip welcome + document-selection when doc type is pre-selected from Android
-      function buildSteps(usePreselectedDoc) {
-        var builtSteps = [];
-        if (!usePreselectedDoc) {
-          if (!skipWelcome) {
-            builtSteps.push({
-              name: 'welcome',
-              id: 'welcome',
-              elements: [{ id: 'list', type: 'list', orderIndex: 45, props: {} }],
-            });
-          }
-          builtSteps.push({
-            name: 'document-selection',
-            id: 'document-selection',
-            documentOptions: [
-              { type: 'id_card', kind: 'proof_of_identity' },
-              { type: 'passport', kind: 'proof_of_identity' },
-              { type: 'voter_id', kind: 'proof_of_identity' },
-              { type: 'drivers_license', kind: 'proof_of_identity' },
-            ],
-          });
+        if (!detectedReasonCode && workflowData?.context?.revisionReason) {
+          detectedReasonCode = mapRevisionReasonToCode(workflowData.context.revisionReason);
         }
-
-        // Pass `type` and `documentInfo` on steps that need them when pre-selected.
-        // `type` → used by getDocumentType() to resolve the document overlay.
-        // `documentInfo` → used by CheckDocument/SelfieStart to determine back-side skipping,
-        //   and by DocumentPhotoBackStart/CheckDocumentPhotoBack for document context.
-        // When doc-selection is NOT skipped, the SDK populates selectedDocumentInfo store instead.
-        builtSteps.push(
-          {
-            name: 'document-photo',
-            id: 'document-photo',
-            type: usePreselectedDoc ? preselectedDocType : undefined,
-          },
-          {
-            name: 'check-document',
-            id: 'check-document',
-            type: usePreselectedDoc ? preselectedDocType : undefined,
-            documentInfo: preselectedDocInfo,
-          },
-          {
-            name: 'document-photo-back-start',
-            id: 'document-photo-back-start',
-            documentInfo: preselectedDocInfo,
-          },
-          {
-            name: 'document-photo-back',
-            id: 'document-photo-back',
-            type: usePreselectedDoc ? preselectedDocType : undefined,
-          },
-          {
-            name: 'check-document-photo-back',
-            id: 'check-document-photo-back',
-            documentInfo: preselectedDocInfo,
-          },
-          { name: 'selfie-start', id: 'selfie-start', documentInfo: preselectedDocInfo },
-          { name: 'selfie', id: 'selfie' },
-          { name: 'check-selfie', id: 'check-selfie' },
-          {
-            name: 'document-photo',
-            id: 'document-photo',
-            namespace: 'address-proof-photo',
-            type: 'utility_bill',
-            documentInfo: { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 },
-          },
-          {
-            name: 'check-document',
-            id: 'check-document',
-            namespace: 'address-proof-check',
-            type: 'utility_bill',
-            documentInfo: { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 },
-          },
-          { name: 'loading', id: 'loading' },
-          { name: 'resubmission', id: 'resubmission' },
-          { name: 'decline', id: 'decline' },
-          { name: 'manual-review', id: 'manual-review' },
-          { name: 'error', id: 'error' },
-          { name: 'final', id: 'final' },
-        );
-        return builtSteps;
-      }
-
-      // ── Server-driven step builder ──
-      // Maps config.kycSdkSteps (an array of SDK step name strings) from the
-      // workflow config to SDK step objects.  This is distinct from
-      // collectionFlow.state.steps which contains form-page names
-      // (personal_information, kyc_documents, etc.) — a different namespace.
-      // Falls back to buildSteps() when the config provides no step data.
-      // docOptions: config.kycSdkDocumentOptions (or DEFAULT_DOC_OPTIONS fallback).
-      //   Drives the document-selection step's selectable types.
-      function buildStepsFromConfig(stepNames, usePreselectedDoc, docOptions) {
-        var selectionOptions = (docOptions || DEFAULT_DOC_OPTIONS).map(function (d) {
-          return { type: d.type, kind: d.kind || 'proof_of_identity' };
-        });
-
-        return stepNames.map(function (name) {
-          var step = { name: name, id: name };
-
-          // Enrich steps that need extra SDK props — mirrors buildSteps() enrichment
-          if (name === 'welcome') {
-            step.elements = [{ id: 'list', type: 'list', orderIndex: 45, props: {} }];
-          }
-          if (name === 'document-selection') {
-            step.documentOptions = selectionOptions;
-          }
-          if (['document-photo', 'check-document', 'document-photo-back'].includes(name)) {
-            if (usePreselectedDoc) step.type = preselectedDocType;
-          }
-          if (
-            [
-              'check-document',
-              'document-photo-back-start',
-              'check-document-photo-back',
-              'selfie-start',
-            ].includes(name)
-          ) {
-            step.documentInfo = preselectedDocInfo;
-          }
-          // Address proof steps: use document-photo / check-document SDK components
-          // with utility_bill type and proof_of_address category
-          if (name === 'address-proof-photo') {
-            step.name = 'document-photo';
-            step.id = 'document-photo';
-            step.namespace = 'address-proof-photo';
-            step.type = 'utility_bill';
-            step.documentInfo = { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 };
-          }
-          if (name === 'address-proof-check') {
-            step.name = 'check-document';
-            step.id = 'check-document';
-            step.namespace = 'address-proof-check';
-            step.type = 'utility_bill';
-            step.documentInfo = { type: 'utility_bill', kind: 'proof_of_address', variant: 'regular', backSide: false, orderIndex: 1 };
-          }
-          return step;
-        });
-      }
-
-      // NOTE: `steps` is resolved after the workflow fetch (see below) so we can
-      // prefer config-driven steps from workflowData.config.kycSdkSteps.
-
-      // ── Signal completion to Android WebView ──
-      // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
-      var signalSent = false;
-      function signalCompletion(status, idvResult, reasonCode) {
-        if (signalSent) return;
-        signalSent = true;
-        // Clean up observers and animations before navigating away
-        if (typeof cleanupObserversAndAnimations === 'function') {
-          cleanupObserversAndAnimations();
-        }
-        var url = new URL('/kyc-mobile/done', window.location.origin);
-        url.searchParams.set('close', 'true');
-        url.searchParams.set('status', status);
-        if (idvResult) url.searchParams.set('idvResult', idvResult);
-        if (reasonCode) url.searchParams.set('reasonCode', reasonCode);
-        url.searchParams.set('sync', 'true');
-        window.location.href = url.toString();
-      }
-
-      function escapeHtml(input) {
-        return String(input || '').replace(/[&<>"']/g, function (ch) {
-          return (
-            {
-              '&': '&amp;',
-              '<': '&lt;',
-              '>': '&gt;',
-              '"': '&quot;',
-              "'": '&#39;',
-            }[ch] || ch
-          );
-        });
-      }
-
-      function setHostHtml(html) {
-        var host = document.getElementById('kyc-host');
-        if (host) host.innerHTML = html;
-      }
-
-      function renderStatusCard(options) {
-        var title = options && options.title ? String(options.title) : '';
-        var body = options && options.body ? String(options.body) : '';
-        var meta = options && options.meta ? String(options.meta) : '';
-        var nextSteps = options && options.nextSteps ? String(options.nextSteps) : '';
-        var showSpinner = Boolean(options && options.showSpinner);
-        var icon = options && options.icon ? String(options.icon) : '';
-
-        var primaryLabel = options && options.primaryLabel ? String(options.primaryLabel) : 'Close';
-        var secondaryLabel =
-          options && options.secondaryLabel ? String(options.secondaryLabel) : '';
-
-        setHostHtml(
-          '<div class="status-wrap">' +
-            '<div class="status-card">' +
-            (icon ? '<div class="status-icon">' + icon + '</div>' : '') +
-            '<div class="status-title">' +
-            escapeHtml(title) +
-            '</div>' +
-            '<div class="status-body">' +
-            (showSpinner ? '<span class="status-spinner"></span>' : '') +
-            escapeHtml(body) +
-            '</div>' +
-            (meta ? '<div class="status-meta">' + escapeHtml(meta) + '</div>' : '') +
-            (nextSteps
-              ? '<div class="status-next-steps"><strong>What happens next?</strong>' +
-                escapeHtml(nextSteps) +
-                '</div>'
-              : '') +
-            '<div class="status-actions">' +
-            (secondaryLabel
-              ? '<button id="status-secondary" class="status-btn secondary" type="button">' +
-                escapeHtml(secondaryLabel) +
-                '</button>'
-              : '') +
-            '<button id="status-primary" class="status-btn primary" type="button">' +
-            escapeHtml(primaryLabel) +
-            '</button>' +
-            '</div>' +
-            '</div>' +
-            '</div>',
-        );
-
-        var primaryBtn = document.getElementById('status-primary');
-        if (primaryBtn && options && typeof options.onPrimary === 'function') {
-          primaryBtn.addEventListener('click', options.onPrimary);
-        }
-
-        var secondaryBtn = document.getElementById('status-secondary');
-        if (secondaryBtn && options && typeof options.onSecondary === 'function') {
-          secondaryBtn.addEventListener('click', options.onSecondary);
+        if (!detectedReasonCode) {
+          detectedReasonCode = 'GENERIC';
         }
       }
 
-      // ── Resubmission reason taxonomy ──
-      // Maps server reason codes to user-facing messages (preserved from legacy implementation)
-      var RESUBMISSION_REASONS = {
-        DOCUMENT_BLURRY:
-          'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
-        DOCUMENT_OBSCURED:
-          'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
-        DOCUMENT_EXPIRED:
-          'The document you submitted has expired. Please use a valid, unexpired document.',
-        FACE_NOT_VISIBLE:
-          'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
-        FACE_MISMATCH:
-          'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
-        DOCUMENT_BACK_MISSING: 'We need a photo of the back of your document. Please capture it.',
-        DOCUMENT_TYPE_UNSUPPORTED:
-          'The document type you submitted is not accepted. Please choose a different document.',
-        GENERIC: 'There was an issue with your submission. Please try again.',
-      };
+      // Use URL param reason if present
+      var reasonCode =
+        resubmitReason && RESUBMISSION_REASONS[resubmitReason]
+          ? resubmitReason
+          : detectedReasonCode;
 
-      // Map free-text revision reasons from MiKashBoks backoffice to structured codes
-      function mapRevisionReasonToCode(revisionReason) {
-        if (!revisionReason || typeof revisionReason !== 'string') return 'GENERIC';
-        var lower = revisionReason.toLowerCase();
-        if (/blur|unclear|quality|unreadable|sharp|focus/.test(lower)) return 'DOCUMENT_BLURRY';
-        if (/obscur|cut off|partial|crop/.test(lower)) return 'DOCUMENT_OBSCURED';
-        if (/expir/.test(lower)) return 'DOCUMENT_EXPIRED';
-        if (/face not|selfie|face visible/.test(lower)) return 'FACE_NOT_VISIBLE';
-        if (/face mismatch|does not match|face match/.test(lower)) return 'FACE_MISMATCH';
-        if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
-        if (/unsupported|not accepted|wrong document/.test(lower))
-          return 'DOCUMENT_TYPE_UNSUPPORTED';
-        return 'GENERIC';
+      // Address proof is now handled natively by the SDK flow (address-proof-start,
+      // address-proof-photo, check-address-proof steps). No legacy redirect needed.
+      if (runtimeUiFlags.requireAddressProof) {
+        console.log('[KYC] Address proof is required — SDK will include address proof steps.');
       }
 
-      function safeJsonClone(value, fallback) {
-        try {
-          if (value == null) return fallback;
-          return JSON.parse(JSON.stringify(value));
-        } catch (e) {
-          console.warn('Failed to clone JSON payload:', e);
-          return fallback;
-        }
-      }
-
-      function buildWorkflowContextForSubmission(activeFlow) {
-        var context = safeJsonClone(activeFlow && activeFlow.context, {}) || {};
-        var activeState = safeJsonClone(activeFlow && activeFlow.state, null);
-
-        if (!context.collectionFlow || typeof context.collectionFlow !== 'object') {
-          context.collectionFlow = {};
-        }
-
-        // Prefer the computed state from /active-flow (contains canonical step tuple).
-        if (activeState && Array.isArray(activeState.steps) && activeState.steps.length > 0) {
-          context.collectionFlow.state = activeState;
-        }
-
-        return context;
-      }
-
-      // ── Init status helper ──
-      function setInitStatus(msg) {
-        var span = document.querySelector('.init-loading span');
-        if (span) span.textContent = msg;
-      }
-
-      // ── Camera permission pre-check ──
-      async function checkCameraPermission() {
-        try {
-          if (navigator.permissions && navigator.permissions.query) {
-            var result = await navigator.permissions.query({ name: 'camera' });
-            if (result.state === 'denied') {
-              renderStatusCard({
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f59e0b" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#f59e0b"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-                title: 'Camera Access Required',
-                body: 'Please enable camera access in your phone settings, then return to this page.',
-                primaryLabel: 'Retry',
-                onPrimary: function () {
-                  window.location.reload();
-                },
-              });
-              return false;
-            }
-          }
-        } catch (e) {
-          /* not all browsers support permissions.query for camera */
-        }
-        return true;
-      }
-
-      // ── Main initialization ──
-      async function initFlow() {
-        // Check SDK availability — script may fail to load on slow networks
-        var MiKashBoksSDK = window.BallerineSDK;
-
-        if (typeof MiKashBoksSDK === 'undefined') {
-          document.getElementById('kyc-host').innerHTML =
-            '<p class="init-message error">Verification SDK failed to load. Please check your internet connection and try again.</p>';
-          return;
-        }
-
-        if (!TOKEN) {
-          document.getElementById('kyc-host').innerHTML =
-            '<p class="init-message muted">No verification token provided. Please open this page from the MiKashBoks app.</p>';
-          return;
-        }
-
-        var cameraOk = await checkCameraPermission();
-        if (!cameraOk) return;
-
-        // 1. Fetch workflow data — BLOCKING: required for endUserId for uploads
-        // Retry once (2 attempts total) with 20s timeout per attempt.
-        // Mobile networks in Sierra Leone can be unreliable — a single attempt is insufficient.
-        var FETCH_TIMEOUT_MS = 20000;
-        var MAX_ATTEMPTS = 2;
-        var workflowData = null;
-        var lastFetchError = null;
-
-        setInitStatus('Connecting to verification service...');
-
-        for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-          try {
-            var fetchOptions = { headers: { Authorization: 'Bearer ' + TOKEN } };
-            var timeoutPromise = new Promise(function (_, reject) {
-              setTimeout(function () {
-                reject(new Error('Timeout'));
-              }, FETCH_TIMEOUT_MS);
-            });
-            if (typeof AbortController !== 'undefined') {
-              var controller = new AbortController();
-              fetchOptions.signal = controller.signal;
-              setTimeout(function () {
-                controller.abort();
-              }, FETCH_TIMEOUT_MS);
-            }
-            var resp = await Promise.race([
-              fetch(apiBase + '/collection-flow/active-flow', fetchOptions),
-              timeoutPromise,
-            ]);
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            var json = await resp.json();
-            workflowData = json.result || json;
-            break; // success — exit retry loop
-          } catch (e) {
-            lastFetchError = e;
-            console.warn(
-              '[KYC] Workflow fetch attempt ' + attempt + '/' + MAX_ATTEMPTS + ' failed:',
-              (e && e.message) || 'Unknown error',
-            );
-            if (attempt < MAX_ATTEMPTS) {
-              // Brief pause before retry (1s)
-              await new Promise(function (r) {
-                setTimeout(r, 1000);
-              });
-            }
-          }
-        }
-
-        if (!workflowData) {
-          console.error(
-            '[KYC] Failed to load workflow after ' + MAX_ATTEMPTS + ' attempts:',
-            (lastFetchError && lastFetchError.message) || 'Unknown error',
-          );
-          initFailed = true;
-          renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-            title: 'Connection Failed',
-            body: 'Could not connect to the verification service. Please check your internet connection and try again.',
-            primaryLabel: 'Retry',
-            secondaryLabel: 'Close',
-            onPrimary: function () {
-              window.location.reload();
-            },
-            onSecondary: function () {
-              signalCompletion('error', '', 'NETWORK_ERROR');
-            },
-          });
-          return;
-        }
-
-        setInitStatus('Loading verification interface...');
-
-        var endUserId = workflowData?.endUserId || workflowData?.context?.entity?.id || 'unknown';
-
-        if (!endUserId || endUserId === 'unknown') {
-          initFailed = true;
-          renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-            title: 'Session Error',
-            body: 'Could not identify your account. Please close and reopen the verification link.',
-            primaryLabel: 'Close',
-            onPrimary: function () {
-              signalCompletion('error', '', 'INVALID_SESSION');
-            },
-          });
-          return;
-        }
-
-        var issuingCountry =
-          workflowData?.context?.entity?.data?.country ||
-          workflowData?.context?.customData?.country ||
-          'SL';
-
-        // 2. Handle non-collection states (user may reopen an existing link)
-        var workflowStateRaw = workflowData?.state || workflowData?.status || '';
-        var workflowState = String(workflowStateRaw || '')
-          .trim()
-          .toLowerCase();
-
-        var approvedStates = ['approved', 'auto_approved'];
-        var rejectedStates = ['rejected', 'auto_rejected', 'declined'];
-        var inReviewStates = ['manual_review', 'review'];
-        var processingStates = [
-          'document_verification',
-          'facial_verification',
-          'dedup_evaluation',
-          'device_dedup_check',
-          'ncra_check',
-          'risk_evaluation',
-          'awaiting_3rd_party_data',
-        ];
-
-        if (approvedStates.includes(workflowState)) {
-          renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#22c55e" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#22c55e"/><path d="M20 28l5.5 5.5L36 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-            title: 'Identity Verified',
-            body: 'Your identity has been verified.',
-            meta: 'Tap Done to return to MiKashBoks.',
-            primaryLabel: 'Done',
-            onPrimary: function () {
-              signalCompletion('success', 'approved');
-            },
-          });
-          return;
-        }
-
-        if (rejectedStates.includes(workflowState)) {
-          renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M22 22l12 12M34 22l-12 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-            title: 'Verification Unsuccessful',
-            body: 'We could not verify your identity from the photos you submitted. Please try again with clearer photos.',
-            meta: 'Common reasons: blurry photo, face not matching ID, or expired document.',
-            primaryLabel: 'Close',
-            onPrimary: function () {
-              signalCompletion('error', 'rejected');
-            },
-          });
-          return;
-        }
-
-        if (inReviewStates.includes(workflowState)) {
-          renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><ellipse cx="28" cy="28" rx="10" ry="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="28" cy="28" r="3.5" fill="#fff"/></svg>',
-            title: 'Under Review',
-            body: 'Your photos were submitted successfully. Our team is reviewing them now.',
-            meta: 'You will receive an SMS when the review is complete, usually within 24 hours.',
-            primaryLabel: 'Done',
-            secondaryLabel: 'Refresh Status',
-            onPrimary: function () {
-              signalCompletion('exit', 'manual_review');
-            },
-            onSecondary: function () {
-              window.location.reload();
-            },
-          });
-          return;
-        }
-
-        if (processingStates.includes(workflowState)) {
-          renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#7b15ff" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#7b15ff"/><circle cx="28" cy="28" r="10" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="15 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 28 28" to="360 28 28" dur="2s" repeatCount="indefinite"/></circle></svg>',
-            title: 'Checking Your Photos...',
-            body: 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.',
-            meta: 'You can close this screen. We will notify you by SMS when the result is ready.',
-            showSpinner: true,
-            primaryLabel: 'Done',
-            secondaryLabel: 'Refresh Status',
-            onPrimary: function () {
-              signalCompletion('exit', 'processing');
-            },
-            onSecondary: function () {
-              window.location.reload();
-            },
-          });
-          return;
-        }
-
-        // 3. Check for resubmission state
-        var resubmitReason = params.get('reason') || params.get('reasonCode');
-        var isRevision = ['pending_resubmission', 'revision', 'revised'].includes(workflowState);
-
-        // Detect revision reason from workflow context
-        var detectedReasonCode = null;
-        if (isRevision) {
-          var docs = workflowData?.context?.documents || [];
-          for (var i = 0; i < docs.length; i++) {
-            var decision = docs[i].decision || {};
-            if (decision.status === 'revision' && decision.revisionReason) {
-              detectedReasonCode = mapRevisionReasonToCode(decision.revisionReason);
-              break;
-            }
-          }
-          if (!detectedReasonCode && workflowData?.context?.revisionReason) {
-            detectedReasonCode = mapRevisionReasonToCode(workflowData.context.revisionReason);
-          }
-          if (!detectedReasonCode) {
-            detectedReasonCode = 'GENERIC';
-          }
-        }
-
-        // Use URL param reason if present
-        var reasonCode =
-          resubmitReason && RESUBMISSION_REASONS[resubmitReason]
-            ? resubmitReason
-            : detectedReasonCode;
-
-        // 3. Resolve config-driven document options
-        // These drive the document-selection step AND preselectedDocInfo enrichment.
-        var rawConfigDocOptions =
-          workflowData &&
+      // 3. Resolve config-driven document options
+      // These drive the document-selection step AND preselectedDocInfo enrichment.
+      var rawConfigDocOptions =
+        workflowData &&
           workflowData.config &&
           Array.isArray(workflowData.config.kycSdkDocumentOptions) &&
           workflowData.config.kycSdkDocumentOptions.length > 0
-            ? workflowData.config.kycSdkDocumentOptions
-            : null;
-
-        var configDocOptions = rawConfigDocOptions
-          ? normalizeDocOptions(rawConfigDocOptions)
+          ? workflowData.config.kycSdkDocumentOptions
           : null;
 
-        var activeDocOptions = configDocOptions || DEFAULT_DOC_OPTIONS;
-        if (configDocOptions) {
-          console.log(
-            '[KYC] Using config-driven document options:',
-            configDocOptions.map(function (d) {
-              return d.type;
-            }),
-          );
-          // Re-derive preselectedDocInfo from server config (may have different backSide/variant)
-          preselectedDocInfo = resolvePreselectedDocInfo(configDocOptions);
-        } else {
-          console.warn(
-            '[KYC] ⚠ No config.kycSdkDocumentOptions found in workflow config. ' +
-              'Using hardcoded SL defaults. To control document types from the server, add ' +
-              'kycSdkDocumentOptions: [{type, kind, variant, backSide}] to the Ballerine workflow config.',
-          );
-        }
+      var configDocOptions = rawConfigDocOptions
+        ? normalizeDocOptions(rawConfigDocOptions)
+        : null;
 
-        // Guard: if Android preselected a docType that is not allowed by current server config,
-        // fall back to full-flow document selection instead of crashing SDK bootstrap.
-        if (hasPreselectedDoc && !preselectedDocInfo) {
-          console.warn(
-            '[KYC] Preselected docType is not available in active workflow config. ' +
-              'Falling back to document-selection step.',
-            preselectedDocType,
-          );
-          hasPreselectedDoc = false;
-          preselectedDocType = null;
-        }
+      var activeDocOptions = configDocOptions || DEFAULT_DOC_OPTIONS;
+      if (configDocOptions) {
+        console.log(
+          '[KYC] Using config-driven document options:',
+          configDocOptions.map(function (d) {
+            return d.type;
+          }),
+        );
+        // Re-derive preselectedDocInfo from server config (may have different backSide/variant)
+        preselectedDocInfo = resolvePreselectedDocInfo(configDocOptions);
+      } else {
+        console.warn(
+          '[KYC] ⚠ No config.kycSdkDocumentOptions found in workflow config. ' +
+          'Using hardcoded SL defaults. To control document types from the server, add ' +
+          'kycSdkDocumentOptions: [{type, kind, variant, backSide}] to the Ballerine workflow config.',
+        );
+      }
 
-        // 4. Resolve SDK steps — prefer config-driven, fallback to client-hardcoded
-        // NOTE: We read from config.kycSdkSteps (an array of SDK step name strings),
-        // NOT from collectionFlow.state.steps (which contains form-page names like
-        // 'personal_information' — a different namespace used by the collection flow app).
-        var configSteps =
-          workflowData &&
+      // Guard: if Android preselected a docType that is not allowed by current server config,
+      // fall back to full-flow document selection instead of crashing SDK bootstrap.
+      if (hasPreselectedDoc && !preselectedDocInfo) {
+        console.warn(
+          '[KYC] Preselected docType is not available in active workflow config. ' +
+          'Falling back to document-selection step.',
+          preselectedDocType,
+        );
+        hasPreselectedDoc = false;
+        preselectedDocType = null;
+      }
+
+      // 4. Resolve SDK steps — prefer config-driven, fallback to client-hardcoded
+      // NOTE: We read from config.kycSdkSteps (an array of SDK step name strings),
+      // NOT from collectionFlow.state.steps (which contains form-page names like
+      // 'personal_information' — a different namespace used by the collection flow app).
+      var configSteps =
+        workflowData &&
           workflowData.config &&
           Array.isArray(workflowData.config.kycSdkSteps) &&
           workflowData.config.kycSdkSteps.length > 0
-            ? workflowData.config.kycSdkSteps.slice()
-            : null;
+          ? workflowData.config.kycSdkSteps.slice()
+          : null;
 
-        if (configSteps && skipWelcome) {
-          if (configSteps.includes('welcome')) {
-            console.log('[KYC] skipWelcome param detected; removing welcome step.');
-          }
-          configSteps = configSteps.filter(function (name) {
-            return name !== 'welcome';
-          });
-          if (configSteps.length === 0) {
-            console.warn(
-              '[KYC] skipWelcome removed all configured steps. Falling back to the built-in flow.',
-            );
-            configSteps = null;
-          }
+      if (configSteps && shouldSkipWelcomeStep()) {
+        if (configSteps.includes('welcome')) {
+          console.log('[KYC] skipWelcome param detected; removing welcome step.');
         }
-
-        if (configSteps && !hasPreselectedDoc && !configSteps.includes('document-selection')) {
+        configSteps = configSteps.filter(function (name) {
+          return name !== 'welcome';
+        });
+        if (configSteps.length === 0) {
           console.warn(
-            '[KYC] config.kycSdkSteps is missing document-selection while preselected mode is off. ' +
-              'Falling back to client-safe step set.',
+            '[KYC] skipWelcome removed all configured steps. Falling back to the built-in flow.',
           );
           configSteps = null;
         }
+      }
 
-        var steps;
-        if (configSteps) {
-          steps = buildStepsFromConfig(configSteps, hasPreselectedDoc, activeDocOptions);
-          console.log(
-            '[KYC] Using config-driven steps:',
-            steps.map(function (s) {
-              return s.name;
-            }),
-          );
-        } else {
-          steps = buildSteps(hasPreselectedDoc);
-          console.warn(
-            '[KYC] ⚠ No config.kycSdkSteps found in workflow config. ' +
-              'Using client-hardcoded steps. To drive SDK steps from the server, add ' +
-              'kycSdkSteps: ["welcome", "document-selection", ...] to the Ballerine workflow config.',
-          );
-        }
+      if (configSteps && !hasPreselectedDoc && !configSteps.includes('document-selection')) {
+        console.warn(
+          '[KYC] config.kycSdkSteps is missing document-selection while preselected mode is off. ' +
+          'Falling back to client-safe step set.',
+        );
+        configSteps = null;
+      }
 
-        // Validate kycSdkTheme presence
-        if (!(workflowData && workflowData.config && workflowData.config.kycSdkTheme)) {
-          console.warn(
-            '[KYC] ⚠ No config.kycSdkTheme found in workflow config. ' +
-              'Using default Inter font and #7b15ff primary color. To customize, add ' +
-              'kycSdkTheme: {primaryColor, fontFamily, fontLink, fontWeights} to the Ballerine workflow config.',
-          );
-        }
+      var steps;
+      if (configSteps) {
+        steps = buildStepsFromConfig(configSteps, hasPreselectedDoc, activeDocOptions);
+        console.log(
+          '[KYC] Using config-driven steps:',
+          steps.map(function (s) {
+            return s.name;
+          }),
+        );
+      } else {
+        steps = buildSteps(hasPreselectedDoc);
+        console.warn(
+          '[KYC] ⚠ No config.kycSdkSteps found in workflow config. ' +
+          'Using client-hardcoded steps. To drive SDK steps from the server, add ' +
+          'kycSdkSteps: ["welcome", "document-selection", ...] to the Ballerine workflow config.',
+        );
+      }
 
-        // 5. Initialize MiKashBoks SDK
-        var workflowContextPayload = buildWorkflowContextForSubmission(workflowData);
-        var workflowStatePayload = safeJsonClone(workflowData && workflowData.state, {});
+      // Validate kycSdkTheme presence
+      if (!(workflowData && workflowData.config && workflowData.config.kycSdkTheme)) {
+        console.warn(
+          '[KYC] ⚠ No config.kycSdkTheme found in workflow config. ' +
+          'Using default Inter font and #0071D3 primary color. To customize, add ' +
+          'kycSdkTheme: {primaryColor, fontFamily, fontLink, fontWeights} to the Ballerine workflow config.',
+        );
+      }
 
-        var sdkConfig = {
-          endUserInfo: {
-            id: endUserId,
-            endUserMetadata: {
-              issuingCountry: issuingCountry,
-              // Keep full context required by workflow plugins (entity/customData) and
-              // use computed active-flow state to avoid invalid empty step arrays.
-              workflowContext: JSON.stringify(workflowContextPayload),
-              workflowState: JSON.stringify(workflowStatePayload),
-              selfieCategory: 'proof_of_identity_ownership',
-              preselectedDocType: preselectedDocType || '',
-            },
+      // 5. Initialize MiKashBoks SDK
+      var workflowContextPayload = buildWorkflowContextForSubmission(workflowData);
+      var workflowStatePayload = safeJsonClone(workflowData && workflowData.state, {});
+
+      var sdkConfig = {
+        endUserInfo: {
+          id: endUserId,
+          endUserMetadata: {
+            issuingCountry: issuingCountry,
+            // Keep full context required by workflow plugins (entity/customData) and
+            // use computed active-flow state to avoid invalid empty step arrays.
+            workflowContext: JSON.stringify(workflowContextPayload),
+            workflowState: JSON.stringify(workflowStatePayload),
+            documentCategory: 'proof_of_identity',
+            selfieCategory: 'proof_of_identity_ownership',
+            preselectedDocType: preselectedDocType || '',
           },
-          backendConfig: {
-            baseUrl: apiBase,
-            auth: {
-              method: 'jwt',
-              authorizationHeader: 'Bearer ' + TOKEN,
-            },
-            endpoints: {
-              uploadFile: '/collection-flow/documents',
-              updateContext: '/collection-flow/sync/context',
-              finalSubmission: '/collection-flow/final-submission',
-              sendEvent: '/collection-flow/send-event',
-              activeFlow: '/collection-flow/active-flow',
-            },
+        },
+        backendConfig: {
+          baseUrl: apiBase,
+          auth: {
+            method: 'jwt',
+            authorizationHeader: 'Bearer ' + TOKEN,
           },
-          uiConfig: {
-            general: {
-              progress: true,
-              colors: {
-                primary:
-                  (workflowData &&
-                    workflowData.config &&
-                    workflowData.config.kycSdkTheme &&
-                    workflowData.config.kycSdkTheme.primaryColor) ||
-                  '#0071D3',
-              },
-              fonts: {
-                name:
-                  (workflowData &&
-                    workflowData.config &&
-                    workflowData.config.kycSdkTheme &&
-                    workflowData.config.kycSdkTheme.fontFamily) ||
-                  'Inter',
-                link:
-                  (workflowData &&
-                    workflowData.config &&
-                    workflowData.config.kycSdkTheme &&
-                    workflowData.config.kycSdkTheme.fontLink) ||
-                  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-                weight: (workflowData &&
+          endpoints: {
+            uploadFile: '/collection-flow/documents',
+            updateContext: '/collection-flow/sync/context',
+            finalSubmission: '/collection-flow/final-submission',
+            sendEvent: '/collection-flow/send-event',
+            activeFlow: '/collection-flow/active-flow',
+          },
+        },
+        uiConfig: {
+          general: {
+            progress: !(hasNativeHeader && runtimeUiFlags.hideWebHeaderInNative),
+            colors: {
+              primary:
+                (workflowData &&
                   workflowData.config &&
                   workflowData.config.kycSdkTheme &&
-                  workflowData.config.kycSdkTheme.fontWeights) || [400, 500, 600, 700],
-              },
+                  workflowData.config.kycSdkTheme.primaryColor) ||
+                '#0071D3',
             },
-            components: {
-              paragraph: { 'font-size': '20px', 'line-height': '1.7' },
-              title: { 'font-size': '28px', 'font-weight': '700' },
-            },
-            flows: {
-              'mikashboks-kyc': {
-                steps: steps,
-                syncFlow: true,
-                useFinalQueryParams: true,
-                showCloseButton: false,
-              },
+            fonts: {
+              name:
+                (workflowData &&
+                  workflowData.config &&
+                  workflowData.config.kycSdkTheme &&
+                  workflowData.config.kycSdkTheme.fontFamily) ||
+                'Inter',
+              link:
+                (workflowData &&
+                  workflowData.config &&
+                  workflowData.config.kycSdkTheme &&
+                  workflowData.config.kycSdkTheme.fontLink) ||
+                'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+              weight: (workflowData &&
+                workflowData.config &&
+                workflowData.config.kycSdkTheme &&
+                workflowData.config.kycSdkTheme.fontWeights) || [400, 500, 600, 700],
             },
           },
-          translations: {
+          components: runtimeUiFlags.enableLargeTypography
+            ? {
+              paragraph: { 'font-size': '20px', 'line-height': '1.7' },
+              title: { 'font-size': '28px', 'font-weight': '700' },
+            }
+            : {},
+          flows: {
+            'mikashboks-kyc': {
+              steps: steps,
+              syncFlow: true,
+              useFinalQueryParams: true,
+              showCloseButton: false,
+            },
+          },
+        },
+        translations: runtimeUiFlags.simplifyCopy
+          ? {
             overrides: {
               en: {
                 welcome: {
@@ -1389,15 +1549,24 @@
                     'Make sure your face is clearly visible. If it looks dark or blurry, tap back to retake.',
                 },
                 // ── Address proof translations ──
-                'address-proof-photo': {
+                'address-proof-start': {
                   title: 'Proof of Address',
                   description:
-                    'Take a photo of a utility bill, bank statement, or government letter showing your current address (issued within the last 3 months).',
+                    'We need a photo of a document that shows your address — for example a utility bill, bank statement, or official letter.',
+                  button: 'Take Photo',
                 },
-                'address-proof-check': {
-                  title: 'Review Address Proof',
+                'address-proof-photo': {
+                  title: 'Photograph Your Document',
+                  proof_of_address: {
+                    title: 'Address Document',
+                    description:
+                      'Place your document flat on a surface. Make sure your name and address are clearly visible.',
+                  },
+                },
+                'check-address-proof': {
+                  title: 'Review Address Photo',
                   description:
-                    'Make sure the document is clear and your name and address are readable.',
+                    'Can you see your name and address clearly? If not, tap back to retake.',
                 },
                 // ── End-state translations ──
                 loader: {
@@ -1478,441 +1647,466 @@
                 },
               },
             },
-          },
-        };
-
-        setInitStatus('Preparing camera and permissions...');
-        await MiKashBoksSDK.flows.init(sdkConfig);
-
-        MiKashBoksSDK.flows.mount({
-          flowName: 'mikashboks-kyc',
-          elementId: 'kyc-host',
-          jwt: TOKEN,
-          callbacks: {
-            onFlowComplete: function (payload) {
-              var idvResult = payload && payload.payload ? payload.payload.idvResult : '';
-              var reasonCode = payload && payload.payload ? payload.payload.reasonCode : '';
-              if (idvResult === 'declined') {
-                signalCompletion('error', idvResult);
-              } else if (idvResult === 'resubmission_requested') {
-                signalCompletion('resubmit', idvResult, reasonCode || detectedReasonCode);
-              } else if (idvResult === 'review') {
-                signalCompletion('exit', 'manual_review');
-              } else {
-                signalCompletion('success', idvResult || 'approved');
-              }
-            },
-            onFlowExit: function () {
-              signalCompletion('exit', '');
-            },
-            onFlowError: function (error) {
-              console.error('[KYC] Flow error:', (error && error.message) || 'Unknown error');
-              signalCompletion('error', '');
-            },
-          },
-        });
-      }
-
-      // ── Start ──
-      initFlow().catch(async function (err) {
-        console.error('[KYC] Init failed:', (err && err.message) || 'Unknown error');
-        // Hardening: If preselected doc mode fails to boot (SDK/config edge case),
-        // retry once in full-flow mode instead of failing immediately.
-        if (!initRetryAttempted && hasPreselectedDoc) {
-          initRetryAttempted = true;
-          hasPreselectedDoc = false;
-          preselectedDocType = null;
-          preselectedDocInfo = null;
-          steps = buildSteps(false);
-          console.warn(
-            'Retrying KYC init in full-flow mode after preselected-doc bootstrap failure',
-          );
-          try {
-            await initFlow();
-            return;
-          } catch (retryErr) {
-            console.error(
-              '[KYC] Retry init failed:',
-              (retryErr && retryErr.message) || 'Unknown error',
-            );
-            err = retryErr;
           }
-        }
-
-        // Final fallback: route to legacy mobile page once to avoid hard-blocking users.
-        // This protects older/quirky Android WebViews when SDK bootstrap fails.
-        if (tryLegacyFallback(err)) {
-          return;
-        }
-
-        initFailed = true;
-        renderStatusCard({
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-          title: 'Could Not Start Verification',
-          body: 'Something went wrong while loading. Please check your internet connection and try again.',
-          meta: 'Compatibility mode could not start. Please close and reopen the verification link from MiKashBoks.',
-          primaryLabel: 'Retry',
-          secondaryLabel: 'Close',
-          onPrimary: function () {
-            window.location.reload();
-          },
-          onSecondary: function () {
-            signalCompletion('error', '', 'INIT_FAILED');
-          },
-        });
-      });
-
-      // ── Lottie loading animation (for initial page load) ──
-      var lottieAnimData = {
-        v: '5.7.1',
-        fr: 30,
-        ip: 0,
-        op: 60,
-        w: 200,
-        h: 200,
-        nm: 'verify',
-        layers: [
-          {
-            ddd: 0,
-            ind: 0,
-            ty: 4,
-            nm: 'arc',
-            sr: 1,
-            ks: {
-              o: { a: 0, k: 100 },
-              r: {
-                a: 1,
-                k: [
-                  { i: { x: [0.833], y: [0.833] }, o: { x: [0.167], y: [0.167] }, t: 0, s: [0] },
-                  { t: 60, s: [360] },
-                ],
-              },
-              p: { a: 0, k: [100, 100, 0] },
-              a: { a: 0, k: [0, 0, 0] },
-              s: { a: 0, k: [100, 100, 100] },
-            },
-            ao: 0,
-            shapes: [
-              { ty: 'el', d: 1, s: { a: 0, k: [140, 140] }, p: { a: 0, k: [0, 0] } },
-              {
-                ty: 'st',
-                c: { a: 0, k: [0.482, 0.082, 1, 1] },
-                o: { a: 0, k: 100 },
-                w: { a: 0, k: 5 },
-                lc: 2,
-                lj: 1,
-                d: [
-                  { n: 'd', nm: 'd', v: { a: 0, k: 90 } },
-                  { n: 'g', nm: 'g', v: { a: 0, k: 200 } },
-                ],
-              },
-            ],
-            ip: 0,
-            op: 60,
-            st: 0,
-            bm: 0,
-          },
-          {
-            ddd: 0,
-            ind: 1,
-            ty: 4,
-            nm: 'arc2',
-            sr: 1,
-            ks: {
-              o: { a: 0, k: 50 },
-              r: {
-                a: 1,
-                k: [
-                  { i: { x: [0.833], y: [0.833] }, o: { x: [0.167], y: [0.167] }, t: 0, s: [180] },
-                  { t: 60, s: [540] },
-                ],
-              },
-              p: { a: 0, k: [100, 100, 0] },
-              a: { a: 0, k: [0, 0, 0] },
-              s: { a: 0, k: [100, 100, 100] },
-            },
-            ao: 0,
-            shapes: [
-              { ty: 'el', d: 1, s: { a: 0, k: [110, 110] }, p: { a: 0, k: [0, 0] } },
-              {
-                ty: 'st',
-                c: { a: 0, k: [0.482, 0.082, 1, 1] },
-                o: { a: 0, k: 100 },
-                w: { a: 0, k: 3 },
-                lc: 2,
-                lj: 1,
-                d: [
-                  { n: 'd', nm: 'd', v: { a: 0, k: 50 } },
-                  { n: 'g', nm: 'g', v: { a: 0, k: 200 } },
-                ],
-              },
-            ],
-            ip: 0,
-            op: 60,
-            st: 0,
-            bm: 0,
-          },
-          {
-            ddd: 0,
-            ind: 2,
-            ty: 4,
-            nm: 'pulse',
-            sr: 1,
-            ks: {
-              o: {
-                a: 1,
-                k: [
-                  { i: { x: [0.667] }, o: { x: [0.333] }, t: 0, s: [20] },
-                  { i: { x: [0.667] }, o: { x: [0.333] }, t: 30, s: [8] },
-                  { t: 60, s: [20] },
-                ],
-              },
-              r: { a: 0, k: 0 },
-              p: { a: 0, k: [100, 100, 0] },
-              a: { a: 0, k: [0, 0, 0] },
-              s: {
-                a: 1,
-                k: [
-                  {
-                    i: { x: [0.667, 0.667, 0.667] },
-                    o: { x: [0.333, 0.333, 0.333] },
-                    t: 0,
-                    s: [100, 100, 100],
-                  },
-                  {
-                    i: { x: [0.667, 0.667, 0.667] },
-                    o: { x: [0.333, 0.333, 0.333] },
-                    t: 30,
-                    s: [115, 115, 100],
-                  },
-                  { t: 60, s: [100, 100, 100] },
-                ],
-              },
-            },
-            ao: 0,
-            shapes: [
-              { ty: 'el', d: 1, s: { a: 0, k: [70, 70] }, p: { a: 0, k: [0, 0] } },
-              { ty: 'fl', c: { a: 0, k: [0.482, 0.082, 1, 1] }, o: { a: 0, k: 100 } },
-            ],
-            ip: 0,
-            op: 60,
-            st: 0,
-            bm: 0,
-          },
-        ],
+          : undefined,
       };
 
-      var lottieInstance = null;
+      setInitStatus('Preparing camera and permissions...');
+      await MiKashBoksSDK.flows.init(sdkConfig);
 
-      function destroyLottie() {
-        if (lottieInstance) {
-          try {
-            lottieInstance.destroy();
-          } catch (e) {
-            /* ignore */
-          }
-          lottieInstance = null;
-        }
-      }
+      MiKashBoksSDK.flows.mount({
+        flowName: 'mikashboks-kyc',
+        elementId: 'kyc-host',
+        jwt: TOKEN,
+        callbacks: {
+          onFlowComplete: function (payload) {
+            var idvResult = payload && payload.payload ? payload.payload.idvResult : '';
+            var reasonCode = payload && payload.payload ? payload.payload.reasonCode : '';
+            if (idvResult === 'declined') {
+              signalCompletion('error', idvResult);
+            } else if (idvResult === 'resubmission_requested') {
+              signalCompletion('resubmit', idvResult, reasonCode || detectedReasonCode);
+            } else if (idvResult === 'review') {
+              signalCompletion('exit', 'manual_review');
+            } else {
+              signalCompletion('success', idvResult || 'approved');
+            }
+          },
+          onFlowExit: function () {
+            signalCompletion('exit', '');
+          },
+          onFlowError: function (error) {
+            console.error('[KYC] Flow error:', (error && error.message) || 'Unknown error');
+            signalCompletion('error', '');
+          },
+        },
+      });
+    }
 
-      function initLottieForInitLoading() {
-        if (typeof window.lottie === 'undefined') return;
-        var initLoadingEl = document.querySelector('.init-loading');
-        if (!initLoadingEl) return;
-        destroyLottie();
-        var container = document.createElement('div');
-        container.className = 'lottie-player';
-        container.style.width = '120px';
-        container.style.height = '120px';
-        initLoadingEl.insertBefore(container, initLoadingEl.firstChild);
+    // ── Start ──
+    initFlow().catch(async function (err) {
+      console.error('[KYC] Init failed:', (err && err.message) || 'Unknown error');
+      // Hardening: If preselected doc mode fails to boot (SDK/config edge case),
+      // retry once in full-flow mode instead of failing immediately.
+      if (!initRetryAttempted) {
+        initRetryAttempted = true;
+        hasPreselectedDoc = false;
+        preselectedDocType = null;
+        preselectedDocInfo = null;
+
+        // ── Cleanup: destroy any partial SDK state from the failed first init ──
+        // Without this, the second init() call hits stale DOM and crashes with
+        // "Cannot read properties of undefined (reading 'classList')".
         try {
-          lottieInstance = window.lottie.loadAnimation({
-            container: container,
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            animationData: lottieAnimData,
-          });
-          initLoadingEl.classList.add('has-lottie');
-        } catch (e) {
-          console.warn('Lottie init failed, keeping CSS spinner:', e);
+          var sdk = window.BallerineSDK;
+          if (sdk && sdk.flows && typeof sdk.flows.destroy === 'function') {
+            sdk.flows.destroy();
+          }
+        } catch (destroyErr) {
+          console.warn('[KYC] SDK destroy before retry failed (non-fatal):', destroyErr);
         }
-      }
+        // Reset the host container to a clean loading state
+        var host = document.getElementById('kyc-host');
+        if (host) {
+          host.innerHTML =
+            '<div class="init-loading">' +
+            '<div class="spinner"></div>' +
+            '<span style="color:#64748b;font-size:14px">Retrying verification...</span>' +
+            '</div>';
+        }
+        // Brief pause to let the browser GC stale references
+        await new Promise(function (r) { setTimeout(r, 300); });
 
-      function tryInjectLottieIntoSDKLoader(blrnApp) {
-        if (typeof window.lottie === 'undefined') return;
-        if (blrnApp.querySelector('.lottie-player')) return;
-        var spinnerEl = blrnApp.querySelector(
-          '[class*="loader" i], [class*="spinner" i], [class*="loading" i]',
+        console.warn(
+          'Retrying KYC init in full-flow mode after bootstrap failure',
         );
-        if (!spinnerEl || !spinnerEl.parentElement) return;
-        destroyLottie();
-        var container = document.createElement('div');
-        container.className = 'lottie-player';
-        container.style.width = '120px';
-        container.style.height = '120px';
-        container.style.margin = '0 auto 16px';
-        spinnerEl.parentElement.insertBefore(container, spinnerEl);
         try {
-          lottieInstance = window.lottie.loadAnimation({
-            container: container,
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            animationData: lottieAnimData,
-          });
-          spinnerEl.style.display = 'none';
-        } catch (e) {
-          container.remove();
+          await initFlow();
+          return;
+        } catch (retryErr) {
+          console.error(
+            '[KYC] Retry init failed:',
+            (retryErr && retryErr.message) || 'Unknown error',
+          );
+          err = retryErr;
         }
       }
 
-      // Initialize Lottie for the init loading spinner once script loads
-      if (typeof window.lottie !== 'undefined') {
-        initLottieForInitLoading();
-      } else {
-        // Wait for deferred lottie script to load
-        window.addEventListener('load', function () {
-          setTimeout(initLottieForInitLoading, 100);
-        });
+      // Final fallback: route to legacy mobile page once to avoid hard-blocking users.
+      // This protects older/quirky Android WebViews when SDK bootstrap fails.
+      if (tryLegacyFallback(err)) {
+        return;
       }
 
-      // ── Landscape orientation hint for document capture ──
-      var orientationHint = document.getElementById('orientation-hint');
-      var isDocCaptureActive = false;
-      var orientationDismissed = false;
-      var resizeDebounce = null;
+      initFailed = true;
+      renderStatusCard({
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        title: 'Could Not Start Verification',
+        body: 'Something went wrong while loading. Please check your internet connection and try again.',
+        meta: 'Compatibility mode could not start. Please close and reopen the verification link from MiKashBoks.',
+        primaryLabel: 'Retry',
+        secondaryLabel: 'Close',
+        onPrimary: function () {
+          window.location.reload();
+        },
+        onSecondary: function () {
+          signalCompletion('error', '', 'INIT_FAILED');
+        },
+      });
+    });
 
-      function showOrientationHint() {
-        if (!isDocCaptureActive || orientationDismissed) return;
-        if (window.innerHeight > window.innerWidth) {
-          orientationHint.classList.add('visible');
-        } else {
-          orientationHint.classList.remove('visible');
-        }
-      }
+    // ── Lottie loading animation (for initial page load) ──
+    var lottieAnimData = {
+      v: '5.7.1',
+      fr: 30,
+      ip: 0,
+      op: 60,
+      w: 200,
+      h: 200,
+      nm: 'verify',
+      layers: [
+        {
+          ddd: 0,
+          ind: 0,
+          ty: 4,
+          nm: 'arc',
+          sr: 1,
+          ks: {
+            o: { a: 0, k: 100 },
+            r: {
+              a: 1,
+              k: [
+                { i: { x: [0.833], y: [0.833] }, o: { x: [0.167], y: [0.167] }, t: 0, s: [0] },
+                { t: 60, s: [360] },
+              ],
+            },
+            p: { a: 0, k: [100, 100, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: { a: 0, k: [100, 100, 100] },
+          },
+          ao: 0,
+          shapes: [
+            { ty: 'el', d: 1, s: { a: 0, k: [140, 140] }, p: { a: 0, k: [0, 0] } },
+            {
+              ty: 'st',
+              c: { a: 0, k: [0.000, 0.443, 0.827, 1] },
+              o: { a: 0, k: 100 },
+              w: { a: 0, k: 5 },
+              lc: 2,
+              lj: 1,
+              d: [
+                { n: 'd', nm: 'd', v: { a: 0, k: 90 } },
+                { n: 'g', nm: 'g', v: { a: 0, k: 200 } },
+              ],
+            },
+          ],
+          ip: 0,
+          op: 60,
+          st: 0,
+          bm: 0,
+        },
+        {
+          ddd: 0,
+          ind: 1,
+          ty: 4,
+          nm: 'arc2',
+          sr: 1,
+          ks: {
+            o: { a: 0, k: 50 },
+            r: {
+              a: 1,
+              k: [
+                { i: { x: [0.833], y: [0.833] }, o: { x: [0.167], y: [0.167] }, t: 0, s: [180] },
+                { t: 60, s: [540] },
+              ],
+            },
+            p: { a: 0, k: [100, 100, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: { a: 0, k: [100, 100, 100] },
+          },
+          ao: 0,
+          shapes: [
+            { ty: 'el', d: 1, s: { a: 0, k: [110, 110] }, p: { a: 0, k: [0, 0] } },
+            {
+              ty: 'st',
+              c: { a: 0, k: [0.000, 0.443, 0.827, 1] },
+              o: { a: 0, k: 100 },
+              w: { a: 0, k: 3 },
+              lc: 2,
+              lj: 1,
+              d: [
+                { n: 'd', nm: 'd', v: { a: 0, k: 50 } },
+                { n: 'g', nm: 'g', v: { a: 0, k: 200 } },
+              ],
+            },
+          ],
+          ip: 0,
+          op: 60,
+          st: 0,
+          bm: 0,
+        },
+        {
+          ddd: 0,
+          ind: 2,
+          ty: 4,
+          nm: 'pulse',
+          sr: 1,
+          ks: {
+            o: {
+              a: 1,
+              k: [
+                { i: { x: [0.667] }, o: { x: [0.333] }, t: 0, s: [20] },
+                { i: { x: [0.667] }, o: { x: [0.333] }, t: 30, s: [8] },
+                { t: 60, s: [20] },
+              ],
+            },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [100, 100, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: {
+              a: 1,
+              k: [
+                {
+                  i: { x: [0.667, 0.667, 0.667] },
+                  o: { x: [0.333, 0.333, 0.333] },
+                  t: 0,
+                  s: [100, 100, 100],
+                },
+                {
+                  i: { x: [0.667, 0.667, 0.667] },
+                  o: { x: [0.333, 0.333, 0.333] },
+                  t: 30,
+                  s: [115, 115, 100],
+                },
+                { t: 60, s: [100, 100, 100] },
+              ],
+            },
+          },
+          ao: 0,
+          shapes: [
+            { ty: 'el', d: 1, s: { a: 0, k: [70, 70] }, p: { a: 0, k: [0, 0] } },
+            { ty: 'fl', c: { a: 0, k: [0.000, 0.443, 0.827, 1] }, o: { a: 0, k: 100 } },
+          ],
+          ip: 0,
+          op: 60,
+          st: 0,
+          bm: 0,
+        },
+      ],
+    };
 
-      function hideOrientationHint() {
-        orientationHint.classList.remove('visible');
-      }
+    var lottieInstance = null;
 
-      // Dismiss button handler (sole handler — inline onclick removed)
-      var dismissBtn = orientationHint.querySelector('.dismiss-btn');
-      if (dismissBtn) {
-        dismissBtn.addEventListener('click', function () {
-          orientationDismissed = true;
-          hideOrientationHint();
-        });
-      }
-
-      function requestLandscape() {
+    function destroyLottie() {
+      if (lottieInstance) {
         try {
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape').catch(function () {
-              showOrientationHint();
-            });
-          } else {
-            showOrientationHint();
-          }
-        } catch (e) {
-          showOrientationHint();
-        }
-      }
-
-      function releaseLandscape() {
-        try {
-          if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
-          }
+          lottieInstance.destroy();
         } catch (e) {
           /* ignore */
         }
+        lottieInstance = null;
+      }
+    }
+
+    function initLottieForInitLoading() {
+      if (typeof window.lottie === 'undefined') return;
+      var initLoadingEl = document.querySelector('.init-loading');
+      if (!initLoadingEl) return;
+      destroyLottie();
+      var container = document.createElement('div');
+      container.className = 'lottie-player';
+      container.style.width = '120px';
+      container.style.height = '120px';
+      initLoadingEl.insertBefore(container, initLoadingEl.firstChild);
+      try {
+        lottieInstance = window.lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: lottieAnimData,
+        });
+        initLoadingEl.classList.add('has-lottie');
+      } catch (e) {
+        console.warn('Lottie init failed, keeping CSS spinner:', e);
+      }
+    }
+
+    function tryInjectLottieIntoSDKLoader(blrnApp) {
+      if (typeof window.lottie === 'undefined') return;
+      if (blrnApp.querySelector('.lottie-player')) return;
+      var spinnerEl = blrnApp.querySelector(
+        '[class*="loader" i], [class*="spinner" i], [class*="loading" i]',
+      );
+      if (!spinnerEl || !spinnerEl.parentElement) return;
+      destroyLottie();
+      var container = document.createElement('div');
+      container.className = 'lottie-player';
+      container.style.width = '120px';
+      container.style.height = '120px';
+      container.style.margin = '0 auto 16px';
+      spinnerEl.parentElement.insertBefore(container, spinnerEl);
+      try {
+        lottieInstance = window.lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: lottieAnimData,
+        });
+        spinnerEl.style.display = 'none';
+      } catch (e) {
+        container.remove();
+      }
+    }
+
+    // Initialize Lottie for the init loading spinner once script loads
+    if (typeof window.lottie !== 'undefined') {
+      initLottieForInitLoading();
+    } else {
+      // Wait for deferred lottie script to load
+      window.addEventListener('load', function () {
+        setTimeout(initLottieForInitLoading, 100);
+      });
+    }
+
+    // ── Landscape orientation hint for document capture ──
+    var orientationHint = document.getElementById('orientation-hint');
+    var isDocCaptureActive = false;
+    var orientationDismissed = false;
+    var resizeDebounce = null;
+
+    function showOrientationHint() {
+      if (!isDocCaptureActive || orientationDismissed) return;
+      if (window.innerHeight > window.innerWidth) {
+        orientationHint.classList.add('visible');
+      } else {
+        orientationHint.classList.remove('visible');
+      }
+    }
+
+    function hideOrientationHint() {
+      orientationHint.classList.remove('visible');
+    }
+
+    // Dismiss button handler (sole handler — inline onclick removed)
+    var dismissBtn = orientationHint.querySelector('.dismiss-btn');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', function () {
+        orientationDismissed = true;
         hideOrientationHint();
+      });
+    }
+
+    function requestLandscape() {
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(function () {
+            showOrientationHint();
+          });
+        } else {
+          showOrientationHint();
+        }
+      } catch (e) {
+        showOrientationHint();
       }
+    }
 
-      window.addEventListener('resize', function () {
-        clearTimeout(resizeDebounce);
-        resizeDebounce = setTimeout(function () {
-          if (isDocCaptureActive) showOrientationHint();
-        }, 100);
-      });
+    function releaseLandscape() {
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      hideOrientationHint();
+    }
 
-      // ── Step detection via MutationObserver ──
-      var stepObserverDebounce = null;
-      var stepObserverAttached = false;
-      var stepObserver = new MutationObserver(function () {
-        clearTimeout(stepObserverDebounce);
-        stepObserverDebounce = setTimeout(function () {
-          var host = document.getElementById('kyc-host');
-          if (!host) return;
-          var blrnApp = host.querySelector('#blrn-app');
-          if (!blrnApp) return;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(function () {
+        if (isDocCaptureActive) showOrientationHint();
+      }, 100);
+    });
 
-          // Detect document capture step (has camera + document overlay)
-          var hasCamera = !!blrnApp.querySelector('video, [class*="camera"]');
-          var hasDocOverlay = !!blrnApp.querySelector(
-            '.overlay.card, .overlay.passport, [class*="document-overlay"]',
-          );
-          var isDocCapture = hasCamera && hasDocOverlay;
-
-          if (isDocCapture && !isDocCaptureActive) {
-            isDocCaptureActive = true;
-            orientationDismissed = false;
-            requestLandscape();
-          } else if (!isDocCapture && isDocCaptureActive) {
-            isDocCaptureActive = false;
-            orientationDismissed = false; // Reset for next document step
-            releaseLandscape();
-          }
-
-          // Detect loading step and try to inject Lottie
-          var textContent = blrnApp.textContent || '';
-          var isLoadingStep =
-            /uploading|running.*checks|finalizing/i.test(textContent) &&
-            !blrnApp.querySelector('.status-card');
-          if (isLoadingStep) {
-            tryInjectLottieIntoSDKLoader(blrnApp);
-          }
-        }, 250);
-      });
-
-      function attachStepObserver() {
-        if (stepObserverAttached) return;
+    // ── Step detection via MutationObserver ──
+    var stepObserverDebounce = null;
+    var stepObserverAttached = false;
+    var stepObserver = new MutationObserver(function () {
+      clearTimeout(stepObserverDebounce);
+      stepObserverDebounce = setTimeout(function () {
         var host = document.getElementById('kyc-host');
-        if (host) {
-          stepObserver.observe(host, { childList: true, subtree: true });
-          stepObserverAttached = true;
+        if (!host) return;
+        var blrnApp = host.querySelector('#blrn-app');
+        if (!blrnApp) return;
+
+        // Detect document capture step (has camera + document overlay)
+        var hasCamera = !!blrnApp.querySelector('video, [class*="camera"]');
+        var hasDocOverlay = !!blrnApp.querySelector(
+          '.overlay.card, .overlay.passport, [class*="document-overlay"]',
+        );
+        var isDocCapture = hasCamera && hasDocOverlay;
+
+        if (isDocCapture && !isDocCaptureActive) {
+          isDocCaptureActive = true;
+          orientationDismissed = false;
+          requestLandscape();
+        } else if (!isDocCapture && isDocCaptureActive) {
+          isDocCaptureActive = false;
+          orientationDismissed = false; // Reset for next document step
+          releaseLandscape();
         }
+
+        // Detect loading step and try to inject Lottie
+        var textContent = blrnApp.textContent || '';
+        var isLoadingStep =
+          /uploading|checking|almost done/i.test(textContent) &&
+          !blrnApp.querySelector('.status-card');
+        if (isLoadingStep) {
+          tryInjectLottieIntoSDKLoader(blrnApp);
+        }
+      }, 250);
+    });
+
+    function attachStepObserver() {
+      if (stepObserverAttached) return;
+      var host = document.getElementById('kyc-host');
+      if (host) {
+        stepObserver.observe(host, { childList: true, subtree: true });
+        stepObserverAttached = true;
       }
+    }
 
-      // Cleanup on flow completion or page unload
-      function cleanupObserversAndAnimations() {
-        if (stepObserverAttached) {
-          stepObserver.disconnect();
-          stepObserverAttached = false;
-        }
-        clearTimeout(stepObserverDebounce);
-        clearTimeout(resizeDebounce);
-        destroyLottie();
-        releaseLandscape();
+    // Cleanup on flow completion or page unload
+    function cleanupObserversAndAnimations() {
+      if (stepObserverAttached) {
+        stepObserver.disconnect();
+        stepObserverAttached = false;
       }
+      clearTimeout(stepObserverDebounce);
+      clearTimeout(resizeDebounce);
+      destroyLottie();
+      releaseLandscape();
+    }
 
-      window.addEventListener('pagehide', cleanupObserversAndAnimations);
-      window.addEventListener('beforeunload', cleanupObserversAndAnimations);
+    window.addEventListener('pagehide', cleanupObserversAndAnimations);
+    window.addEventListener('beforeunload', cleanupObserversAndAnimations);
 
-      attachStepObserver();
+    attachStepObserver();
 
-      // ── Offline detection ──
-      var offlineBanner = document.getElementById('offline-banner');
-      window.addEventListener('offline', function () {
-        offlineBanner.classList.add('visible');
-      });
-      window.addEventListener('online', function () {
-        offlineBanner.classList.remove('visible');
-        if (initFailed) {
-          window.location.reload();
-        }
-      });
-    </script>
-  </body>
+    // ── Offline detection ──
+    var offlineBanner = document.getElementById('offline-banner');
+    window.addEventListener('offline', function () {
+      offlineBanner.classList.add('visible');
+    });
+    window.addEventListener('online', function () {
+      offlineBanner.classList.remove('visible');
+      if (initFailed) {
+        window.location.reload();
+      }
+    });
+  </script>
+</body>
+
 </html>

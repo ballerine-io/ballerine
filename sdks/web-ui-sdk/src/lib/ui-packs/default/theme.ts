@@ -764,6 +764,118 @@ const stepsTheme: TStepsConfigurations = [
       },
     ],
   },
+  // ── Address Proof Steps ──
+  {
+    name: Steps.AddressProofStart,
+    id: Steps.AddressProofStart,
+    style: {},
+    elements: [
+      backIconButton,
+      closeIconButton,
+      {
+        type: Elements.Title,
+        orderIndex: 30,
+        id: 'title',
+        props: {},
+      },
+      {
+        id: 'description',
+        orderIndex: 40,
+        type: Elements.Paragraph,
+        props: {},
+      },
+      {
+        id: 'image',
+        orderIndex: 50,
+        type: Elements.Image,
+        props: {
+          attributes: {
+            src: '/assets/ui-packs/default/images/document-photo-back-start.svg',
+            alt: 'address-proof-start',
+            width: '260px',
+            height: '212px',
+          },
+        },
+      },
+      {
+        id: 'button',
+        orderIndex: 60,
+        type: Elements.Button,
+        props: {},
+      },
+    ],
+  },
+  {
+    name: Steps.AddressProofPhoto,
+    id: Steps.AddressProofPhoto,
+    elements: [
+      backWhiteIconButton,
+      {
+        id: 'title',
+        orderIndex: 20,
+        type: Elements.Title,
+        props: {
+          style: {
+            color: '#fff',
+          },
+        },
+      },
+      {
+        id: 'description',
+        orderIndex: 30,
+        type: Elements.Paragraph,
+        props: {
+          style: {
+            color: '#fff',
+          },
+        },
+      },
+      {
+        id: 'video',
+        orderIndex: 40,
+        type: Elements.VideoContainer,
+        props: {},
+      },
+      {
+        id: 'loader',
+        orderIndex: 50,
+        type: Elements.Loader,
+        props: {},
+      },
+      {
+        id: 'button',
+        orderIndex: 60,
+        type: Elements.CameraButton,
+        props: {},
+      },
+    ],
+  },
+  {
+    name: Steps.CheckAddressProof,
+    id: Steps.CheckAddressProof,
+    elements: [
+      backIconButton,
+      closeIconButton,
+      {
+        id: 'title',
+        orderIndex: 30,
+        type: Elements.Title,
+        props: {},
+      },
+      {
+        id: 'description',
+        orderIndex: 40,
+        type: Elements.Paragraph,
+        props: {},
+      },
+      {
+        id: 'photo',
+        orderIndex: 50,
+        type: Elements.Photo,
+        props: {},
+      },
+    ],
+  },
 ];
 
 export const uiTheme: IUIPackTheme & Pick<IAppConfigurationUI, 'settings'> = {
@@ -1021,6 +1133,30 @@ export const uiTheme: IUIPackTheme & Pick<IAppConfigurationUI, 'settings'> = {
       'text-align': 'center',
       padding: '10px 0px 24px',
       color: '#001B39',
+    },
+    list: {
+      listProps: {
+        style: {
+          margin: '0px',
+          padding: '0px',
+          'text-align': 'left',
+        },
+      },
+      titleProps: {
+        style: {
+          'font-weight': 600,
+          'font-size': '16px',
+          color: '#001B39',
+          margin: '0px 0px 12px',
+        },
+      },
+      listElementProps: {
+        style: {
+          'font-size': '14px',
+          color: '#788597',
+          margin: '8px 0px',
+        },
+      },
     },
   },
   settings: {

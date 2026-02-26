@@ -9,6 +9,15 @@ describe('ConfigSchema', () => {
         primaryColor: '#0B63CE',
         fontFamily: 'Montserrat',
       },
+      kycSdkUi: {
+        enableLargeTypography: true,
+        simplifyCopy: true,
+        hideWebHeaderInNative: true,
+        skipWelcomeWhenNativeIntro: true,
+        showCompatTriggerReason: true,
+        requireAddressProof: true,
+        forceLegacyWhenAddressProof: true,
+      },
     });
 
     expect(result.success).toBe(true);
@@ -26,6 +35,7 @@ describe('ConfigSchema', () => {
   it('still validates known key types', () => {
     const result = ConfigSchema.safeParse({
       kycSdkSteps: 'welcome',
+      kycSdkUi: { requireAddressProof: 'true' },
     });
 
     expect(result.success).toBe(false);

@@ -42,6 +42,8 @@
       html,
       body {
         height: 100%;
+        width: 100%;
+        max-width: 100%;
         font-family: 'Inter', -apple-system, sans-serif;
         background: var(--bg);
         color: var(--text);
@@ -185,7 +187,7 @@
       }
 
       .step-desc {
-        font-size: 16px;
+        font-size: 17px;
         color: var(--text-muted);
         text-align: center;
         line-height: 1.65;
@@ -322,6 +324,12 @@
         border-radius: 12px;
       }
 
+      .camera-overlay.a4 {
+        aspect-ratio: 1 / 1.4142;
+        width: 70%;
+        border-radius: 12px;
+      }
+
       .camera-overlay.selfie-frame {
         aspect-ratio: 3 / 4;
         width: 70%;
@@ -389,12 +397,12 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 360px;
+        min-height: 400px;
       }
 
       .preview-container img {
-        max-width: 100%;
-        max-height: 420px;
+        width: min(96vw, 520px);
+        max-height: min(70vh, 520px);
         border-radius: var(--radius);
         box-shadow: var(--shadow-lg);
         object-fit: contain;
@@ -544,6 +552,22 @@
         border-top: 1px solid var(--border);
         flex-shrink: 0;
       }
+
+      .compat-banner {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #eff6ff;
+        color: #0c4a6e;
+        border-bottom: 1px solid #bfdbfe;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .compat-banner.visible {
+        display: flex;
+      }
     </style>
   </head>
 
@@ -558,6 +582,10 @@
     <div id="errorBanner" class="error-banner">
       <span>⚠️</span>
       <span class="error-text" id="errorText"></span>
+    </div>
+    <div id="compatBanner" class="compat-banner">
+      <span>ℹ️</span>
+      <span id="compatBannerText"></span>
     </div>
 
     <div class="content">
@@ -595,7 +623,7 @@
           <button
             class="doc-card"
             data-doc-type="id_card"
-            data-doc-category="identification_document"
+            data-doc-category="proof_of_identity"
             role="radio"
             aria-checked="false"
             tabindex="0"
@@ -631,7 +659,7 @@
           <button
             class="doc-card"
             data-doc-type="passport"
-            data-doc-category="identification_document"
+            data-doc-category="proof_of_identity"
             role="radio"
             aria-checked="false"
             tabindex="0"
@@ -667,7 +695,7 @@
           <button
             class="doc-card"
             data-doc-type="voter_id"
-            data-doc-category="identification_document"
+            data-doc-category="proof_of_identity"
             role="radio"
             aria-checked="false"
             tabindex="0"
@@ -701,7 +729,7 @@
           <button
             class="doc-card"
             data-doc-type="drivers_license"
-            data-doc-category="identification_document"
+            data-doc-category="proof_of_identity"
             role="radio"
             aria-checked="false"
             tabindex="0"
@@ -805,7 +833,47 @@
         </div>
       </div>
 
-      <!-- STEP 6: Selfie intro -->
+      <!-- STEP 6: Address Proof -->
+      <div class="step" id="step-address-photo">
+        <div class="step-title">Proof of Address</div>
+        <div class="step-desc">
+          Take a clear photo of a utility bill, bank statement, or government letter showing your
+          current address.
+        </div>
+        <div class="camera-container" id="addressCameraContainer">
+          <div class="camera-loading" id="addressCameraLoading">
+            <div class="spinner"></div>
+            <span>Starting camera...</span>
+          </div>
+          <video id="addressVideo" autoplay playsinline muted></video>
+          <div class="camera-overlay-container">
+            <div class="camera-overlay a4" id="addressOverlay">
+              <span class="overlay-label">ADDRESS PROOF</span>
+            </div>
+          </div>
+          <div class="camera-hint">Hold steady and avoid glare</div>
+          <button
+            class="btn-capture"
+            id="addressCaptureBtn"
+            aria-label="Take proof of address photo"
+          ></button>
+        </div>
+      </div>
+
+      <!-- STEP 7: Review Address Proof -->
+      <div class="step" id="step-address-review">
+        <div class="step-title">Review Address Proof</div>
+        <div class="step-desc">
+          Make sure your name and address are clearly visible and readable.
+        </div>
+        <div class="preview-container"><img id="addressPreview" alt="Address proof preview" /></div>
+        <div class="preview-actions">
+          <button class="btn btn-secondary" id="addressRetakeBtn">↻ Retake</button>
+          <button class="btn btn-primary" id="addressAcceptBtn">✓ Looks Good</button>
+        </div>
+      </div>
+
+      <!-- STEP 8: Selfie intro -->
       <div class="step" id="step-selfie-start">
         <div class="step-icon selfie">
           <svg
@@ -833,7 +901,7 @@
         <div class="spacer"></div>
       </div>
 
-      <!-- STEP 7: Selfie Photo -->
+      <!-- STEP 9: Selfie Photo -->
       <div class="step" id="step-selfie">
         <div class="step-title">Take Your Selfie</div>
         <div class="step-desc">Look at the camera and hold steady</div>
@@ -851,7 +919,7 @@
         </div>
       </div>
 
-      <!-- STEP 8: Review Selfie -->
+      <!-- STEP 10: Review Selfie -->
       <div class="step" id="step-selfie-review">
         <div class="step-title">Review Your Selfie</div>
         <div class="step-desc">Make sure your face is clearly visible</div>
@@ -864,7 +932,7 @@
         </div>
       </div>
 
-      <!-- STEP 9: Submitting -->
+      <!-- STEP 11: Submitting -->
       <div class="step" id="step-loading">
         <div class="spacer"></div>
         <div class="spinner"></div>
@@ -873,7 +941,7 @@
         <div class="spacer"></div>
       </div>
 
-      <!-- STEP 10: Complete -->
+      <!-- STEP 12: Complete -->
       <div class="step" id="step-complete">
         <div class="spacer"></div>
         <div class="step-icon success">
@@ -963,12 +1031,40 @@
       }
       const skipWelcome = truthyParam(params.get('skipWelcome'));
       const hasNativeHeader = truthyParam(params.get('nativeHeader'));
+      const showCompatReason =
+        !params.has('showCompatReason') || truthyParam(params.get('showCompatReason'));
+      const legacyReason = params.get('legacyReason');
+      let requireAddressProof = truthyParam(params.get('addressProof'));
       if (hasNativeHeader) {
         document.body.classList.add('native-header');
       }
       if (skipWelcome) {
         document.body.classList.add('skip-welcome');
       }
+
+      function describeLegacyReason(reasonCode) {
+        const reason = String(reasonCode || '').toLowerCase();
+        if (reason.includes('address_proof_required')) {
+          return 'We switched to compatibility mode because this verification requires one extra proof-of-address photo.';
+        }
+        if (reason.includes('timeout') || reason.includes('network')) {
+          return 'We switched to compatibility mode because your connection was unstable while loading the standard flow.';
+        }
+        if (reason.includes('step') || reason.includes('sdk') || reason.includes('init')) {
+          return 'We switched to compatibility mode because your phone had trouble loading one standard verification screen.';
+        }
+        return 'Compatibility mode is active to improve reliability on this phone.';
+      }
+
+      function showCompatibilityReason(reasonCode) {
+        const banner = document.getElementById('compatBanner');
+        const text = document.getElementById('compatBannerText');
+        if (!banner || !text || !reasonCode || !showCompatReason) return;
+        text.textContent = describeLegacyReason(reasonCode);
+        banner.classList.add('visible');
+      }
+
+      showCompatibilityReason(legacyReason);
       // API base: from kyb-app runtime config (entrypoint.sh writes globalThis.env.VITE_API_URL)
       // Security: NEVER allow apiUrl override from query params (prevents credential theft)
       const rawBase =
@@ -982,24 +1078,32 @@
       }
 
       // ── State ──
-      const BASE_STEPS = [
-        'step-welcome',
-        'step-doc-select',
-        'step-doc-photo',
-        'step-doc-review',
-        'step-doc-back-photo',
-        'step-doc-back-review',
-        'step-selfie-start',
-        'step-selfie',
-        'step-selfie-review',
-        'step-loading',
-        'step-complete',
-      ];
-      const STEPS = skipWelcome
-        ? BASE_STEPS.filter(function (stepId) {
-            return stepId !== 'step-welcome';
-          })
-        : BASE_STEPS;
+      function buildLinearSteps() {
+        const steps = [
+          'step-welcome',
+          'step-doc-select',
+          'step-doc-photo',
+          'step-doc-review',
+          'step-doc-back-photo',
+          'step-doc-back-review',
+        ];
+        if (requireAddressProof) {
+          steps.push('step-address-photo', 'step-address-review');
+        }
+        steps.push(
+          'step-selfie-start',
+          'step-selfie',
+          'step-selfie-review',
+          'step-loading',
+          'step-complete',
+        );
+        if (!skipWelcome) return steps;
+        return steps.filter(function (stepId) {
+          return stepId !== 'step-welcome';
+        });
+      }
+
+      let STEPS = buildLinearSteps();
       let currentStep = 0;
       // Pre-selected document type from Android (skips welcome + doc-select steps)
       const VALID_DOC_TYPES = ['id_card', 'passport', 'voter_id', 'drivers_license'];
@@ -1007,9 +1111,10 @@
       let selectedDocType = VALID_DOC_TYPES.includes(preselectedDocType)
         ? preselectedDocType
         : null;
-      let selectedDocCategory = selectedDocType ? 'identification_document' : null;
+      let selectedDocCategory = selectedDocType ? 'proof_of_identity' : null;
       let docPhotoBlob = null;
       let docBackPhotoBlob = null;
+      let addressProofBlob = null;
       let selfieBlob = null;
       let activeStream = null;
       let isMirrored = false;
@@ -1038,6 +1143,10 @@
       function needsBackSide(docType) {
         // Passports are single-page; cards typically have a back side
         return docType !== 'passport';
+      }
+
+      function getPostDocumentStep() {
+        return requireAddressProof ? 'step-address-photo' : 'step-selfie-start';
       }
 
       // ── Error taxonomy for resubmission ──
@@ -1282,6 +1391,13 @@
           2,
         );
         workflowData = result.result || result;
+        const configRequireAddressProof = workflowData?.config?.kycSdkUi?.requireAddressProof;
+        if (typeof configRequireAddressProof === 'boolean') {
+          const previousStepId = STEPS[currentStep] || 'step-welcome';
+          requireAddressProof = configRequireAddressProof;
+          STEPS = buildLinearSteps();
+          currentStep = Math.max(0, STEPS.indexOf(previousStepId));
+        }
         console.log('Workflow data loaded:', !!workflowData);
       }
 
@@ -1354,6 +1470,10 @@
           updateDocOverlay('docBackOverlay', selectedDocType);
           startCamera(document.getElementById('docBackVideo'), 'environment');
         }
+        if (stepId === 'step-address-photo') {
+          updateDocOverlay('addressOverlay', 'bank_statement');
+          startCamera(document.getElementById('addressVideo'), 'environment');
+        }
         if (stepId === 'step-selfie') startCamera(document.getElementById('selfieVideo'), 'user');
         if (stepId === 'step-loading') submitDocuments();
       }
@@ -1372,6 +1492,10 @@
         const overlay = document.getElementById(overlayId);
         if (!overlay) return;
         // Reset classes and apply correct type
+        if (overlayId === 'addressOverlay') {
+          overlay.className = 'camera-overlay a4';
+          return;
+        }
         overlay.className = 'camera-overlay ' + getOverlayClass(docType || 'id_card');
         // Keep the label if present
         const label = overlay.querySelector('.overlay-label');
@@ -1385,6 +1509,8 @@
           'step-doc-review',
           'step-doc-back-photo',
           'step-doc-back-review',
+          'step-address-photo',
+          'step-address-review',
           'step-selfie',
           'step-selfie-review',
           'step-loading',
@@ -1427,6 +1553,7 @@
           if (reason.targetStep === 'step-doc-photo' || reason.targetStep === 'step-doc-select') {
             docPhotoBlob = null;
             docBackPhotoBlob = null;
+            addressProofBlob = null;
           }
           if (reason.targetStep === 'step-selfie') {
             selfieBlob = null;
@@ -1554,9 +1681,9 @@
         if (needsBackSide(selectedDocType)) {
           goToStep(STEPS.indexOf('step-doc-back-photo'));
         } else {
-          // Passports: skip back side, go straight to selfie
+          // Passports: skip back side
           docBackPhotoBlob = null;
-          goToStep(STEPS.indexOf('step-selfie-start'));
+          goToStep(STEPS.indexOf(getPostDocumentStep()));
         }
       });
 
@@ -1581,6 +1708,28 @@
 
       document
         .getElementById('docBackAcceptBtn')
+        .addEventListener('click', () => goToStep(STEPS.indexOf(getPostDocumentStep())));
+
+      document.getElementById('addressCaptureBtn').addEventListener('click', async () => {
+        const blob = await captureFrame(document.getElementById('addressVideo'), {
+          forceLandscape: true,
+        });
+        if (!blob) {
+          showError('Could not capture address proof. Please try again.');
+          return;
+        }
+        addressProofBlob = blob;
+        blobToPreview(addressProofBlob, document.getElementById('addressPreview'));
+        goToStep(STEPS.indexOf('step-address-review'));
+      });
+
+      document.getElementById('addressRetakeBtn').addEventListener('click', () => {
+        addressProofBlob = null;
+        goToStep(STEPS.indexOf('step-address-photo'));
+      });
+
+      document
+        .getElementById('addressAcceptBtn')
         .addEventListener('click', () => goToStep(STEPS.indexOf('step-selfie-start')));
 
       document.getElementById('selfieCaptureBtn').addEventListener('click', async () => {
@@ -1633,6 +1782,10 @@
           showErrorStep('Back-side photo is required. Please go back and capture it.');
           return;
         }
+        if (requireAddressProof && !addressProofBlob) {
+          showErrorStep('Proof of address is required. Please go back and capture it.');
+          return;
+        }
 
         try {
           // 1. Upload all photos in parallel
@@ -1651,7 +1804,7 @@
               selfieBlob,
               'selfie.jpeg',
               selectedDocType,
-              selectedDocCategory,
+              'proof_of_identity_ownership',
               'selfie',
               'front',
               docBackPhotoBlob ? 3 : 2,
@@ -1668,6 +1821,19 @@
                 'document',
                 'back',
                 2,
+              ),
+            );
+          }
+          if (requireAddressProof && addressProofBlob) {
+            uploads.push(
+              uploadDocument(
+                addressProofBlob,
+                'proof_of_address.jpeg',
+                'utility_bill',
+                'proof_of_address',
+                'document',
+                'front',
+                1,
               ),
             );
           }

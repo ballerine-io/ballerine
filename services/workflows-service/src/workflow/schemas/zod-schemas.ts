@@ -124,6 +124,17 @@ export const ConfigSchema = z
         fontWeights: z.array(z.number()).optional(),
       })
       .optional(),
+    kycSdkUi: z
+      .object({
+        enableLargeTypography: z.boolean().optional(),
+        simplifyCopy: z.boolean().optional(),
+        hideWebHeaderInNative: z.boolean().optional(),
+        skipWelcomeWhenNativeIntro: z.boolean().optional(),
+        showCompatTriggerReason: z.boolean().optional(),
+        requireAddressProof: z.boolean().optional(),
+        forceLegacyWhenAddressProof: z.boolean().optional(),
+      })
+      .optional(),
   })
   // Accept unknown keys so mixed-revision rollouts do not fail on newly introduced config fields.
   .passthrough()
