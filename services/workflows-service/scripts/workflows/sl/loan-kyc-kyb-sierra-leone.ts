@@ -63,8 +63,8 @@ export const loanKycKybSierraLeoneDefinition = {
         tags: [StateTag.PENDING_PROCESS],
         on: {
           start: 'kyc_verification',
-          // Guard: child callback can arrive before parent start is processed.
-          // Accept and continue instead of rejecting with invalid-transition error.
+          // Guard: if child KYC completed before parent left idle (race condition),
+          // skip directly to KYB determination instead of failing.
           KYC_CHILD_RESPONDED: [{ target: 'kyb_determination' }],
         },
       },
@@ -77,7 +77,7 @@ export const loanKycKybSierraLeoneDefinition = {
         on: {
           KYC_CHILD_SPAWNED: [{ target: 'pending_kyc' }],
           KYC_CHILD_FAILED: [{ target: 'manual_review' }],
-          // Guard: child result may race ahead of spawn acknowledgment.
+          // Guard: child completed faster than spawn acknowledgment
           KYC_CHILD_RESPONDED: [{ target: 'kyb_determination' }],
         },
       },
