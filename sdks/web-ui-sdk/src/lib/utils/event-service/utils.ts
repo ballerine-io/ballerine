@@ -102,12 +102,24 @@ export const sendButtonClickEvent = (
 };
 
 export const sendFlowErrorEvent = (_error: Error, _shouldExit = false) => {
-  // const as = get(appState);
+  const error = _error as Error & {
+    stage?: string;
+    reasonCode?: string | number;
+    status?: number;
+  };
+  const payload: Record<string, unknown> = {
+    message: error.message || 'Unknown flow error',
+    stage: error.stage || 'flow_runtime',
+    reasonCode: typeof error.reasonCode !== 'undefined' ? error.reasonCode : 'FLOW_RUNTIME_ERROR',
+  };
+  if (typeof error.status === 'number') {
+    payload.status = error.status;
+  }
 
   const eventOptions: IFlowErrorPayload = {
     eventName: BALLERINE_EVENT,
     eventType: EventTypes.FLOW_ERROR,
-    payload: {},
+    payload,
     // shouldExit: shouldExit,
     // details: {
     //   currentIdx: as.currentStepIdx,

@@ -48,6 +48,45 @@ export class CollectionFlowController {
     protected readonly documentService: DocumentService,
   ) {}
 
+  private isWorkflowTransitionConflict(error: unknown): boolean {
+    if (!(error instanceof common.BadRequestException)) {
+      return false;
+    }
+
+    const response = error.getResponse();
+    const responseRecord = response as AnyRecord;
+    const responseMessage = responseRecord?.message;
+    const rawMessage =
+      typeof response === 'string'
+        ? response
+        : Array.isArray(responseMessage)
+        ? responseMessage.map(item => String(item)).join(' ')
+        : String(responseMessage || '');
+
+    return rawMessage.includes('does not exist for workflow');
+  }
+
+  private toIdempotentConflict(error: unknown, stage: 'send_event' | 'final_submission') {
+    const response =
+      error instanceof common.BadRequestException ? error.getResponse() : (error as AnyRecord);
+    const responseRecord = response as AnyRecord;
+    const responseMessage = responseRecord?.message;
+    const details =
+      typeof response === 'string'
+        ? response
+        : Array.isArray(responseMessage)
+        ? responseMessage.map(item => String(item)).join(' ')
+        : String(responseMessage || 'Workflow state conflict');
+
+    return new common.ConflictException({
+      message:
+        'Submission was already processed or workflow already advanced. Refresh status and continue.',
+      reasonCode: 'WORKFLOW_STATE_CONFLICT',
+      stage,
+      details,
+    });
+  }
+
   @common.Get('/customer')
   async getCustomer(@TokenScope() tokenScope: ITokenScope) {
     return this.collectionFlowService.getCustomerDetails(tokenScope.projectId);
@@ -153,14 +192,28 @@ export class CollectionFlowController {
 
   @common.Post('/send-event')
   async finishFlow(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
-    return await this.workflowService.event(
-      {
-        id: tokenScope.workflowRuntimeDataId,
-        name: body.eventName,
-      },
-      [tokenScope.projectId],
-      tokenScope.projectId,
-    );
+    try {
+      return await this.workflowService.event(
+        {
+          id: tokenScope.workflowRuntimeDataId,
+          name: body.eventName,
+        },
+        [tokenScope.projectId],
+        tokenScope.projectId,
+      );
+    } catch (error) {
+      if (this.isWorkflowTransitionConflict(error)) {
+        this.appLogger.warn('send-event idempotent conflict', {
+          workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+          projectId: tokenScope.projectId,
+          eventName: body.eventName,
+          error,
+        });
+        throw this.toIdempotentConflict(error, 'send_event');
+      }
+
+      throw error;
+    }
   }
 
   @common.Post('/final-submission')
@@ -245,6 +298,20 @@ export class CollectionFlowController {
     } catch (error) {
       if (error instanceof CollectionFlowMissingException) {
         throw error;
+      }
+
+      if (error instanceof common.ConflictException) {
+        throw error;
+      }
+
+      if (this.isWorkflowTransitionConflict(error)) {
+        this.appLogger.warn('final-submission idempotent conflict', {
+          workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
+          projectId: tokenScope.projectId,
+          eventName: body.eventName,
+          error,
+        });
+        throw this.toIdempotentConflict(error, 'final_submission');
       }
 
       try {

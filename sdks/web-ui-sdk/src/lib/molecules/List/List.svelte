@@ -13,12 +13,18 @@
   export let configuration: IElementProps;
 
   const globalListProps =
-    ($globalConfiguration.list?.listProps as IElementProps) || $uiPack.list.listProps;
-  const globalListStyles = globalListProps.style as ICSSProperties;
+    ($globalConfiguration.components?.list?.listProps as IElementProps) ||
+    $uiPack?.components?.list?.listProps ||
+    {};
+  const globalListStyles = globalListProps?.style as ICSSProperties;
   const titleProps =
-    ($globalConfiguration.list?.titleProps as IElementProps) || $uiPack.list.titleProps;
+    ($globalConfiguration.components?.list?.titleProps as IElementProps) ||
+    $uiPack?.components?.list?.titleProps ||
+    {};
   const listElementProps =
-    ($globalConfiguration.list?.listElementProps as IElementProps) || $uiPack.list.listElementProps;
+    ($globalConfiguration.components?.list?.listElementProps as IElementProps) ||
+    $uiPack?.components?.list?.listElementProps ||
+    {};
 
   const style = makeStylesFromConfiguration(globalListStyles, configuration.style);
 

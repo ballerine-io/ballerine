@@ -131,8 +131,10 @@ export const ConfigSchema = z
         hideWebHeaderInNative: z.boolean().optional(),
         skipWelcomeWhenNativeIntro: z.boolean().optional(),
         showCompatTriggerReason: z.boolean().optional(),
+        showHardFailDiagnostics: z.boolean().optional(),
         requireAddressProof: z.boolean().optional(),
         forceLegacyWhenAddressProof: z.boolean().optional(),
+        enableLegacyFallbackOnInit: z.boolean().optional(),
       })
       .optional(),
   })

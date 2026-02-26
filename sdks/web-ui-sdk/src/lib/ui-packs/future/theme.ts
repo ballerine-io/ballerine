@@ -1031,6 +1031,30 @@ export const uiTheme: IAppConfigurationUI = {
       color: '#926A90',
       'font-size': '16x',
     },
+    list: {
+      listProps: {
+        style: {
+          margin: '0px',
+          padding: '0px',
+          'text-align': 'left',
+        },
+      },
+      titleProps: {
+        style: {
+          'font-weight': 700,
+          'font-size': '14px',
+          color: '#926A90',
+          margin: '0px 0px 12px',
+        },
+      },
+      listElementProps: {
+        style: {
+          'font-size': '13px',
+          color: '#926A90',
+          margin: '6px 0px',
+        },
+      },
+    },
     cameraButton: {},
     videoContainer: {},
     input: {},

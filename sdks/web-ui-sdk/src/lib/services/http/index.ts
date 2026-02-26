@@ -2,6 +2,7 @@ import { ISelectedParams, IStoreData } from '../../contexts/app-state';
 import { IDocumentVerificationResponse } from './types';
 import { TVerificationStatuses } from '../../utils/event-service/types';
 import {
+  getActiveFlowEndpoint,
   getAuthorizationHeader,
   getEndUserInfo,
   getFinalSubmissionEndpoint,
@@ -11,6 +12,7 @@ import {
   getVerificationStatusEndpoint,
 } from '../../contexts/configuration/getters';
 import { AnyRecord } from '../../../types';
+import { DecisionStatus } from '../../contexts/app-state/types';
 
 // NOTE: Endpoint resolution is LAZY — must be called inside functions, NOT at module level.
 // The config store is empty at module load time; it's only populated after flows.init().
@@ -25,28 +27,149 @@ export const generateParams = (data: IDocumentVerificationResponse): ISelectedPa
   return params;
 };
 
-/**
- * Extract a human-readable error detail from a failed HTTP response.
- * Falls back to statusText if the body cannot be parsed.
- */
-const extractErrorDetail = async (response: Response): Promise<string> => {
-  let detail = response.statusText;
-  try {
-    const body = await response.json();
-    if (body.message) detail = body.message;
-  } catch {
-    // Body wasn't JSON — keep statusText
+type HttpRequestStage =
+  | 'upload_document'
+  | 'final_submission'
+  | 'send_event'
+  | 'active_flow_refresh'
+  | 'sync_context'
+  | 'verification_status_poll'
+  | 'request';
+
+type HttpError = Error & {
+  status?: number;
+  url?: string;
+  stage?: HttpRequestStage | string;
+  detail?: string;
+  payload?: AnyRecord | null;
+  reasonCode?: string | number;
+};
+
+const toReasonCode = (
+  payload: AnyRecord | null,
+  detail: string,
+  status: number,
+): string | number | undefined => {
+  const resultPayload =
+    payload && payload.result && typeof payload.result === 'object'
+      ? (payload.result as AnyRecord)
+      : null;
+  const directReasonCode =
+    payload && typeof payload.reasonCode !== 'undefined'
+      ? payload.reasonCode
+      : resultPayload && typeof resultPayload.reasonCode !== 'undefined'
+      ? resultPayload.reasonCode
+      : undefined;
+  if (typeof directReasonCode === 'string' || typeof directReasonCode === 'number') {
+    return directReasonCode;
   }
-  return detail;
+
+  const lower = String(detail || '').toLowerCase();
+  if (status === 409 && lower.includes('kyc_child_responded') && lower.includes('idle')) {
+    return 'PARENT_WORKFLOW_STATE_IDLE';
+  }
+  if (status === 409) {
+    return 'WORKFLOW_CONFLICT';
+  }
+  if (status === 401 || status === 403) {
+    return 'AUTHORIZATION_FAILED';
+  }
+  if (status >= 500) {
+    return 'SERVER_ERROR';
+  }
+  return undefined;
+};
+
+const parseErrorBody = async (
+  response: Response,
+): Promise<{ detail: string; payload: AnyRecord | null }> => {
+  let rawText = '';
+  try {
+    rawText = await response.text();
+  } catch {
+    rawText = '';
+  }
+
+  let payload: AnyRecord | null = null;
+  if (rawText) {
+    try {
+      payload = JSON.parse(rawText) as AnyRecord;
+    } catch {
+      payload = null;
+    }
+  }
+
+  let detail = response.statusText || 'Request failed';
+  if (payload && typeof payload.message === 'string' && payload.message.trim()) {
+    detail = payload.message.trim();
+  } else if (payload && typeof payload.error === 'string' && payload.error.trim()) {
+    detail = payload.error.trim();
+  } else if (rawText && !payload) {
+    detail = rawText.trim().slice(0, 220);
+  }
+
+  return { detail, payload };
+};
+
+const createHttpError = async (
+  response: Response,
+  url: string,
+  stage: HttpRequestStage | string,
+): Promise<HttpError> => {
+  const { detail, payload } = await parseErrorBody(response);
+  const reasonCode = toReasonCode(payload, detail, response.status);
+  const error = new Error(`Error at ${url}: ${response.status} — ${detail}`) as HttpError;
+  error.status = response.status;
+  error.url = url;
+  error.stage = stage;
+  error.detail = detail;
+  error.payload = payload;
+  if (typeof reasonCode !== 'undefined') {
+    error.reasonCode = reasonCode;
+  }
+  return error;
+};
+
+const createHardFailError = (
+  message: string,
+  stage: HttpRequestStage | string,
+  reasonCode?: string,
+): HttpError => {
+  const error = new Error(message) as HttpError;
+  error.stage = stage;
+  if (reasonCode) {
+    error.reasonCode = reasonCode;
+  }
+  return error;
+};
+
+const isHttpConflictError = (error: unknown): error is HttpError => {
+  return Number((error as HttpError)?.status) === 409;
+};
+
+const logIdempotentConflict = (stage: HttpRequestStage | string, error: unknown) => {
+  const err = error as HttpError;
+  console.warn('Idempotent workflow conflict handled', {
+    stage,
+    status: err?.status,
+    reasonCode: err?.reasonCode,
+    detail: err?.detail || err?.message,
+    url: err?.url,
+  });
 };
 
 /** Timeout for file uploads — generous for slow mobile networks in West Africa. */
 const UPLOAD_TIMEOUT_MS = 90_000;
 
-const httpPost = async <TResponse>(url: string, body: FormData) => {
+const httpPost = async <TResponse>(
+  url: string,
+  body: FormData,
+  options?: { stage?: HttpRequestStage | string },
+) => {
   const headers: Record<string, string> = {};
   const authHeader = getAuthorizationHeader();
   if (authHeader) headers['Authorization'] = authHeader;
+  const stage = options?.stage || 'request';
 
   // AbortController enforces a hard timeout on file uploads.
   // Mobile networks in Sierra Leone can stall mid-upload; without this
@@ -65,24 +188,32 @@ const httpPost = async <TResponse>(url: string, body: FormData) => {
   } catch (err) {
     clearTimeout(timeoutId);
     if (err instanceof DOMException && err.name === 'AbortError') {
-      throw new Error(`Upload timed out after ${UPLOAD_TIMEOUT_MS / 1000}s — please check your connection and try again.`);
+      throw new Error(
+        `Upload timed out after ${
+          UPLOAD_TIMEOUT_MS / 1000
+        }s — please check your connection and try again.`,
+      );
     }
     throw err;
   }
   clearTimeout(timeoutId);
 
   if (!response.ok) {
-    const detail = await extractErrorDetail(response);
-    throw new Error(`Error at ${url}: ${response.status} — ${detail}`);
+    throw await createHttpError(response, url, stage);
   }
 
   return (await response.json()) as Promise<TResponse>;
 };
 
-const httpPostJson = async <TResponse>(url: string, body: AnyRecord) => {
+const httpPostJson = async <TResponse>(
+  url: string,
+  body: AnyRecord,
+  options?: { stage?: HttpRequestStage | string },
+) => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const authHeader = getAuthorizationHeader();
   if (authHeader) headers['Authorization'] = authHeader;
+  const stage = options?.stage || 'request';
 
   const response = await fetch(url, {
     method: 'POST',
@@ -91,17 +222,21 @@ const httpPostJson = async <TResponse>(url: string, body: AnyRecord) => {
   });
 
   if (!response.ok) {
-    const detail = await extractErrorDetail(response);
-    throw new Error(`Error at ${url}: ${response.status} — ${detail}`);
+    throw await createHttpError(response, url, stage);
   }
 
   return (await response.json()) as Promise<TResponse>;
 };
 
-const httpPatch = async <TResponse>(url: string, body: AnyRecord) => {
+const httpPatch = async <TResponse>(
+  url: string,
+  body: AnyRecord,
+  options?: { stage?: HttpRequestStage | string },
+) => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const authHeader = getAuthorizationHeader();
   if (authHeader) headers['Authorization'] = authHeader;
+  const stage = options?.stage || 'request';
 
   const response = await fetch(url, {
     method: 'PATCH',
@@ -110,17 +245,17 @@ const httpPatch = async <TResponse>(url: string, body: AnyRecord) => {
   });
 
   if (!response.ok) {
-    const detail = await extractErrorDetail(response);
-    throw new Error(`Error at ${url}: ${response.status} — ${detail}`);
+    throw await createHttpError(response, url, stage);
   }
 
   return (await response.json()) as Promise<TResponse>;
 };
 
-const httpGet = async (url: string) => {
+const httpGet = async (url: string, options?: { stage?: HttpRequestStage | string }) => {
   const headers: Record<string, string> = {};
   const authHeader = getAuthorizationHeader();
   if (authHeader) headers['Authorization'] = authHeader;
+  const stage = options?.stage || 'request';
 
   const response = await fetch(url, {
     method: 'GET',
@@ -128,8 +263,7 @@ const httpGet = async (url: string) => {
   });
 
   if (!response.ok) {
-    const detail = await extractErrorDetail(response);
-    throw new Error(`Error fetching ${url}: ${response.status} — ${detail}`);
+    throw await createHttpError(response, url, stage);
   }
 
   return response.json();
@@ -146,14 +280,17 @@ const withRetry = async <T>(
   fn: () => Promise<T>,
   { maxAttempts = 2, delayMs = 1500 }: { maxAttempts?: number; delayMs?: number } = {},
 ): Promise<T> => {
-  let lastError: Error | undefined;
+  let lastError: HttpError | undefined;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await fn();
     } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
+      lastError = err instanceof Error ? (err as HttpError) : (new Error(String(err)) as HttpError);
       // Don't retry 4xx client errors — only network failures and 5xx
-      const is4xx = /: 4\d{2} —/.test(lastError.message);
+      const status = Number(lastError.status);
+      const is4xx = Number.isFinite(status)
+        ? status >= 400 && status < 500
+        : /: 4\d{2} —/.test(lastError.message);
       if (is4xx || attempt >= maxAttempts) break;
       console.warn(`Retry ${attempt}/${maxAttempts} after error:`, lastError.message);
       await delay(delayMs * attempt); // Linear backoff
@@ -167,7 +304,9 @@ export const getVerificationStatus = async (_endUserId: string) => {
   const endpointUrl = getVerificationStatusEndpoint({ verificationId });
 
   // TODO: Enter a validation step here that would infer the response's type
-  return httpGet(endpointUrl) as Promise<IDocumentVerificationResponse>;
+  return httpGet(endpointUrl, {
+    stage: 'verification_status_poll',
+  }) as Promise<IDocumentVerificationResponse>;
 };
 
 const base64ToBlob = (dataURI: string) => {
@@ -210,7 +349,7 @@ const createDocument = (
 });
 
 const updateContext = async (context: Record<string, unknown>) => {
-  return await httpPatch(getUpdateContextEndpoint(), { context });
+  return await httpPatch(getUpdateContextEndpoint(), { context }, { stage: 'sync_context' });
 };
 
 /**
@@ -240,10 +379,20 @@ const uploadCollectionFlowDocument = async (
   issuingCountry: string,
 ): Promise<unknown> => {
   if (blob.size > MAX_UPLOAD_SIZE) {
-    throw new Error(`File "${filename}" is too large (${Math.round(blob.size / 1024 / 1024)}MB). Maximum size is 10MB.`);
+    throw createHardFailError(
+      `File "${filename}" is too large (${Math.round(
+        blob.size / 1024 / 1024,
+      )}MB). Maximum size is 10MB.`,
+      'upload_document',
+      'FILE_TOO_LARGE',
+    );
   }
   if (blob.type && !ALLOWED_MIME_TYPES.includes(blob.type)) {
-    throw new Error(`Invalid file type "${blob.type}" for "${filename}". Only JPEG, PNG, and WebP are accepted.`);
+    throw createHardFailError(
+      `Invalid file type "${blob.type}" for "${filename}". Only JPEG, PNG, and WebP are accepted.`,
+      'upload_document',
+      'INVALID_FILE_TYPE',
+    );
   }
 
   const formData = new FormData();
@@ -257,7 +406,131 @@ const uploadCollectionFlowDocument = async (
   formData.append('documentVariant', fileVariant);
   formData.append('endUserId', endUserId);
 
-  return withRetry(() => httpPost(getUploadFileEndpoint(), formData));
+  try {
+    return await withRetry(() =>
+      httpPost(getUploadFileEndpoint(), formData, { stage: 'upload_document' }),
+    );
+  } catch (error) {
+    if (isHttpConflictError(error)) {
+      // Idempotent upload behavior: duplicate submissions should not block the flow.
+      logIdempotentConflict('upload_document', error);
+      return { status: 'conflict_ignored' };
+    }
+    throw error;
+  }
+};
+
+const normalizeWorkflowState = (state: unknown): string => {
+  return String(state || '')
+    .trim()
+    .toLowerCase();
+};
+
+const REVISION_STATES = ['pending_resubmission', 'revision', 'revised'];
+const REJECTED_STATES = ['rejected', 'auto_rejected', 'declined'];
+const APPROVED_STATES = ['approved', 'auto_approved'];
+
+const mapRevisionReasonToCode = (revisionReason: unknown): string => {
+  if (!revisionReason || typeof revisionReason !== 'string') {
+    return 'GENERIC';
+  }
+  const lower = revisionReason.toLowerCase();
+  if (/blur|unclear|quality|unreadable|sharp|focus/.test(lower)) return 'DOCUMENT_BLURRY';
+  if (/obscur|cut off|partial|crop/.test(lower)) return 'DOCUMENT_OBSCURED';
+  if (/expir/.test(lower)) return 'DOCUMENT_EXPIRED';
+  if (/face not|selfie|face visible/.test(lower)) return 'FACE_NOT_VISIBLE';
+  if (/face mismatch|does not match|face match/.test(lower)) return 'FACE_MISMATCH';
+  if (/back|back side|reverse/.test(lower)) return 'DOCUMENT_BACK_MISSING';
+  if (/unsupported|not accepted|wrong document/.test(lower)) return 'DOCUMENT_TYPE_UNSUPPORTED';
+  return 'GENERIC';
+};
+
+const extractRevisionReasonCodeFromActiveFlow = (activeFlow: AnyRecord): string | undefined => {
+  const context = activeFlow?.context as AnyRecord | undefined;
+  if (!context || typeof context !== 'object') {
+    return undefined;
+  }
+
+  const contextResult =
+    context.result && typeof context.result === 'object' ? (context.result as AnyRecord) : null;
+  const contextReasonCode = context.reasonCode || contextResult?.reasonCode;
+  if (typeof contextReasonCode === 'string' || typeof contextReasonCode === 'number') {
+    return String(contextReasonCode);
+  }
+
+  if (typeof context.revisionReason === 'string') {
+    return mapRevisionReasonToCode(context.revisionReason);
+  }
+
+  const docs = Array.isArray(context.documents) ? context.documents : [];
+  for (const doc of docs) {
+    const decision = doc?.decision as AnyRecord | undefined;
+    if (!decision || typeof decision !== 'object') continue;
+
+    const decisionResult =
+      decision.result && typeof decision.result === 'object'
+        ? (decision.result as AnyRecord)
+        : null;
+    const decisionReasonCode = decision.reasonCode || decisionResult?.reasonCode;
+    if (typeof decisionReasonCode === 'string' || typeof decisionReasonCode === 'number') {
+      return String(decisionReasonCode);
+    }
+
+    if (decision.status === 'revision' && typeof decision.revisionReason === 'string') {
+      return mapRevisionReasonToCode(decision.revisionReason);
+    }
+  }
+
+  return undefined;
+};
+
+const resolveConflictSubmissionResult = async (): Promise<IDocumentVerificationResponse> => {
+  try {
+    const latestResult = await httpGet(getActiveFlowEndpoint(), {
+      stage: 'active_flow_refresh',
+    });
+    const latestFlow =
+      latestResult && typeof latestResult === 'object' && 'result' in (latestResult as AnyRecord)
+        ? ((latestResult as AnyRecord).result as AnyRecord)
+        : (latestResult as AnyRecord);
+
+    const normalizedState = normalizeWorkflowState(latestFlow?.state || latestFlow?.status);
+    if (REVISION_STATES.includes(normalizedState)) {
+      const reasonCode = extractRevisionReasonCodeFromActiveFlow(latestFlow) || 'GENERIC';
+      return {
+        status: 'completed' as TVerificationStatuses,
+        idvResult: DecisionStatus.RESUBMISSION_REQUESTED,
+        reasonCode,
+      };
+    }
+    if (REJECTED_STATES.includes(normalizedState)) {
+      return {
+        status: 'completed' as TVerificationStatuses,
+        idvResult: DecisionStatus.DECLINED,
+      };
+    }
+    if (APPROVED_STATES.includes(normalizedState)) {
+      return {
+        status: 'completed' as TVerificationStatuses,
+        idvResult: DecisionStatus.APPROVED,
+      };
+    }
+
+    // Unknown/pending states are treated as "review" to keep UX idempotent.
+    return {
+      status: 'completed' as TVerificationStatuses,
+      idvResult: DecisionStatus.REVIEW,
+      reasonCode: 'WORKFLOW_CONFLICT',
+    };
+  } catch (error) {
+    // If reconciliation fails, still degrade gracefully to review instead of hard-failing.
+    console.warn('Failed to reconcile workflow state after conflict. Defaulting to review.', error);
+    return {
+      status: 'completed' as TVerificationStatuses,
+      idvResult: DecisionStatus.REVIEW,
+      reasonCode: 'WORKFLOW_CONFLICT',
+    };
+  }
 };
 
 /**
@@ -273,7 +546,11 @@ export const verifyDocumentsCollectionFlow = async (
   // navigator.onLine is imperfect (can be true on captive portals) but catches
   // the common case of airplane mode / Wi-Fi disconnect on mobile devices.
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    throw new Error('You appear to be offline. Please check your internet connection and try again.');
+    throw createHardFailError(
+      'You appear to be offline. Please check your internet connection and try again.',
+      'request',
+      'NETWORK_OFFLINE',
+    );
   }
 
   const endUserInfo = getEndUserInfo();
@@ -306,13 +583,21 @@ export const verifyDocumentsCollectionFlow = async (
   }
 
   if (!endUserId || endUserId === 'unknown') {
-    throw new Error('Could not determine user identity. Please close and try again.');
+    throw createHardFailError(
+      'Could not determine user identity. Please close and try again.',
+      'request',
+      'INVALID_SESSION',
+    );
   }
 
   // Determine the primary document type and category from stored data
   const primaryDoc = data.docs[0];
   if (!primaryDoc) {
-    throw new Error('No document data found. Please retake your photos.');
+    throw createHardFailError(
+      'No document data found. Please retake your photos.',
+      'request',
+      'NO_DOCUMENT_DATA',
+    );
   }
 
   const docType = primaryDoc.type || 'id_card';
@@ -329,7 +614,11 @@ export const verifyDocumentsCollectionFlow = async (
   // Front page (required — must have a document front photo)
   const frontPage = primaryDoc.pages.find(p => p.side === 'front');
   if (!frontPage?.base64) {
-    throw new Error('Front page photo is missing. Please retake your document photo.');
+    throw createHardFailError(
+      'Front page photo is missing. Please retake your document photo.',
+      'upload_document',
+      'MISSING_FRONT_PHOTO',
+    );
   }
   uploadPromises.push(
     uploadCollectionFlowDocument(
@@ -430,8 +719,10 @@ export const verifyDocumentsCollectionFlow = async (
       'Upload failures:',
       failures.map(f => (f as PromiseRejectedResult).reason),
     );
-    throw new Error(
+    throw createHardFailError(
       `${failures.length} of ${uploadResults.length} document upload(s) failed. Please try again.`,
+      'upload_document',
+      'UPLOAD_FAILED',
     );
   }
 
@@ -451,7 +742,9 @@ export const verifyDocumentsCollectionFlow = async (
       }
     | undefined;
   const currentStateStepsCandidate = currentState?.steps;
-  const currentStateSteps = Array.isArray(currentStateStepsCandidate) ? currentStateStepsCandidate : [];
+  const currentStateSteps = Array.isArray(currentStateStepsCandidate)
+    ? currentStateStepsCandidate
+    : [];
   const hasStateSteps = currentStateSteps.length > 0;
 
   if (!hasStateSteps && workflowState) {
@@ -469,26 +762,52 @@ export const verifyDocumentsCollectionFlow = async (
         eventName: 'COLLECTION_FLOW_FINISHED',
         context,
       },
+      { stage: 'final_submission' },
     );
   } catch (finalErr) {
-    console.warn('final-submission failed, trying send-event:', finalErr);
-    // Fallback: just fire the event directly
-    try {
-      const sendEventEndpoint = getSendEventEndpoint();
-      submissionResult = await httpPostJson<IDocumentVerificationResponse>(sendEventEndpoint, {
-        eventName: 'COLLECTION_FLOW_FINISHED',
-      });
-    } catch (eventErr) {
-      console.error('Both final-submission and send-event failed:', eventErr);
-      throw new Error(
-        'Your photos were uploaded but we could not start processing. Please try again.',
-      );
+    if (isHttpConflictError(finalErr)) {
+      logIdempotentConflict('final_submission', finalErr);
+      submissionResult = await resolveConflictSubmissionResult();
+    } else {
+      console.warn('final-submission failed, trying send-event:', finalErr);
+      // Fallback: just fire the event directly
+      try {
+        const sendEventEndpoint = getSendEventEndpoint();
+        submissionResult = await httpPostJson<IDocumentVerificationResponse>(
+          sendEventEndpoint,
+          {
+            eventName: 'COLLECTION_FLOW_FINISHED',
+          },
+          { stage: 'send_event' },
+        );
+      } catch (eventErr) {
+        if (isHttpConflictError(eventErr)) {
+          logIdempotentConflict('send_event', eventErr);
+          submissionResult = await resolveConflictSubmissionResult();
+        } else {
+          console.error('Both final-submission and send-event failed:', eventErr);
+          const hardFail =
+            eventErr instanceof Error
+              ? (eventErr as HttpError)
+              : createHardFailError(
+                  'Your photos were uploaded but we could not start processing. Please try again.',
+                  'send_event',
+                  'SUBMISSION_DISPATCH_FAILED',
+                );
+          if (!hardFail.stage) hardFail.stage = 'send_event';
+          if (!hardFail.reasonCode) hardFail.reasonCode = 'SUBMISSION_DISPATCH_FAILED';
+          if (!hardFail.message) {
+            hardFail.message =
+              'Your photos were uploaded but we could not start processing. Please try again.';
+          }
+          throw hardFail;
+        }
+      }
     }
   }
 
   // Normalize idvResult — may be nested in .result
-  const idvResult =
-    submissionResult.idvResult || submissionResult.result?.idvResult || undefined;
+  const idvResult = submissionResult.idvResult || submissionResult.result?.idvResult || undefined;
   const reasonCode =
     submissionResult.reasonCode || submissionResult.result?.reasonCode || undefined;
 
@@ -534,7 +853,11 @@ export const verifyDocuments = async (
   const results = await Promise.all(promises);
 
   if (results.length === 0) {
-    throw new Error('No documents were uploaded. Please retake your photos.');
+    throw createHardFailError(
+      'No documents were uploaded. Please retake your photos.',
+      'upload_document',
+      'NO_UPLOAD_RESULTS',
+    );
   }
 
   const documents = data.docs.map(doc => createDocument(doc, results));

@@ -376,8 +376,10 @@ export const kycOnboardingSierraLeoneDefinition = {
       hideWebHeaderInNative: true,
       skipWelcomeWhenNativeIntro: true,
       showCompatTriggerReason: true,
+      showHardFailDiagnostics: true,
       requireAddressProof: true,
       forceLegacyWhenAddressProof: false, // SDK now handles address proof natively
+      enableLegacyFallbackOnInit: false, // keep users in the primary SDK flow by default
     },
   },
   contextSchema: {

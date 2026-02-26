@@ -15,8 +15,10 @@ describe('ConfigSchema', () => {
         hideWebHeaderInNative: true,
         skipWelcomeWhenNativeIntro: true,
         showCompatTriggerReason: true,
+        showHardFailDiagnostics: true,
         requireAddressProof: true,
         forceLegacyWhenAddressProof: true,
+        enableLegacyFallbackOnInit: false,
       },
     });
 

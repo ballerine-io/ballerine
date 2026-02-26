@@ -38,6 +38,12 @@
   let veryficationTimeout: NodeJS.Timeout;
   let review = false;
   let showText = true;
+  type HardFailError = Error & {
+    status?: number;
+    stage?: string;
+    reasonCode?: string | number;
+    payload?: Record<string, unknown> | null;
+  };
 
   const endUserId = $configuration.endUserInfo.id;
   if (!endUserId) {
@@ -87,9 +93,7 @@
         (s: { name?: string }) => s.name === 'document-selection',
       );
       const resolvedTarget =
-        targetStepId === 'document-selection' && !hasDocSelection
-          ? 'document-photo'
-          : targetStepId;
+        targetStepId === 'document-selection' && !hasDocSelection ? 'document-photo' : targetStepId;
       $currentParams = { ...params, targetStepId: resolvedTarget } as ISelectedParams;
       await preloadStepById($configuration, configuration, 'resubmission', flowName);
       $currentStepId = 'resubmission';
@@ -150,15 +154,84 @@
     }
   };
 
+  const sanitizeDiagnosticValue = (value: unknown, fallback: string): string => {
+    const str = String(value || '').trim();
+    if (!str) return fallback;
+    return str
+      .replace(/\s+/g, '_')
+      .replace(/[^A-Za-z0-9_.:-]/g, '_')
+      .slice(0, 80);
+  };
+
+  const buildHardFailReference = (err: HardFailError): string => {
+    const stage = sanitizeDiagnosticValue(err.stage, 'unknown_stage');
+    const reasonValue =
+      err.reasonCode ||
+      (err.payload && typeof err.payload.reasonCode !== 'undefined'
+        ? String(err.payload.reasonCode)
+        : '');
+    const reasonCode = sanitizeDiagnosticValue(reasonValue, 'unknown_reason');
+    const status = Number(err.status);
+    const statusPart = Number.isFinite(status) && status > 0 ? `http=${status} | ` : '';
+    return `Ref: ${statusPart}stage=${stage} | reason=${reasonCode}`;
+  };
+
+  const resolveHardFailUserMessage = (err: HardFailError): string => {
+    const status = Number(err.status);
+    const reasonCode =
+      err.reasonCode ||
+      (err.payload && typeof err.payload.reasonCode !== 'undefined' ? err.payload.reasonCode : '');
+    const normalizedReason = String(reasonCode || '')
+      .trim()
+      .toUpperCase();
+
+    if (
+      status === 409 &&
+      ['WORKFLOW_STATE_CONFLICT', 'WORKFLOW_CONFLICT', 'PARENT_WORKFLOW_STATE_IDLE'].includes(
+        normalizedReason,
+      )
+    ) {
+      return 'We already received this verification submission. Your status is being synchronized now.';
+    }
+    if (normalizedReason === 'DOCUMENT_ALREADY_EXISTS') {
+      return 'This photo was already uploaded. Continue to the next step.';
+    }
+    if (normalizedReason === 'DOCUMENT_VERSION_CONFLICT') {
+      return 'A newer document version already exists. Refresh and continue.';
+    }
+    if (normalizedReason === 'NETWORK_OFFLINE') {
+      return 'You appear to be offline. Please reconnect and try again.';
+    }
+    if (normalizedReason === 'NETWORK_TIMEOUT') {
+      return 'The network request timed out. Please try again on a stronger connection.';
+    }
+    if (normalizedReason === 'SUBMISSION_DISPATCH_FAILED') {
+      return 'Your photos were uploaded, but processing did not start. Please try again.';
+    }
+    if (status === 409) {
+      return 'This request was already submitted. We are syncing your current verification status.';
+    }
+
+    return err.message || 'Something went wrong. Please try again.';
+  };
+
+  const buildHardFailMessage = (err: HardFailError): string => {
+    const baseMessage = resolveHardFailUserMessage(err);
+    return `${baseMessage} ${buildHardFailReference(err)}`;
+  };
+
   const makeRequest = async (data: IStoreData) => {
     let res;
     try {
       res = await verifyDocuments(data);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err =
+        error instanceof Error
+          ? (error as HardFailError)
+          : (new Error(String(error)) as HardFailError);
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', err);
-      $currentParams = { message: err.message } as ISelectedParams;
+      $currentParams = { message: buildHardFailMessage(err) } as ISelectedParams;
       await preloadStepById($configuration, configuration, 'error', flowName);
       $currentStepId = 'error';
 

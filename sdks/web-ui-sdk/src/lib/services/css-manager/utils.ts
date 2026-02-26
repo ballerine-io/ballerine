@@ -72,7 +72,7 @@ export const makeStylesFromConfiguration = (
   return styles.join('\n');
 };
 
-export const makesLocalStyles = (configStyles: ICSSProperties) => {
+export const makesLocalStyles = (configStyles: ICSSProperties = {}) => {
   let styles: string[] = [];
 
   const setProperties = (css: ICSSProperties, property: keyof ICSSProperties, prefix = '') => {

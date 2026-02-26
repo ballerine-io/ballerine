@@ -194,6 +194,19 @@
         margin-bottom: 24px;
       }
 
+      .error-diagnostics {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px dashed #d1d5db;
+        background: #f8fafc;
+        color: #334155;
+        font-size: 12px;
+        line-height: 1.45;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        display: none;
+      }
+
       .doc-grid {
         display: flex;
         flex-direction: column;
@@ -1010,6 +1023,7 @@
         </div>
         <div class="step-title">Something Went Wrong</div>
         <div class="step-desc" id="errorDesc">An error occurred. Please try again.</div>
+        <div class="error-diagnostics" id="errorDiag"></div>
         <button class="btn btn-primary" id="retryBtn" style="margin-top: 16px">Try Again</button>
         <button class="btn btn-secondary" id="closeErrorBtn" style="margin-top: 8px">Close</button>
         <div class="spacer"></div>
@@ -1121,6 +1135,8 @@
       let workflowData = null; // populated from active-flow API
       let previousObjectUrl = null; // track for revocation
       let errorDismissTimer = null; // track error banner timeout
+      let completionCloseStatus = 'success';
+      let completionIdvResult = 'approved';
 
       // ── Document overlay mapping (from MiKashBoks SDK) ──
       // Maps document types to overlay frame classes
@@ -1332,6 +1348,69 @@
         imgEl.src = previousObjectUrl;
       }
 
+      function normalizeWorkflowState(rawState) {
+        return String(rawState || '')
+          .trim()
+          .toLowerCase();
+      }
+
+      function isConflictError(error) {
+        return Number(error && error.status) === 409;
+      }
+
+      function extractReasonCode(payload) {
+        if (!payload || typeof payload !== 'object') return null;
+        return payload.reasonCode || (payload.result && payload.result.reasonCode) || null;
+      }
+
+      function buildApiErrorMessage(status, path) {
+        if (status === 409 && path.includes('/collection-flow/final-submission')) {
+          return 'Your verification is already being processed.';
+        }
+        if (status === 409 && path.includes('/collection-flow/send-event')) {
+          return 'Your verification event was already submitted.';
+        }
+        if (status === 409 && path.includes('/collection-flow/documents')) {
+          return 'This photo was already uploaded.';
+        }
+        if (status >= 500) {
+          return 'The verification service is temporarily unavailable. Please try again.';
+        }
+        return `Request failed (${status}). Please try again.`;
+      }
+
+      function inferApiStage(path) {
+        if (!path) return 'legacy_request';
+        if (path.includes('/collection-flow/documents')) return 'upload_document';
+        if (path.includes('/collection-flow/final-submission')) return 'final_submission';
+        if (path.includes('/collection-flow/send-event')) return 'send_event';
+        if (path.includes('/collection-flow/active-flow')) return 'active_flow_refresh';
+        return 'legacy_request';
+      }
+
+      async function resolveConflictSubmissionResult() {
+        try {
+          const latestResult = await apiRequest('GET', '/collection-flow/active-flow', null, false);
+          workflowData = latestResult.result || latestResult;
+        } catch (stateErr) {
+          console.warn('Failed to refresh workflow state after conflict:', stateErr);
+        }
+
+        const revisionCode = checkWorkflowForResubmission();
+        if (revisionCode) {
+          return { idvResult: 'resubmission_requested', reasonCode: revisionCode };
+        }
+
+        const latestState = normalizeWorkflowState(workflowData?.state || workflowData?.status);
+        if (['rejected', 'auto_rejected', 'declined'].includes(latestState)) {
+          return { idvResult: 'declined' };
+        }
+        if (['approved', 'auto_approved'].includes(latestState)) {
+          return { idvResult: 'approved' };
+        }
+        return { idvResult: 'review' };
+      }
+
       // ── API helpers ──
       async function apiRequest(method, path, body, isFormData) {
         const headers = {};
@@ -1354,12 +1433,29 @@
             const text = await resp.text().catch(() => '');
             // Don't expose server internals to user — log only
             console.error(`API error: ${method} ${path}: ${resp.status} ${text.substring(0, 200)}`);
-            throw new Error(`Request failed (${resp.status}). Please try again.`);
+            let payload = null;
+            try {
+              payload = text ? JSON.parse(text) : null;
+            } catch (_) {
+              payload = null;
+            }
+            const error = new Error(buildApiErrorMessage(resp.status, path));
+            error.status = resp.status;
+            error.path = path;
+            error.stage = inferApiStage(path);
+            error.payload = payload;
+            error.reasonCode = extractReasonCode(payload);
+            throw error;
           }
           return resp.json().catch(() => ({}));
         } catch (err) {
           if (err.name === 'AbortError') {
-            throw new Error('Request timed out. Please check your connection and try again.');
+            const timeoutError = new Error(
+              'Request timed out. Please check your connection and try again.',
+            );
+            timeoutError.stage = inferApiStage(path);
+            timeoutError.reasonCode = 'NETWORK_TIMEOUT';
+            throw timeoutError;
           }
           throw err;
         } finally {
@@ -1374,6 +1470,7 @@
           try {
             return await apiRequest(method, path, body, isFormData);
           } catch (err) {
+            if (isConflictError(err)) throw err;
             if (attempt === retries) throw err;
             // Wait before retry: 1s, 2s
             await new Promise(r => setTimeout(r, (attempt + 1) * 1000));
@@ -1433,7 +1530,15 @@
         formData.append('documentVariant', fileVariant);
         formData.append('endUserId', endUserId);
 
-        return apiRequestWithRetry('POST', '/collection-flow/documents', formData, true, 1);
+        try {
+          return await apiRequestWithRetry('POST', '/collection-flow/documents', formData, true, 1);
+        } catch (err) {
+          if (isConflictError(err)) {
+            console.warn('Document upload returned 409 conflict, continuing as already uploaded.');
+            return { alreadyUploaded: true };
+          }
+          throw err;
+        }
       }
 
       // ── Navigation ──
@@ -1534,11 +1639,48 @@
         }
       }
 
-      function showErrorStep(msg) {
+      function normalizeDiagValue(value, fallback) {
+        const normalized = String(value || '')
+          .trim()
+          .replace(/\s+/g, '_')
+          .replace(/[^a-zA-Z0-9_.:-]/g, '_')
+          .slice(0, 80);
+        return normalized || fallback;
+      }
+
+      function formatErrorDiagnostics(details) {
+        const payload = details && typeof details.payload === 'object' ? details.payload : {};
+        const status = Number((details && details.status) || payload.status || 0);
+        const stage = normalizeDiagValue(
+          (details && details.stage) || payload.stage,
+          'legacy_submit',
+        );
+        const reasonCode = normalizeDiagValue(
+          (details && details.reasonCode) || payload.reasonCode || payload.code,
+          status === 409 ? 'WORKFLOW_CONFLICT' : 'UNKNOWN_ERROR',
+        );
+        const parts = [];
+        if (Number.isFinite(status) && status > 0) parts.push(`http=${status}`);
+        parts.push(`stage=${stage}`);
+        parts.push(`reason=${reasonCode}`);
+        return `Ref: ${parts.join(' | ')}`;
+      }
+
+      function showErrorStep(msg, details) {
         stopCamera();
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById('step-error').classList.add('active');
         document.getElementById('errorDesc').textContent = msg;
+        const errorDiag = document.getElementById('errorDiag');
+        if (errorDiag) {
+          if (details) {
+            errorDiag.textContent = formatErrorDiagnostics(details);
+            errorDiag.style.display = 'block';
+          } else {
+            errorDiag.textContent = '';
+            errorDiag.style.display = 'none';
+          }
+        }
         footer.style.display = 'none';
       }
 
@@ -1611,7 +1753,7 @@
       // Check workflow state for revision/resubmission and extract reason
       function checkWorkflowForResubmission() {
         if (!workflowData) return null;
-        const state = workflowData.state || workflowData.status;
+        const state = normalizeWorkflowState(workflowData.state || workflowData.status);
         const REVISION_STATES = ['pending_resubmission', 'revision', 'revised'];
         if (!REVISION_STATES.includes(state)) return null;
 
@@ -1638,8 +1780,13 @@
         if (step === 'step-complete') {
           // Signal completion to Android WebView via URL change.
           // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
-          window.location.href =
-            window.location.origin + '/kyc-mobile/done?close=true&status=success';
+          const doneUrl = new URL('/kyc-mobile/done', window.location.origin);
+          doneUrl.searchParams.set('close', 'true');
+          doneUrl.searchParams.set('status', completionCloseStatus);
+          if (completionIdvResult) {
+            doneUrl.searchParams.set('idvResult', completionIdvResult);
+          }
+          window.location.href = doneUrl.toString();
           return;
         }
         goToStep(currentStep + 1);
@@ -1771,19 +1918,31 @@
 
         // Pre-flight check
         if (!navigator.onLine) {
-          showErrorStep('You are offline. Please check your internet connection and try again.');
+          showErrorStep('You are offline. Please check your internet connection and try again.', {
+            stage: 'legacy_preflight',
+            reasonCode: 'NETWORK_OFFLINE',
+          });
           return;
         }
         if (!docPhotoBlob || !selfieBlob) {
-          showErrorStep('Missing photos. Please go back and retake them.');
+          showErrorStep('Missing photos. Please go back and retake them.', {
+            stage: 'legacy_preflight',
+            reasonCode: 'MISSING_PHOTOS',
+          });
           return;
         }
         if (needsBackSide(selectedDocType) && !docBackPhotoBlob) {
-          showErrorStep('Back-side photo is required. Please go back and capture it.');
+          showErrorStep('Back-side photo is required. Please go back and capture it.', {
+            stage: 'legacy_preflight',
+            reasonCode: 'MISSING_BACK_PHOTO',
+          });
           return;
         }
         if (requireAddressProof && !addressProofBlob) {
-          showErrorStep('Proof of address is required. Please go back and capture it.');
+          showErrorStep('Proof of address is required. Please go back and capture it.', {
+            stage: 'legacy_preflight',
+            reasonCode: 'MISSING_ADDRESS_PROOF',
+          });
           return;
         }
 
@@ -1863,15 +2022,34 @@
             });
             submissionSucceeded = true;
           } catch (finalErr) {
-            console.warn('final-submission failed, trying send-event:', finalErr);
-            // Fallback: just fire the event directly
-            try {
-              submissionResult = await apiRequest('POST', '/collection-flow/send-event', {
-                eventName: 'COLLECTION_FLOW_FINISHED',
-              });
+            if (isConflictError(finalErr)) {
+              console.warn(
+                'final-submission returned 409 conflict, reconciling with active workflow state.',
+              );
+              submissionResult = await resolveConflictSubmissionResult();
               submissionSucceeded = true;
-            } catch (eventErr) {
-              console.error('Both final-submission and send-event failed:', eventErr);
+            }
+            if (submissionSucceeded) {
+              // Conflict path already resolved from workflow state.
+            } else {
+              console.warn('final-submission failed, trying send-event:', finalErr);
+              // Fallback: just fire the event directly
+              try {
+                submissionResult = await apiRequest('POST', '/collection-flow/send-event', {
+                  eventName: 'COLLECTION_FLOW_FINISHED',
+                });
+                submissionSucceeded = true;
+              } catch (eventErr) {
+                if (isConflictError(eventErr)) {
+                  console.warn(
+                    'send-event returned 409 conflict, reconciling with active workflow state.',
+                  );
+                  submissionResult = await resolveConflictSubmissionResult();
+                  submissionSucceeded = true;
+                } else {
+                  console.error('Both final-submission and send-event failed:', eventErr);
+                }
+              }
             }
           }
 
@@ -1879,6 +2057,10 @@
             showErrorStep(
               'Your photos were uploaded but we could not start processing. ' +
                 'Please try again, or contact support if the problem persists.',
+              {
+                stage: 'legacy_submit',
+                reasonCode: 'SUBMISSION_DISPATCH_FAILED',
+              },
             );
             return;
           }
@@ -1892,21 +2074,53 @@
           } else if (idvResult === 'declined') {
             showErrorStep(
               'Your verification could not be completed. Please contact support for assistance.',
+              {
+                stage: 'legacy_submit',
+                reasonCode: 'DECLINED',
+              },
             );
+          } else if (idvResult === 'approved' || idvResult === 'auto_approved') {
+            completionCloseStatus = 'success';
+            completionIdvResult = 'approved';
+            goToStep(STEPS.indexOf('step-complete'));
           } else {
+            completionCloseStatus = 'exit';
+            completionIdvResult = idvResult === 'review' ? 'manual_review' : 'processing';
             goToStep(STEPS.indexOf('step-complete'));
           }
         } catch (err) {
           console.error('Submission failed:', err);
 
           // Check if the error response contains a resubmission reason
-          if (err.reasonCode && RESUBMISSION_REASONS[err.reasonCode]) {
-            showResubmitStep(err.reasonCode);
+          const errorReasonCode = err.reasonCode || extractReasonCode(err.payload);
+          if (errorReasonCode && RESUBMISSION_REASONS[errorReasonCode]) {
+            showResubmitStep(errorReasonCode);
+            return;
+          }
+          if (isConflictError(err)) {
+            const conflictResult = await resolveConflictSubmissionResult();
+            if (
+              conflictResult?.idvResult === 'resubmission_requested' &&
+              conflictResult?.reasonCode
+            ) {
+              showResubmitStep(conflictResult.reasonCode);
+            } else if (conflictResult?.idvResult === 'declined') {
+              showErrorStep(
+                'Your verification could not be completed. Please contact support for assistance.',
+                {
+                  stage: 'legacy_conflict_resolution',
+                  reasonCode: 'DECLINED',
+                },
+              );
+            } else {
+              goToStep(STEPS.indexOf('step-complete'));
+            }
             return;
           }
 
           showErrorStep(
             err.message || 'Something went wrong. Please check your connection and try again.',
+            err,
           );
         }
       }

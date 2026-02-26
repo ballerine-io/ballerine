@@ -102,9 +102,12 @@ export class CollectionFlowDocumentsService {
           })}`,
         );
 
-        throw new ConflictException(
-          `Document with provided data already exists. Please update the existing document instead.`,
-        );
+        throw new ConflictException({
+          message:
+            'Document with provided data already exists. Please update the existing document instead.',
+          reasonCode: 'DOCUMENT_ALREADY_EXISTS',
+          stage: 'upload_document',
+        });
       }
 
       const document = await this.documentService.create(
@@ -183,11 +186,13 @@ export class CollectionFlowDocumentsService {
 
       if (document.decision === DocumentDecision.revisions) {
         if (latestDocument && document.version + 1 <= latestDocument.version) {
-          throw new ConflictException(
-            `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
+          throw new ConflictException({
+            message: `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
               document.version + 1
             } is not the latest version. Latest version is ${latestDocument.version}.`,
-          );
+            reasonCode: 'DOCUMENT_VERSION_CONFLICT',
+            stage: 'upload_document',
+          });
         }
 
         this.appLogger.log(
@@ -406,9 +411,11 @@ export class CollectionFlowDocumentsService {
       );
 
       if (latestDocument && document.version < latestDocument.version) {
-        throw new ConflictException(
-          `Deleting document with id ${documentId} is not allowed. Document version ${document.version} is not the latest version. Latest version is ${latestDocument?.version}.`,
-        );
+        throw new ConflictException({
+          message: `Deleting document with id ${documentId} is not allowed. Document version ${document.version} is not the latest version. Latest version is ${latestDocument?.version}.`,
+          reasonCode: 'DOCUMENT_VERSION_CONFLICT',
+          stage: 'delete_document',
+        });
       }
 
       await this.documentService.deleteByIds(
