@@ -477,11 +477,22 @@
       ) {
         return 'passport';
       }
-      // Defense-in-depth: return null for unknown types instead of passing raw string.
-      // This forces the user to the document-selection screen instead of crashing the SDK.
-      console.warn('[KYC] Unknown docType passed through normalizeDocType:', normalized,
-        '— falling back to full document selection.');
-      return null;
+      // Canonical SDK types — pass through without warning (normal case from backend)
+      if (
+        normalized === 'id_card' ||
+        normalized === 'passport' ||
+        normalized === 'voter_id' ||
+        normalized === 'drivers_license'
+      ) {
+        return normalized;
+      }
+      // Unknown type — log for observability but pass through.
+      // normalizeDocOptions() also calls this function, so returning null here would
+      // silently drop valid server-provided document options. The VALID_DOC_TYPES
+      // guard (below) handles unknown URL ?docType params separately.
+      console.warn('[KYC] normalizeDocType: unrecognized type:', normalized,
+        '— passing through as-is.');
+      return normalized;
     }
 
     function normalizeDocOptions(docOptions) {
