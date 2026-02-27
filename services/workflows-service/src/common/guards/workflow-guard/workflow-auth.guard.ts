@@ -73,6 +73,14 @@ export class WorkflowAuthGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
+    // Validate UUID format before querying Prisma — the token column is UUID type.
+    // Without this check, malformed tokens cause a Prisma 500 instead of a clean 401.
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (!uuidRegex.test(token)) {
+      throw new UnauthorizedException('Invalid token format');
+    }
+
     const tokenEntity = await this.workflowTokenService.findByTokenWithExpiredUnscoped(token);
 
     if (!tokenEntity) {
