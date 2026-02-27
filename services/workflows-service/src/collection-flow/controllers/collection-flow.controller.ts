@@ -48,42 +48,85 @@ export class CollectionFlowController {
     protected readonly documentService: DocumentService,
   ) {}
 
-  private isWorkflowTransitionConflict(error: unknown): boolean {
+  private getWorkflowTransitionConflictDetails(error: unknown): string {
     if (!(error instanceof common.BadRequestException)) {
-      return false;
+      return '';
     }
 
     const response = error.getResponse();
     const responseRecord = response as AnyRecord;
     const responseMessage = responseRecord?.message;
-    const rawMessage =
-      typeof response === 'string'
-        ? response
-        : Array.isArray(responseMessage)
-        ? responseMessage.map(item => String(item)).join(' ')
-        : String(responseMessage || '');
+
+    if (typeof response === 'string') {
+      return response;
+    }
+
+    if (Array.isArray(responseMessage)) {
+      return responseMessage.map(item => String(item)).join(' ');
+    }
+
+    return String(responseMessage || '');
+  }
+
+  private getWorkflowTransitionConflictState(details: string): string | undefined {
+    if (!details) {
+      return undefined;
+    }
+
+    const stateMatch = details.match(/state:\s*([a-zA-Z0-9_-]+)/i);
+    return stateMatch?.[1];
+  }
+
+  private resolveWorkflowTransitionConflictReasonCode(
+    details: string,
+    eventName?: string,
+  ): 'PARENT_WORKFLOW_STATE_IDLE' | 'WORKFLOW_STATE_CONFLICT' {
+    const normalizedDetails = details.toLowerCase();
+    const normalizedEvent = String(eventName || '')
+      .trim()
+      .toLowerCase();
+    const mentionsKycChildResponded =
+      normalizedEvent === 'kyc_child_responded' ||
+      normalizedDetails.includes('kyc_child_responded');
+    const mentionsIdleState = normalizedDetails.includes('state: idle');
+
+    if (mentionsKycChildResponded && mentionsIdleState) {
+      return 'PARENT_WORKFLOW_STATE_IDLE';
+    }
+
+    return 'WORKFLOW_STATE_CONFLICT';
+  }
+
+  private isWorkflowTransitionConflict(error: unknown): boolean {
+    if (!(error instanceof common.BadRequestException)) {
+      return false;
+    }
+
+    const rawMessage = this.getWorkflowTransitionConflictDetails(error);
 
     return rawMessage.includes('does not exist for workflow');
   }
 
-  private toIdempotentConflict(error: unknown, stage: 'send_event' | 'final_submission') {
-    const response =
-      error instanceof common.BadRequestException ? error.getResponse() : (error as AnyRecord);
-    const responseRecord = response as AnyRecord;
-    const responseMessage = responseRecord?.message;
-    const details =
-      typeof response === 'string'
-        ? response
-        : Array.isArray(responseMessage)
-        ? responseMessage.map(item => String(item)).join(' ')
-        : String(responseMessage || 'Workflow state conflict');
+  private toIdempotentConflict(
+    error: unknown,
+    stage: 'send_event' | 'final_submission',
+    eventName?: string,
+  ) {
+    const details = this.getWorkflowTransitionConflictDetails(error) || 'Workflow state conflict';
+    const reasonCode = this.resolveWorkflowTransitionConflictReasonCode(details, eventName);
+    const currentState = this.getWorkflowTransitionConflictState(details);
+    const message =
+      reasonCode === 'PARENT_WORKFLOW_STATE_IDLE'
+        ? 'Verification is already in progress. Status is being synchronized now.'
+        : 'Submission was already processed or workflow already advanced. Refresh status and continue.';
 
     return new common.ConflictException({
-      message:
-        'Submission was already processed or workflow already advanced. Refresh status and continue.',
-      reasonCode: 'WORKFLOW_STATE_CONFLICT',
+      message,
+      reasonCode,
       stage,
       details,
+      ...(currentState ? { currentState } : {}),
+      idempotent: true,
     });
   }
 
@@ -203,13 +246,21 @@ export class CollectionFlowController {
       );
     } catch (error) {
       if (this.isWorkflowTransitionConflict(error)) {
+        const details = this.getWorkflowTransitionConflictDetails(error);
+        const reasonCode = this.resolveWorkflowTransitionConflictReasonCode(
+          details,
+          body.eventName,
+        );
+        const currentState = this.getWorkflowTransitionConflictState(details);
         this.appLogger.warn('send-event idempotent conflict', {
           workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
           projectId: tokenScope.projectId,
           eventName: body.eventName,
-          error,
+          reasonCode,
+          currentState,
+          details,
         });
-        throw this.toIdempotentConflict(error, 'send_event');
+        throw this.toIdempotentConflict(error, 'send_event', body.eventName);
       }
 
       throw error;
@@ -305,13 +356,21 @@ export class CollectionFlowController {
       }
 
       if (this.isWorkflowTransitionConflict(error)) {
+        const details = this.getWorkflowTransitionConflictDetails(error);
+        const reasonCode = this.resolveWorkflowTransitionConflictReasonCode(
+          details,
+          body.eventName,
+        );
+        const currentState = this.getWorkflowTransitionConflictState(details);
         this.appLogger.warn('final-submission idempotent conflict', {
           workflowRuntimeDataId: tokenScope.workflowRuntimeDataId,
           projectId: tokenScope.projectId,
           eventName: body.eventName,
-          error,
+          reasonCode,
+          currentState,
+          details,
         });
-        throw this.toIdempotentConflict(error, 'final_submission');
+        throw this.toIdempotentConflict(error, 'final_submission', body.eventName);
       }
 
       try {

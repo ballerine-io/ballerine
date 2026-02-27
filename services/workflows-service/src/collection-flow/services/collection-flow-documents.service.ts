@@ -92,15 +92,18 @@ export class CollectionFlowDocumentsService {
       );
 
       if (!isDocumentUnique) {
-        this.appLogger.error(
-          `Document with following data already exists: ${JSON.stringify({
-            category: data.category,
-            type: data.type,
-            businessId: data.businessId,
-            endUserId: data.endUserId,
-            version: 1,
-          })}`,
-        );
+        this.appLogger.warn('collection-flow document duplicate detected', {
+          stage: 'upload_document',
+          reasonCode: 'DOCUMENT_ALREADY_EXISTS',
+          workflowId,
+          projectId,
+          category: data.category,
+          type: data.type,
+          businessId: data.businessId,
+          endUserId: data.endUserId,
+          version: 1,
+          idempotent: true,
+        });
 
         throw new ConflictException({
           message:
@@ -186,6 +189,17 @@ export class CollectionFlowDocumentsService {
 
       if (document.decision === DocumentDecision.revisions) {
         if (latestDocument && document.version + 1 <= latestDocument.version) {
+          this.appLogger.warn('collection-flow document version conflict on re-upload', {
+            stage: 'upload_document',
+            reasonCode: 'DOCUMENT_VERSION_CONFLICT',
+            workflowId,
+            projectId,
+            documentId,
+            documentVersion: document.version,
+            expectedNextVersion: document.version + 1,
+            latestVersion: latestDocument.version,
+            idempotent: true,
+          });
           throw new ConflictException({
             message: `Re-uploading document with id ${documentId} is not allowed. Expected new version ${
               document.version + 1
@@ -411,6 +425,15 @@ export class CollectionFlowDocumentsService {
       );
 
       if (latestDocument && document.version < latestDocument.version) {
+        this.appLogger.warn('collection-flow document version conflict on delete', {
+          stage: 'delete_document',
+          reasonCode: 'DOCUMENT_VERSION_CONFLICT',
+          documentId,
+          projectId,
+          documentVersion: document.version,
+          latestVersion: latestDocument.version,
+          idempotent: true,
+        });
         throw new ConflictException({
           message: `Deleting document with id ${documentId} is not allowed. Document version ${document.version} is not the latest version. Latest version is ${latestDocument?.version}.`,
           reasonCode: 'DOCUMENT_VERSION_CONFLICT',
