@@ -477,7 +477,11 @@
       ) {
         return 'passport';
       }
-      return normalized;
+      // Defense-in-depth: return null for unknown types instead of passing raw string.
+      // This forces the user to the document-selection screen instead of crashing the SDK.
+      console.warn('[KYC] Unknown docType passed through normalizeDocType:', normalized,
+        '— falling back to full document selection.');
+      return null;
     }
 
     function normalizeDocOptions(docOptions) {
@@ -706,6 +710,13 @@
     var VALID_DOC_TYPES = DEFAULT_DOC_OPTIONS.map(function (d) {
       return d.type;
     });
+    // Extra validation: even if normalizeDocType returned a value, reject it if
+    // it's not in our known document options to prevent SDK init crash.
+    if (preselectedDocType && !VALID_DOC_TYPES.includes(preselectedDocType)) {
+      console.warn('[KYC] preselectedDocType', preselectedDocType,
+        'is not in VALID_DOC_TYPES', VALID_DOC_TYPES, '— clearing preselection.');
+      preselectedDocType = null;
+    }
     var hasPreselectedDoc = VALID_DOC_TYPES.includes(preselectedDocType);
 
     // ── Document info for pre-selected type ──
