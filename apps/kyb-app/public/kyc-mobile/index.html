@@ -1050,6 +1050,14 @@
         var reasonCode = rawReasonCode;
         if (!reasonCode) {
           var lowerMessage = String(message || '').toLowerCase();
+
+          if (status === 0) {
+            var httpMatch = lowerMessage.match(/http\s*(\d{3})/);
+            if (httpMatch && httpMatch[1]) {
+              status = parseInt(httpMatch[1], 10);
+            }
+          }
+
           if (status === 409) {
             reasonCode = 'WORKFLOW_CONFLICT';
           } else if (lowerMessage.indexOf('timeout') !== -1) {

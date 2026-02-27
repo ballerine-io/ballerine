@@ -43,6 +43,13 @@ export class WorkflowAuthGuard implements CanActivate {
   ) {
     const req = context.switchToHttp().getRequest<Request>();
 
+    // Validate UUID format before querying Prisma — the workflow.id column is UUID type.
+    // Without this check, malformed workflow IDs cause a Prisma 500 instead of a clean 401.
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(workflowId)) {
+      throw new UnauthorizedException('Invalid Workflow ID format');
+    }
+
     const workflow = await this.workflowService.getWorkflowRuntimeDataById(
       workflowId,
       {},

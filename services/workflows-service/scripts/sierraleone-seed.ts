@@ -19,6 +19,10 @@ import { Customer, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { hashKey } from '../src/customer/api-key/utils';
 import {
+  KYC_SL_WORKFLOW_DEFINITION_IDS,
+  normalizeLegacyKycSdkSteps,
+} from './normalize-kyc-sdk-steps';
+import {
   generateKycOnboardingSierraLeone,
   generateKybOnboardingSierraLeoneFormal,
   generateKybOnboardingSierraLeoneInformal,
@@ -1716,7 +1720,13 @@ async function main() {
 
     // 3. Seed workflow definitions (already use upsert via generators)
     console.info('Seeding workflow definitions...');
-    const workflows = await seedWorkflowDefinitions(client);
+    await seedWorkflowDefinitions(client);
+    const normalizedWorkflowSteps = await normalizeLegacyKycSdkSteps(client, [
+      ...KYC_SL_WORKFLOW_DEFINITION_IDS,
+    ]);
+    console.info(
+      `    ✓ normalized legacy kycSdkSteps where needed (workflowDefinitions=${normalizedWorkflowSteps.workflowDefinitionsUpdated}, workflowRuntimes=${normalizedWorkflowSteps.workflowRuntimeDataUpdated})`,
+    );
 
     // 4. Seed UI definitions for the default project
     console.info('Seeding UI definitions...');

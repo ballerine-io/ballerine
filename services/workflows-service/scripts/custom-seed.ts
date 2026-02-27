@@ -4,6 +4,10 @@ import { AppModule } from '@/app.module';
 import { CustomerService } from '@/customer/customer.service';
 import { hashKey } from '../src/customer/api-key/utils';
 import {
+  KYC_SL_WORKFLOW_DEFINITION_IDS,
+  normalizeLegacyKycSdkSteps,
+} from './normalize-kyc-sdk-steps';
+import {
   kycOnboardingSierraLeoneDefinition,
   kybOnboardingSierraLeoneFormalDefinition,
   kybOnboardingSierraLeoneInformalDefinition,
@@ -188,6 +192,13 @@ export async function customSeed() {
       });
       console.info(`    ✓ ${label}`);
     }
+
+    const normalizedWorkflowSteps = await normalizeLegacyKycSdkSteps(client, [
+      ...KYC_SL_WORKFLOW_DEFINITION_IDS,
+    ]);
+    console.info(
+      `    ✓ normalized legacy kycSdkSteps where needed (workflowDefinitions=${normalizedWorkflowSteps.workflowDefinitionsUpdated}, workflowRuntimes=${normalizedWorkflowSteps.workflowRuntimeDataUpdated})`,
+    );
 
     // ── 4. Collection Flow UI Definitions ──
     console.info('  Upserting SL collection flow UI definitions...');

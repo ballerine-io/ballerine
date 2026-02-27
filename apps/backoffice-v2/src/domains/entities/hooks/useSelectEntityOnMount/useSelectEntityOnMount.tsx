@@ -18,7 +18,10 @@ export const useSelectEntityOnMount = () => {
   const onSelectEntity = useSelectEntity();
   const entity = useEntityType();
   const firstCaseId = workflows?.[0]?.id;
-  const workflowIds = useMemo(() => new Set(workflows?.map(workflow => workflow.id) ?? []), [workflows]);
+  const workflowIds = useMemo(
+    () => new Set(workflows?.map(workflow => workflow.id) ?? []),
+    [workflows],
+  );
   const { error: workflowByIdError } = useWorkflowByIdQuery({ workflowId: caseId ?? '' });
   const { state } = useLocation();
   const prevCaseId = useMemo(() => {
@@ -35,8 +38,7 @@ export const useSelectEntityOnMount = () => {
       return;
     }
 
-    const nextEntityId =
-      prevCaseId && workflowIds.has(prevCaseId) ? prevCaseId : firstCaseId;
+    const nextEntityId = prevCaseId && workflowIds.has(prevCaseId) ? prevCaseId : firstCaseId;
 
     if (!nextEntityId) {
       return;
