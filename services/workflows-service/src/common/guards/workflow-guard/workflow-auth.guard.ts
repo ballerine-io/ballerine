@@ -58,8 +58,20 @@ export class WorkflowAuthGuard implements CanActivate {
       type: 'user',
     });
 
-    (req as any).tokenScope =
-      await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(workflow.id);
+    // Defense-in-depth: if the database has a corrupted token UUID, Prisma crashes
+    // when deserializing the row. Catch and continue with null tokenScope instead
+    // of failing the entire request with a 500.
+    try {
+      (req as any).tokenScope =
+        await this.workflowTokenService.findFirstByWorkflowRuntimeDataIdUnscoped(workflow.id);
+    } catch (error) {
+      console.warn(
+        `[WorkflowAuthGuard] Failed to resolve tokenScope for workflow ${workflow.id}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      (req as any).tokenScope = null;
+    }
 
     return true;
   }
@@ -81,7 +93,20 @@ export class WorkflowAuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid token format');
     }
 
-    const tokenEntity = await this.workflowTokenService.findByTokenWithExpiredUnscoped(token);
+    // Defense-in-depth: wrap Prisma query so corrupted DB rows cause a clean 401,
+    // not a 500. Prisma may crash if the token column in the result is a malformed UUID.
+    let tokenEntity;
+
+    try {
+      tokenEntity = await this.workflowTokenService.findByTokenWithExpiredUnscoped(token);
+    } catch (error) {
+      console.error(
+        `[WorkflowAuthGuard] Prisma error looking up token: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      throw new UnauthorizedException('Token lookup failed');
+    }
 
     if (!tokenEntity) {
       throw new UnauthorizedException('Unauthorized');
