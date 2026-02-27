@@ -399,6 +399,11 @@
       height: 120px;
     }
 
+    .b-kyc-client .welcome-wrapper {
+      padding-bottom: 30px !important;
+      margin-bottom: 20px !important;
+    }
+
     /* Hide init spinner when Lottie takes over */
     .init-loading.has-lottie .spinner {
       display: none;
@@ -446,12 +451,31 @@
         .trim()
         .toLowerCase()
         .replace(/[\s-]+/g, '_');
+      // Map Android enum names and common variants to SDK-expected types
+      if (
+        normalized === 'national_id' ||
+        normalized === 'sierraleone_national_id'
+      ) {
+        return 'id_card';
+      }
+      if (
+        normalized === 'sierraleone_voter_id' ||
+        normalized === 'voter'
+      ) {
+        return 'voter_id';
+      }
       if (
         normalized === 'driver_license' ||
         normalized === 'driver_licence' ||
-        normalized === 'drivers_licence'
+        normalized === 'drivers_licence' ||
+        normalized === 'sierraleone_driver_license'
       ) {
         return 'drivers_license';
+      }
+      if (
+        normalized === 'sierraleone_passport'
+      ) {
+        return 'passport';
       }
       return normalized;
     }
@@ -1706,7 +1730,7 @@
             workflowState: JSON.stringify(workflowStatePayload),
             documentCategory: 'proof_of_identity',
             selfieCategory: 'proof_of_identity_ownership',
-            preselectedDocType: preselectedDocType || '',
+            preselectedDocType: (preselectedDocType === 'voter_id' ? 'id_card' : preselectedDocType) || '',
           },
         },
         backendConfig: {
