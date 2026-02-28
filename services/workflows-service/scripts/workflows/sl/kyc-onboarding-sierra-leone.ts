@@ -75,6 +75,15 @@ export const kycOnboardingSierraLeoneDefinition = {
         always: [
           {
             target: 'device_check',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: "entity.data.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceHash || entity.data.deviceFingerprint || entity.data.device.fingerprintJsDeviceId || entity.data.device.fingerprintJsDeviceHash || entity.data.device.deviceFingerprint || entity.data.deviceIp || entity.data.device.deviceIp || entity.data.networkIp || entity.data.networkIpAddresses[0] || entity.data.device.networkIpAddresses[0] || entity.data.ip",
+              },
+            },
+          },
+          {
+            target: 'risk_evaluation',
           },
         ],
       },
@@ -296,16 +305,16 @@ export const kycOnboardingSierraLeoneDefinition = {
               transformer: 'jmespath',
               mapping: `{
                 device: {
-                  fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
-                  fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
-                  deviceFingerprint: entity.data.deviceFingerprint,
-                  deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
-                  deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
-                  deviceImei: entity.data.deviceImei,
-                  deviceModel: entity.data.deviceModel,
-                  deviceBrand: entity.data.deviceBrand,
-                  deviceUserAgent: entity.data.deviceUserAgent,
-                  deviceIp: entity.data.deviceIp
+                  fingerprintJsDeviceId: entity.data.device.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceId,
+                  fingerprintJsDeviceHash: entity.data.device.fingerprintJsDeviceHash || entity.data.fingerprintJsDeviceHash,
+                  deviceFingerprint: entity.data.device.deviceFingerprint || entity.data.deviceFingerprint,
+                  deviceFirebaseInstallationId: entity.data.device.deviceFirebaseInstallationId || entity.data.deviceFirebaseInstallationId,
+                  deviceLocalInstallationId: entity.data.device.deviceLocalInstallationId || entity.data.deviceLocalInstallationId,
+                  deviceImei: entity.data.device.deviceImei || entity.data.deviceImei,
+                  deviceModel: entity.data.device.deviceModel || entity.data.deviceModel,
+                  deviceBrand: entity.data.device.deviceBrand || entity.data.deviceBrand,
+                  deviceUserAgent: entity.data.device.deviceUserAgent || entity.data.deviceUserAgent,
+                  deviceIp: entity.data.device.deviceIp || entity.data.deviceIp || entity.data.networkIp || entity.data.networkIpAddresses[0] || entity.data.device.networkIpAddresses[0] || entity.data.ip
                 },
                 countryCode: 'SL'
               }`,

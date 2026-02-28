@@ -123,6 +123,86 @@ describe('normalizeLegacyKycSdkSteps', () => {
     });
   });
 
+  it('does not normalize when kycSdkSteps is present but not an array', async () => {
+    const client = makeClient();
+
+    client.workflowDefinition.findMany.mockResolvedValue([
+      {
+        id: 'definition-1',
+        config: {
+          kycSdkSteps: 'address-proof-check',
+        } as Prisma.JsonValue,
+      },
+      {
+        id: 'definition-2',
+        config: {
+          kycSdkSteps: { value: 'address-proof-check' },
+        } as Prisma.JsonValue,
+      },
+    ]);
+    client.workflowRuntimeData.findMany.mockResolvedValue([
+      { id: 'runtime-1', config: { kycSdkSteps: 123 } as Prisma.JsonValue },
+    ]);
+
+    const result = await normalizeLegacyKycSdkSteps(asPrismaClient(client), [
+      'definition-1',
+      'definition-2',
+      'runtime-1',
+    ]);
+
+    expect(result).toEqual({
+      workflowDefinitionsUpdated: 0,
+      workflowRuntimeDataUpdated: 0,
+    });
+    expect(client.workflowDefinition.update).not.toHaveBeenCalled();
+    expect(client.workflowRuntimeData.update).not.toHaveBeenCalled();
+  });
+
+  it('preserves unexpected and non-string step values while normalizing legacy ids in mixed arrays', async () => {
+    const client = makeClient();
+    const mixedSteps = [
+      legacyStep,
+      'unexpected-step',
+      42,
+      null,
+      { label: 'not-a-step' },
+      'another-step',
+    ];
+
+    client.workflowDefinition.findMany.mockResolvedValue([
+      {
+        id: 'definition-1',
+        config: {
+          kycSdkSteps: mixedSteps,
+        } as Prisma.JsonValue,
+      },
+    ]);
+    client.workflowRuntimeData.findMany.mockResolvedValue([]);
+
+    const result = await normalizeLegacyKycSdkSteps(asPrismaClient(client), ['definition-1']);
+
+    expect(result).toEqual({
+      workflowDefinitionsUpdated: 1,
+      workflowRuntimeDataUpdated: 0,
+    });
+    expect(client.workflowDefinition.update).toHaveBeenCalledTimes(1);
+    expect(client.workflowDefinition.update).toHaveBeenCalledWith({
+      where: { id: 'definition-1' },
+      data: {
+        config: {
+          kycSdkSteps: [
+            normalizedLegacyStep,
+            'unexpected-step',
+            42,
+            null,
+            { label: 'not-a-step' },
+            'another-step',
+          ],
+        },
+      },
+    });
+  });
+
   it('does not mutate configs that only contain unexpected kycSdkSteps values', async () => {
     const client = makeClient();
     const runtimeConfig = { kycSdkSteps: ['unexpected-step-a', 'unexpected-step-b'] };

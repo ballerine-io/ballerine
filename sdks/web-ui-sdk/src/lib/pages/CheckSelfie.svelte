@@ -24,7 +24,7 @@
 <div class="container" {style}>
   {#each step.elements as element}
     {#if element.type === Elements.Photo}
-      <Photo src={$selfieUri} configuration={element.props} />
+      <Photo src={$selfieUri} configuration={element.props} overlayType="selfie" />
     {/if}
     {#if element.type === Elements.IconButton}
       <IconButton

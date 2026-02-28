@@ -11,6 +11,34 @@ import { IFlow } from '../../contexts/flows';
 import { TranslationType } from '../../contexts/translation';
 import { IUIPackTheme } from '../../ui-packs/types';
 
+const legacyKycSdkStepIdByLegacy = {
+  'address-proof-check': 'check-address-proof',
+} as const;
+
+const normalizeKycSdkStepId = (value: unknown): { value: string; normalized: boolean } => {
+  if (typeof value !== 'string' || !value.trim()) {
+    return { value: String(value), normalized: false };
+  }
+
+  const normalized = legacyKycSdkStepIdByLegacy[value as keyof typeof legacyKycSdkStepIdByLegacy];
+  if (!normalized) {
+    return { value, normalized: false };
+  }
+
+  return { value: normalized, normalized: true };
+};
+
+const resolveFlowStepId = (flowStepId: unknown): { value: string; normalized: boolean } => {
+  const result = normalizeKycSdkStepId(flowStepId);
+  if (result.normalized) {
+    console.warn(
+      `[KYC SDK] Legacy flow step id normalized: ${flowStepId as string} -> ${result.value}.`,
+    );
+  }
+
+  return result;
+};
+
 export const mergeStepConfig = (
   defaultConfig: IStepConfiguration,
   overrides: IStepConfiguration,
@@ -106,11 +134,25 @@ const mergeConfigurationFlowsWithUiPack = (
   let steps: IStepConfiguration[] = uiTheme.steps;
   if (flowSteps) {
     steps = flowSteps.map(flowStep => {
-      const themeStep = uiTheme.steps.find(s => s.id === flowStep.id);
-      if (!themeStep) {
-        throw new Error(`Invalid step id provided: ${flowStep.id as string}`);
+    if (typeof flowStep.id !== 'string') {
+      throw new Error(`Invalid step id provided: ${String(flowStep.id)}`);
       }
-      const mergedStep = deepmerge(themeStep, flowStep);
+
+      const { value: resolvedFlowStepId, normalized } = resolveFlowStepId(flowStep.id);
+      const flowStepId = normalized ? resolvedFlowStepId : flowStep.id;
+      const themeStep = uiTheme.steps.find(s => s.id === flowStepId);
+      if (!themeStep) {
+        throw new Error(`Invalid step id provided: ${flowStep.id }`);
+      }
+
+      const normalizedFlowStep = normalized
+        ? {
+            ...(flowStep as unknown as Record<string, unknown>),
+            id: flowStepId,
+          }
+        : flowStep;
+
+      const mergedStep = deepmerge(themeStep, normalizedFlowStep);
       return {
         ...mergedStep,
         id: mergedStep.type ? `${mergedStep.id}-${mergedStep.type}` : mergedStep.id,

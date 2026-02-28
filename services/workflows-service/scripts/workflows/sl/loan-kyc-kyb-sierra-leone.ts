@@ -306,16 +306,16 @@ export const loanKycKybSierraLeoneDefinition = {
                   country: 'SL',
                   tenantId: entity.data.tenantId,
                   projectId: entity.data.projectId,
-                  deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
-                  deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
-                  fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
-                  fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
-                  deviceFingerprint: entity.data.deviceFingerprint,
-                  deviceImei: entity.data.deviceImei,
-                  deviceModel: entity.data.deviceModel,
-                  deviceBrand: entity.data.deviceBrand,
-                  deviceUserAgent: entity.data.deviceUserAgent,
-                  deviceIp: entity.data.deviceIp
+                  deviceFirebaseInstallationId: entity.data.device.deviceFirebaseInstallationId || entity.data.deviceFirebaseInstallationId,
+                  deviceLocalInstallationId: entity.data.device.deviceLocalInstallationId || entity.data.deviceLocalInstallationId,
+                  fingerprintJsDeviceId: entity.data.device.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceId,
+                  fingerprintJsDeviceHash: entity.data.device.fingerprintJsDeviceHash || entity.data.fingerprintJsDeviceHash,
+                  deviceFingerprint: entity.data.device.deviceFingerprint || entity.data.deviceFingerprint,
+                  deviceImei: entity.data.device.deviceImei || entity.data.deviceImei,
+                  deviceModel: entity.data.device.deviceModel || entity.data.deviceModel,
+                  deviceBrand: entity.data.device.deviceBrand || entity.data.deviceBrand,
+                  deviceUserAgent: entity.data.device.deviceUserAgent || entity.data.deviceUserAgent,
+                  deviceIp: entity.data.device.deviceIp || entity.data.deviceIp || entity.data.networkIp || entity.data.networkIpAddresses[0] || entity.data.device.networkIpAddresses[0] || entity.data.ip
                 }
               },
               documents: documents[?category=='proof_of_identity' || category=='proof_of_identity_ownership' || category=='proof_of_address' || category=='proof_of_location']
@@ -379,27 +379,53 @@ export const loanKycKybSierraLeoneDefinition = {
                   projectId: entity.data.projectId,
                   ownerPhoneNumber: entity.data.phoneNumber,
                   ownerEmail: entity.data.email,
-                  fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
-                  fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
-                  deviceFingerprint: entity.data.deviceFingerprint,
-                  deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
-                  deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
-                  deviceImei: entity.data.deviceImei,
-                  deviceModel: entity.data.deviceModel,
-                  deviceBrand: entity.data.deviceBrand,
-                  deviceUserAgent: entity.data.deviceUserAgent,
-                  deviceIp: entity.data.deviceIp,
+                  fingerprintJsDeviceId:
+                    entity.data.device.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceId,
+                  fingerprintJsDeviceHash:
+                    entity.data.device.fingerprintJsDeviceHash || entity.data.fingerprintJsDeviceHash,
+                  deviceFingerprint:
+                    entity.data.device.deviceFingerprint || entity.data.deviceFingerprint,
+                  deviceFirebaseInstallationId:
+                    entity.data.device.deviceFirebaseInstallationId ||
+                    entity.data.deviceFirebaseInstallationId,
+                  deviceLocalInstallationId:
+                    entity.data.device.deviceLocalInstallationId ||
+                    entity.data.deviceLocalInstallationId,
+                  deviceImei: entity.data.device.deviceImei || entity.data.deviceImei,
+                  deviceModel: entity.data.device.deviceModel || entity.data.deviceModel,
+                  deviceBrand: entity.data.device.deviceBrand || entity.data.deviceBrand,
+                  deviceUserAgent: entity.data.device.deviceUserAgent || entity.data.deviceUserAgent,
+                  deviceIp:
+                    entity.data.device.deviceIp ||
+                    entity.data.deviceIp ||
+                    entity.data.networkIp ||
+                    entity.data.networkIpAddresses[0] ||
+                    entity.data.device.networkIpAddresses[0] ||
+                    entity.data.ip,
                   device: {
-                    fingerprintJsDeviceId: entity.data.fingerprintJsDeviceId,
-                    fingerprintJsDeviceHash: entity.data.fingerprintJsDeviceHash,
-                    deviceFingerprint: entity.data.deviceFingerprint,
-                    deviceFirebaseInstallationId: entity.data.deviceFirebaseInstallationId,
-                    deviceLocalInstallationId: entity.data.deviceLocalInstallationId,
-                    deviceImei: entity.data.deviceImei,
-                    deviceModel: entity.data.deviceModel,
-                    deviceBrand: entity.data.deviceBrand,
-                    deviceUserAgent: entity.data.deviceUserAgent,
-                    deviceIp: entity.data.deviceIp
+                    fingerprintJsDeviceId:
+                      entity.data.device.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceId,
+                    fingerprintJsDeviceHash:
+                      entity.data.device.fingerprintJsDeviceHash || entity.data.fingerprintJsDeviceHash,
+                    deviceFingerprint:
+                      entity.data.device.deviceFingerprint || entity.data.deviceFingerprint,
+                    deviceFirebaseInstallationId:
+                      entity.data.device.deviceFirebaseInstallationId ||
+                      entity.data.deviceFirebaseInstallationId,
+                    deviceLocalInstallationId:
+                      entity.data.device.deviceLocalInstallationId ||
+                      entity.data.deviceLocalInstallationId,
+                    deviceImei: entity.data.device.deviceImei || entity.data.deviceImei,
+                    deviceModel: entity.data.device.deviceModel || entity.data.deviceModel,
+                    deviceBrand: entity.data.device.deviceBrand || entity.data.deviceBrand,
+                    deviceUserAgent: entity.data.device.deviceUserAgent || entity.data.deviceUserAgent,
+                    deviceIp:
+                      entity.data.device.deviceIp ||
+                      entity.data.deviceIp ||
+                      entity.data.networkIp ||
+                      entity.data.networkIpAddresses[0] ||
+                      entity.data.device.networkIpAddresses[0] ||
+                      entity.data.ip
                   },
                   additionalInfo: {
                     owner: {

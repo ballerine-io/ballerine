@@ -12,6 +12,7 @@
   import { getLayoutStyles, getStepConfiguration } from '../ui-packs';
   import { getFlowConfig } from '../contexts/flows/hooks';
   import { getDocumentType } from '../utils/documents-utils';
+  import { getOverlayDocumentType } from '../atoms/Overlay/utils';
 
   export let stepId;
 
@@ -21,6 +22,7 @@
 
   const stepNamespace = step.namespace!;
   const documentType = getDocumentType(step, $selectedDocumentInfo);
+  const overlayType = documentType ? getOverlayDocumentType(documentType) : '';
 
   let image = '';
   let skipBackSide = false;
@@ -81,7 +83,7 @@
       </Paragraph>
     {/if}
     {#if element.type === Elements.Photo}
-      <Photo configuration={element.props} src={image} />
+      <Photo configuration={element.props} src={image} {overlayType} />
     {/if}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />

@@ -17,6 +17,7 @@
   import { preloadNextStepByCurrent } from '../services/preload-service';
   import { ActionNames, sendButtonClickEvent, VerificationStatuses } from '../utils/event-service';
   import { getFlowConfig } from '../contexts/flows/hooks';
+  import { getOverlayDocumentType } from '../atoms/Overlay/utils';
 
   export let stepId;
 
@@ -28,6 +29,7 @@
 
   let image: string;
   let documentInfo: IDocumentInfo | undefined = undefined;
+  let overlayType: string = '';
 
   $: {
     documentInfo = step.documentInfo || $selectedDocumentInfo;
@@ -36,6 +38,7 @@
     }
     if (documentInfo) {
       image = getDocImage(documentInfo.type, $documents, 'back');
+      overlayType = getOverlayDocumentType(documentInfo.type);
     }
   }
 
@@ -74,7 +77,7 @@
       </Paragraph>
     {/if}
     {#if element.type === Elements.Photo}
-      <Photo configuration={element.props} src={image} />
+      <Photo configuration={element.props} src={image} {overlayType} />
     {/if}
     {#if element.type === Elements.Image}
       <Image configuration={element.props} />
