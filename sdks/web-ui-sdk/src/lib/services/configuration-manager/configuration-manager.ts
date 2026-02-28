@@ -129,22 +129,21 @@ export const preloadFlowBasicSteps = async (
 const preloadBasicSteps = async (flow: IFlow): Promise<IFlow> => {
   const steps = flow.steps as IStepConfiguration[];
   let preloadedSteps = steps;
-  // Welcome step preload
-  const welcomeStep = steps.find(s => s.name === Steps.Welcome);
-  if (welcomeStep) {
-    const updatedWelcomeStep = await preloadStepImages(welcomeStep);
-    preloadedSteps = preloadedSteps.map(s =>
-      s.name === welcomeStep.name ? updatedWelcomeStep : s,
+
+  // Preload images for ALL steps — the SDK renders SVG src via {@html} so
+  // every step with an Image element needs its SVG content fetched upfront.
+  for (const step of steps) {
+    const hasImageElement = step.elements?.some(
+      (e: { props?: { attributes?: { src?: string } } }) => e.props?.attributes?.src,
     );
+    if (hasImageElement) {
+      const updatedStep = await preloadStepImages(step);
+      preloadedSteps = preloadedSteps.map(s =>
+        s.name === step.name ? updatedStep : s,
+      );
+    }
   }
-  // Loading step preload
-  const loadingStep = steps.find(s => s.name === Steps.Loading);
-  if (loadingStep) {
-    const updatedLoadingStep = await preloadStepImages(loadingStep);
-    preloadedSteps = preloadedSteps.map(s =>
-      s.name === loadingStep.name ? updatedLoadingStep : s,
-    );
-  }
+
   return {
     ...flow,
     steps: preloadedSteps,

@@ -40,6 +40,9 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      height: 100dvh;
+      height: 100vh;
+      /* fallback for older browsers */
     }
 
     #kyc-host {
@@ -48,32 +51,56 @@
       flex-direction: column;
       overflow: hidden;
       width: 100%;
-      max-height: 100dvh;
+      height: 100dvh;
+      height: 100vh;
     }
 
-    /* Force SDK content to stay within viewport */
+    /* ── App-like viewport-fit: every step fills exactly the screen ── */
+
+    /* SDK root container fills the host */
     #kyc-host #blrn-app {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      max-height: 100dvh;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      max-height: 100dvh !important;
+      overflow: hidden !important;
     }
 
-    /* Constrain welcome illustration so CTA stays in view */
-    #kyc-host #blrn-app img:not([alt='result']) {
-      max-height: 25vh !important;
-      object-fit: contain !important;
-      width: auto !important;
-    }
-
-    /* Flex-fit the SDK's step containers */
+    /* Each step's top-level container fills and distributes space */
     #kyc-host #blrn-app>div {
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      flex: 1;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* SVG illustrations (rendered via {@html}) should shrink, not push CTA off-screen */
+    #kyc-host #blrn-app .container:has(> svg) {
+      flex-shrink: 1 !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #kyc-host #blrn-app svg {
+      max-height: 20vh !important;
+      width: auto !important;
+      display: block !important;
+      margin: 0 auto !important;
+    }
+
+    /* Pin the primary action button to the bottom of the viewport */
+    #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']) {
+      flex-shrink: 0 !important;
+      margin-top: auto !important;
+    }
+
+    /* Welcome page list should not grow unbounded */
+    #kyc-host #blrn-app ul,
+    #kyc-host #blrn-app ol {
+      flex-shrink: 1 !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
     }
 
     .init-message {
