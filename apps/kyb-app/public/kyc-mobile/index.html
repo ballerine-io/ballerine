@@ -85,7 +85,7 @@
       margin: 0 auto !important;
     }
 
-    /* ── Navigation buttons: stack vertically, always visible at bottom ── */
+    /* ── Navigation buttons: side-by-side, equal width, always visible at bottom ── */
     #kyc-host .navigation-buttons,
     #kyc-host #blrn-app .navigation-buttons {
       width: 100% !important;
@@ -94,8 +94,8 @@
       padding: 12px 16px !important;
       flex-shrink: 0 !important;
       display: flex !important;
-      flex-direction: column !important;
-      gap: 10px !important;
+      flex-direction: row !important;
+      gap: 12px !important;
       /* Stick buttons at the very bottom so they're always visible */
       position: sticky !important;
       bottom: 0 !important;
@@ -106,31 +106,30 @@
 
     /* All buttons must respect container width */
     #kyc-host #blrn-app button {
-      max-width: 100% !important;
-      width: 100% !important;
       box-sizing: border-box !important;
       flex-shrink: 0 !important;
     }
 
     #kyc-host .navigation-buttons button {
+      flex: 1 1 0 !important;
       width: 100% !important;
-      flex: none !important;
+      margin: 0 !important;
     }
 
     /* ── Fix photo preview: document in landscape, selfie circular ── */
 
-    /* Default: document photo crops to landscape 4:3 */
+    /* Default: document photo uses contain so it doesn't crop edges and looks complete */
     #kyc-host #blrn-app .photo-wrapper img,
     #kyc-host #blrn-app img[alt="result"] {
       width: 100% !important;
       height: 100% !important;
-      object-fit: cover !important;
+      object-fit: contain !important;
       object-position: center center !important;
       border-radius: 12px !important;
       display: block !important;
     }
 
-    /* Force photo-wrapper to a landscape ratio so the img fills it */
+    /* Force photo-wrapper to a landscape ratio so the img fits inside it */
     #kyc-host #blrn-app .photo-wrapper {
       width: 85% !important;
       aspect-ratio: 4 / 3 !important;
@@ -142,12 +141,16 @@
       max-height: 55vh !important;
     }
 
-    /* Selfie uses portrait/circular crop */
+    /* Selfie uses portrait/circular crop and cover because it's a face */
     #kyc-host #blrn-app .photo-wrapper.selfie {
       aspect-ratio: 1 / 1 !important;
       border-radius: 9999px !important;
       width: 60% !important;
       max-height: 45vh !important;
+    }
+
+    #kyc-host #blrn-app .photo-wrapper.selfie img {
+      object-fit: cover !important;
     }
 
     /* Welcome page list should not grow unbounded */
@@ -959,6 +962,14 @@
           {
             name: 'address-proof-start',
             id: 'address-proof-start',
+            type: 'utility_bill',
+            documentInfo: {
+              type: 'utility_bill',
+              kind: 'proof_of_address',
+              variant: 'regular',
+              backSide: false,
+              orderIndex: 10,
+            },
           },
           {
             name: 'address-proof-photo',

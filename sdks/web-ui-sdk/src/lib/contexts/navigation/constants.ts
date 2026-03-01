@@ -54,7 +54,7 @@ export const steps = [
   { name: Steps.Error, component: ErrorPage, type: 'no-flow-part' },
   { name: Steps.Final, component: Final, type: 'no-flow-part' },
   // Address proof steps — reuse existing document capture components
-  { name: Steps.AddressProofStart, component: DocumentPhotoBackStart },
+  { name: Steps.AddressProofStart, component: DocumentStart },
   { name: Steps.AddressProofPhoto, component: DocumentPhoto },
   { name: Steps.CheckAddressProof, component: CheckDocument },
 ];
