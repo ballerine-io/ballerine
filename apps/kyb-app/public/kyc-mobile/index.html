@@ -1162,7 +1162,7 @@
           window.location.href = url.toString();
         } else {
           try { window.close(); } catch (e) { }
-          var icon = status === 'error' ? SVG_ICONS.fail : (status === 'success' ? SVG_ICONS.success : SVG_ICONS.final);
+          var icon = status === 'error' ? SVG_ICONS.fail : (status === 'success' ? SVG_ICONS.success : SVG_ICONS.success);
           renderStatusCard({
             icon: icon,
             title: 'You can safely close this tab',
@@ -1799,11 +1799,19 @@
           try {
             var docType = null;
             var docs = workflowData?.context?.documents || [];
-
-            var typeStr = (docs.length > 0 && (docs[0].type || docs[0].category || docs[0].documentType)) ||
-              workflowData?.context?.entity?.data?.documentType ||
-              workflowData?.context?.entity?.data?.additionalInfo?.documentType ||
-              params.get('docType');
+            var typeStr = null;
+            if (docs.length > 0) {
+              typeStr = docs[0].type || docs[0].category || docs[0].documentType || null;
+            }
+            if (!typeStr) {
+              typeStr = workflowData?.context?.entity?.data?.documentType ||
+                workflowData?.context?.entity?.data?.additionalInfo?.documentType ||
+                null;
+            }
+            // Fallback: use the preselectedDocType from the URL (already normalized via normalizeDocType)
+            if (!typeStr && preselectedDocType) {
+              typeStr = preselectedDocType;
+            }
 
             if (typeStr) {
               var norm = String(typeStr).toLowerCase();
