@@ -85,46 +85,62 @@
       margin: 0 auto !important;
     }
 
-    /* ── Fix button horizontal overflow ── */
-    /* Navigation buttons container must not overflow */
+    /* ── Navigation buttons: stack vertically, one per line ── */
     #kyc-host .navigation-buttons,
     #kyc-host #blrn-app .navigation-buttons {
       width: 100% !important;
       max-width: 100% !important;
       box-sizing: border-box !important;
-      padding-left: 16px !important;
-      padding-right: 16px !important;
+      padding: 0 16px 8px !important;
       flex-shrink: 0 !important;
       display: flex !important;
-      gap: 8px !important;
+      flex-direction: column !important;
+      gap: 10px !important;
     }
 
     /* All buttons must respect container width */
     #kyc-host #blrn-app button {
       max-width: 100% !important;
+      width: 100% !important;
       box-sizing: border-box !important;
-      flex-shrink: 1 !important;
-      min-width: 0 !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
+      flex-shrink: 0 !important;
     }
 
-    /* When two buttons side-by-side, each takes half */
     #kyc-host .navigation-buttons button {
-      flex: 1 1 0 !important;
-      min-width: 0 !important;
+      width: 100% !important;
+      flex: none !important;
     }
 
-    /* ── Fix photo preview: force landscape for documents ── */
-    /* The img has inline styles from SDK config — must use !important */
+    /* ── Fix photo preview: document in landscape, selfie circular ── */
+    /* Wrap the img in a fixed-ratio container approach via the photo-wrapper class */
+    /* But since we can't change Svelte scoped styles, target by page context */
+
+    /* Default: document photo crops to landscape 4:3 */
+    #kyc-host #blrn-app .photo-wrapper img,
     #kyc-host #blrn-app img[alt="result"] {
-      max-width: 90% !important;
-      max-height: 35vh !important;
+      width: 100% !important;
+      height: 100% !important;
       object-fit: cover !important;
-      object-position: center !important;
+      object-position: center top !important;
       border-radius: 12px !important;
       display: block !important;
+    }
+
+    /* Force photo-wrapper to a landscape ratio so the img fills it */
+    #kyc-host #blrn-app .photo-wrapper {
+      width: 85% !important;
+      aspect-ratio: 4 / 3 !important;
+      overflow: hidden !important;
+      border-radius: 12px !important;
       margin: 0 auto !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* Selfie uses portrait/circular crop */
+    #kyc-host #blrn-app .photo-wrapper.selfie {
+      aspect-ratio: 1 / 1 !important;
+      border-radius: 9999px !important;
+      width: 70% !important;
     }
 
     /* Welcome page list should not grow unbounded */
@@ -2044,15 +2060,13 @@
                   description: 'Make sure the back side is clear and readable.',
                 },
                 'selfie-start': {
-                  title: 'Time for a Selfie',
-                  description:
-                    'We will match your face to your ID photo. Use good lighting, remove hats or glasses, and look straight at the camera.',
+                  title: 'Take a Selfie',
+                  description: 'Look straight at the camera in good lighting.',
                   button: 'Take Selfie',
                 },
                 selfie: {
                   title: 'Selfie',
-                  description:
-                    'Position your face inside the oval. Look straight at the camera and keep your expression natural. Make sure there are no shadows on your face.',
+                  description: 'Fit your face inside the oval and keep still.',
                 },
                 'check-selfie': {
                   title: 'Review Your Selfie',
