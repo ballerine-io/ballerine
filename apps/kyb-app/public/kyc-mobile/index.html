@@ -1138,11 +1138,7 @@
       function isWebViewContext() {
         if (hasNativeHeader) return true;
         try {
-          var ua = window.navigator.userAgent || '';
-          if (ua.indexOf('; wv)') > -1) return true;
-          if (/WebView/.test(ua)) return true;
           if (typeof window.BallerineWebViewBridge !== 'undefined') return true;
-          if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
         } catch (e) { }
         return false;
       }
@@ -1797,18 +1793,24 @@
         }
 
         if (processingStates.includes(workflowState)) {
-          var title = 'Checking Your Photos...';
-          var body = 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.';
+          var title = 'Checking Your Information...';
+          var body = 'We received your information and are checking it now. This usually takes up to 24 hours.';
 
           try {
             var docType = null;
             var docs = workflowData?.context?.documents || [];
-            if (docs.length > 0 && docs[0].type) {
-              var typeStr = docs[0].type;
-              if (typeStr === 'id_card') docType = 'National ID';
-              else if (typeStr === 'voter_id') docType = 'Voter ID';
-              else if (typeStr === 'drivers_license') docType = 'Driver License';
-              else if (typeStr === 'passport') docType = 'Passport';
+
+            var typeStr = (docs.length > 0 && (docs[0].type || docs[0].category || docs[0].documentType)) ||
+              workflowData?.context?.entity?.data?.documentType ||
+              workflowData?.context?.entity?.data?.additionalInfo?.documentType ||
+              params.get('docType');
+
+            if (typeStr) {
+              var norm = String(typeStr).toLowerCase();
+              if (norm.indexOf('id_card') > -1 || norm.indexOf('national') > -1) docType = 'National ID';
+              else if (norm.indexOf('voter') > -1) docType = 'Voter ID';
+              else if (norm.indexOf('driver') > -1 || norm.indexOf('driving') > -1) docType = 'Driver License';
+              else if (norm.indexOf('passport') > -1) docType = 'Passport';
               else docType = typeStr.replace(/_/g, ' ').replace(/\b\w/g, function (l) { return l.toUpperCase(); });
             }
             if (docType) {
@@ -1829,7 +1831,7 @@
             }
 
             if (timeAgo) {
-              body = 'We received your photos (submitted ' + timeAgo + ') and are checking them now. This usually takes 1\u20132 minutes.';
+              body = 'We received your information (submitted ' + timeAgo + ') and are checking it now. This usually takes up to 24 hours.';
             }
           } catch (e) {
             // Silently fallback to generic copy on parsing errors
