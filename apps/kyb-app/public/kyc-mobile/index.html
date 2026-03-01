@@ -34,6 +34,18 @@
       font-family: 'Inter', -apple-system, sans-serif;
       background: #f8fafc;
       color: #1e293b;
+      /* ── Deep Native Feel ── */
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
+      overscroll-behavior-y: none;
+      /* Prevent pull-to-refresh & overscroll bounce */
+    }
+
+    /* Re-enable selection for inputs if any exist */
+    input,
+    textarea {
+      user-select: auto;
     }
 
     body {
@@ -100,7 +112,13 @@
       position: sticky !important;
       bottom: 0 !important;
       z-index: 10 !important;
-      background: #f8fafc !important;
+      /* Glassmorphism for native iOS feel */
+      background: rgba(248, 250, 252, 0.85) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      /* Respect home indicator on modern phones */
+      padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+      border-top: 1px solid rgba(226, 232, 240, 0.6) !important;
       margin-top: auto !important;
     }
 
@@ -318,6 +336,9 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      /* Prevent text selection when tapping fast */
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .status-btn:active {
