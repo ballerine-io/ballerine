@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" />
   <meta name="theme-color" content="#1a1a2e" />
   <meta name="referrer" content="no-referrer" />
   <title>MiKashBoks – Identity Verification</title>
@@ -112,10 +113,10 @@
       position: sticky !important;
       bottom: 0 !important;
       z-index: 10 !important;
-      /* Glassmorphism for native iOS feel */
+      /* Glassmorphism for native iOS feel (blur capped at 8px for low-end SL devices) */
       background: rgba(248, 250, 252, 0.85) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
       /* Respect home indicator on modern phones */
       padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
       border-top: 1px solid rgba(226, 232, 240, 0.6) !important;
@@ -516,8 +517,11 @@
     }
 
     /* ── Premium Card-style Document Selection ── */
-    #kyc-host #blrn-app ul>li,
-    #kyc-host #blrn-app [role='listitem'] {
+    /* Scoped to document-selection step only — avoids styling the welcome-page benefit list */
+    #kyc-host #blrn-app [class*='document-selection'] ul>li,
+    #kyc-host #blrn-app [class*='DocumentSelection'] ul>li,
+    #kyc-host #blrn-app [class*='document-selection'] [role='listitem'],
+    #kyc-host #blrn-app [class*='DocumentSelection'] [role='listitem'] {
       background: #ffffff !important;
       border: 1px solid #e2e8f0 !important;
       border-radius: 16px !important;
@@ -528,8 +532,10 @@
       cursor: pointer !important;
     }
 
-    #kyc-host #blrn-app ul>li:active,
-    #kyc-host #blrn-app [role='listitem']:active {
+    #kyc-host #blrn-app [class*='document-selection'] ul>li:active,
+    #kyc-host #blrn-app [class*='DocumentSelection'] ul>li:active,
+    #kyc-host #blrn-app [class*='document-selection'] [role='listitem']:active,
+    #kyc-host #blrn-app [class*='DocumentSelection'] [role='listitem']:active {
       background: #f8fafc !important;
       transform: scale(0.98) !important;
       border-color: #cbd5e1 !important;
@@ -650,6 +656,22 @@
       #kyc-host #blrn-app .overlay.card {
         width: min(80vh, 520px) !important;
         height: min(50vh, 340px) !important;
+      }
+    }
+
+    /* ── Accessibility: respect user motion preferences ── */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .orientation-hint .rotate-icon {
+        animation: none;
       }
     }
   </style>
@@ -973,13 +995,6 @@
         // These reuse the SDK's DocumentPhotoBackStart, DocumentPhoto, and CheckDocument
         // components with a 'proof_of_address' document kind.
         if (runtimeUiFlags.requireAddressProof) {
-          var ADDRESS_PROOF_DOC_INFO = {
-            type: 'utility_bill',
-            kind: 'proof_of_address',
-            variant: 'regular',
-            backSide: false,
-            orderIndex: 10,
-          };
           builtSteps.push(
             {
               name: 'address-proof-start',
@@ -1073,19 +1088,46 @@
             step.documentInfo = preselectedDocInfo;
           }
           // Address proof steps — set type and documentInfo for proof_of_address category
-          if (['address-proof-photo', 'check-address-proof'].includes(name)) {
+          if (['address-proof-start', 'address-proof-photo', 'check-address-proof'].includes(name)) {
             step.type = 'utility_bill';
-            step.documentInfo = {
-              type: 'utility_bill',
-              kind: 'proof_of_address',
-              variant: 'regular',
-              backSide: false,
-              orderIndex: 10,
-            };
+            step.documentInfo = ADDRESS_PROOF_DOC_INFO;
           }
           return applyStepUiOverrides(step);
         });
       }
+
+      // ── Shared workflow state arrays ──
+      // Defined once at module scope to prevent drift between initFlow() and
+      // reconcileConflictAndComplete().
+      var APPROVED_STATES = ['approved', 'auto_approved'];
+      var REJECTED_STATES = ['rejected', 'auto_rejected', 'declined'];
+      var REVIEW_STATES = ['manual_review', 'review'];
+      var REVISION_STATES = ['pending_resubmission', 'revision', 'revised'];
+      var PROCESSING_STATES = [
+        'idle', 'document_collection', 'pending_kyc', 'kyc_verification',
+        'kyb_determination', 'document_verification', 'facial_verification',
+        'dedup_evaluation', 'device_dedup_check', 'ncra_check',
+        'risk_evaluation', 'awaiting_3rd_party_data',
+      ];
+
+      var ADDRESS_PROOF_DOC_INFO = {
+        type: 'utility_bill',
+        kind: 'proof_of_address',
+        variant: 'regular',
+        backSide: false,
+        orderIndex: 10,
+      };
+
+      // ── Shared SVG Icons ──
+      var SVG_ICONS = {
+        sync: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><path d="M22 23a8 8 0 0 1 12.5 1.5M34 33a8 8 0 0 1-12.5-1.5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M34.5 20v5h-5M21.5 36v-5h5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        error: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        warning: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f59e0b" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#f59e0b"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        success: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#22c55e" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#22c55e"/><path d="M20 28l5.5 5.5L36 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        fail: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M22 22l12 12M34 22l-12 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        review: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><ellipse cx="28" cy="28" rx="10" ry="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="28" cy="28" r="3.5" fill="#fff"/></svg>',
+        processing: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#0071D3" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#0071D3"/><circle cx="28" cy="28" r="10" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="15 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 28 28" to="360 28 28" dur="2s" repeatCount="indefinite"/></circle></svg>',
+      };
 
       // NOTE: `steps` is resolved after the workflow fetch (see below) so we can
       // prefer config-driven steps from workflowData.config.kycSdkSteps.
@@ -1197,11 +1239,6 @@
         return 'Ref: ' + parts.join(' | ');
       }
 
-      function isParentStateMismatchMessage(diagnostics) {
-        var msg = String((diagnostics && diagnostics.message) || '').toLowerCase();
-        return msg.indexOf('kyc_child_responded') !== -1 && msg.indexOf('idle') !== -1;
-      }
-
       function getHardFailMetaMessage(diagnostics) {
         if (diagnostics.status === 409) {
           return runtimeUiFlags.simplifyCopy
@@ -1216,12 +1253,7 @@
 
       function getHardFailBodyMessage(diagnostics, fallbackText) {
         var reason = String((diagnostics && diagnostics.reasonCode) || '').toUpperCase();
-        if (
-          diagnostics.status === 409 &&
-          ['WORKFLOW_STATE_CONFLICT', 'WORKFLOW_CONFLICT', 'PARENT_WORKFLOW_STATE_IDLE'].includes(
-            reason,
-          )
-        ) {
+        if (isIdempotentWorkflowConflictDiagnostics(diagnostics)) {
           return runtimeUiFlags.simplifyCopy
             ? 'We already received your details. Loading the next step...'
             : 'We already received this verification submission. Refresh to load your latest status.';
@@ -1257,6 +1289,9 @@
         var secondaryLabel =
           options && options.secondaryLabel ? String(options.secondaryLabel) : '';
 
+        // SAFETY: `icon` is intentionally inserted as raw HTML because it contains
+        // inline SVG markup. All callers pass hardcoded SVG literals — if this ever
+        // becomes server-driven, it MUST be sanitized first.
         setHostHtml(
           '<div class="status-wrap">' +
           '<div class="status-card">' +
@@ -1442,7 +1477,7 @@
       async function reconcileConflictAndComplete(diagnostics) {
         console.warn('[KYC] Reconciling idempotent conflict', diagnostics);
         renderStatusCard({
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><path d="M28 16v24M16 28h24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          icon: SVG_ICONS.sync,
           title: 'Syncing Verification Status',
           body: 'We already received your submission. Updating your status now.',
           meta: 'This usually takes a few seconds.',
@@ -1456,24 +1491,11 @@
             latestFlow && (latestFlow.state || latestFlow.status),
           );
           var reasonCode = extractRevisionReasonCodeFromWorkflow(latestFlow);
-          var approvedStates = ['approved', 'auto_approved'];
-          var rejectedStates = ['rejected', 'auto_rejected', 'declined'];
-          var reviewStates = ['manual_review', 'review'];
-          var revisionStates = ['pending_resubmission', 'revision', 'revised'];
-          var processingStates = [
-            'idle',
-            'document_collection',
-            'pending_kyc',
-            'kyc_verification',
-            'kyb_determination',
-            'document_verification',
-            'facial_verification',
-            'dedup_evaluation',
-            'device_dedup_check',
-            'ncra_check',
-            'risk_evaluation',
-            'awaiting_3rd_party_data',
-          ];
+          var approvedStates = APPROVED_STATES;
+          var rejectedStates = REJECTED_STATES;
+          var reviewStates = REVIEW_STATES;
+          var revisionStates = REVISION_STATES;
+          var processingStates = PROCESSING_STATES;
 
           if (approvedStates.includes(workflowState)) {
             signalCompletion('success', 'approved', reasonCode);
@@ -1512,7 +1534,7 @@
             reconcileDiagnostics,
           );
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+            icon: SVG_ICONS.error,
             title: 'Status Sync Delayed',
             body: 'We received your submission, but could not refresh your latest status yet.',
             meta: 'Tap Refresh Status to try again. You can safely close this screen.',
@@ -1542,7 +1564,7 @@
             var result = await navigator.permissions.query({ name: 'camera' });
             if (result.state === 'denied') {
               renderStatusCard({
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f59e0b" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#f59e0b"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+                icon: SVG_ICONS.warning,
                 title: 'Camera Access Required',
                 body: 'Please enable camera access in your phone settings, then return to this page.',
                 primaryLabel: 'Retry',
@@ -1639,7 +1661,7 @@
           );
           initFailed = true;
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+            icon: SVG_ICONS.error,
             title: 'Connection Failed',
             body: 'Could not connect to the verification service. Please check your internet connection and try again.',
             meta: getHardFailMetaMessage(fetchDiagnostics),
@@ -1667,7 +1689,7 @@
           );
           initFailed = true;
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+            icon: SVG_ICONS.error,
             title: 'Session Error',
             body: 'Could not identify your account. Please close and reopen the verification link.',
             meta: getHardFailMetaMessage(sessionDiagnostics),
@@ -1694,22 +1716,14 @@
           .trim()
           .toLowerCase();
 
-        var approvedStates = ['approved', 'auto_approved'];
-        var rejectedStates = ['rejected', 'auto_rejected', 'declined'];
-        var inReviewStates = ['manual_review', 'review'];
-        var processingStates = [
-          'document_verification',
-          'facial_verification',
-          'dedup_evaluation',
-          'device_dedup_check',
-          'ncra_check',
-          'risk_evaluation',
-          'awaiting_3rd_party_data',
-        ];
+        var approvedStates = APPROVED_STATES;
+        var rejectedStates = REJECTED_STATES;
+        var inReviewStates = REVIEW_STATES;
+        var processingStates = PROCESSING_STATES;
 
         if (approvedStates.includes(workflowState)) {
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#22c55e" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#22c55e"/><path d="M20 28l5.5 5.5L36 22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+            icon: SVG_ICONS.success,
             title: 'Identity Verified',
             body: 'Your identity has been verified.',
             meta: 'Tap Done to return to MiKashBoks.',
@@ -1723,7 +1737,7 @@
 
         if (rejectedStates.includes(workflowState)) {
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M22 22l12 12M34 22l-12 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+            icon: SVG_ICONS.fail,
             title: 'Verification Unsuccessful',
             body: 'We could not verify your identity from the photos you submitted. Please try again with clearer photos.',
             meta: 'Common reasons: blurry photo, face not matching ID, or expired document.',
@@ -1737,7 +1751,7 @@
 
         if (inReviewStates.includes(workflowState)) {
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#3b82f6" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#3b82f6"/><ellipse cx="28" cy="28" rx="10" ry="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="28" cy="28" r="3.5" fill="#fff"/></svg>',
+            icon: SVG_ICONS.review,
             title: 'Under Review',
             body: 'Your photos were submitted successfully. Our team is reviewing them now.',
             meta: 'You will receive an SMS when the review is complete, usually within 24 hours.',
@@ -1755,7 +1769,7 @@
 
         if (processingStates.includes(workflowState)) {
           renderStatusCard({
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#0071D3" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#0071D3"/><circle cx="28" cy="28" r="10" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="15 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 28 28" to="360 28 28" dur="2s" repeatCount="indefinite"/></circle></svg>',
+            icon: SVG_ICONS.processing,
             title: 'Checking Your Photos...',
             body: 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.',
             meta: 'You can close this screen. We will notify you by SMS when the result is ready.',
@@ -1772,9 +1786,9 @@
           return;
         }
 
-        // 3. Check for resubmission state
+        // 4. Check for resubmission state
         var resubmitReason = params.get('reason') || params.get('reasonCode');
-        var isRevision = ['pending_resubmission', 'revision', 'revised'].includes(workflowState);
+        var isRevision = REVISION_STATES.includes(workflowState);
 
         // Detect revision reason from workflow context
         var detectedReasonCode = null;
@@ -1807,7 +1821,7 @@
           console.log('[KYC] Address proof is required — SDK will include address proof steps.');
         }
 
-        // 3. Resolve config-driven document options
+        // 5. Resolve config-driven document options
         // These drive the document-selection step AND preselectedDocInfo enrichment.
         var rawConfigDocOptions =
           workflowData &&
@@ -2241,7 +2255,7 @@
               }
 
               renderStatusCard({
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+                icon: SVG_ICONS.error,
                 title:
                   diagnostics.status === 409 ? 'Request Already Submitted' : 'Something Went Wrong',
                 body: getHardFailBodyMessage(
@@ -2281,6 +2295,8 @@
           hasPreselectedDoc = false;
           preselectedDocType = null;
           preselectedDocInfo = null;
+          isDocCaptureActive = false;
+          orientationDismissed = false;
 
           // ── Cleanup: destroy any partial SDK state from the failed first init ──
           // Without this, the second init() call hits stale DOM and crashes with
@@ -2324,7 +2340,7 @@
 
         initFailed = true;
         renderStatusCard({
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ef4444" opacity="0.12"/><circle cx="28" cy="28" r="20" fill="#ef4444"/><path d="M28 18v12M28 34v2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+          icon: SVG_ICONS.error,
           title: 'Could Not Start Verification',
           body: 'Something went wrong while loading. Please check your internet connection and try again.',
           meta: getHardFailMetaMessage(initDiagnostics),
@@ -2584,6 +2600,7 @@
       }
 
       function requestLandscape() {
+        if (orientationDismissed) return;
         try {
           if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('landscape').catch(function () {
@@ -2608,22 +2625,33 @@
         hideOrientationHint();
       }
 
+      var globalAbortController = null;
+      var listenerOptions = false; // Fallback for browsers lacking AbortController support
+      if (typeof AbortController !== 'undefined') {
+        globalAbortController = new AbortController();
+        listenerOptions = { signal: globalAbortController.signal };
+      }
+
       window.addEventListener('resize', function () {
         clearTimeout(resizeDebounce);
         resizeDebounce = setTimeout(function () {
           if (isDocCaptureActive) showOrientationHint();
         }, 100);
-      });
+      }, listenerOptions);
 
       // ── Step detection via MutationObserver ──
       var stepObserverDebounce = null;
       var stepObserverAttached = false;
+      var cachedObserverHost = null;
+
       var stepObserver = new MutationObserver(function () {
         clearTimeout(stepObserverDebounce);
         stepObserverDebounce = setTimeout(function () {
-          var host = document.getElementById('kyc-host');
-          if (!host) return;
-          var blrnApp = host.querySelector('#blrn-app');
+          if (!cachedObserverHost) {
+            cachedObserverHost = document.getElementById('kyc-host');
+            if (!cachedObserverHost) return;
+          }
+          var blrnApp = cachedObserverHost.querySelector('#blrn-app');
           if (!blrnApp) return;
 
           // Detect document capture step (has camera + document overlay)
@@ -2635,7 +2663,8 @@
 
           if (isDocCapture && !isDocCaptureActive) {
             isDocCaptureActive = true;
-            orientationDismissed = false;
+            // orientationDismissed is intentionally NOT reset here — once dismissed,
+            // it stays dismissed for the entire session (sticky UX).
             requestLandscape();
           } else if (!isDocCapture && isDocCaptureActive) {
             isDocCaptureActive = false;
@@ -2670,14 +2699,17 @@
           stepObserver.disconnect();
           stepObserverAttached = false;
         }
+        if (globalAbortController) {
+          globalAbortController.abort();
+        }
         clearTimeout(stepObserverDebounce);
         clearTimeout(resizeDebounce);
         destroyLottie();
         releaseLandscape();
       }
 
-      window.addEventListener('pagehide', cleanupObserversAndAnimations);
-      window.addEventListener('beforeunload', cleanupObserversAndAnimations);
+      window.addEventListener('pagehide', cleanupObserversAndAnimations, listenerOptions);
+      window.addEventListener('beforeunload', cleanupObserversAndAnimations, listenerOptions);
 
       attachStepObserver();
 
@@ -2685,13 +2717,13 @@
       var offlineBanner = document.getElementById('offline-banner');
       window.addEventListener('offline', function () {
         offlineBanner.classList.add('visible');
-      });
+      }, listenerOptions);
       window.addEventListener('online', function () {
         offlineBanner.classList.remove('visible');
         if (initFailed) {
           window.location.reload();
         }
-      });
+      }, listenerOptions);
     })();
   </script>
 </body>
