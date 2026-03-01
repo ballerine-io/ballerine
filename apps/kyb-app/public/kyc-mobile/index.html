@@ -448,6 +448,35 @@
     body.large-type #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']) {
       padding: 16px 24px !important;
       font-size: 18px !important;
+      border-radius: 16px !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 14px rgba(0, 113, 211, 0.15) !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    }
+
+    body.large-type #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']):active {
+      transform: scale(0.97) !important;
+      box-shadow: 0 2px 8px rgba(0, 113, 211, 0.1) !important;
+    }
+
+    /* ── Premium Card-style Document Selection ── */
+    #kyc-host #blrn-app ul>li,
+    #kyc-host #blrn-app [role='listitem'] {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 16px !important;
+      margin-bottom: 14px !important;
+      padding: 18px 16px !important;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04) !important;
+      transition: all 0.2s ease !important;
+      cursor: pointer !important;
+    }
+
+    #kyc-host #blrn-app ul>li:active,
+    #kyc-host #blrn-app [role='listitem']:active {
+      background: #f8fafc !important;
+      transform: scale(0.98) !important;
+      border-color: #cbd5e1 !important;
     }
 
     /* ── Progress bar enhancement ── */
@@ -1990,7 +2019,7 @@
                 welcome: {
                   title: "Let's Verify Your Identity",
                   description:
-                    'This takes about 2 minutes. Once done, you can access loans, save more, and transact faster.',
+                    'Takes just 2 minutes. Unlock loans, higher savings limits, and faster transactions.',
                   button: 'Get Started',
                 },
                 // ── Welcome page benefit list ──
@@ -1999,14 +2028,14 @@
                 // Number of items is auto-detected from key count minus 1 (for title).
                 'list-mikashboks-kyc': {
                   title: 'What you need:',
-                  'item-1': 'A valid ID document (National ID, passport, voter ID, or licence)',
+                  'item-1': 'A valid ID (National ID, passport, voter ID, or licence)',
                   'item-2': 'A clear selfie of your face',
                   'item-3': 'Good lighting \u2014 avoid dark rooms and direct sunlight',
                   'item-4': 'Your data stays private and secure',
                 },
                 'document-selection': {
                   title: 'Choose Your ID',
-                  description: 'Select the type of identity document you would like to use.',
+                  description: 'Select the ID you want to use.',
                 },
                 // ── SL-specific document option descriptions ──
                 'document-options': {
@@ -2025,32 +2054,32 @@
                 'document-photo': {
                   title: 'Photograph Your ID',
                   description:
-                    'Place your ID flat on a table. Make sure all 4 corners show, all text is clear, and there is no glare.',
+                    'Place your ID flat in good light. Make sure all 4 corners show and text is clear.',
                   id_card: {
                     title: 'National ID \u2014 Front',
                     description:
-                      'Place your National ID flat on a table or surface. Tips: use indoor lighting, avoid shadows, make sure all 4 corners and all text are visible.',
+                      'Place your ID flat in good light. Make sure all 4 corners show and text is clear.',
                   },
                   passport: {
                     title: 'Passport Photo Page',
                     description:
-                      'Open to the photo page and lay it flat. Tips: avoid glare on the laminated surface, tilt slightly if you see a reflection.',
+                      'Open to the photo page and lay flat. Avoid glare on the shiny surface.',
                   },
                   voter_id: {
                     title: 'Voter ID \u2014 Front',
                     description:
-                      'Place your Voter ID flat on a table or surface. Tips: use indoor lighting, avoid shadows, make sure all 4 corners and all text are visible.',
+                      'Place your ID flat in good light. Make sure all 4 corners show and text is clear.',
                   },
                   drivers_license: {
                     title: "Driver's Licence \u2014 Front",
                     description:
-                      'Place your Licence flat on a table or surface. Tips: use indoor lighting, avoid shadows, make sure all 4 corners and all text are visible.',
+                      'Place your Licence flat in good light. Make sure all 4 corners show and text is clear.',
                   },
                 },
                 'check-document': {
                   title: 'Review Your Photo',
                   description:
-                    'Is all the text clear? Are all 4 corners showing? No blur or glare? If not, tap back to retake.',
+                    'Is the text clear? Are all 4 corners showing? If not, tap back to retake.',
                 },
                 'document-photo-back-start': {
                   title: 'Back of Document',
@@ -2058,58 +2087,58 @@
                   button: 'Take Photo',
                 },
                 'document-photo-back': {
-                  title: 'Document – Back Side',
-                  description: 'Position the back of your document inside the frame.',
+                  title: 'Document – Back',
+                  description: 'Fit the back of your document inside the frame.',
                   id_card: {
                     title: 'National ID – Back',
-                    description: 'Position the back of your National ID inside the frame.',
+                    description: 'Fit the back of your National ID inside the frame.',
                   },
                   voter_id: {
                     title: 'Voter ID – Back',
-                    description: 'Position the back of your Voter ID inside the frame.',
+                    description: 'Fit the back of your Voter ID inside the frame.',
                   },
                   drivers_license: {
                     title: "Driver's Licence – Back",
-                    description: "Position the back of your Driver's Licence inside the frame.",
+                    description: "Fit the back of your Driver's Licence inside the frame.",
                   },
                 },
                 'check-document-photo-back': {
                   title: 'Check Back Photo',
-                  description: 'Make sure the back side is clear and readable.',
+                  description: 'Make sure the back side is clear and easy to read.',
                 },
                 'selfie-start': {
                   title: 'Take a Selfie',
-                  description: 'Look straight at the camera in good lighting.',
+                  description: 'Look straight at the camera. Make sure your face is well lit.',
                   button: 'Take Selfie',
                 },
                 selfie: {
                   title: 'Selfie',
-                  description: 'Fit your face inside the oval and keep still.',
+                  description: 'Fit your face inside the oval and stay still.',
                 },
                 'check-selfie': {
                   title: 'Review Your Selfie',
                   description:
-                    'Make sure your face is clearly visible. If it looks dark or blurry, tap back to retake.',
+                    'Make sure your face is clear. If it looks dark or blurry, tap back to retake.',
                 },
                 // ── Address proof translations ──
                 'address-proof-start': {
                   title: 'Proof of Address',
                   description:
-                    'We need a photo of a document that shows your address — for example a utility bill, bank statement, or official letter.',
+                    'We need a photo of a document that shows your address (like a utility bill or bank statement).',
                   button: 'Take Photo',
                 },
                 'address-proof-photo': {
-                  title: 'Photograph Your Document',
+                  title: 'Photograph Document',
                   proof_of_address: {
                     title: 'Address Document',
                     description:
-                      'Place your document flat on a surface. Make sure your name and address are clearly visible.',
+                      'Place your document flat. Make sure your name and address are clearly visible.',
                   },
                 },
                 'check-address-proof': {
                   title: 'Review Address Photo',
                   description:
-                    'Can you see your name and address clearly? If not, tap back to retake.',
+                    'Can you read your name and address clearly? If not, tap back to retake.',
                 },
                 // ── End-state translations ──
                 loader: {
@@ -2120,7 +2149,7 @@
                 final: {
                   title: 'All Done!',
                   description:
-                    'Your ID and selfie have been received. We will check them and text you the result.',
+                    'Your verification is complete. We will check it and text you the result.',
                   button: 'Done',
                 },
                 // ── Resubmission per-reason translations ──
@@ -2130,37 +2159,37 @@
                 resubmission: {
                   // Fallback for unknown/null reason codes
                   title: 'Resubmission Required',
-                  description: 'There was an issue with your submission. Please try again.',
+                  description: 'There was an issue with your photos. Please try again.',
                   button: 'Try Again',
                   // Per-reason overrides
-                  'DOCUMENT_BLURRY-title': 'Photo Quality Issue',
+                  'DOCUMENT_BLURRY-title': 'Photo is Blurry',
                   'DOCUMENT_BLURRY-description':
-                    'Your document photo was blurry or unclear. Please retake it with better lighting and hold your phone steady.',
-                  'DOCUMENT_BLURRY-button': 'Retake Document Photo',
-                  'DOCUMENT_OBSCURED-title': 'Document Not Fully Visible',
+                    'Your document photo was not clear. Please retake it in better light and hold steady.',
+                  'DOCUMENT_BLURRY-button': 'Retake Photo',
+                  'DOCUMENT_OBSCURED-title': 'Document Cut Off',
                   'DOCUMENT_OBSCURED-description':
-                    'Part of your document was cut off or obscured. Make sure the entire document fits within the frame.',
-                  'DOCUMENT_OBSCURED-button': 'Retake Document Photo',
+                    'Part of your document is missing. Make sure the whole document fits in the frame.',
+                  'DOCUMENT_OBSCURED-button': 'Retake Photo',
                   'DOCUMENT_EXPIRED-title': 'Document Expired',
                   'DOCUMENT_EXPIRED-description':
-                    'The document you submitted has expired. Please use a valid, unexpired document.',
-                  'DOCUMENT_EXPIRED-button': 'Choose Another Document',
-                  'FACE_NOT_VISIBLE-title': 'Face Not Clearly Visible',
+                    'This document has expired. Please use a valid, current ID.',
+                  'DOCUMENT_EXPIRED-button': 'Choose Another ID',
+                  'FACE_NOT_VISIBLE-title': 'Face Not Clear',
                   'FACE_NOT_VISIBLE-description':
-                    'Your face was not clearly visible in the selfie. Please ensure good lighting and face the camera directly.',
+                    'We could not see your face clearly. Find good lighting and look straight at the camera.',
                   'FACE_NOT_VISIBLE-button': 'Retake Selfie',
                   'FACE_MISMATCH-title': 'Face Does Not Match',
                   'FACE_MISMATCH-description':
-                    'The selfie does not match the face on your document. Please ensure you are submitting your own document.',
+                    'The selfie does not match the face on the ID. Please submit your own document.',
                   'FACE_MISMATCH-button': 'Retake Photos',
-                  'DOCUMENT_BACK_MISSING-title': 'Back of Document Missing',
+                  'DOCUMENT_BACK_MISSING-title': 'Back Side Missing',
                   'DOCUMENT_BACK_MISSING-description':
-                    'We need a photo of the back of your document. Please capture it.',
+                    'We still need a photo of the back of your document.',
                   'DOCUMENT_BACK_MISSING-button': 'Take Back Photo',
-                  'DOCUMENT_TYPE_UNSUPPORTED-title': 'Document Not Accepted',
+                  'DOCUMENT_TYPE_UNSUPPORTED-title': 'ID Not Accepted',
                   'DOCUMENT_TYPE_UNSUPPORTED-description':
-                    'The document type you submitted is not accepted. Please choose a different document.',
-                  'DOCUMENT_TYPE_UNSUPPORTED-button': 'Choose Another Document',
+                    'We cannot accept this type of document. Please choose a different option.',
+                  'DOCUMENT_TYPE_UNSUPPORTED-button': 'Choose Another ID',
                   'GENERIC-title': 'Resubmission Required',
                   'GENERIC-description':
                     'There was an issue with your submission. Please try again.',
