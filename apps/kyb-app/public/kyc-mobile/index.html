@@ -1135,6 +1135,18 @@
       // ── Signal completion to Android WebView ──
       // WebUrlLoaderFragment detects ?close=true and navigates to the final screen.
       var signalSent = false;
+      function isWebViewContext() {
+        if (hasNativeHeader) return true;
+        try {
+          var ua = window.navigator.userAgent || '';
+          if (ua.indexOf('; wv)') > -1) return true;
+          if (/WebView/.test(ua)) return true;
+          if (typeof window.BallerineWebViewBridge !== 'undefined') return true;
+          if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+        } catch (e) { }
+        return false;
+      }
+
       function signalCompletion(status, idvResult, reasonCode) {
         if (signalSent) return;
         signalSent = true;
@@ -1142,13 +1154,30 @@
         if (typeof cleanupObserversAndAnimations === 'function') {
           cleanupObserversAndAnimations();
         }
-        var url = new URL('/kyc-mobile/done', window.location.origin);
-        url.searchParams.set('close', 'true');
-        url.searchParams.set('status', status);
-        if (idvResult) url.searchParams.set('idvResult', idvResult);
-        if (reasonCode) url.searchParams.set('reasonCode', reasonCode);
-        url.searchParams.set('sync', 'true');
-        window.location.href = url.toString();
+
+        if (isWebViewContext()) {
+          var url = new URL('/kyc-mobile/done', window.location.origin);
+          url.searchParams.set('close', 'true');
+          url.searchParams.set('status', status);
+          if (idvResult) url.searchParams.set('idvResult', idvResult);
+          if (reasonCode) url.searchParams.set('reasonCode', reasonCode);
+          url.searchParams.set('sync', 'true');
+          if (TOKEN) url.searchParams.set('token', TOKEN);
+          window.location.href = url.toString();
+        } else {
+          try { window.close(); } catch (e) { }
+          var icon = status === 'error' ? SVG_ICONS.fail : (status === 'success' ? SVG_ICONS.success : SVG_ICONS.final);
+          renderStatusCard({
+            icon: icon,
+            title: 'You can safely close this tab',
+            body: 'You have completed this step. Please return to the MiKashBoks app or your WhatsApp conversation to continue.',
+            meta: '',
+            primaryLabel: 'Close Tab',
+            onPrimary: function () {
+              try { window.close(); } catch (e) { }
+            }
+          });
+        }
       }
 
       function escapeHtml(input) {
@@ -1768,10 +1797,48 @@
         }
 
         if (processingStates.includes(workflowState)) {
+          var title = 'Checking Your Photos...';
+          var body = 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.';
+
+          try {
+            var docType = null;
+            var docs = workflowData?.context?.documents || [];
+            if (docs.length > 0 && docs[0].type) {
+              var typeStr = docs[0].type;
+              if (typeStr === 'id_card') docType = 'National ID';
+              else if (typeStr === 'voter_id') docType = 'Voter ID';
+              else if (typeStr === 'drivers_license') docType = 'Driver License';
+              else if (typeStr === 'passport') docType = 'Passport';
+              else docType = typeStr.replace(/_/g, ' ').replace(/\b\w/g, function (l) { return l.toUpperCase(); });
+            }
+            if (docType) {
+              title = 'Checking Your ' + docType + '...';
+            }
+
+            var timeAgo = '';
+            var updatedAt = workflowData?.updatedAt || workflowData?.createdAt || workflowData?.context?.entity?.createdAt;
+            if (updatedAt) {
+              var msAgo = Date.now() - new Date(updatedAt).getTime();
+              var minAgo = Math.floor(msAgo / 60000);
+              if (minAgo < 1) timeAgo = 'just now';
+              else if (minAgo === 1) timeAgo = '1 minute ago';
+              else if (minAgo < 60) timeAgo = minAgo + ' minutes ago';
+              else if (minAgo < 120) timeAgo = '1 hour ago';
+              else if (minAgo < 1440) timeAgo = Math.floor(minAgo / 60) + ' hours ago';
+              else timeAgo = Math.floor(minAgo / 1440) + ' days ago';
+            }
+
+            if (timeAgo) {
+              body = 'We received your photos (submitted ' + timeAgo + ') and are checking them now. This usually takes 1\u20132 minutes.';
+            }
+          } catch (e) {
+            // Silently fallback to generic copy on parsing errors
+          }
+
           renderStatusCard({
             icon: SVG_ICONS.processing,
-            title: 'Checking Your Photos...',
-            body: 'We received your photos and are checking them now. This usually takes 1\u20132 minutes.',
+            title: title,
+            body: body,
             meta: 'You can close this screen. We will notify you by SMS when the result is ready.',
             showSpinner: true,
             primaryLabel: 'Done',
