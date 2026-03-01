@@ -72,27 +72,59 @@
       flex-direction: column !important;
       height: 100% !important;
       min-height: 0 !important;
-      overflow: hidden !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* SVG illustrations (rendered via {@html}) should shrink, not push CTA off-screen */
-    #kyc-host #blrn-app .container:has(> svg) {
-      flex-shrink: 1 !important;
-      min-height: 0 !important;
-      overflow: hidden !important;
-    }
-
+    /* SVG illustrations (rendered via {@html}) should shrink */
     #kyc-host #blrn-app svg {
-      max-height: 20vh !important;
+      max-height: 18vh !important;
       width: auto !important;
       display: block !important;
       margin: 0 auto !important;
     }
 
-    /* Pin the primary action button to the bottom of the viewport */
-    #kyc-host #blrn-app button:not([class*='icon']):not([class*='close']):not([class*='back']) {
+    /* ── Fix button horizontal overflow ── */
+    /* Navigation buttons container must not overflow */
+    #kyc-host .navigation-buttons,
+    #kyc-host #blrn-app .navigation-buttons {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
       flex-shrink: 0 !important;
-      margin-top: auto !important;
+      display: flex !important;
+      gap: 8px !important;
+    }
+
+    /* All buttons must respect container width */
+    #kyc-host #blrn-app button {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      flex-shrink: 1 !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* When two buttons side-by-side, each takes half */
+    #kyc-host .navigation-buttons button {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+    }
+
+    /* ── Fix photo preview: force landscape for documents ── */
+    /* The img has inline styles from SDK config — must use !important */
+    #kyc-host #blrn-app img[alt="result"] {
+      max-width: 90% !important;
+      max-height: 35vh !important;
+      object-fit: cover !important;
+      object-position: center !important;
+      border-radius: 12px !important;
+      display: block !important;
+      margin: 0 auto !important;
     }
 
     /* Welcome page list should not grow unbounded */
