@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
+import { useCreateIdentityVerificationAssessmentMutation } from '@/domains/assessments/hooks/mutations/useCreateIdentityVerificationAssessmentMutation/useCreateIdentityVerificationAssessmentMutation';
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import {
   CreateIdentityVerificationDialogInput,
@@ -28,14 +28,14 @@ export const useCreateIdentityVerificationCheckDialogLogic = ({
     resolver: zodResolver(CreateIdentityVerificationDialogSchema),
   });
   const [showSuccess, setShowSuccess] = useState(false);
-  const { mutate: mutateCreateBusinessReport, isLoading: isSubmitting } =
-    useCreateBusinessReportMutation({ disableToast: true });
-  const onSubmit: SubmitHandler<CreateIdentityVerificationDialogInput> = data => {
-    mutateCreateBusinessReport(data, {
+  const { mutate: mutateCreateIdentityVerificationAssessment, isLoading: isSubmitting } =
+    useCreateIdentityVerificationAssessmentMutation({
       onSuccess: () => {
         setShowSuccess(true);
       },
     });
+  const onSubmit: SubmitHandler<CreateIdentityVerificationDialogInput> = data => {
+    mutateCreateIdentityVerificationAssessment(data);
   };
 
   const toggleOpen = useCallback(

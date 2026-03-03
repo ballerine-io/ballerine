@@ -13,6 +13,11 @@ export const Tab = {
   DIRECTORS: 'DIRECTORS',
   MONITORING_REPORTS: 'MONITORING_REPORTS',
   KYC: 'KYC',
+  KYC_PROFILE: 'KYC_PROFILE',
+  KYC_DOCUMENTS: 'KYC_DOCUMENTS',
+  KYC_VERIFICATION: 'KYC_VERIFICATION',
+  KYC_AML: 'KYC_AML',
+  KYC_CUSTOM_DATA: 'KYC_CUSTOM_DATA',
   CUSTOM_DATA: 'CUSTOM_DATA',
 } as const;
 
@@ -86,9 +91,29 @@ export const getVariantTabs = (
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     const baseTabs = [
       {
-        name: Tab.KYC,
-        displayName: 'KYC',
-        hidden: true,
+        name: Tab.KYC_PROFILE,
+        displayName: 'Profile',
+        disabled: !tabBlocks[Tab.KYC_PROFILE]?.length,
+      },
+      {
+        name: Tab.KYC_DOCUMENTS,
+        displayName: 'Documents',
+        disabled: !tabBlocks[Tab.KYC_DOCUMENTS]?.length,
+      },
+      {
+        name: Tab.KYC_VERIFICATION,
+        displayName: 'Verification',
+        disabled: !tabBlocks[Tab.KYC_VERIFICATION]?.length,
+      },
+      {
+        name: Tab.KYC_AML,
+        displayName: 'AML',
+        disabled: !tabBlocks[Tab.KYC_AML]?.length,
+      },
+      {
+        name: Tab.KYC_CUSTOM_DATA,
+        displayName: 'Custom Data',
+        disabled: !tabBlocks[Tab.KYC_CUSTOM_DATA]?.length,
       },
     ];
 

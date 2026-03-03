@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react';
 import { Checkbox } from '@/common/components/atoms/Checkbox/Checkbox';
+import { Button } from '@/common/components/atoms/Button/Button';
 import { FilterSvg, MagnifyingGlassSvg, SortSvg } from '@/common/components/atoms/icons';
 import { TIndividual } from '@/domains/individuals/types';
 import { Item } from './Cases.Item';
@@ -35,6 +36,14 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   onSortDirToggle,
   search,
   count,
+  selectedCasesCount,
+  isAllCasesOnCurrentPageSelected,
+  isLoadingBulkDecision,
+  onToggleSelectAllCasesOnCurrentPage,
+  onClearSelectedCases,
+  onBulkApproveCases,
+  onBulkRejectCases,
+  onBulkRevisionCases,
   ...props
 }) => {
   const {
@@ -145,6 +154,57 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
         </div>
         <div className="mt-4 text-sm font-semibold text-[#999999]">
           {Intl.NumberFormat().format(count)} {count === 1 ? 'case' : 'cases'}
+        </div>
+        <div className="mt-3 rounded-md border border-neutral/10 p-2 theme-dark:border-neutral/60">
+          <div className="flex flex-wrap items-center gap-2">
+            <Checkbox
+              checked={isAllCasesOnCurrentPageSelected}
+              value="select-all-cases"
+              onChange={onToggleSelectAllCasesOnCurrentPage}
+              className="text-xs font-medium"
+              checkboxProps={{ className: 'd-4' }}
+            >
+              Select All On Page
+            </Checkbox>
+            <span className="text-xs text-base-content/70">{selectedCasesCount} selected</span>
+            {selectedCasesCount > 0 && (
+              <>
+                <Button
+                  size="sm"
+                  variant="warning"
+                  onClick={onBulkRevisionCases}
+                  disabled={isLoadingBulkDecision}
+                  className="ml-auto whitespace-nowrap"
+                >
+                  Ask Re-uploads
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={onBulkRejectCases}
+                  disabled={isLoadingBulkDecision}
+                >
+                  Reject
+                </Button>
+                <Button
+                  size="sm"
+                  variant="success"
+                  onClick={onBulkApproveCases}
+                  disabled={isLoadingBulkDecision}
+                >
+                  Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onClearSelectedCases}
+                  disabled={isLoadingBulkDecision}
+                >
+                  Clear
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
       {children}

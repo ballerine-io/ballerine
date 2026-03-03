@@ -9,6 +9,7 @@ import { Type } from '@sinclair/typebox';
 import { kycOnboardingSierraLeoneDefinition } from './kyc-onboarding-sierra-leone';
 import { kybOnboardingSierraLeoneFormalDefinition } from './kyb-onboarding-sierra-leone-formal';
 import { kybOnboardingSierraLeoneInformalDefinition } from './kyb-onboarding-sierra-leone-informal';
+import { loanDocumentsReviewSierraLeoneDefinition } from './loan-documents-review-sierra-leone';
 import { generateBaseCaseLevelStatesWithPendingResubmission } from '../generate-base-case-level-states';
 
 /**
@@ -95,7 +96,7 @@ export const loanKycKybSierraLeoneDefinition = {
       /**
        * KYB Determination
        * Routes to the appropriate KYB workflow based on business type:
-       * - No business info → skip to loan_document_review
+       * - No business info → skip to loan documents review
        * - Informal business type + no registration → informal KYB
        * - Everything else → formal KYB
        */
@@ -104,7 +105,7 @@ export const loanKycKybSierraLeoneDefinition = {
         always: [
           {
             // Skip KYB if no business info provided
-            target: 'loan_document_review',
+            target: 'loan_documents_review',
             cond: {
               type: 'jmespath',
               options: {
@@ -140,7 +141,7 @@ export const loanKycKybSierraLeoneDefinition = {
       pending_kyb_formal: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          KYB_FORMAL_RESPONDED: [{ target: 'loan_document_review' }],
+          KYB_FORMAL_RESPONDED: [{ target: 'loan_documents_review' }],
         },
       },
       kyb_verification_informal: {
@@ -153,25 +154,16 @@ export const loanKycKybSierraLeoneDefinition = {
       pending_kyb_informal: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          KYB_INFORMAL_RESPONDED: [{ target: 'loan_document_review' }],
+          KYB_INFORMAL_RESPONDED: [{ target: 'loan_documents_review' }],
         },
       },
-      /**
-       * Loan Financial Analysis (Multimodal)
-       * Analyzes submitted financial documents for underwriting-grade signals:
-       * - Authenticity heuristic (possibly edited/forged)
-       * - Quality score (readability)
-       * - Estimated income / currency / date range (when inferable)
-       * Non-blocking on failure — proceeds to financial_analysis regardless.
-       * Auto-skips if no financial documents submitted.
-       */
-      loan_document_review: {
+      loan_documents_review: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          LOAN_FINANCIAL_ANALYZED: [{ target: 'financial_analysis' }],
-          LOAN_FINANCIAL_ANALYSIS_FAILED: [{ target: 'financial_analysis' }], // Non-blocking
+          LOAN_DOCUMENTS_REVIEW_SPAWNED: [{ target: 'pending_loan_documents_review' }],
+          LOAN_DOCUMENTS_REVIEW_FAILED: [{ target: 'manual_review' }],
+          LOAN_DOCUMENTS_REVIEW_RESPONDED: [{ target: 'financial_analysis' }],
         },
-        // Auto-transition if no loan documents
         always: [
           {
             target: 'financial_analysis',
@@ -184,16 +176,32 @@ export const loanKycKybSierraLeoneDefinition = {
           },
         ],
       },
+      pending_loan_documents_review: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          LOAN_DOCUMENTS_REVIEW_RESPONDED: [{ target: 'financial_analysis' }],
+        },
+      },
       /**
        * Financial Analysis
-       * Auto-transitions — summary can be derived from:
-       * - pluginsOutput.loan_financial_analysis (underwriting signals)
+       * Analyzes submitted financial documents for underwriting-grade signals.
+       * Non-blocking on failure and auto-skips when no financial documents are present.
        */
       financial_analysis: {
         tags: [StateTag.PENDING_PROCESS],
+        on: {
+          LOAN_FINANCIAL_ANALYZED: [{ target: 'risk_evaluation' }],
+          LOAN_FINANCIAL_ANALYSIS_FAILED: [{ target: 'risk_evaluation' }],
+        },
         always: [
           {
             target: 'risk_evaluation',
+            cond: {
+              type: 'jmespath',
+              options: {
+                rule: "length(documents[?category=='financial_information' || category=='proof_of_employment']) == `0`",
+              },
+            },
           },
         ],
       },
@@ -210,7 +218,7 @@ export const loanKycKybSierraLeoneDefinition = {
                 // 2. KYB child approved (or no KYB required)
                 // 3. Financial analysis (if present) does not flag document as likely forged
                 // Guard against missing childWorkflows to avoid length(null) runtime errors.
-                rule: `(childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) > \`0\`) && (childWorkflows.kyb_onboarding_sierra_leone_formal == null && childWorkflows.kyb_onboarding_sierra_leone_informal == null || length(childWorkflows.kyb_onboarding_sierra_leone_formal.*[?tags[?@ == 'approved']] || childWorkflows.kyb_onboarding_sierra_leone_informal.*[?tags[?@ == 'approved']] || []) > \`0\`) && (pluginsOutput.loan_financial_analysis == null || pluginsOutput.loan_financial_analysis.data == null || pluginsOutput.loan_financial_analysis.data.authenticityConfidence == null || pluginsOutput.loan_financial_analysis.data.authenticityConfidence >= \`0.4\`)`,
+                rule: `(childWorkflows.kyc_onboarding_sierra_leone != null && length(childWorkflows.kyc_onboarding_sierra_leone.*[?tags[?@ == 'approved']]) > \`0\`) && (childWorkflows.kyb_onboarding_sierra_leone_formal == null && childWorkflows.kyb_onboarding_sierra_leone_informal == null || length(childWorkflows.kyb_onboarding_sierra_leone_formal.*[?tags[?@ == 'approved']] || childWorkflows.kyb_onboarding_sierra_leone_informal.*[?tags[?@ == 'approved']] || []) > \`0\`) && (childWorkflows.loan_documents_review_sierra_leone == null || length(childWorkflows.loan_documents_review_sierra_leone.*[?tags[?@ == 'approved']]) > \`0\`) && (pluginsOutput.loan_financial_analysis == null || pluginsOutput.loan_financial_analysis.data == null || pluginsOutput.loan_financial_analysis.data.authenticityConfidence == null || pluginsOutput.loan_financial_analysis.data.authenticityConfidence >= \`0.4\`)`,
               },
             },
           },
@@ -220,7 +228,7 @@ export const loanKycKybSierraLeoneDefinition = {
         ],
       },
       ...generateBaseCaseLevelStatesWithPendingResubmission({
-        resumeState: 'loan_document_review',
+        resumeState: 'loan_documents_review',
       }),
     },
   },
@@ -237,7 +245,7 @@ export const loanKycKybSierraLeoneDefinition = {
         pluginKind: 'api',
         url: `{secret.UNIFIED_API_URL}/api/v1/document/analyze-financial`,
         method: 'POST',
-        stateNames: ['loan_document_review'],
+        stateNames: ['financial_analysis'],
         successAction: 'LOAN_FINANCIAL_ANALYZED',
         errorAction: 'LOAN_FINANCIAL_ANALYSIS_FAILED',
         headers: {
@@ -294,7 +302,7 @@ export const loanKycKybSierraLeoneDefinition = {
             mapping: `{
               entity: {
                 type: 'individual',
-                id: join('-', [to_string('loan-applicant'), to_string(entity.id)]),
+                id: to_string(entity.data.nationalId || entity.data.passportNumber || entity.id || ''),
                 data: {
                   firstName: entity.data.firstName,
                   lastName: entity.data.lastName,
@@ -334,7 +342,7 @@ export const loanKycKybSierraLeoneDefinition = {
             mapping: `{
               entity: {
                 type: 'business',
-                id: join('-', [to_string('loan-business'), to_string(entity.id)]),
+                id: entity.data.registrationNumber || join('-', ['loan-business', to_string(entity.id || '')]),
                 data: {
                   companyName: entity.data.businessName,
                   registrationNumber: entity.data.registrationNumber,
@@ -367,7 +375,7 @@ export const loanKycKybSierraLeoneDefinition = {
             mapping: `{
               entity: {
                 type: 'business',
-                id: join('-', [to_string('loan-business'), to_string(entity.id)]),
+                id: join('-', ['loan-informal-business', to_string(entity.id || '')]),
                 data: {
                   businessName: entity.data.businessName,
                   businessType: entity.data.businessType,
@@ -446,6 +454,33 @@ export const loanKycKybSierraLeoneDefinition = {
         ],
         initEvent: 'start_with_documents',
       },
+      {
+        pluginKind: 'child',
+        name: 'loan_documents_review_child',
+        definitionId: loanDocumentsReviewSierraLeoneDefinition.id,
+        transformers: [
+          {
+            transformer: 'jmespath',
+            mapping: `{
+              entity: {
+                type: 'individual',
+                id: join('-', ['loan-doc-review', to_string(entity.data.loanApplicationId || entity.id || '')]),
+                data: {
+                  firstName: entity.data.firstName,
+                  lastName: entity.data.lastName,
+                  email: entity.data.email,
+                  nationalId: entity.data.nationalId,
+                  loanApplicationId: entity.data.loanApplicationId,
+                  tenantId: entity.data.tenantId,
+                  projectId: entity.data.projectId
+                }
+              },
+              documents: documents[?category=='financial_information' || category=='proof_of_employment']
+            }`,
+          },
+        ],
+        initEvent: 'start_with_documents',
+      },
     ],
     commonPlugins: [
       // KYC: single child for the applicant (wrapped in iterative with single-element array)
@@ -494,6 +529,21 @@ export const loanKycKybSierraLeoneDefinition = {
         successAction: 'KYB_INFORMAL_SPAWNED',
         errorAction: 'KYB_CHILD_FAILED',
       },
+      // Loan documents review child
+      {
+        pluginKind: 'iterative',
+        name: 'loan_documents_review_single',
+        actionPluginName: 'loan_documents_review_child',
+        stateNames: ['loan_documents_review'],
+        iterateOn: [
+          {
+            transformer: 'jmespath',
+            mapping: '[@]',
+          },
+        ],
+        successAction: 'LOAN_DOCUMENTS_REVIEW_SPAWNED',
+        errorAction: 'LOAN_DOCUMENTS_REVIEW_FAILED',
+      },
     ],
   },
   config: {
@@ -509,6 +559,13 @@ export const loanKycKybSierraLeoneDefinition = {
     isDocumentTrackerEnabled: true,
     isCollectionFlowPageRevisionEnabled: true,
     theme: { type: 'kyb' },
+    reuseChildWorkflowsByEntity: true,
+    reuseChildWorkflowsMaxAgeDays: 365,
+    reuseChildWorkflowDefinitionIds: [
+      kycOnboardingSierraLeoneDefinition.id,
+      kybOnboardingSierraLeoneFormalDefinition.id,
+      kybOnboardingSierraLeoneInformalDefinition.id,
+    ],
     childCallbackResults: [
       {
         definitionId: kycOnboardingSierraLeoneDefinition.name,
@@ -520,6 +577,17 @@ export const loanKycKybSierraLeoneDefinition = {
         ],
         persistenceStates: ['approved', 'rejected', 'manual_review'],
         deliverEvent: 'KYC_CHILD_RESPONDED',
+      },
+      {
+        definitionId: loanDocumentsReviewSierraLeoneDefinition.name,
+        transformers: [
+          {
+            transformer: 'jmespath',
+            mapping: '{childEntity: entity.data, documents: documents}',
+          },
+        ],
+        persistenceStates: ['approved', 'rejected'],
+        deliverEvent: 'LOAN_DOCUMENTS_REVIEW_RESPONDED',
       },
       {
         definitionId: kybOnboardingSierraLeoneFormalDefinition.name,

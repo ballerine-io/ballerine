@@ -40,10 +40,14 @@ export const MonitoringReportsTabs = [
 export const CaseTabs = [
   'summary',
   'kyb',
-  // Used by KYC-themed workflows. The backoffice renders a hidden "KYC" tab
-  // internally (see get-variant-tabs.ts) and we still need this value to be a
-  // valid URL search param to avoid empty renders / redirect loops.
+  // Backward compatibility for existing links. The KYC layout now uses explicit
+  // kycProfile/kycDocuments/kycVerification/kycAml/kycCustomData tabs.
   'kyc',
+  'kycProfile',
+  'kycDocuments',
+  'kycVerification',
+  'kycAml',
+  'kycCustomData',
   'storeInfo',
   'documents',
   'individuals',
@@ -56,6 +60,11 @@ export const TabToLabel = {
   summary: 'Summary',
   kyb: 'KYB',
   kyc: 'KYC',
+  kycProfile: 'Profile',
+  kycDocuments: 'Documents',
+  kycVerification: 'Verification',
+  kycAml: 'AML',
+  kycCustomData: 'Custom Data',
   storeInfo: 'Store',
   documents: 'Documents',
   individuals: 'Individuals',

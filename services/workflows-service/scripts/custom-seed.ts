@@ -12,7 +12,75 @@ import {
   kybOnboardingSierraLeoneFormalDefinition,
   kybOnboardingSierraLeoneInformalDefinition,
   loanKycKybSierraLeoneDefinition,
+  loanDocumentsReviewSierraLeoneDefinition,
 } from './workflows/sl';
+
+async function migrateLegacyFilterToCanonicalId(
+  client: PrismaClient,
+  {
+    projectId,
+    canonicalId,
+    legacyNames,
+  }: { projectId: string; canonicalId: string; legacyNames: string[] },
+) {
+  const canonical = await client.filter.findUnique({
+    where: { id: canonicalId },
+    select: { id: true },
+  });
+
+  if (canonical || !legacyNames.length) {
+    return;
+  }
+
+  const legacy = await client.filter.findFirst({
+    where: {
+      projectId,
+      name: { in: legacyNames },
+      id: { not: canonicalId },
+    },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+
+  if (!legacy) {
+    return;
+  }
+
+  await client.filter.update({
+    where: { id: legacy.id },
+    data: { id: canonicalId },
+  });
+}
+
+async function resolveUniqueFilterName(
+  client: PrismaClient,
+  {
+    projectId,
+    preferredName,
+    targetFilterId,
+  }: { projectId: string; preferredName: string; targetFilterId: string },
+) {
+  let candidate = preferredName;
+  let suffix = 2;
+
+  while (true) {
+    const conflict = await client.filter.findFirst({
+      where: {
+        projectId,
+        name: candidate,
+        id: { not: targetFilterId },
+      },
+      select: { id: true },
+    });
+
+    if (!conflict) {
+      return candidate;
+    }
+
+    candidate = `${preferredName} (${suffix})`;
+    suffix += 1;
+  }
+}
 
 /**
  * Per-entity idempotent seed for Sierra Leone data.
@@ -177,6 +245,10 @@ export async function customSeed() {
         label: 'kyb_onboarding_sierra_leone_informal',
       },
       { def: loanKycKybSierraLeoneDefinition, label: 'loan_kyc_kyb_sierra_leone' },
+      {
+        def: loanDocumentsReviewSierraLeoneDefinition,
+        label: 'loan_documents_review_sierra_leone',
+      },
     ] as const;
 
     for (const { def, label } of workflowDefs) {
@@ -1115,9 +1187,57 @@ export async function customSeed() {
       });
 
       // Case Filters
+      const individualKycFilterId = `filter-sl-kyc-individuals-${projectId}`;
+      const businessKybFilterId = `filter-sl-kyb-businesses-${projectId}`;
+      const loanApplicationsFilterId = `filter-sl-loan-applications-${projectId}`;
+      const loanDocumentsReviewFilterId = `filter-sl-loan-documents-review-${projectId}`;
+
+      await migrateLegacyFilterToCanonicalId(client, {
+        projectId,
+        canonicalId: individualKycFilterId,
+        legacyNames: ['SL Individual KYC'],
+      });
+      await migrateLegacyFilterToCanonicalId(client, {
+        projectId,
+        canonicalId: businessKybFilterId,
+        legacyNames: ['SL Business KYB'],
+      });
+      await migrateLegacyFilterToCanonicalId(client, {
+        projectId,
+        canonicalId: loanApplicationsFilterId,
+        legacyNames: ['SL Loan Applications'],
+      });
+      await migrateLegacyFilterToCanonicalId(client, {
+        projectId,
+        canonicalId: loanDocumentsReviewFilterId,
+        legacyNames: ['SL Loan Documents Review'],
+      });
+
+      const individualKycFilterName = await resolveUniqueFilterName(client, {
+        projectId,
+        preferredName: 'Individual KYC',
+        targetFilterId: individualKycFilterId,
+      });
+      const businessKybFilterName = await resolveUniqueFilterName(client, {
+        projectId,
+        preferredName: 'Business KYB',
+        targetFilterId: businessKybFilterId,
+      });
+      const loanApplicationsFilterName = await resolveUniqueFilterName(client, {
+        projectId,
+        preferredName: 'Loan Applications',
+        targetFilterId: loanApplicationsFilterId,
+      });
+      const loanDocumentsReviewFilterName = await resolveUniqueFilterName(client, {
+        projectId,
+        preferredName: 'Loan Documents Review',
+        targetFilterId: loanDocumentsReviewFilterId,
+      });
+
       await client.filter.upsert({
-        where: { name_projectId: { name: 'SL Individual KYC', projectId } },
+        where: { id: individualKycFilterId },
         update: {
+          name: individualKycFilterName,
           entity: 'individuals',
           query: {
             select: {
@@ -1142,8 +1262,8 @@ export async function customSeed() {
           } as any,
         },
         create: {
-          id: `filter-sl-kyc-individuals-${projectId}`,
-          name: 'SL Individual KYC',
+          id: individualKycFilterId,
+          name: individualKycFilterName,
           entity: 'individuals',
           projectId,
           query: {
@@ -1171,8 +1291,9 @@ export async function customSeed() {
       });
 
       await client.filter.upsert({
-        where: { name_projectId: { name: 'SL Business KYB', projectId } },
+        where: { id: businessKybFilterId },
         update: {
+          name: businessKybFilterName,
           entity: 'businesses',
           query: {
             select: {
@@ -1193,8 +1314,8 @@ export async function customSeed() {
           } as any,
         },
         create: {
-          id: `filter-sl-kyb-businesses-${projectId}`,
-          name: 'SL Business KYB',
+          id: businessKybFilterId,
+          name: businessKybFilterName,
           entity: 'businesses',
           projectId,
           query: {
@@ -1218,8 +1339,9 @@ export async function customSeed() {
       });
 
       await client.filter.upsert({
-        where: { name_projectId: { name: 'SL Loan Applications', projectId } },
+        where: { id: loanApplicationsFilterId },
         update: {
+          name: loanApplicationsFilterName,
           entity: 'individuals',
           query: {
             select: {
@@ -1238,8 +1360,8 @@ export async function customSeed() {
           } as any,
         },
         create: {
-          id: `filter-sl-loan-applications-${projectId}`,
-          name: 'SL Loan Applications',
+          id: loanApplicationsFilterId,
+          name: loanApplicationsFilterName,
           entity: 'individuals',
           projectId,
           query: {
@@ -1260,7 +1382,51 @@ export async function customSeed() {
         },
       });
 
-      console.info(`    ✓ ${projectId} (4 UIs + 3 filters)`);
+      await client.filter.upsert({
+        where: { id: loanDocumentsReviewFilterId },
+        update: {
+          name: loanDocumentsReviewFilterName,
+          entity: 'individuals',
+          query: {
+            select: {
+              id: true,
+              status: true,
+              createdAt: true,
+              state: true,
+              context: true,
+              workflowDefinitionId: true,
+              assigneeId: true,
+              endUser: {
+                select: { id: true, firstName: true, lastName: true, correlationId: true },
+              },
+            },
+            where: { workflowDefinitionId: 'loan_documents_review_sierra_leone' },
+          } as any,
+        },
+        create: {
+          id: loanDocumentsReviewFilterId,
+          name: loanDocumentsReviewFilterName,
+          entity: 'individuals',
+          projectId,
+          query: {
+            select: {
+              id: true,
+              status: true,
+              createdAt: true,
+              state: true,
+              context: true,
+              workflowDefinitionId: true,
+              assigneeId: true,
+              endUser: {
+                select: { id: true, firstName: true, lastName: true, correlationId: true },
+              },
+            },
+            where: { workflowDefinitionId: 'loan_documents_review_sierra_leone' },
+          } as any,
+        },
+      });
+
+      console.info(`    ✓ ${projectId} (4 UIs + 4 filters)`);
     }
 
     // ── 5. Admin User ──

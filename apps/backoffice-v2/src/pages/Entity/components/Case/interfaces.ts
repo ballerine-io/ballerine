@@ -12,6 +12,8 @@ export interface IItemProps {
   entityAvatarUrl: string;
   assignee: TAssignee | null;
   tags: TStateTags;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 export interface IInfoProps {

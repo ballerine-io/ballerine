@@ -583,6 +583,168 @@ export class WorkflowService {
     return childWorkflow;
   }
 
+  private async findReusableCompletedChildWorkflow({
+    childPluginConfiguration,
+    projectIds,
+    maxAgeDays,
+  }: {
+    childPluginConfiguration: ChildPluginCallbackOutput;
+    projectIds: TProjectIds;
+    maxAgeDays?: number;
+  }) {
+    const childEntity = childPluginConfiguration.initOptions.context?.entity as
+      | (Record<string, unknown> & {
+          type?: string;
+        })
+      | undefined;
+
+    if (!childEntity) {
+      return null;
+    }
+
+    const entityType =
+      childEntity.type === 'business'
+        ? 'business'
+        : childEntity.type === 'individual'
+        ? 'endUser'
+        : null;
+
+    if (!entityType) {
+      return null;
+    }
+
+    const ballerineEntityId = await this.__tryToFetchExistingEntityId(childEntity, projectIds);
+
+    if (!ballerineEntityId) {
+      return null;
+    }
+
+    return await this.workflowRuntimeDataRepository.findLatestCompletedWorkflowByEntity(
+      {
+        entityId: ballerineEntityId,
+        entityType,
+        workflowDefinitionId: childPluginConfiguration.definitionId,
+        requiredTag: StateTag.APPROVED,
+        maxAgeDays,
+      },
+      projectIds,
+    );
+  }
+
+  private async persistReusableChildWorkflowToParent(
+    {
+      parentWorkflowRuntimeId,
+      parentWorkflowDefinition,
+      reusableChildWorkflow,
+    }: {
+      parentWorkflowRuntimeId: string;
+      parentWorkflowDefinition: WorkflowDefinition;
+      reusableChildWorkflow: WorkflowRuntimeData;
+    },
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+    transaction: PrismaTransaction,
+  ): Promise<boolean> {
+    const parentWorkflowRuntime = await this.workflowRuntimeDataRepository.findByIdAndLock(
+      parentWorkflowRuntimeId,
+      {},
+      projectIds,
+      transaction,
+    );
+
+    const childCallbackResult = (
+      parentWorkflowDefinition?.config
+        ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
+    )?.find(callback => callback?.definitionId === reusableChildWorkflow.workflowDefinitionId);
+
+    if (!childCallbackResult) {
+      return false;
+    }
+
+    const callback = childCallbackResult as ChildWorkflowCallback & {
+      persistenceStates?: string[];
+    };
+
+    const isPersistableState =
+      !callback.persistenceStates?.length ||
+      (!!reusableChildWorkflow.state &&
+        callback.persistenceStates.includes(reusableChildWorkflow.state));
+
+    if (!isPersistableState) {
+      return false;
+    }
+
+    let childContextToPersist = reusableChildWorkflow.context;
+
+    for (const transformerConfig of callback.transformers || []) {
+      const transformer = this.initiateTransformer(transformerConfig as SerializableTransformer);
+      childContextToPersist = await transformer.transform({
+        ...childContextToPersist,
+        projectId: parentWorkflowRuntime.projectId,
+      });
+    }
+
+    const parentContext = this.composeContextWithChildResponse(
+      parentWorkflowRuntime.context,
+      reusableChildWorkflow.workflowDefinitionId,
+      {
+        [reusableChildWorkflow.id]: {
+          entityId: reusableChildWorkflow.context?.entity?.id,
+          status: reusableChildWorkflow.status,
+          tags: reusableChildWorkflow.tags,
+          state: reusableChildWorkflow.state,
+          result: childContextToPersist,
+          reused: true,
+        },
+      },
+    ) as AnyRecord;
+
+    const linkedWorkflows = (parentContext.linkedWorkflows ||= {}) as Record<
+      string,
+      Record<string, AnyRecord>
+    >;
+    linkedWorkflows[reusableChildWorkflow.workflowDefinitionId] ||= {};
+    linkedWorkflows[reusableChildWorkflow.workflowDefinitionId]![reusableChildWorkflow.id] = {
+      workflowRuntimeDataId: reusableChildWorkflow.id,
+      status: reusableChildWorkflow.status,
+      state: reusableChildWorkflow.state,
+      tags: reusableChildWorkflow.tags,
+      linkedAt: new Date().toISOString(),
+      source: 'reused-completed-workflow',
+    };
+
+    await this.event(
+      {
+        id: parentWorkflowRuntimeId,
+        name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+        payload: {
+          newContext: parentContext,
+          arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
+        },
+      },
+      projectIds,
+      currentProjectId,
+      transaction,
+    );
+
+    if (
+      callback.deliverEvent &&
+      parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed
+    ) {
+      await this.event(
+        {
+          id: parentWorkflowRuntime.id,
+          name: callback.deliverEvent,
+        },
+        projectIds,
+        currentProjectId,
+        transaction,
+      );
+    }
+
+    return true;
+  }
+
   async getWorkflowDefinitionById(
     id: string,
     args: Parameters<WorkflowDefinitionRepository['findById']>[1],
@@ -674,6 +836,10 @@ export class WorkflowService {
       return [];
     };
 
+    const workflowStatuses =
+      ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) || [];
+    const workflowDefinitionIds = getWorkflowDefinitionIds();
+
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
@@ -681,10 +847,8 @@ export class WorkflowService {
           take: page.size,
           search: search ?? '',
           entityType,
-          statuses:
-            ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
-            [],
-          workflowDefinitionIds: getWorkflowDefinitionIds(),
+          statuses: workflowStatuses,
+          workflowDefinitionIds,
           orderBy,
         },
         filters,
@@ -698,7 +862,19 @@ export class WorkflowService {
     };
 
     const [workflowCount, workflows] = await Promise.all([
-      this.workflowRuntimeDataRepository.count({ where: query.where }, projectIds),
+      this.workflowRuntimeDataRepository.searchCount(
+        {
+          query: {
+            search: search ?? '',
+            entityType,
+            statuses: workflowStatuses,
+            workflowDefinitionIds,
+            orderBy,
+          },
+          filters,
+        },
+        projectIds,
+      ),
       this.workflowRuntimeDataRepository.findMany(
         {
           where: workflowsQuery.where,
@@ -2301,8 +2477,76 @@ export class WorkflowService {
           );
         },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
+          const reusableChildWorkflowDefinitionIds = Array.isArray(
+            (workflowDefinition.config as AnyRecord)?.reuseChildWorkflowDefinitionIds,
+          )
+            ? (
+                (workflowDefinition.config as AnyRecord)
+                  ?.reuseChildWorkflowDefinitionIds as unknown[]
+              ).filter((definitionId): definitionId is string => typeof definitionId === 'string')
+            : [];
+          const maxReusableChildWorkflowAgeDays = Number(
+            (workflowDefinition.config as AnyRecord)?.reuseChildWorkflowsMaxAgeDays,
+          );
+          const shouldAttemptChildWorkflowReuse = Boolean(
+            (workflowDefinition.config as AnyRecord)?.reuseChildWorkflowsByEntity,
+          )
+            ? reusableChildWorkflowDefinitionIds.length
+              ? reusableChildWorkflowDefinitionIds.includes(childPluginConfiguration.definitionId)
+              : true
+            : false;
+
+          if (shouldAttemptChildWorkflowReuse) {
+            const reusableChildWorkflow = await this.findReusableCompletedChildWorkflow({
+              childPluginConfiguration,
+              projectIds,
+              maxAgeDays:
+                Number.isFinite(maxReusableChildWorkflowAgeDays) &&
+                maxReusableChildWorkflowAgeDays > 0
+                  ? maxReusableChildWorkflowAgeDays
+                  : undefined,
+            });
+
+            if (reusableChildWorkflow) {
+              const wasLinkedToParent = await this.persistReusableChildWorkflowToParent(
+                {
+                  parentWorkflowRuntimeId: childPluginConfiguration.parentWorkflowRuntimeId,
+                  parentWorkflowDefinition: workflowDefinition,
+                  reusableChildWorkflow,
+                },
+                projectIds,
+                currentProjectId,
+                transaction,
+              );
+
+              if (wasLinkedToParent) {
+                this.logger.log('Reused completed child workflow for parent runtime', {
+                  parentWorkflowRuntimeId: childPluginConfiguration.parentWorkflowRuntimeId,
+                  reusableChildWorkflowId: reusableChildWorkflow.id,
+                  reusableChildWorkflowDefinitionId: reusableChildWorkflow.workflowDefinitionId,
+                });
+
+                return;
+              }
+            }
+          }
+
+          const childPluginConfigurationToRun = shouldAttemptChildWorkflowReuse
+            ? {
+                ...childPluginConfiguration,
+                initOptions: {
+                  ...childPluginConfiguration.initOptions,
+                  // Prevent accidental cross-parent sharing of an in-progress child workflow.
+                  config: {
+                    ...childPluginConfiguration.initOptions.config,
+                    allowMultipleActiveWorkflows: true,
+                  },
+                },
+              }
+            : childPluginConfiguration;
+
           const runnableChildWorkflow = await this.persistChildEvent(
-            childPluginConfiguration,
+            childPluginConfigurationToRun,
             projectIds,
             currentProjectId,
             transaction,
@@ -2311,6 +2555,17 @@ export class WorkflowService {
           if (!runnableChildWorkflow || !childPluginConfiguration.initOptions.event) {
             this.logger.log('Child workflow not runnable', {
               childWorkflowId: runnableChildWorkflow?.workflowRuntimeData.id,
+            });
+
+            return;
+          }
+
+          if (
+            runnableChildWorkflow.workflowRuntimeData.status === WorkflowRuntimeDataStatus.completed
+          ) {
+            this.logger.log('Child workflow already completed, skipping init event', {
+              childWorkflowId: runnableChildWorkflow.workflowRuntimeData.id,
+              parentWorkflowRuntimeId: childPluginConfiguration.parentWorkflowRuntimeId,
             });
 
             return;

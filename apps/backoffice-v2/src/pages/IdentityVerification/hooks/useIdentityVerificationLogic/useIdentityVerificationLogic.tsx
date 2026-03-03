@@ -24,13 +24,14 @@ export const useIdentityVerificationLogic = () => {
         demoDaysLeft: customer.config.demoAccessDetails.demoDaysLeft,
       })
     : null;
+  const isIdentityVerificationEnabled = !!customer?.config?.createIdentityVerification;
   const createBusinessReport = {
     ...customer?.features?.createBusinessReport,
-    enabled: customer?.features?.createBusinessReport?.enabled && !demoError,
+    enabled: isIdentityVerificationEnabled && !demoError,
   };
   const createBusinessReportBatch = {
     ...customer?.features?.createBusinessReportBatch,
-    enabled: customer?.features?.createBusinessReportBatch?.enabled && !demoError,
+    enabled: false,
   };
 
   const { data: session } = useAuthenticatedUserQuery();
@@ -38,10 +39,10 @@ export const useIdentityVerificationLogic = () => {
 
   const { search, onSearch } = useSearch();
 
-  const [{ page, pageSize, from, to, isCreating }, setSearchParams] = useZodSearchParams(
-    IdentityVerificationSearchSchema,
-    { replace: true },
-  );
+  const [
+    { page, pageSize, from, to, isCreating, workflowRuntimeDataId, entityId },
+    setSearchParams,
+  ] = useZodSearchParams(IdentityVerificationSearchSchema, { replace: true });
 
   const open = isCreating ?? false;
   const toggleOpen = (value?: boolean) => setSearchParams({ isCreating: value });
@@ -53,14 +54,16 @@ export const useIdentityVerificationLogic = () => {
     },
     from,
     to,
+    workflowRuntimeDataId,
+    entityId,
   };
 
   const { data, isLoading: isLoadingIdentityVerificationChecks } =
     useIdentityVerificationAssessmentsQuery(reportQuery);
 
   const isClearAllButtonVisible = useMemo(
-    () => !!(search !== '' || from || to),
-    [from, search, to],
+    () => !!(search !== '' || from || to || workflowRuntimeDataId || entityId),
+    [entityId, from, search, to, workflowRuntimeDataId],
   );
 
   const handleFilterChange = useCallback(
@@ -91,6 +94,8 @@ export const useIdentityVerificationLogic = () => {
       findings: [],
       from: undefined,
       to: undefined,
+      workflowRuntimeDataId: undefined,
+      entityId: undefined,
       isAlert: 'All',
       page: '1',
     });

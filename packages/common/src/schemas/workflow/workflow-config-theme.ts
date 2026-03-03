@@ -2,6 +2,6 @@ import { WorkflowDefinitionConfigThemeEnum, WorkflowDefinitionConfigThemes } fro
 import { z } from 'zod';
 
 export const WorkflowDefinitionConfigThemeSchema = z.object({
-  type: z.enum(WorkflowDefinitionConfigThemes).default(WorkflowDefinitionConfigThemeEnum.KYB),
+  type: z.enum(WorkflowDefinitionConfigThemes),
   tabsOverride: z.array(z.string()).optional(),
 });

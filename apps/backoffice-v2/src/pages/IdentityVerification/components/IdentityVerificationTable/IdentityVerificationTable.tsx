@@ -1,12 +1,12 @@
 import type { FunctionComponent } from 'react';
 
 import { UrlDataTable } from '@/common/components/organisms/UrlDataTable/UrlDataTable';
-import { TIdentityVerificationChecks } from '@/domains/identity-verification/fetchers';
+import { TIdentityVerificationAssessments } from '@/domains/assessments/fetchers';
 import { useIdentityVerificationTableLogic } from './hooks/useIdentityVerificationTableLogic/useIdentityVerificationTableLogic';
 import { useColumns } from './columns';
 
 export const IdentityVerificationTable: FunctionComponent<{
-  data: TIdentityVerificationChecks['data'];
+  data: TIdentityVerificationAssessments['data'];
   isDemoAccount: boolean;
 }> = ({ data, isDemoAccount }) => {
   const { Cell } = useIdentityVerificationTableLogic();

@@ -1,9 +1,11 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 import {
+  fetchIdentityVerificationAssessment,
   fetchIdentityVerificationAssessments,
   fetchKybAndOwnershipAssessment,
   fetchKybAndOwnershipAssessments,
+  IIdentityVerificationAssessmentParams,
   IIdentityVerificationAssessmentsParams,
   IKybAndOwnershipAssessmentsParams,
 } from './fetchers';
@@ -45,6 +47,10 @@ export const identityVerificationAssessmentsQueryKey = createQueryKeys(
 
         return fetchIdentityVerificationAssessments(data);
       },
+    }),
+    findById: ({ id }: IIdentityVerificationAssessmentParams) => ({
+      queryKey: [{ id }],
+      queryFn: () => fetchIdentityVerificationAssessment(id),
     }),
   },
 );

@@ -1,4 +1,5 @@
 import { CaseCreation } from '@/pages/Entities/components/CaseCreation';
+import { TStateTags } from '@ballerine/common';
 import { ctw, Skeleton } from '@ballerine/ui';
 import React, { FunctionComponent } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -29,6 +30,16 @@ export const Entities: FunctionComponent = () => {
     skeletonEntities,
     isManualCaseCreationEnabled,
     isNoCases,
+    selectedCaseIds,
+    selectedCasesCount,
+    isAllCasesOnCurrentPageSelected,
+    onToggleSelectCase,
+    onToggleSelectAllCasesOnCurrentPage,
+    onClearSelectedCases,
+    onBulkApproveCases,
+    onBulkRejectCases,
+    onBulkRevisionCases,
+    isLoadingBulkDecision,
   } = useEntities();
 
   return (
@@ -40,6 +51,14 @@ export const Entities: FunctionComponent = () => {
         onSortDirToggle={onSortDirToggle}
         search={search}
         count={caseCount}
+        selectedCasesCount={selectedCasesCount}
+        isAllCasesOnCurrentPageSelected={isAllCasesOnCurrentPageSelected}
+        isLoadingBulkDecision={isLoadingBulkDecision}
+        onToggleSelectAllCasesOnCurrentPage={onToggleSelectAllCasesOnCurrentPage}
+        onClearSelectedCases={onClearSelectedCases}
+        onBulkApproveCases={onBulkApproveCases}
+        onBulkRejectCases={onBulkRejectCases}
+        onBulkRevisionCases={onBulkRevisionCases}
       >
         <MotionScrollArea
           className={ctw({
@@ -67,8 +86,10 @@ export const Entities: FunctionComponent = () => {
                           } as TAssignee)
                         : null
                     }
-                    tags={case_.tags}
-                    entityAvatarUrl={case_.entity?.avatarUrl}
+                    tags={(case_.tags ?? []) as unknown as TStateTags}
+                    entityAvatarUrl={case_.entity?.avatarUrl ?? ''}
+                    isSelected={selectedCaseIds.includes(case_.id)}
+                    onToggleSelect={onToggleSelectCase}
                   />
                 ))}
           </Cases.List>

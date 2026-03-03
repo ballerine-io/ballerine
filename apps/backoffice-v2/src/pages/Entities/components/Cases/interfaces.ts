@@ -18,4 +18,12 @@ export interface ICasesProps extends DivComponent {
   onSortDirToggle: () => void;
   search: string;
   count: number;
+  selectedCasesCount: number;
+  isAllCasesOnCurrentPageSelected: boolean;
+  isLoadingBulkDecision: boolean;
+  onToggleSelectAllCasesOnCurrentPage: () => void;
+  onClearSelectedCases: () => void;
+  onBulkApproveCases: () => void;
+  onBulkRejectCases: () => void;
+  onBulkRevisionCases: () => void;
 }

@@ -6,6 +6,8 @@ export const IdentityVerificationSearchSchema = BaseSearchSchema.extend({
   status: z.array(z.string()).optional(),
   from: z.string().date().optional(),
   to: z.string().date().optional(),
+  workflowRuntimeDataId: z.string().optional(),
+  entityId: z.string().optional(),
   isCreating: z
     .string()
     .transform(value => value === 'true')
@@ -28,5 +30,5 @@ export const CreateIdentityVerificationDialogSchema = z.object({
     .max(255),
   country: z.string().max(255),
   state: z.string().optional(),
-  dateOfBirth: z.date(),
+  dateOfBirth: z.string().date(),
 });

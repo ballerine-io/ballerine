@@ -2,13 +2,12 @@ import dayjs from 'dayjs';
 import { ChevronLeft } from 'lucide-react';
 import { useRef } from 'react';
 
-import { Button, ContentTooltip, Skeleton, TextWithNAFallback } from '@ballerine/ui';
+import { Badge, Button, ContentTooltip, Skeleton, TextWithNAFallback } from '@ballerine/ui';
 
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { SectionObserver } from '@/common/components/organisms/SectionObserver/SectionObserver';
 import { NotesButton } from '@/domains/notes/NotesButton';
 import { NotesSheet } from '@/domains/notes/NotesSheet';
-import { MerchantMonitoringReportStatus } from '../MerchantMonitoring/components/MerchantMonitoringReportStatus/MerchantMonitoringReportStatus';
 import { useIdentityVerificationPageLogic } from './hooks/useIdentityVerificationPageLogic';
 
 export const IdentityVerificationAssessmentPage = () => {
@@ -16,12 +15,11 @@ export const IdentityVerificationAssessmentPage = () => {
     sections,
     check,
     isLoadingCheck,
-    checkId,
-    customer,
     onNavigateBack,
     notes,
     isNotesOpen,
     setIsNotesOpen,
+    linkedCaseEntityId,
   } = useIdentityVerificationPageLogic();
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -56,22 +54,28 @@ export const IdentityVerificationAssessmentPage = () => {
 
       <div className="flex h-full flex-col px-6 pt-4">
         <TextWithNAFallback as={'h2'} className="pb-4 text-2xl font-bold">
-          {check.companyName}
+          {[check.firstName, check.lastName].filter(Boolean).join(' ')}
         </TextWithNAFallback>
 
         <div className={`flex items-center space-x-8 pb-4`}>
           <div className={`flex items-center`}>
             <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
-            <MerchantMonitoringReportStatus
-              reportId={checkId}
-              status={check.status}
-              businessId={check.businessId}
-            />
+            <Badge
+              className={`capitalize ${
+                check.status === 'verified'
+                  ? 'bg-[#DBEDDB] text-[#1C3829]'
+                  : check.status === 'rejected'
+                  ? 'bg-[#ECA1A5] text-[#1C3829]'
+                  : 'bg-[#E3E2E0] text-[#32302C]'
+              }`}
+            >
+              {check.status}
+            </Badge>
           </div>
 
           <div className={`text-sm`}>
             <span className={`me-2 leading-6 text-slate-400`}>Created at</span>
-            {check.createdAt && dayjs(new Date(check.createdAt)).format('MMM Do, YYYY HH:mm')}
+            {check.createdAt && dayjs(check.createdAt).format('MMM Do, YYYY HH:mm')}
           </div>
 
           {/* <div className={`flex items-center space-x-2 text-sm`}> */}
@@ -91,10 +95,10 @@ export const IdentityVerificationAssessmentPage = () => {
             modal={false}
             notes={notes ?? []}
             noteData={{
-              entityId: check.businessId || '',
-              entityType: `Business`,
+              entityId: linkedCaseEntityId || '',
+              entityType: `EndUser`,
               noteableId: check.id || '',
-              noteableType: `Report`,
+              noteableType: `Assessment`,
             }}
           >
             <NotesButton numberOfNotes={notes?.length} />

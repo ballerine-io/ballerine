@@ -827,12 +827,19 @@ export class DocumentService {
       workflowDataWithEndUsers.endUsers?.filter(
         endUser => endUser.variant === EndUserVariant.ubo,
       ) ?? [];
+    const businessData =
+      workflowDataWithEndUsers.context?.entity?.data &&
+      typeof workflowDataWithEndUsers.context.entity.data === 'object'
+        ? (workflowDataWithEndUsers.context.entity.data as Record<string, unknown>)
+        : {};
+    const businessCompanyName =
+      typeof businessData.companyName === 'string' ? businessData.companyName : '';
 
     const entities = {
       business: {
         id: workflowDataWithEndUsers.context.entity.ballerineEntityId,
         variant: 'business',
-        companyName: workflowDataWithEndUsers.context.entity.data.companyName,
+        companyName: businessCompanyName,
       },
       directors: directors.map(director => ({
         id: director.id,

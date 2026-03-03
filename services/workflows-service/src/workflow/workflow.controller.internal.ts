@@ -2,10 +2,11 @@ import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { BackofficeUserAuthGuard } from '@/common/guards/backoffice-user-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { AuthenticatedEntity, TProjectId, TProjectIds } from '@/types';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
@@ -32,6 +33,7 @@ import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 import { FilterQuery } from '@/workflow/types';
 import { type Static, Type } from '@sinclair/typebox';
 import { Validate } from 'ballerine-nestjs-typebox';
+import type { Request } from 'express';
 import * as errors from '../errors';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
@@ -212,7 +214,7 @@ export class WorkflowControllerInternal {
   @common.Post('/batch/event-decision')
   @swagger.ApiOkResponse({ description: 'Batch decision results' })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(BackofficeUserAuthGuard)
   async batchDecision(
     @common.Body()
     data: {
@@ -221,8 +223,18 @@ export class WorkflowControllerInternal {
       reason?: string;
     },
     @CurrentProject() currentProjectId: TProjectId,
+    @common.Req() req: Request,
   ) {
     const { workflowIds, name, reason } = data;
+    const authenticatedEntity = req.user as
+      | (AuthenticatedEntity & { projectIds?: TProjectIds })
+      | undefined;
+    const requesterUserId =
+      authenticatedEntity?.type === 'user' ? authenticatedEntity.user?.id : undefined;
+    const effectiveProjectIds =
+      authenticatedEntity?.projectIds && Array.isArray(authenticatedEntity.projectIds)
+        ? authenticatedEntity.projectIds
+        : [currentProjectId];
 
     if (!workflowIds?.length) {
       throw new common.BadRequestException('workflowIds array is required and must not be empty');
@@ -242,15 +254,53 @@ export class WorkflowControllerInternal {
       );
     }
 
+    if (authenticatedEntity?.type === 'user' && !requesterUserId) {
+      throw new common.UnauthorizedException('Unauthorized');
+    }
+
     const results: Array<{ id: string; success: boolean; error?: string }> = [];
 
     for (const id of workflowIds) {
       try {
+        const workflowRuntime = (await this.service.getWorkflowRuntimeDataById(
+          id,
+          {
+            include: {
+              parentWorkflowRuntimeData: {
+                select: {
+                  assigneeId: true,
+                },
+              },
+            },
+          },
+          effectiveProjectIds,
+        )) as WorkflowRuntimeData & {
+          parentWorkflowRuntimeData?: {
+            assigneeId?: string | null;
+          } | null;
+        };
+
+        if (requesterUserId) {
+          const isAssignedToRequester =
+            workflowRuntime.assigneeId === requesterUserId ||
+            workflowRuntime.parentWorkflowRuntimeData?.assigneeId === requesterUserId;
+
+          if (!isAssignedToRequester) {
+            results.push({
+              id,
+              success: false,
+              error: 'Forbidden: workflow is not assigned to the requesting user',
+            });
+
+            continue;
+          }
+        }
+
         await this.service.updateDecisionAndSendEvent({
           id,
           name,
           reason,
-          projectId: currentProjectId,
+          projectId: workflowRuntime.projectId,
         });
         results.push({ id, success: true });
       } catch (error) {

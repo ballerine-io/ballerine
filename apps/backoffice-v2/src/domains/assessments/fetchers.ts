@@ -147,10 +147,10 @@ export const IdentityVerificationAssessmentSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  deletedAt: z.date().nullable().optional(),
-  data: z.object({}).optional(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  deletedAt: z.coerce.date().nullable().optional(),
+  data: z.record(z.unknown()).optional(),
   verificationLink: z.string(),
   status: z.enum(IdentityVerificationStatuses),
   issues: z.array(z.string()).optional(),
@@ -166,6 +166,8 @@ export interface IIdentityVerificationAssessmentsParams extends PaginationParams
   status?: string[];
   from?: string;
   to?: string;
+  workflowRuntimeDataId?: string;
+  entityId?: string;
 }
 
 export type TIdentityVerificationAssessment = z.infer<typeof IdentityVerificationAssessmentSchema>;
@@ -174,17 +176,65 @@ export type TIdentityVerificationAssessments = z.infer<
   typeof IdentityVerificationAssessmentsSchema
 >;
 
+export interface IIdentityVerificationAssessmentParams {
+  id: string;
+}
+
+const CreateIdentityVerificationAssessmentSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  country: z.string(),
+  state: z.string().optional(),
+  dateOfBirth: z.string().date(),
+});
+
+const CreateIdentityVerificationAssessmentResponseSchema = z.object({
+  id: z.string(),
+});
+
+export type TCreateIdentityVerificationAssessmentPayload = z.infer<
+  typeof CreateIdentityVerificationAssessmentSchema
+>;
+export type TCreateIdentityVerificationAssessmentResponse = z.infer<
+  typeof CreateIdentityVerificationAssessmentResponseSchema
+>;
+
+export const createIdentityVerificationAssessment = async (
+  payload: TCreateIdentityVerificationAssessmentPayload,
+) => {
+  const [result, error] = await apiClient({
+    endpoint: `identity-verification/assessments`,
+    method: Method.POST,
+    body: payload,
+    schema: CreateIdentityVerificationAssessmentResponseSchema,
+    timeout: 30_000,
+  });
+
+  return handleZodError(error, result);
+};
+
+export const fetchIdentityVerificationAssessment = async (id: string) => {
+  const [result, error] = await apiClient({
+    endpoint: `identity-verification/assessments/${id}`,
+    method: Method.GET,
+    schema: IdentityVerificationAssessmentSchema,
+    timeout: 30_000,
+  });
+
+  return handleZodError(error, result);
+};
+
 export const fetchIdentityVerificationAssessments = async (
   params: IIdentityVerificationAssessmentsParams,
 ) => {
   const queryParams = qs.stringify(params, { encode: false });
 
-  const response = await apiClient({
-    url: `/identity-verification/assessments?${queryParams}`,
+  const [result, error] = await apiClient({
+    endpoint: `identity-verification/assessments?${queryParams}`,
     method: Method.GET,
     schema: IdentityVerificationAssessmentsSchema,
     timeout: 30_000,
   });
 
-  return IdentityVerificationAssessmentsSchema.parse(response);
+  return handleZodError(error, result);
 };

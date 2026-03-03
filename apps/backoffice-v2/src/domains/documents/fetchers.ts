@@ -8,6 +8,7 @@ export const fetchDocumentsTrackerItems = async ({ workflowId }: { workflowId: s
   const [documentsTrackerItems, error] = await apiClient({
     endpoint: `../external/documents/tracker/${workflowId}`,
     method: Method.GET,
+    timeout: 30000,
     schema: DocumentsTrackerSchema,
   });
 

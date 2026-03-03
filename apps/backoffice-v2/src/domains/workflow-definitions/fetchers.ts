@@ -4,11 +4,7 @@ import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import {
-  WorkflowDefinitionConfigThemeEnum,
-  WorkflowDefinitionConfigThemeSchema,
-  WorkflowDefinitionVariant,
-} from '@ballerine/common';
+import { WorkflowDefinitionConfigThemeSchema, WorkflowDefinitionVariant } from '@ballerine/common';
 import { z } from 'zod';
 
 export const PluginSchema = z.object({
@@ -34,9 +30,7 @@ export const WorkflowDefinitionConfigSchema = z
     isAgentEditingEnabled: z.boolean().default(false),
     isCaseRiskOverviewEnabled: z.boolean().default(false),
     isDocumentTrackerEnabled: z.boolean().default(false),
-    theme: WorkflowDefinitionConfigThemeSchema.default({
-      type: WorkflowDefinitionConfigThemeEnum.KYB,
-    }),
+    theme: WorkflowDefinitionConfigThemeSchema.optional(),
     uiOptions: z
       .object({
         backoffice: z

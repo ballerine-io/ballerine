@@ -22,6 +22,7 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { toast } from 'sonner';
 import { t } from 'i18next';
 import { useObjectEntriesBlock } from '@/lib/blocks/hooks/useObjectEntriesBlock/useObjectEntriesBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import {
   EDIT_TEMPLATES,
   useEditCollectionFlow,
@@ -611,6 +612,44 @@ export const useTabsToBlocksMap = ({
     subheading: 'Deduplication and shared-device risk (Unified API)',
   });
 
+  const identityVerificationDeepLinkBlock = useMemo(() => {
+    const workflowRuntimeDataId = blocksCreationParams?.workflow?.id;
+    const entityId = blocksCreationParams?.workflow?.context?.entity?.id;
+
+    if (!workflowRuntimeDataId) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'callToAction',
+        value: {
+          text: 'Open Identity Verification Checks',
+          onClick: () => {
+            if (typeof window === 'undefined') {
+              return;
+            }
+
+            const locale = window.location.pathname.split('/')[1] || 'en';
+            const searchParams = new URLSearchParams();
+            searchParams.set('workflowRuntimeDataId', workflowRuntimeDataId);
+
+            if (entityId) {
+              searchParams.set('entityId', entityId);
+            }
+
+            window.location.assign(`/${locale}/identity-verification?${searchParams.toString()}`);
+          },
+          props: {
+            variant: 'outline',
+            className: 'w-fit',
+          },
+        },
+      })
+      .build();
+  }, [blocksCreationParams?.workflow?.context?.entity?.id, blocksCreationParams?.workflow?.id]);
+
   const defaultTabsMap = {
     [Tab.SUMMARY]: [
       ...(blocksCreationParams?.workflow?.workflowDefinition?.config?.isCaseOverviewEnabled
@@ -673,12 +712,15 @@ export const useTabsToBlocksMap = ({
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
-      [Tab.KYC]: [
+      [Tab.KYC_PROFILE]: [
         ...businessInformationBlocks,
         ...entityAddressWithContainerBlock,
-        ...verificationResultsBlock,
-        ...amlWithContainerBlock,
+        ...entityAdditionalInfoBlock,
       ],
+      [Tab.KYC_DOCUMENTS]: [...businessDocumentBlocks],
+      [Tab.KYC_VERIFICATION]: [...identityVerificationDeepLinkBlock, ...verificationResultsBlock],
+      [Tab.KYC_AML]: [...amlWithContainerBlock],
+      [Tab.KYC_CUSTOM_DATA]: [...customDataBlock],
     } as const;
   }
 

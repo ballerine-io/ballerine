@@ -116,8 +116,8 @@ export class WorkflowRuntimeDataRepository {
       },
       select: {
         id: true,
-        parentRuntimeDataId: true,
         projectId: true,
+        parentRuntimeDataId: true,
       },
     });
 
@@ -126,17 +126,22 @@ export class WorkflowRuntimeDataRepository {
     }
 
     const resolvedProjectId = requestedWorkflow.projectId;
-    let rootWorkflowId = requestedWorkflow.id;
-    let currentParentId = requestedWorkflow.parentRuntimeDataId;
-    const visitedWorkflowIds = new Set<string>([requestedWorkflow.id]);
+    let selectedWorkflowId = requestedWorkflow.id;
+    let parentRuntimeDataId = requestedWorkflow.parentRuntimeDataId;
+    const visitedParentIds = new Set<string>([requestedWorkflow.id]);
 
-    // Climb parent links until we reach the top-most runtime row.
-    while (currentParentId && !visitedWorkflowIds.has(currentParentId)) {
-      visitedWorkflowIds.add(currentParentId);
+    // Restore root-parent traversal semantics: when a child workflow id is requested,
+    // return the root parent with its immediate children for a consistent case view.
+    while (parentRuntimeDataId) {
+      // Guard against malformed cyclic chains.
+      if (visitedParentIds.has(parentRuntimeDataId)) {
+        break;
+      }
 
+      visitedParentIds.add(parentRuntimeDataId);
       const parentWorkflow = await this.prismaService.workflowRuntimeData.findFirst({
         where: {
-          id: currentParentId,
+          id: parentRuntimeDataId,
           projectId: resolvedProjectId,
         },
         select: {
@@ -149,15 +154,15 @@ export class WorkflowRuntimeDataRepository {
         break;
       }
 
-      rootWorkflowId = parentWorkflow.id;
-      currentParentId = parentWorkflow.parentRuntimeDataId;
+      selectedWorkflowId = parentWorkflow.id;
+      parentRuntimeDataId = parentWorkflow.parentRuntimeDataId;
     }
 
     const workflows = (await this.prismaService.$queryRaw`
         WITH workflows AS (
           SELECT
             CASE
-              WHEN wrd.parent_runtime_data_id IS NULL THEN 'parent'
+              WHEN wrd.id = ${selectedWorkflowId} THEN 'parent'
               ELSE 'child'
             END AS "workflowType",
             wrd.id,
@@ -293,15 +298,18 @@ export class WorkflowRuntimeDataRepository {
             AND wrd."assigneeId" IS NOT NULL
           WHERE
             (
-              wrd.id = ${rootWorkflowId}
-              OR wrd.parent_runtime_data_id = ${rootWorkflowId}
+              wrd.id = ${selectedWorkflowId}
+              OR wrd.parent_runtime_data_id = ${selectedWorkflowId}
             )
             AND wrd."projectId" = ${resolvedProjectId}
         ),
         ubos AS (
           SELECT
             jsonb_array_elements(
-              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'ubos'
+              COALESCE(
+                workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'ubos',
+                '[]'::jsonb
+              )
             ) AS ubos
           FROM
             workflows
@@ -309,7 +317,10 @@ export class WorkflowRuntimeDataRepository {
         directors AS (
           SELECT
             jsonb_array_elements(
-              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'directors'
+              COALESCE(
+                workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'directors',
+                '[]'::jsonb
+              )
             ) AS directors
           FROM
             workflows
@@ -317,7 +328,10 @@ export class WorkflowRuntimeDataRepository {
         peopleOfInterest AS (
           SELECT
             jsonb_array_elements(
-              workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'peopleOfInterest'
+              COALESCE(
+                workflows.context -> 'entity' -> 'data' -> 'additionalInfo' -> 'peopleOfInterest',
+                '[]'::jsonb
+              )
             ) AS peopleOfInterest
           FROM
             workflows
@@ -381,7 +395,7 @@ export class WorkflowRuntimeDataRepository {
     const childWorkflows = workflows.filter(workflow => workflow.workflowType === 'child');
 
     if (!parentWorkflow) {
-      throw new NotFoundException(`A workflow with an id of "${rootWorkflowId}" was not found`);
+      throw new NotFoundException(`A workflow with an id of "${selectedWorkflowId}" was not found`);
     }
 
     return {
@@ -572,6 +586,56 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
+  async findLatestCompletedWorkflowByEntity(
+    {
+      entityId,
+      entityType,
+      workflowDefinitionId,
+      requiredTag,
+      maxAgeDays,
+    }: {
+      entityId: string;
+      entityType: TEntityType;
+      workflowDefinitionId: string;
+      requiredTag?: string;
+      maxAgeDays?: number;
+    },
+    projectIds: TProjectIds,
+  ) {
+    const createdAtGte =
+      typeof maxAgeDays === 'number' && maxAgeDays > 0
+        ? new Date(Date.now() - maxAgeDays * 24 * 60 * 60 * 1000)
+        : undefined;
+
+    return await this.findOne(
+      {
+        where: {
+          workflowDefinitionId,
+          [entityType]: {
+            id: entityId,
+          },
+          status: WorkflowRuntimeDataStatus.completed,
+          ...(requiredTag
+            ? {
+                tags: {
+                  array_contains: requiredTag,
+                },
+              }
+            : {}),
+          ...(createdAtGte
+            ? {
+                createdAt: {
+                  gte: createdAtGte,
+                },
+              }
+            : {}),
+        },
+        orderBy: [{ resolvedAt: 'desc' }, { updatedAt: 'desc' }],
+      },
+      projectIds,
+    );
+  }
+
   async findContext(id: string, projectIds: TProjectIds) {
     return (
       await this.prismaService.workflowRuntimeData.findFirstOrThrow(
@@ -674,25 +738,21 @@ export class WorkflowRuntimeDataRepository {
       includeUnassigned: filters?.assigneeId?.includes(null) || false,
     };
 
-    const assigneeIdsParam = assigneeIds.length
-      ? Prisma.join(assigneeIds.map(id => Prisma.sql`${id}`))
-      : Prisma.sql``;
+    const toPgTextArray = (items?: Array<string | null> | null) => {
+      const normalizedItems = items?.filter((item): item is string => item !== null) ?? [];
 
-    const workflowDefinitionIdsParam = workflowDefinitionIds?.length
-      ? Prisma.join(workflowDefinitionIds.map(id => Prisma.sql`${id}`))
-      : Prisma.sql``;
+      return normalizedItems.length
+        ? Prisma.sql`ARRAY[${Prisma.join(
+            normalizedItems.map(item => Prisma.sql`${item}`),
+          )}]::text[]`
+        : Prisma.sql`NULL::text[]`;
+    };
 
-    const statusesParam = statuses.length
-      ? Prisma.join(statuses.map(status => Prisma.sql`${status}`))
-      : Prisma.sql``;
-
-    const projectIdsParam = projectIds?.length
-      ? Prisma.join(projectIds.map(id => Prisma.sql`${id}`))
-      : Prisma.sql``;
-
-    const caseStatusParam = filters?.caseStatus?.length
-      ? Prisma.join(filters.caseStatus.map(status => Prisma.sql`${status}`))
-      : Prisma.sql``;
+    const assigneeIdsParam = toPgTextArray(assigneeIds);
+    const workflowDefinitionIdsParam = toPgTextArray(workflowDefinitionIds);
+    const statusesParam = toPgTextArray(statuses);
+    const projectIdsParam = toPgTextArray(projectIds ? [...projectIds] : null);
+    const caseStatusParam = toPgTextArray(filters?.caseStatus);
 
     const sql = Prisma.sql`
         SELECT id
@@ -701,17 +761,83 @@ export class WorkflowRuntimeDataRepository {
             ${entityType}::text,
             ${orderByColumn}::text,
             ${orderByDirection}::text,
-            array[${workflowDefinitionIdsParam}]::text[],
-            array[${statusesParam}]::text[],
-            array[${projectIdsParam}]::text[],
-            array[${assigneeIdsParam}]::text[],
-            array[${caseStatusParam}]::text[],
+            ${workflowDefinitionIdsParam},
+            ${statusesParam},
+            ${projectIdsParam},
+            ${assigneeIdsParam},
+            ${caseStatusParam},
             ${includeUnassigned}::boolean
         )
         LIMIT ${take} OFFSET ${skip}
     `;
 
     return (await this.prismaService.$queryRaw(sql)) as WorkflowRuntimeData[];
+  }
+
+  async searchCount(
+    {
+      query: { search, entityType, workflowDefinitionIds, statuses, orderBy },
+      filters,
+    }: {
+      query: {
+        search?: string;
+        entityType: string;
+        statuses: string[];
+        workflowDefinitionIds?: string[];
+        orderBy: Parameters<typeof toPrismaOrderBy>[0];
+      };
+      filters?: {
+        caseStatus?: string[];
+        assigneeId?: Array<string | null>;
+        status?: WorkflowRuntimeDataStatus[];
+      };
+    },
+    projectIds: TProjectIds,
+  ): Promise<number> {
+    const [orderByColumn, orderByDirection] = orderBy.split(':');
+
+    const { assigneeIds, includeUnassigned } = {
+      assigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
+      includeUnassigned: filters?.assigneeId?.includes(null) || false,
+    };
+
+    const toPgTextArray = (items?: Array<string | null> | null) => {
+      const normalizedItems = items?.filter((item): item is string => item !== null) ?? [];
+
+      return normalizedItems.length
+        ? Prisma.sql`ARRAY[${Prisma.join(
+            normalizedItems.map(item => Prisma.sql`${item}`),
+          )}]::text[]`
+        : Prisma.sql`NULL::text[]`;
+    };
+
+    const assigneeIdsParam = toPgTextArray(assigneeIds);
+    const workflowDefinitionIdsParam = toPgTextArray(workflowDefinitionIds);
+    const statusesParam = toPgTextArray(statuses);
+    const projectIdsParam = toPgTextArray(projectIds ? [...projectIds] : null);
+    const caseStatusParam = toPgTextArray(filters?.caseStatus);
+
+    const sql = Prisma.sql`
+        SELECT COUNT(*)::int AS count
+        FROM search_workflow_data(
+            ${search}::text,
+            ${entityType}::text,
+            ${orderByColumn}::text,
+            ${orderByDirection}::text,
+            ${workflowDefinitionIdsParam},
+            ${statusesParam},
+            ${projectIdsParam},
+            ${assigneeIdsParam},
+            ${caseStatusParam},
+            ${includeUnassigned}::boolean
+        )
+    `;
+
+    const [result] = (await this.prismaService.$queryRaw(sql)) as Array<{
+      count: number | bigint | string;
+    }>;
+
+    return Number(result?.count ?? 0);
   }
 }
 

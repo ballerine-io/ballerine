@@ -45,6 +45,7 @@ export const fetchWorkflows = async (params: {
   const [workflows, error] = await apiClient({
     endpoint: `workflows?${queryParams}`,
     method: Method.GET,
+    timeout: 30000,
     schema: z.object({
       data: z.array(
         z.object({
@@ -229,21 +230,30 @@ export const fetchWorkflowById = async ({ workflowId }: { workflowId: string }) 
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}`,
     method: Method.GET,
-    schema: WorkflowByIdSchema.transform(data => ({
-      ...data,
-      context: {
-        ...data.context,
-        pluginsOutput: {
-          ...data.context?.pluginsOutput,
-          // TODO: Upgrade workflows-service TypeScript version to >= 5 and use `string-ts`'s `deepCamelCase` instead on the server side in `formatWorkflow`.
-          // Currently, `nest-access-control` v2.2.0 is incompatible with TypeScript >= 5.
-          website_monitoring: {
-            ...data.context?.pluginsOutput?.website_monitoring,
-            data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
+    timeout: 30000,
+    schema: WorkflowByIdSchema.transform(data => {
+      const websiteMonitoring =
+        typeof data.context?.pluginsOutput?.website_monitoring === 'object' &&
+        data.context?.pluginsOutput?.website_monitoring !== null
+          ? (data.context.pluginsOutput.website_monitoring as Record<string, unknown>)
+          : {};
+
+      return {
+        ...data,
+        context: {
+          ...data.context,
+          pluginsOutput: {
+            ...data.context?.pluginsOutput,
+            // TODO: Upgrade workflows-service TypeScript version to >= 5 and use `string-ts`'s `deepCamelCase` instead on the server side in `formatWorkflow`.
+            // Currently, `nest-access-control` v2.2.0 is incompatible with TypeScript >= 5.
+            website_monitoring: {
+              ...websiteMonitoring,
+              data: deepCamelKeys((websiteMonitoring.data as Record<string, unknown>) ?? {}),
+            },
           },
         },
-      },
-    })),
+      };
+    }),
   });
 
   return handleZodError(error, workflow);
@@ -373,6 +383,46 @@ export const fetchWorkflowEventDecision = async ({
   });
 
   return handleZodError(error, workflow);
+};
+
+const WorkflowBatchEventDecisionResponseSchema = z.object({
+  total: z.number(),
+  succeeded: z.number(),
+  failed: z.number(),
+  results: z.array(
+    z.object({
+      id: z.string(),
+      success: z.boolean(),
+      error: z.string().optional(),
+    }),
+  ),
+});
+
+export type TWorkflowBatchEventDecisionResponse = z.infer<
+  typeof WorkflowBatchEventDecisionResponseSchema
+>;
+
+export const fetchWorkflowBatchEventDecision = async ({
+  workflowIds,
+  body,
+}: {
+  workflowIds: string[];
+  body: {
+    name: 'approve' | 'reject' | 'revision';
+    reason?: string;
+  };
+}) => {
+  const [result, error] = await apiClient({
+    endpoint: `workflows/batch/event-decision`,
+    method: Method.POST,
+    body: {
+      workflowIds,
+      ...body,
+    },
+    schema: WorkflowBatchEventDecisionResponseSchema,
+  });
+
+  return handleZodError(error, result);
 };
 
 export const createWorkflowRequest = async ({

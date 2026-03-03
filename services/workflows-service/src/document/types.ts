@@ -27,7 +27,10 @@ export const EntitySchema = z.discriminatedUnion('variant', [
   z.object({
     variant: z.literal('business'),
     id: z.string(),
-    companyName: z.string(),
+    companyName: z
+      .string()
+      .nullish()
+      .transform(value => value ?? ''),
   }),
   z.object({
     id: z.string(),

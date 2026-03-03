@@ -14,3 +14,7 @@ export {
   loanKycKybSierraLeoneDefinition,
   generateLoanKycKybSierraLeone,
 } from './loan-kyc-kyb-sierra-leone';
+export {
+  loanDocumentsReviewSierraLeoneDefinition,
+  generateLoanDocumentsReviewSierraLeone,
+} from './loan-documents-review-sierra-leone';

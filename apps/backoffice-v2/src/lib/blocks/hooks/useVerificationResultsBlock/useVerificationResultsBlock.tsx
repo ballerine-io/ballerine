@@ -193,14 +193,17 @@ const getPluginStatus = (plugin: VerificationPluginOutput | undefined): string |
 
   const pluginData = asRecord(plugin.data);
   const rawStatus = plugin.verificationStatus ?? pluginData?.['status'];
+
   if (typeof rawStatus !== 'string') {
     return undefined;
   }
 
   const normalizedStatus = rawStatus.toLowerCase();
+
   if (normalizedStatus === 'completed') {
     return 'VERIFIED';
   }
+
   if (normalizedStatus === 'failed') {
     return 'ERROR';
   }
@@ -280,17 +283,20 @@ const getPluginExtractedData = (
   const pluginData = asRecord(plugin.data);
   const nestedData = asRecord(pluginData?.['data']);
   const extractedFromNestedData = asRecord(nestedData?.['extractedData']);
+
   if (extractedFromNestedData) {
     return extractedFromNestedData;
   }
 
   const extractedFromTopLevelData = asRecord(pluginData?.['extractedData']);
+
   if (extractedFromTopLevelData) {
     return extractedFromTopLevelData;
   }
 
   const metadata = asRecord(pluginData?.['metadata']);
   const extractedFromMetadata = asRecord(metadata?.['extractedData']);
+
   if (extractedFromMetadata) {
     return extractedFromMetadata;
   }
@@ -324,6 +330,7 @@ const getPluginImages = (
       const image = asRecord(item);
       const content = image?.['content'];
       const context = image?.['context'];
+
       if (typeof content === 'string' && content.length > 0) {
         collected.push({
           content,
@@ -357,9 +364,11 @@ const DOCUMENT_CATEGORY_LABELS: Record<string, string> = {
 
 const getImageCategory = (context: string | undefined): string => {
   const normalized = (context || '').toLowerCase();
+
   if (normalized.includes('selfie') || normalized.includes('face')) {
     return 'proof_of_identity_ownership';
   }
+
   if (normalized.includes('address') || normalized.includes('utility')) {
     return 'proof_of_address';
   }
@@ -426,7 +435,9 @@ const computeOverallConfidence = (
     scores.push(facialConfidence > 1 ? facialConfidence : facialConfidence * 100);
   }
 
-  if (scores.length === 0) return null;
+  if (scores.length === 0) {
+    return null;
+  }
 
   // Conservative approach: weakest link determines overall trust
   return Math.min(...scores);
@@ -437,9 +448,15 @@ const getStatusBadge = (
 ):
   | { text: string; variant: 'success' | 'destructive' | 'warning' | 'info' | 'violet' }
   | undefined => {
-  if (!status) return undefined;
+  if (!status) {
+    return undefined;
+  }
+
   const display = STATUS_DISPLAY[status];
-  if (!display) return { text: status, variant: 'info' };
+
+  if (!display) {
+    return { text: status, variant: 'info' };
+  }
 
   return {
     text: display.label,
@@ -518,27 +535,33 @@ export const useVerificationResultsBlock = ({
 
     // Build specific alert message listing which checks need review and why
     const failedChecks: string[] = [];
+
     if (docVerification && needsReview(docStatus)) {
       const hasError = docFailedAttributes.some((a: string) => a.toLowerCase().includes('error'));
       failedChecks.push(
         hasError ? 'Document Verification (processing error)' : 'Document Verification',
       );
     }
+
     if (facialVerification && needsReview(facialStatus)) {
       const hasError =
         facialStatus === 'ERROR' ||
         facialFailedAttributes.some((a: string) => a.toLowerCase().includes('error'));
       failedChecks.push(hasError ? 'Facial Verification (system error)' : 'Facial Verification');
     }
+
     if (businessDocumentVerification && needsReview(businessDocStatus)) {
       failedChecks.push('Business Document Verification');
     }
+
     if (addressVerification && needsReview(addressStatus)) {
       failedChecks.push('Address Verification');
     }
+
     if (marketCardVerification && needsReview(marketCardStatus)) {
       failedChecks.push('Market Card Verification');
     }
+
     const alertMessage =
       failedChecks.length > 0 ? `Checks requiring review: ${failedChecks.join(', ')}` : undefined;
 
@@ -950,7 +973,9 @@ export const useVerificationResultsBlock = ({
       for (const [category, details] of categorized) {
         const validDetails = details.filter(d => d.imageUrl || d.base64);
 
-        if (validDetails.length === 0) continue;
+        if (validDetails.length === 0) {
+          continue;
+        }
 
         const label = DOCUMENT_CATEGORY_LABELS[category] ?? toTitleCase(category);
 
@@ -1013,6 +1038,7 @@ function buildOverallStatus(
 
   const pushConfidenceDetail = (label: string, plugin: VerificationPluginOutput | undefined) => {
     const confidence = getPluginConfidenceScore(plugin);
+
     if (confidence === undefined || confidence === null) {
       return;
     }
@@ -1205,7 +1231,10 @@ function buildExtractedDataDetails(
   const details: Array<{ label: string; value: string }> = [];
 
   for (const [sectionKey, sectionValue] of Object.entries(extractedData)) {
-    if (INTERNAL_METADATA_KEYS.has(sectionKey)) continue;
+    if (INTERNAL_METADATA_KEYS.has(sectionKey)) {
+      continue;
+    }
+
     if (!sectionValue || typeof sectionValue !== 'object' || Array.isArray(sectionValue)) {
       if (sectionValue !== null && sectionValue !== undefined && sectionValue !== '') {
         details.push({ label: toTitleCase(sectionKey), value: String(sectionValue) });

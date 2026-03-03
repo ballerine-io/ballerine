@@ -55,6 +55,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowCollectionFlowController } from './workflow-collection-flow.controller';
 import { AssessmentsModule } from '@/assessments/assessments.module';
 import { AssessmentsService } from '@/assessments/assessments.service';
+import { BackofficeUserAuthGuard } from '@/common/guards/backoffice-user-auth.guard';
 // eslint-disable-next-line import/no-cycle
 import { KycModule } from '@/kyc/kyc.module';
 import { EndUserModule } from '@/end-user/end-user.module';
@@ -130,6 +131,7 @@ import { DocumentModule } from '@/document/document.module';
     WorkflowRuntimeDataActorService,
     CustomerService,
     AssessmentsService,
+    BackofficeUserAuthGuard,
   ],
   exports: [
     WorkflowService,

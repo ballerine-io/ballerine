@@ -15,7 +15,7 @@ export const fetcher: IFetcher = async ({
     'Content-Type': 'application/json',
   },
   options,
-  timeout = 10000,
+  timeout = 30_000,
   schema,
   isBlob = false,
   isFormData = false,
