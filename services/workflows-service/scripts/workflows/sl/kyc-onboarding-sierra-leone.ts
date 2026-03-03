@@ -78,7 +78,7 @@ export const kycOnboardingSierraLeoneDefinition = {
             cond: {
               type: 'jmespath',
               options: {
-                rule: "entity.data.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceHash || entity.data.deviceFingerprint || entity.data.device.fingerprintJsDeviceId || entity.data.device.fingerprintJsDeviceHash || entity.data.device.deviceFingerprint || entity.data.deviceIp || entity.data.device.deviceIp || entity.data.networkIp || entity.data.networkIpAddresses[0] || entity.data.device.networkIpAddresses[0] || entity.data.ip",
+                rule: 'entity.data.fingerprintJsDeviceId || entity.data.fingerprintJsDeviceHash || entity.data.deviceFingerprint || entity.data.device.fingerprintJsDeviceId || entity.data.device.fingerprintJsDeviceHash || entity.data.device.deviceFingerprint || entity.data.deviceIp || entity.data.device.deviceIp || entity.data.networkIp || entity.data.networkIpAddresses[0] || entity.data.device.networkIpAddresses[0] || entity.data.ip',
               },
             },
           },
