@@ -19,6 +19,18 @@ import { TRoute, TRouteWithChildren } from '@/domains/auth/components/Authentica
 import { useCustomerQuery } from '@/domains/customer/hooks/queries/useCustomerQuery/useCustomerQuery';
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 
+const normalizeFilterName = ({ id, name }: { id: string; name: string }) => {
+  if (!id.startsWith('filter-sl-')) {
+    return name;
+  }
+
+  if (id.startsWith('filter-sl-loan-documents-review-')) {
+    return 'Loan Documents Queue';
+  }
+
+  return name.replace(/^SL\s+/i, '').trim();
+};
+
 export const useSidebarItems = () => {
   const { data: filters } = useFiltersQuery();
   const locale = useLocale();
@@ -49,7 +61,7 @@ export const useSidebarItems = () => {
     children:
       businessesFilters?.map(({ id, name }) => ({
         filterId: id,
-        text: name,
+        text: normalizeFilterName({ id, name }),
         key: `nav-item-${id}`,
         href: getCaseManagementEntitiesHrefByFilterId({
           locale,
@@ -161,7 +173,7 @@ export const useSidebarItems = () => {
           children: [
             ...(individualsFilters?.map(({ id, name }) => ({
               filterId: id,
-              text: name,
+              text: normalizeFilterName({ id, name }),
               href: getCaseManagementEntitiesHrefByFilterId({
                 locale,
                 filterId: id,

@@ -23,19 +23,19 @@ export const Tab = {
 
 export const getVariantTabs = (
   theme: WorkflowDefinitionConfigTheme,
-  tabBlocks: Record<string, any[] | undefined>,
+  _tabBlocks: Record<string, any[] | undefined>,
 ): TCaseTabDefinition[] => {
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
     const baseTabs = [
       {
         name: Tab.SUMMARY,
         displayName: 'Summary',
-        disabled: !tabBlocks[Tab.SUMMARY]?.length,
+        disabled: false,
       },
       {
         name: Tab.KYB,
         displayName: 'KYB',
-        disabled: !tabBlocks[Tab.KYB]?.length,
+        disabled: false,
       },
       {
         name: Tab.INDIVIDUALS,
@@ -45,29 +45,29 @@ export const getVariantTabs = (
       {
         name: Tab.DOCUMENTS,
         displayName: 'Documents',
-        disabled: !tabBlocks[Tab.DOCUMENTS]?.length,
+        disabled: false,
       },
       {
         name: Tab.MONITORING_REPORTS,
         displayName: 'Web Presence',
-        disabled: !tabBlocks[Tab.MONITORING_REPORTS]?.length,
+        disabled: false,
       },
       {
         name: Tab.STORE_INFO,
         displayName: 'Store',
-        disabled: !tabBlocks[Tab.STORE_INFO]?.length,
+        disabled: false,
       },
 
       {
         name: Tab.ASSOCIATED_COMPANIES,
         displayName: 'Associated Companies',
-        disabled: !tabBlocks[Tab.ASSOCIATED_COMPANIES]?.length,
+        disabled: false,
       },
 
       {
         name: Tab.CUSTOM_DATA,
         displayName: 'Custom Data',
-        disabled: !tabBlocks[Tab.CUSTOM_DATA]?.length,
+        disabled: false,
         tooltip:
           'This tab displays customer data provided by API, allowing MiKashBoks AI to enrich its analysis.',
       },
@@ -93,27 +93,27 @@ export const getVariantTabs = (
       {
         name: Tab.KYC_PROFILE,
         displayName: 'Profile',
-        disabled: !tabBlocks[Tab.KYC_PROFILE]?.length,
+        disabled: !_tabBlocks[Tab.KYC_PROFILE]?.length,
       },
       {
         name: Tab.KYC_DOCUMENTS,
         displayName: 'Documents',
-        disabled: !tabBlocks[Tab.KYC_DOCUMENTS]?.length,
+        disabled: !_tabBlocks[Tab.KYC_DOCUMENTS]?.length,
       },
       {
         name: Tab.KYC_VERIFICATION,
         displayName: 'Verification',
-        disabled: !tabBlocks[Tab.KYC_VERIFICATION]?.length,
+        disabled: !_tabBlocks[Tab.KYC_VERIFICATION]?.length,
       },
       {
         name: Tab.KYC_AML,
         displayName: 'AML',
-        disabled: !tabBlocks[Tab.KYC_AML]?.length,
+        disabled: !_tabBlocks[Tab.KYC_AML]?.length,
       },
       {
         name: Tab.KYC_CUSTOM_DATA,
         displayName: 'Custom Data',
-        disabled: !tabBlocks[Tab.KYC_CUSTOM_DATA]?.length,
+        disabled: !_tabBlocks[Tab.KYC_CUSTOM_DATA]?.length,
       },
     ];
 

@@ -165,11 +165,11 @@ const NavItem = forwardRef<
     <SidebarMenuButton
       ref={ref}
       className={ctw(
-        'flex h-auto w-full items-center gap-x-2 rounded-md text-sm font-bold capitalize text-slate-400 2xl:text-base',
+        'flex h-auto w-full items-center gap-x-2 rounded-md text-sm font-medium capitalize text-slate-600 2xl:text-base',
         'group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:!p-0',
         'duration-50 transition-colors',
         {
-          'text-slate-400/60': premium,
+          'text-slate-500/70': premium,
           'hover:bg-slate-200 hover:text-primary active:bg-primary-foreground active:text-primary':
             !premium,
           'group-data-[collapsible=icon]:hidden': 'children' in navItem,

@@ -1503,7 +1503,7 @@ async function seedFilters(client: PrismaClient, projectId: string) {
   });
   const loanDocumentsReviewFilterName = await resolveUniqueFilterName(client, {
     projectId,
-    preferredName: 'Loan Documents Review',
+    preferredName: 'Loan Documents Queue',
     targetFilterId: loanDocumentsReviewFilterId,
   });
 

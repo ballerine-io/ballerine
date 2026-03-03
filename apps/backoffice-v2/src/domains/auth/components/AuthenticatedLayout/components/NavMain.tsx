@@ -46,8 +46,8 @@ export const NavMain: FunctionComponent<{ className?: string }> = ({ className }
                           <NavItem
                             navItem={subItem}
                             className={ctw('p-0', {
-                              'font-semibold text-[#20232E]': subItem.filterId === filterId,
-                              'text-[#8990AC] aria-[current=page]:font-normal':
+                              'font-semibold text-primary': subItem.filterId === filterId,
+                              'text-slate-600 hover:text-primary aria-[current=page]:font-normal':
                                 subItem.filterId && subItem.filterId !== filterId,
                             })}
                             linkClassName="p-2"

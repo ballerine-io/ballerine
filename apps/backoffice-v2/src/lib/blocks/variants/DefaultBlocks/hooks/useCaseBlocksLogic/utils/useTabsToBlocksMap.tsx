@@ -12,7 +12,7 @@ import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mut
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { TAllBlocks } from '../../useDefaultBlocksLogic/constants';
-import { useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { useKYCBlocks } from '../hooks/useKYCBlocks/useKYCBlocks';
 import { useMutation } from '@tanstack/react-query';
 import { Method } from '@/common/enums';
@@ -27,6 +27,15 @@ import {
   EDIT_TEMPLATES,
   useEditCollectionFlow,
 } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useEditCollectionFlow';
+import { Blocks } from '@ballerine/blocks';
+import {
+  Building2Icon,
+  DatabaseIcon,
+  FileTextIcon,
+  GlobeIcon,
+  LayoutDashboardIcon,
+  StoreIcon,
+} from 'lucide-react';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -36,6 +45,34 @@ export type TCaseBlocksCreationProps = {
     reason?: string;
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
+};
+
+type TNoDataTabState = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+};
+
+const getNoDataTabBlocks = ({ title, description, icon }: TNoDataTabState): Blocks =>
+  createBlocksTyped()
+    .addBlock()
+    .addCell({
+      type: 'noData',
+      value: {
+        title,
+        description,
+        icon: <>{icon}</>,
+      },
+      props: {},
+    })
+    .build();
+
+const withNoDataFallback = (tabBlocks: Blocks, fallback: TNoDataTabState): Blocks => {
+  if (tabBlocks.length > 0) {
+    return tabBlocks;
+  }
+
+  return getNoDataTabBlocks(fallback);
 };
 
 export const initiateIndividualVerificationAndSendEmail = async ({
@@ -650,54 +687,98 @@ export const useTabsToBlocksMap = ({
       .build();
   }, [blocksCreationParams?.workflow?.context?.entity?.id, blocksCreationParams?.workflow?.id]);
 
+  const summaryBlocks = [
+    ...(blocksCreationParams?.workflow?.workflowDefinition?.config?.isCaseOverviewEnabled
+      ? caseOverviewBlock
+      : []),
+    ...websiteMonitoringBlock,
+    ...(aiSummaryBlock ? aiSummaryBlock : []),
+    ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
+      ? merchantScreeningBlock
+      : []),
+  ];
+
+  const kybBlocks = [
+    ...kybRegistryInfoBlock,
+    ...ubosRegistryProvidedBlock,
+    ...companySanctionsBlock,
+    ...entityInfoBlock,
+    ...entityAddressWithContainerBlock,
+    ...headquartersAddressWithContainerBlock,
+    ...entityAdditionalInfoBlock,
+    ...registryInfoBlock,
+    // ...mapBlock,
+    ...bankingDetailsBlock,
+    ...bankAccountVerificationBlock,
+    ...commercialCreditCheckBlock,
+  ];
+
+  const storeBlocks = [
+    ...storeInfoBlock,
+    ...processingDetailsBlock,
+    ...websiteBasicRequirementBlock,
+  ];
+  const documentsBlocks = [...businessDocumentBlocks];
+  const individualsBlocks = [
+    ...individualsUserProvidedBlock,
+    ...individualsRegistryProvidedBlock,
+    ...deviceSignalsBlock,
+    ...amlWithContainerBlock,
+    ...mainRepresentativeBlock,
+    ...uboDocumentBlocks,
+    ...directorDocumentBlocks,
+    ...kycBlocks,
+  ];
+  const associatedCompaniesBlocks = [
+    ...associatedCompaniesBlock,
+    ...associatedCompaniesInformationBlock,
+    ...createAssociatedCompanyDocumentBlocks(blocksCreationParams),
+  ];
+  const monitoringReportBlocks = [...websiteMonitoringBlocks];
+  const customDataBlocks = [...customDataBlock];
+
   const defaultTabsMap = {
-    [Tab.SUMMARY]: [
-      ...(blocksCreationParams?.workflow?.workflowDefinition?.config?.isCaseOverviewEnabled
-        ? caseOverviewBlock
-        : []),
-      ...websiteMonitoringBlock,
-      ...(aiSummaryBlock ? aiSummaryBlock : []),
-      ...(blocksCreationParams?.workflow?.context?.pluginsOutput?.merchantScreening
-        ? merchantScreeningBlock
-        : []),
-    ],
-    [Tab.KYB]: [
-      ...kybRegistryInfoBlock,
-      ...ubosRegistryProvidedBlock,
-      ...companySanctionsBlock,
-      ...entityInfoBlock,
-      ...entityAddressWithContainerBlock,
-      ...headquartersAddressWithContainerBlock,
-      ...entityAdditionalInfoBlock,
-      ...registryInfoBlock,
-      // ...mapBlock,
-      ...bankingDetailsBlock,
-      ...bankAccountVerificationBlock,
-      ...commercialCreditCheckBlock,
-    ],
-    [Tab.STORE_INFO]: [
-      ...storeInfoBlock,
-      ...processingDetailsBlock,
-      ...websiteBasicRequirementBlock,
-    ],
-    [Tab.DOCUMENTS]: [...businessDocumentBlocks],
-    [Tab.INDIVIDUALS]: [
-      ...individualsUserProvidedBlock,
-      ...individualsRegistryProvidedBlock,
-      ...deviceSignalsBlock,
-      ...amlWithContainerBlock,
-      ...mainRepresentativeBlock,
-      ...uboDocumentBlocks,
-      ...directorDocumentBlocks,
-      ...kycBlocks,
-    ],
-    [Tab.ASSOCIATED_COMPANIES]: [
-      ...associatedCompaniesBlock,
-      ...associatedCompaniesInformationBlock,
-      ...createAssociatedCompanyDocumentBlocks(blocksCreationParams),
-    ],
-    [Tab.MONITORING_REPORTS]: [...websiteMonitoringBlocks],
-    [Tab.CUSTOM_DATA]: [...customDataBlock],
+    [Tab.SUMMARY]: withNoDataFallback(summaryBlocks, {
+      title: 'Summary Pending',
+      description:
+        'Summary insights will appear after checks and enrichment complete for this case.',
+      icon: <LayoutDashboardIcon className="text-slate-400 d-12" />,
+    }),
+    [Tab.KYB]: withNoDataFallback(kybBlocks, {
+      title: 'KYB Details Not Available Yet',
+      description: 'Business profile and KYB details have not been collected for this case yet.',
+      icon: <Building2Icon className="text-slate-400 d-12" />,
+    }),
+    [Tab.STORE_INFO]: withNoDataFallback(storeBlocks, {
+      title: 'Store Information Not Available',
+      description: 'Store and processing information has not been submitted for this case.',
+      icon: <StoreIcon className="text-slate-400 d-12" />,
+    }),
+    [Tab.DOCUMENTS]: withNoDataFallback(documentsBlocks, {
+      title: 'No Documents Submitted',
+      description: 'No business documents have been uploaded for this case yet.',
+      icon: <FileTextIcon className="text-slate-400 d-12" />,
+    }),
+    [Tab.INDIVIDUALS]: withNoDataFallback(individualsBlocks, {
+      title: 'No Individuals Linked',
+      description: 'No directors, owners, or related individuals are linked to this case yet.',
+      icon: <Building2Icon className="text-slate-400 d-12" />,
+    }),
+    [Tab.ASSOCIATED_COMPANIES]: withNoDataFallback(associatedCompaniesBlocks, {
+      title: 'No Associated Companies',
+      description: 'No associated company data has been provided for this case yet.',
+      icon: <Building2Icon className="text-slate-400 d-12" />,
+    }),
+    [Tab.MONITORING_REPORTS]: withNoDataFallback(monitoringReportBlocks, {
+      title: 'No Web Presence Results',
+      description: 'Web presence monitoring has not produced results for this case yet.',
+      icon: <GlobeIcon className="text-slate-400 d-12" />,
+    }),
+    [Tab.CUSTOM_DATA]: withNoDataFallback(customDataBlocks, {
+      title: 'No Custom Data Provided',
+      description: 'No customer-provided custom data is available for this case.',
+      icon: <DatabaseIcon className="text-slate-400 d-12" />,
+    }),
   } as const;
 
   if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
