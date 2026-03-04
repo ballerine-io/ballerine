@@ -107,7 +107,7 @@
     "d3-hierarchy": "^3.1.2",
     "date-fns": "^3.0.6",
     "dayjs": "^1.11.6",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.3.1",
     "eslint-plugin-tailwindcss": "^3.8.0",
     "framer-motion": "^8.3.4",
     "html2canvas-pro": "^1.5.8",
