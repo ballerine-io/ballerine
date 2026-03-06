@@ -1,5 +1,5 @@
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
-import { ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
@@ -113,32 +113,44 @@ export const useEntities = () => {
     setSelectedCaseIds([]);
   }, []);
 
-  const onBulkDecision = useCallback(
-    async (name: 'approve' | 'reject' | 'revision') => {
+  // Bulk action confirmation dialog state
+  const [bulkActionDialog, setBulkActionDialog] = useState<{
+    isOpen: boolean;
+    action: 'approve' | 'reject' | 'revision' | null;
+  }>({ isOpen: false, action: null });
+
+  const pendingBulkActionRef = useRef<(() => void) | null>(null);
+
+  const actionNameByDecisionName = {
+    approve: 'approved',
+    reject: 'rejected',
+    revision: 'sent for re-upload',
+  } as const;
+
+  const actionPromptByDecisionName = {
+    approve: 'Approve',
+    reject: 'Reject',
+    revision: 'Send for re-upload',
+  } as const;
+
+  const onRequestBulkDecision = useCallback(
+    (name: 'approve' | 'reject' | 'revision') => {
       if (!selectedCaseIds.length) {
         return;
       }
 
-      const actionNameByDecisionName = {
-        approve: 'approved',
-        reject: 'rejected',
-        revision: 'sent for re-upload',
-      } as const;
-      const actionPromptByDecisionName = {
-        approve: 'approve',
-        reject: 'reject',
-        revision: 'send for re-upload',
-      } as const;
+      setBulkActionDialog({ isOpen: true, action: name });
+    },
+    [selectedCaseIds.length],
+  );
 
-      if (
-        !window.confirm(
-          `Are you sure you want to ${actionPromptByDecisionName[name]} ${
-            selectedCaseIds.length
-          } selected case${selectedCaseIds.length === 1 ? '' : 's'}?`,
-        )
-      ) {
-        return;
-      }
+  const onCloseBulkActionDialog = useCallback(() => {
+    setBulkActionDialog({ isOpen: false, action: null });
+  }, []);
+
+  const executeBulkDecision = useCallback(
+    async (name: 'approve' | 'reject' | 'revision') => {
+      setBulkActionDialog({ isOpen: false, action: null });
 
       try {
         const chunkSize = 100;
@@ -155,10 +167,29 @@ export const useEntities = () => {
         };
 
         for (const workflowIds of workflowIdChunks) {
-          const chunkResult = await mutateBatchDecision({
-            workflowIds,
-            name,
-          });
+          let chunkResult = null;
+          let retries = 0;
+          const maxRetries = 2;
+
+          while (retries <= maxRetries) {
+            try {
+              chunkResult = await mutateBatchDecision({
+                workflowIds,
+                name,
+              });
+
+              break;
+            } catch (retryError) {
+              retries++;
+
+              if (retries > maxRetries) {
+                throw retryError;
+              }
+
+              // Exponential backoff: 1s, 2s
+              await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+            }
+          }
 
           if (!chunkResult) {
             throw new Error('Chunk batch decision failed');
@@ -188,12 +219,19 @@ export const useEntities = () => {
             actionNameByDecisionName[name]
           }.`,
         );
-      } catch {
+      } catch (error) {
+        console.error('Bulk action failed:', error);
         toast.error('Batch action failed. Please try again.');
       }
     },
     [mutateBatchDecision, selectedCaseIds],
   );
+
+  const onConfirmBulkAction = useCallback(() => {
+    if (bulkActionDialog.action) {
+      executeBulkDecision(bulkActionDialog.action);
+    }
+  }, [bulkActionDialog.action, executeBulkDecision]);
 
   useSelectEntityOnMount();
 
@@ -227,9 +265,13 @@ export const useEntities = () => {
     onToggleSelectCase,
     onToggleSelectAllCasesOnCurrentPage,
     onClearSelectedCases,
-    onBulkApproveCases: () => onBulkDecision('approve'),
-    onBulkRejectCases: () => onBulkDecision('reject'),
-    onBulkRevisionCases: () => onBulkDecision('revision'),
+    onBulkApproveCases: () => onRequestBulkDecision('approve'),
+    onBulkRejectCases: () => onRequestBulkDecision('reject'),
+    onBulkRevisionCases: () => onRequestBulkDecision('revision'),
     isLoadingBulkDecision,
+    bulkActionDialog,
+    onCloseBulkActionDialog,
+    onConfirmBulkAction,
+    actionPromptByDecisionName,
   };
 };

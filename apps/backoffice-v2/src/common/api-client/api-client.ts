@@ -23,6 +23,7 @@ export const apiClient: IApiClient = async ({ endpoint, method, options, schema,
       },
       headers: {
         'Content-Type': 'application/json',
+        ...(env.VITE_API_KEY ? { 'x-api-key': env.VITE_API_KEY } : {}),
         ...(options?.headers ?? {}),
       },
       schema,

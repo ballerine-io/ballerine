@@ -46,4 +46,6 @@ export const EnvSchema = z.object({
   }, z.custom<RegExp>(value => value instanceof RegExp).optional()),
   VITE_BOTPRESS_CLIENT_ID: z.string().optional(),
   VITE_GOOGLE_MAPS_API_KEY: z.string().optional(),
+  VITE_CUSTOM_API_URL: z.string().url().optional(),
+  VITE_CUSTOM_API_KEY: z.string().optional(),
 });

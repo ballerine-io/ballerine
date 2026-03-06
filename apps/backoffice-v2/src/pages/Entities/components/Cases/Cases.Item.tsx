@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { FunctionComponent, useMemo } from 'react';
 
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { Checkbox } from '@/common/components/atoms/Checkbox/Checkbox';
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
@@ -12,40 +12,11 @@ import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserA
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import dayjs from 'dayjs';
-import { StateTag, TStateTag, valueOrNA } from '@ballerine/common';
+import { StateTag, valueOrNA } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { tagToBadgeData } from '../../../Entity/components/Case/consts';
 import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
-
-// Priority order: most critical states first
-const TAG_PRIORITY: TStateTag[] = [
-  StateTag.REJECTED,
-  StateTag.FLAGGED,
-  StateTag.FAILURE,
-  StateTag.REVISION,
-  StateTag.MANUAL_REVIEW,
-  StateTag.PENDING_PROCESS,
-  StateTag.COLLECTION_FLOW,
-  StateTag.DATA_ENRICHMENT,
-  StateTag.APPROVED,
-  StateTag.DISMISSED,
-  StateTag.RESOLVED,
-  StateTag.EDIT,
-];
-
-const getActiveTag = (tags: readonly TStateTag[] | undefined): TStateTag | undefined => {
-  if (!tags?.length) {
-    return undefined;
-  }
-
-  for (const priority of TAG_PRIORITY) {
-    if (tags.includes(priority)) {
-      return priority;
-    }
-  }
-
-  return tags[0];
-};
+import { getActiveTag } from '@/common/utils/get-active-tag/get-active-tag';
 
 /**
  * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
@@ -77,11 +48,22 @@ export const Item: FunctionComponent<IItemProps> = ({
   const entityInitials = createInitials(fullName);
   const { ref, styles } = useEllipsesWithTitle<HTMLDivElement>();
   const { search } = useLocation();
+  const { locale = 'en' } = useParams();
   const rgb = useMemo(() => stringToRGB(fullName), [fullName]);
   const isApproved = tags?.includes(StateTag.APPROVED);
   const isRejected = tags?.includes(StateTag.REJECTED);
   const activeTag = useMemo(() => getActiveTag(tags), [tags]);
   const isTerminal = isApproved || isRejected;
+
+  // Time urgency: how old is this case
+  const urgency = useMemo(() => {
+    const hoursOld = dayjs().diff(dayjs(createdAt), 'hour');
+
+    if (hoursOld < 24) return { color: 'bg-green-500', label: 'New' };
+    if (hoursOld < 72) return { color: 'bg-yellow-500', label: `${Math.floor(hoursOld / 24)}d` };
+
+    return { color: 'bg-red-500', label: `${Math.floor(hoursOld / 24)}d` };
+  }, [createdAt]);
 
   return (
     <li className="w-full px-2">
@@ -94,7 +76,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           checkboxProps={{ className: 'd-4' }}
         />
         <NavLink
-          to={`/en/case-management/entities/${id}${search}`}
+          to={`/${locale}/case-management/entities/${id}${search}`}
           className={({ isActive }) =>
             ctw(
               `flex min-h-[56px] flex-1 items-center gap-x-3 rounded-lg px-3 py-2.5 outline-none active:bg-muted-foreground/30 active:text-foreground`,
@@ -116,10 +98,18 @@ export const Item: FunctionComponent<IItemProps> = ({
                 'text-error': isRejected,
               })}
             >
-              {/*  Early tell if a state has invalids tags and includes both `REJECTED` and `APPROVED` */}
               {isRejected && <RejectedSvg />}
               {isApproved && <ApprovedSvg />}
             </motion.div>
+            {!isTerminal && (
+              <span
+                className={ctw(
+                  'indicator-item indicator-end indicator-bottom h-2.5 w-2.5 rounded-full border border-white',
+                  urgency.color,
+                )}
+                title={`Case age: ${urgency.label}`}
+              />
+            )}
             <Avatar
               src={entityAvatarUrl}
               className="text-base font-semibold d-8"

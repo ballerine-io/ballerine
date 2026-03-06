@@ -1,4 +1,8 @@
 import { Button } from '@/common/components/atoms/Button/Button';
+import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
+import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
 import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
 import { DialogContent } from '@/common/components/organisms/Dialog/Dialog.Content';
 import { DialogDescription } from '@/common/components/organisms/Dialog/Dialog.Description';
@@ -87,17 +91,31 @@ export const DefaultActions = () => {
       >
         Reject
       </Button>
-      <Button
-        size="md"
-        variant="success"
-        onClick={onMutateApproveCase}
-        disabled={isLoadingActions || !canApprove}
-        className={ctw({
-          loading: debouncedIsLoadingApproveCase,
-        })}
-      >
-        Approve
-      </Button>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span tabIndex={!canApprove ? 0 : undefined}>
+              <Button
+                size="md"
+                variant="success"
+                onClick={onMutateApproveCase}
+                disabled={isLoadingActions || !canApprove}
+                className={ctw({
+                  loading: debouncedIsLoadingApproveCase,
+                })}
+              >
+                Approve
+              </Button>
+            </span>
+          </TooltipTrigger>
+          {!canApprove && canRevision && (
+            <TooltipContent side="bottom">
+              Cannot approve while documents are pending revision. Resolve all document reviews
+              first.
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };

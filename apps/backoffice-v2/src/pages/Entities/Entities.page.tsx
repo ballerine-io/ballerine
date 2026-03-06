@@ -9,6 +9,13 @@ import { Cases } from './components/Cases/Cases';
 import { useEntities } from './hooks/useEntities/useEntities';
 import { NoCases } from '@/pages/Entities/components/NoCases/NoCases';
 import { UrlPagination } from '@/common/components/molecules/UrlPagination/UrlPagination';
+import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
+import { DialogContent } from '@/common/components/organisms/Dialog/Dialog.Content';
+import { DialogDescription } from '@/common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '@/common/components/organisms/Dialog/Dialog.Footer';
+import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
+import { Button } from '@/common/components/atoms/Button/Button';
 
 export const Entities: FunctionComponent = () => {
   const {
@@ -40,6 +47,10 @@ export const Entities: FunctionComponent = () => {
     onBulkRejectCases,
     onBulkRevisionCases,
     isLoadingBulkDecision,
+    bulkActionDialog,
+    onCloseBulkActionDialog,
+    onConfirmBulkAction,
+    actionPromptByDecisionName,
   } = useEntities();
 
   return (
@@ -115,6 +126,42 @@ export const Entities: FunctionComponent = () => {
       </Cases>
       {isNoCases && <NoCases />}
       {!isNoCases && <Outlet />}
+      <Dialog
+        open={bulkActionDialog.isOpen}
+        onOpenChange={open => !open && onCloseBulkActionDialog()}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Bulk Action</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to{' '}
+              {bulkActionDialog.action
+                ? actionPromptByDecisionName[bulkActionDialog.action].toLowerCase()
+                : ''}{' '}
+              {selectedCasesCount} selected case{selectedCasesCount === 1 ? '' : 's'}? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={onCloseBulkActionDialog}>
+              Cancel
+            </Button>
+            <Button
+              variant={
+                bulkActionDialog.action === 'reject'
+                  ? 'destructive'
+                  : bulkActionDialog.action === 'approve'
+                  ? 'success'
+                  : 'warning'
+              }
+              onClick={onConfirmBulkAction}
+            >
+              {bulkActionDialog.action ? actionPromptByDecisionName[bulkActionDialog.action] : ''}{' '}
+              {selectedCasesCount} case{selectedCasesCount === 1 ? '' : 's'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

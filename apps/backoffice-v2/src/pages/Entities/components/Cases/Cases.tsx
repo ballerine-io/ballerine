@@ -156,7 +156,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           {Intl.NumberFormat().format(count)} {count === 1 ? 'case' : 'cases'}
         </div>
         <div className="mt-3 rounded-md border border-neutral/10 p-2 theme-dark:border-neutral/60">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <Checkbox
               checked={isAllCasesOnCurrentPageSelected}
               value="select-all-cases"
@@ -164,47 +164,54 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
               className="text-xs font-medium"
               checkboxProps={{ className: 'd-4' }}
             >
-              Select All On Page
+              Select All
             </Checkbox>
-            <span className="text-xs text-base-content/70">{selectedCasesCount} selected</span>
             {selectedCasesCount > 0 && (
-              <>
-                <Button
-                  size="sm"
-                  variant="warning"
-                  onClick={onBulkRevisionCases}
-                  disabled={isLoadingBulkDecision}
-                  className="ml-auto whitespace-nowrap"
-                >
-                  Ask Re-uploads
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={onBulkRejectCases}
-                  disabled={isLoadingBulkDecision}
-                >
-                  Reject
-                </Button>
-                <Button
-                  size="sm"
-                  variant="success"
-                  onClick={onBulkApproveCases}
-                  disabled={isLoadingBulkDecision}
-                >
-                  Approve
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={onClearSelectedCases}
-                  disabled={isLoadingBulkDecision}
-                >
-                  Clear
-                </Button>
-              </>
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                {selectedCasesCount}
+              </span>
             )}
           </div>
+          {selectedCasesCount > 0 && (
+            <div className="mt-2 flex items-center gap-1.5 border-t border-neutral/10 pt-2 theme-dark:border-neutral/60">
+              <Button
+                size="sm"
+                variant="success"
+                onClick={onBulkApproveCases}
+                disabled={isLoadingBulkDecision}
+                className="flex-1 text-xs"
+              >
+                Approve ({selectedCasesCount})
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={onBulkRejectCases}
+                disabled={isLoadingBulkDecision}
+                className="flex-1 text-xs"
+              >
+                Reject ({selectedCasesCount})
+              </Button>
+              <Button
+                size="sm"
+                variant="warning"
+                onClick={onBulkRevisionCases}
+                disabled={isLoadingBulkDecision}
+                className="flex-1 whitespace-nowrap text-xs"
+              >
+                Re-upload ({selectedCasesCount})
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onClearSelectedCases}
+                disabled={isLoadingBulkDecision}
+                className="text-xs"
+              >
+                Clear
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       {children}

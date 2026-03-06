@@ -16,6 +16,7 @@ import { useCaseState } from '../useCaseState/useCaseState';
 import { IUseActions } from './interfaces';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchUpdateWorkflowById } from '@/domains/workflows/fetchers';
+import { getActiveTag } from '@/common/utils/get-active-tag/get-active-tag';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const filterId = useFilterId();
@@ -56,9 +57,10 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     [mutateAssignWorkflow],
   );
 
-  const tag = useMemo(() => {
-    return workflow?.tags?.find(t => tagToBadgeData[t]);
-  }, [workflow]) as keyof typeof tagToBadgeData;
+  const tag = useMemo(
+    () => getActiveTag(workflow?.tags),
+    [workflow?.tags],
+  ) as keyof typeof tagToBadgeData;
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
 

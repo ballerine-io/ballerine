@@ -56,7 +56,10 @@ export const useDefaultActionsLogic = () => {
   );
 
   const documentsUnderRevisionIds = useMemo(
-    () => documentsUnderRevision?.map(document => document?.id!) || [],
+    () =>
+      documentsUnderRevision
+        ?.filter((document): document is typeof document & { id: string } => !!document?.id)
+        .map(document => document.id) || [],
     [documentsUnderRevision],
   );
 
