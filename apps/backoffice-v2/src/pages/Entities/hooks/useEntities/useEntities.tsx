@@ -1,5 +1,5 @@
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
-import { ChangeEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
@@ -118,8 +118,6 @@ export const useEntities = () => {
     isOpen: boolean;
     action: 'approve' | 'reject' | 'revision' | null;
   }>({ isOpen: false, action: null });
-
-  const pendingBulkActionRef = useRef<(() => void) | null>(null);
 
   const actionNameByDecisionName = {
     approve: 'approved',

@@ -68,8 +68,7 @@ export const getVariantTabs = (
         name: Tab.CUSTOM_DATA,
         displayName: 'Custom Data',
         disabled: false,
-        tooltip:
-          'This tab displays customer data provided by API, allowing MiKashBoks AI to enrich its analysis.',
+        tooltip: 'This tab displays custom data provided via API to enrich the case analysis.',
       },
     ];
 

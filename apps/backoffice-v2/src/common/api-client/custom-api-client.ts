@@ -6,12 +6,12 @@ import { handlePromise } from '../utils/handle-promise/handle-promise';
 /**
  * @description API client for connecting to a custom/unified API.
  * Configured via VITE_CUSTOM_API_URL and VITE_CUSTOM_API_KEY environment variables.
- * Falls back gracefully if no custom API is configured.
+ * Callers should check isCustomApiConfigured() before using this client.
  */
 export const customApiClient: IApiClient = async ({ endpoint, method, options, schema, ...rest }) =>
   handlePromise(
     fetcher({
-      url: `${env.VITE_CUSTOM_API_URL}/${endpoint}`,
+      url: `${env.VITE_CUSTOM_API_URL ?? ''}/${endpoint}`,
       method,
       options: {
         ...options,
