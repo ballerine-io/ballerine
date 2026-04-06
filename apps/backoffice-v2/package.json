@@ -197,7 +197,7 @@
     "terser": "^5.39.0",
     "type-fest": "^4.23.0",
     "typescript": "^5.5.4",
-    "vite": "^5.3.5",
+    "vite": "^6.4.2",
     "vite-plugin-mkcert": "^1.16.0",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-tsconfig-paths": "^5.0.1",
