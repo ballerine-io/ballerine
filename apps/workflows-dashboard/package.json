@@ -43,7 +43,7 @@
     "dayjs": "^1.11.6",
     "install": "^0.13.0",
     "jsoneditor": "^10.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "lucide-react": "^0.144.0",
     "posthog-js": "^1.154.2",
     "react": "^18.2.0",

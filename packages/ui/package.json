@@ -69,7 +69,7 @@
     "json-logic-js": "^2.0.2",
     "jsonata": "^2.0.6",
     "libphonenumber-js": "^1.10.49",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "lucide-react": "^0.245.0",
     "react": "^18.0.37",
     "react-circle-flags": "^0.0.23",
