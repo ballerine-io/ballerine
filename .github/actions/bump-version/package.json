@@ -9,7 +9,7 @@
   "author": "Lior Zamir",
   "license": "ISC",
   "dependencies": {
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.11.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.1"
