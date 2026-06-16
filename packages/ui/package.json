@@ -61,7 +61,7 @@
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.6",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.4.9",
     "email-validator": "^2.0.4",
     "emblor": "1.4.6",
     "framer-motion": "^8.3.4",
