@@ -38,7 +38,7 @@
     "xstate": "^4.37.0"
   },
   "devDependencies": {
-    "@babel/core": "7.17.9",
+    "@babel/core": "7.29.6",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
     "@ballerine/config": "^1.1.44",
