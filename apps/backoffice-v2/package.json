@@ -187,7 +187,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.6",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "postcss": "^8.4.31",
+    "postcss": "^8.5.10",
     "prettier": "^2.8.0",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "rollup-plugin-visualizer": "^5.14.0",
