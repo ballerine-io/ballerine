@@ -35,7 +35,7 @@
     "country-state-city": "^3.1.4",
     "currency-codes": "^2.1.0",
     "dayjs": "^1.11.6",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.4.12",
     "emblor": "^1.4.6",
     "form-data-encoder": "^3.0.0",
     "i18n-iso-countries": "^7.6.0",
