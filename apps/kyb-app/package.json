@@ -51,7 +51,7 @@
     "lucide-react": "^0.144.0",
     "p-queue": "^7.4.1",
     "posthog-js": "^1.154.2",
-    "qs": "^6.11.2",
+    "qs": "^6.16.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.3",
