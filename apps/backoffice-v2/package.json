@@ -151,7 +151,7 @@
     "@ballerine/config": "^1.1.44",
     "@ballerine/eslint-config-react": "^2.0.44",
     "@cspell/cspell-types": "^6.31.1",
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^10.5.0",
     "@playwright/test": "^1.32.1",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-essentials": "^7.0.0-rc.10",
