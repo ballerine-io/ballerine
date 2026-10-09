@@ -61,13 +61,13 @@
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.6",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.4.16",
     "email-validator": "^2.0.4",
     "emblor": "1.4.6",
     "framer-motion": "^8.3.4",
     "i18n-iso-countries": "^7.6.0",
     "json-logic-js": "^2.0.2",
-    "jsonata": "^2.0.6",
+    "jsonata": "^2.2.1",
     "libphonenumber-js": "^1.10.49",
     "lodash": "^4.17.21",
     "lucide-react": "^0.245.0",
@@ -131,6 +131,6 @@
     "vite": "^5.3.5",
     "vite-plugin-dts": "^4.0.1",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^0.33.0"
+    "vitest": "^5.0.3"
   }
 }

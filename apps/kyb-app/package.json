@@ -35,7 +35,7 @@
     "country-state-city": "^3.1.4",
     "currency-codes": "^2.1.0",
     "dayjs": "^1.11.6",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.4.16",
     "emblor": "^1.4.6",
     "form-data-encoder": "^3.0.0",
     "i18n-iso-countries": "^7.6.0",
@@ -45,13 +45,13 @@
     "i18next-http-backend": "^2.1.1",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
-    "jsonata": "^2.0.6",
+    "jsonata": "^2.2.1",
     "ky": "^0.33.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
     "p-queue": "^7.4.1",
     "posthog-js": "^1.154.2",
-    "qs": "^6.11.2",
+    "qs": "^6.16.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.3",
@@ -99,6 +99,6 @@
     "vite-plugin-checker": "^0.6.1",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-tsconfig-paths": "^4.0.7",
-    "vitest": "^0.34.6"
+    "vitest": "^5.0.3"
   }
 }
