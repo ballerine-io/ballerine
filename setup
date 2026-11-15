@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+# Setup script for Ballerine KYC/KYB apps
+# Usage: ./setup [DOMAIN_NAME]
+# If DOMAIN_NAME is provided, it will update frontend build variables and docker-compose env files.
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}🚀 Starting Ballerine KYC/KYB Setup...${NC}"
+
+# 1. Initialize project and prepare environment
+echo -e "${YELLOW}🏗️ Preparing project and environment...${NC}"
+if [ ! -f "./scripts/init.js" ]; then
+    echo -e "${RED}❌ Error: ./scripts/init.js not found!${NC}"
+    exit 1
+fi
+
+# Run the initialization script (builds packages and copies .env files)
+node ./scripts/init.js
+
+# 2. Generate hashing key salt
+echo -e "${YELLOW}🔑 Generating hashing key salt...${NC}"
+if [ ! -f "./scripts/generate-salt.sh" ]; then
+    echo -e "${RED}❌ Error: ./scripts/generate-salt.sh not found!${NC}"
+    exit 1
+fi
+./scripts/generate-salt.sh
+
+# 3. Handle domain configuration (optional argument)
+DOMAIN_NAME=$1
+if [ -n "$DOMAIN_NAME" ]; then
+    echo -e "${YELLOW}🌐 Updating domain configuration for: $DOMAIN_NAME...${NC}"
+    
+    # Update frontend build variables in .env.example files
+    env_files=$(find ./apps -name "*.env.example")
+    for i in $env_files; do
+        echo "  Updating env variables in $i"
+        sed -i "s/localhost/${DOMAIN_NAME}/g" "$i"
+    done
+
+    # Update docker-compose environment files
+    deploy_env_files=$(find ./deploy -name "*.env")
+    for i in $deploy_env_files; do
+        echo "  Updating env variables in $i"
+        sed -i "s/DOMAIN_NAME=\"\"/DOMAIN_NAME=\"${DOMAIN_NAME}\"/g" "$i"
+    done
+else
+    echo -e "${YELLOW}ℹ️ No DOMAIN_NAME provided, skipping frontend/docker-compose domain updates.${NC}"
+fi
+
+# 4. Build everything (Docker Build)
+echo -e "${YELLOW}🐳 Building Docker images and bringing up containers...${NC}"
+
+# Ensure we are in the root directory
+cd /home/user/ballerine
+
+# Check if docker-compose is available
+if ! command -v docker-compose &> /dev/null; then
+    echo -e "${RED}❌ docker-compose not found. Installing...${NC}"
+    sudo apt update
+    sudo apt install -y docker.io
+    mkdir -p ~/.docker/cli-plugins/
+    curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+    chmod +x ~/.docker/cli-plugins/docker-compose
+    sudo mv ~/.docker/cli-plugins/docker-compose /usr/bin/docker-compose
+fi
+
+# Execute the docker build and up (detached)
+cd deploy
+echo -e "${YELLOW}🏗️ Executing docker build and deploy...${NC}"
+sudo docker-compose -f docker-compose-build.yml up -d --build
+
+echo -e "${GREEN}✅ Setup completed successfully! All KYC/KYB apps are building/running.${NC}"
+echo -e "${GREEN}🌐 Access the apps via the configured domain or localhost (if no domain provided).${NC}"
