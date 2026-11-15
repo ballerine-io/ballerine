@@ -21,8 +21,35 @@ if [ ! -f "./scripts/init.js" ]; then
     exit 1
 fi
 
+# Check if pnpm is available, if not, try to install it or use npx
+if ! command -v pnpm &> /dev/null; then
+    echo -e "${YELLOW}📦 pnpm not found. Attempting to install or use npx...${NC}"
+    # Try to install pnpm globally if possible, or use npx pnpm
+    if command -v npm &> /dev/null; then
+        npm install -g pnpm || true
+    fi
+    # Update PATH if needed or use npx
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 # Run the initialization script (builds packages and copies .env files)
-node ./scripts/init.js
+# Use npx pnpm if pnpm is not in PATH but installed, or just pnpm if available
+if command -v pnpm &> /dev/null; then
+    node ./scripts/init.js
+else
+    echo -e "${YELLOW}⚠️ pnpm still not found in PATH. Trying npx pnpm...${NC}"
+    # Temporarily override the run function in init.js or just run pnpm directly before
+    # For simplicity, let's ensure pnpm is available for the init.js script
+    npx pnpm --version >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        # Patch init.js temporarily or just run pnpm install first
+        npx pnpm install
+        node ./scripts/init.js
+    else
+        echo -e "${RED}❌ Error: pnpm is required but not found. Please install pnpm (npm install -g pnpm) and try again.${NC}"
+        exit 1
+    fi
+fi
 
 # 2. Generate hashing key salt
 echo -e "${YELLOW}🔑 Generating hashing key salt...${NC}"
