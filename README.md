@@ -41,6 +41,32 @@
 
 ---
 
+## 🚀 Quick Start: Run the Unified Setup Script
+
+The easiest way to build and run the KYC/KYB apps is by using the unified setup script.
+
+**1. Run the setup script (builds, prepares environment, and starts Docker):**
+```sh
+./setup [DOMAIN_NAME]
+```
+- **Without domain:** `./setup` (uses localhost)
+- **With domain:** `./setup mydomain.com` (updates frontend and docker-compose configs)
+
+**What the script does:**
+- Initializes the project and builds packages (`pnpm run build`)
+- Prepares environment files (`.env`) for all apps and services
+- Generates hashing key salt
+- Executes Docker build and brings up containers (`docker-compose up -d --build`)
+
+**2. Access the apps:**
+- **KYB Collection Flow:** [http://localhost:5201/](http://localhost:5201/) (or your domain)
+- **KYC Collection Flow:** [http://localhost:5202/](http://localhost:5202/) (or your domain)
+- **Back Office:** [http://localhost:5137/](http://localhost:5137/) (or your domain)
+
+> **Note:** Ensure Docker is installed and running before executing the script.
+
+---
+
 > ## ⚠️ Important Notice
 >
 > **The open source repository is currently undergoing a major rebuild and is not actively supported at this time.**
